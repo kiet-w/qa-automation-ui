@@ -1,0 +1,16 @@
+{
+  "search_terms": [
+    {
+      "keyword": "facebook",
+      "expected_title_fragment": "facebook"
+    },
+    {
+      "keyword": "youtube",
+      "expected_title_fragment": "youtube"
+    }
+  ],
+  "target_action": {
+    "channel_search": "VTV24",
+    "filter_mode": "Latest"
+  }
+}
