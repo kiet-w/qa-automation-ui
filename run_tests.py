@@ -42,41 +42,88 @@ def setup_environment(base_dir: Path) -> dict:
 
 
 def determine_report_json_path(user_args: list[str], default_path: str = "reports/report.json") -> str:
-    """Extract report JSON path if overridden by user arguments."""
+    """Extract report JSON path if overridden by user arguments or inferred from ticket folder."""
     for arg in user_args:
         if arg.startswith("--json-report-file="):
             return arg.split("=", 1)[1]
+
+    # Detect ticket folder from CLI arguments (e.g. tests/us01_bing_search or tests/us01_bing_search/test_bing_search.py)
+    for arg in user_args:
+        if not arg.startswith("-"):
+            parts = Path(arg).parts
+            if "tests" in parts:
+                idx = parts.index("tests")
+                if idx + 1 < len(parts):
+                    candidate = parts[idx + 1]
+                    ticket = candidate if not candidate.endswith(".py") else Path(arg).parent.name
+                    if ticket and not ticket.startswith(("_", ".")):
+                        return f"reports/{ticket}/report.json"
+
+    # If no ticket specified in args, check if exactly one ticket folder exists in tests/
+    tests_dir = Path(__file__).resolve().parent / "tests"
+    if tests_dir.exists():
+        subdirs = [d.name for d in tests_dir.iterdir() if d.is_dir() and not d.name.startswith(("_", "."))]
+        if len(subdirs) == 1:
+            return f"reports/{subdirs[0]}/report.json"
+
     return default_path
+
+
+def resolve_actual_report_json(base_dir: Path, configured_path: str) -> str:
+    """
+    Find the actual report.json file generated during the test run.
+    Falls back to locating the newest report.json in reports/ if conftest redirected it.
+    """
+    p = base_dir / configured_path
+    if p.exists():
+        return configured_path
+
+    reports_dir = base_dir / "reports"
+    if reports_dir.exists():
+        candidates = [f for f in reports_dir.glob("**/report.json") if f.is_file()]
+        if candidates:
+            newest = max(candidates, key=lambda f: f.stat().st_mtime)
+            try:
+                return str(newest.relative_to(base_dir))
+            except Exception:
+                return str(newest)
+
+    return configured_path
 
 
 def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_json_path: str) -> int:
     """
     Phase 1: Run Pytest with JSON reporting and user-provided CLI arguments.
+    Supports -n <workers> for parallel execution via pytest-xdist.
     Outputs stream directly to terminal console in real-time.
-    Waits for full completion (sequential or multi-worker xdist).
     """
     print(f"\n{BOLD}{CYAN}{'=' * 68}{RESET}")
     print(f"{BOLD}{CYAN}▶ PHA 1: THỰC THI KIỂM THỬ VỚI PYTEST{RESET}")
     print(f"{BOLD}{CYAN}{'=' * 68}{RESET}")
 
-    # Resolve pytest command
-    pytest_bin = "pytest"
-    if not shutil.which("pytest", path=env.get("PATH", "")):
-        venv_pytest = Path(sys.executable).parent / "pytest"
-        if venv_pytest.exists():
-            pytest_bin = str(venv_pytest)
-        else:
-            pytest_bin = None
+    # Resolve pytest binary or python executable
+    venv_bin = base_dir / ".venv" / "bin"
+    pytest_bin = None
+    if (venv_bin / "pytest").exists():
+        pytest_bin = str(venv_bin / "pytest")
+    elif shutil.which("pytest", path=env.get("PATH", "")):
+        pytest_bin = shutil.which("pytest", path=env.get("PATH", ""))
+    elif (Path(sys.executable).parent / "pytest").exists():
+        pytest_bin = str(Path(sys.executable).parent / "pytest")
 
     # Base pytest arguments
-    cmd = [pytest_bin] if pytest_bin else [sys.executable, "-m", "pytest"]
+    if pytest_bin:
+        cmd = [pytest_bin]
+    elif (venv_bin / "python").exists():
+        cmd = [str(venv_bin / "python"), "-m", "pytest"]
+    else:
+        cmd = [sys.executable, "-m", "pytest"]
 
     # Add json-report flags if not already provided in user_args
     if not any(arg.startswith("--json-report") for arg in user_args):
         cmd.append("--json-report")
     if not any(arg.startswith("--json-report-file=") for arg in user_args):
         cmd.append(f"--json-report-file={report_json_path}")
-
 
     cmd.extend(user_args)
 
@@ -104,6 +151,7 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
         return 130
 
 
+
 def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
     """
     Phase 2: Trigger generate_report.py to build self-contained HTML report.
@@ -123,7 +171,8 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
         print(f"{YELLOW}[CẢNH BÁO] Không tìm thấy file dữ liệu JSON '{report_json_path}'. Bỏ qua bước tạo HTML report.{RESET}")
         return False
 
-    python_bin = sys.executable or "python"
+    venv_python = base_dir / ".venv" / "bin" / "python"
+    python_bin = str(venv_python) if venv_python.exists() else (sys.executable or "python")
     cmd = [python_bin, "generate_report.py", report_json_path]
     cmd_display = " ".join(cmd)
     print(f"{GRAY}Lệnh thực thi: {cmd_display}{RESET}\n")
@@ -137,7 +186,7 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
             stderr=None,
         )
 
-        expected_html = base_dir / "reports" / "execution_report.html"
+        expected_html = report_json_file.parent / "execution_report.html"
         if proc.returncode == 0 and expected_html.exists():
             rel_html = os.path.relpath(expected_html, base_dir)
             abs_html = str(expected_html.resolve())
@@ -159,6 +208,7 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
 def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str):
     """
     Phase 3: Parse report.json (if available) and display clear, ANSI-colored summary.
+    Supports multi-test scenario breakdown for parallel execution.
     """
     report_json_file = base_dir / report_json_path
     total = 0
@@ -167,6 +217,7 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
     skipped = 0
     error = 0
     duration = None
+    tests_summary = []
 
     if report_json_file.exists():
         try:
@@ -179,8 +230,22 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
             skipped = summary.get("skipped", 0)
             error = summary.get("error", 0)
             duration = data.get("duration", None)
+
+            raw_tests = data.get("tests", [])
+            for t in raw_tests:
+                nodeid = t.get("nodeid", "")
+                name = nodeid.split("::")[-1] if "::" in nodeid else nodeid
+                outcome = t.get("outcome", "unknown").upper()
+                dur = float(t.get("duration", t.get("call", {}).get("duration", 0.0)))
+                tests_summary.append((name, outcome, dur))
         except Exception:
             pass
+
+    if total == 0 and tests_summary:
+        total = len(tests_summary)
+        passed = sum(1 for _, out, _ in tests_summary if out == "PASSED")
+        failed = sum(1 for _, out, _ in tests_summary if out == "FAILED")
+        skipped = sum(1 for _, out, _ in tests_summary if out == "SKIPPED")
 
     status_color = GREEN if pytest_returncode == 0 else RED
     status_text = "PASSED" if pytest_returncode == 0 else "FAILED"
@@ -206,6 +271,13 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
     if duration is not None:
         print(f"  Thời gian thực thi  : {BOLD}{duration:.2f}s{RESET}")
 
+    if tests_summary and len(tests_summary) > 1:
+        print(f"\n  {BOLD}Chi tiết kịch bản song song ({len(tests_summary)} test cases):{RESET}")
+        for name, outcome, dur in tests_summary:
+            symbol = f"{GREEN}✓{RESET}" if outcome == "PASSED" else f"{RED}✗{RESET}"
+            out_color = GREEN if outcome == "PASSED" else RED
+            print(f"    {symbol} {name} [{out_color}{outcome}{RESET} - {dur:.2f}s]")
+
     print(f"{BOLD}{CYAN}{'=' * 68}{RESET}\n")
 
 
@@ -222,11 +294,14 @@ def main():
     # Pha 1: Chạy Pytest
     pytest_returncode = run_pytest_phase(base_dir, env, user_args, report_json_path)
 
-    # Pha 2: Sinh Báo cáo HTML
-    run_report_phase(base_dir, env, report_json_path)
+    # Xác định đường dẫn file JSON thực tế đã được sinh
+    actual_json_path = resolve_actual_report_json(base_dir, report_json_path)
 
-    # Tóm tắt kết quả trên Terminal
-    print_summary(base_dir, pytest_returncode, report_json_path)
+    # Pha 2: Sinh Báo cáo HTML
+    run_report_phase(base_dir, env, actual_json_path)
+
+    # Pha 3: Tóm tắt kết quả trên Terminal
+    print_summary(base_dir, pytest_returncode, actual_json_path)
 
     # Thoát với đúng mã lỗi của Pytest cho CI/CD
     sys.exit(pytest_returncode)

@@ -1,11 +1,12 @@
 """BingResultsPage - Page Object for Bing search results page."""
 from playwright.sync_api import Page
 from components.search_box import SearchBoxComponent
+from pages.base_page import BasePage
 
 
-class BingResultsPage:
+class BingResultsPage(BasePage):
     def __init__(self, page: Page):
-        self.page = page
+        super().__init__(page)
         self.search_box = SearchBoxComponent(page)
 
     @property

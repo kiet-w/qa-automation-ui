@@ -12,14 +12,27 @@ def generate_duration_bar_chart_svg(items: List[Any]) -> str:
     Includes baseline, grid indicators, rounded bars, timing labels, and click-to-seek video support.
     """
     if not items:
-        return '<div class="no-data-hint" data-i18n="no_duration_data">No duration data available.</div>'
+        return '<div class="no-data-hint" style="color: var(--text-secondary, #8b949e);" data-i18n="no_duration_data">No duration data available.</div>'
 
-    width = 540
-    height = 190
+    num_items = len(items)
+    # Dynamic slot calculation to guarantee ample breathing room and prevent any text overlap
+    if num_items <= 6:
+        desired_slot = 62.0
+    elif num_items <= 12:
+        desired_slot = 50.0
+    else:
+        desired_slot = 44.0
+
     margin_left = 65
-    margin_right = 25
-    margin_top = 25
+    margin_right = 30
+    margin_top = 28
     margin_bottom = 45
+    height = 205
+
+    # Calculate dynamic width so that bars never crunch together
+    min_width = 540
+    calculated_width = int(margin_left + margin_right + num_items * desired_slot)
+    width = max(min_width, calculated_width)
 
     plot_width = width - margin_left - margin_right
     plot_height = height - margin_top - margin_bottom
@@ -29,20 +42,20 @@ def generate_duration_bar_chart_svg(items: List[Any]) -> str:
         max_val = 1.0
     ceiling = max(round(max_val * 1.15, 1), 1.0)
 
-    num_items = len(items)
     bar_slot = plot_width / num_items
-    bar_width = min(42.0, bar_slot * 0.58)
+    bar_width = min(32.0, max(14.0, bar_slot * 0.52))
 
     svg_parts = [
-        f'<svg viewBox="0 0 {width} {height}" class="bar-chart-svg" width="100%" height="180" xmlns="http://www.w3.org/2000/svg">',
+        '<div class="bar-chart-scroll-wrapper">',
+        f'<svg viewBox="0 0 {width} {height}" class="bar-chart-svg" width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">',
         '  <defs>',
         '    <linearGradient id="bar-grad" x1="0" y1="0" x2="0" y2="1">',
-        '      <stop offset="0%" stop-color="#38bdf8"/>',
-        '      <stop offset="100%" stop-color="#0284c7"/>',
+        '      <stop offset="0%" stop-color="#1f6feb" stop-opacity="0.85"/>',
+        '      <stop offset="100%" stop-color="#0969da" stop-opacity="0.95"/>',
         '    </linearGradient>',
         '    <linearGradient id="bar-grad-accent" x1="0" y1="0" x2="0" y2="1">',
-        '      <stop offset="0%" stop-color="#10b981"/>',
-        '      <stop offset="100%" stop-color="#059669"/>',
+        '      <stop offset="0%" stop-color="#3fb950" stop-opacity="0.9"/>',
+        '      <stop offset="100%" stop-color="#238636" stop-opacity="0.95"/>',
         '    </linearGradient>',
         '  </defs>',
     ]
@@ -52,16 +65,16 @@ def generate_duration_bar_chart_svg(items: List[Any]) -> str:
         y = margin_top + plot_height * (1.0 - ratio)
         val_label = f"{ceiling * ratio:.1f}s"
         svg_parts.append(
-            f'  <line x1="{margin_left}" y1="{y:.1f}" x2="{width - margin_right}" y2="{y:.1f}" stroke="#334155" stroke-dasharray="3,3" stroke-width="1"/>'
+            f'  <line x1="{margin_left}" y1="{y:.1f}" x2="{width - margin_right}" y2="{y:.1f}" stroke="var(--border-color, #30363d)" stroke-dasharray="3,3" stroke-width="1"/>'
         )
         svg_parts.append(
-            f'  <text x="{margin_left - 8}" y="{y + 4:.1f}" text-anchor="end" font-size="10" fill="#64748b" font-family="monospace">{val_label}</text>'
+            f'  <text x="{margin_left - 8}" y="{y + 4:.1f}" text-anchor="end" font-size="10" fill="var(--text-secondary, #8b949e)" font-family="monospace">{val_label}</text>'
         )
 
     # Baseline axis
     baseline_y = margin_top + plot_height
     svg_parts.append(
-        f'  <line x1="{margin_left}" y1="{baseline_y}" x2="{width - margin_right}" y2="{baseline_y}" stroke="#475569" stroke-width="1.5"/>'
+        f'  <line x1="{margin_left}" y1="{baseline_y}" x2="{width - margin_right}" y2="{baseline_y}" stroke="var(--border-color, #30363d)" stroke-width="1.5"/>'
     )
 
     # Bars
@@ -77,9 +90,13 @@ def generate_duration_bar_chart_svg(items: List[Any]) -> str:
         is_highlight = (val == max_val and len(items) > 1)
         grad_id = "bar-grad-accent" if is_highlight else "bar-grad"
 
-        short_label = label
-        if len(short_label) > 8:
-            short_label = short_label[:7] + "…"
+        # Format bottom label cleanly to avoid overlapping
+        if num_items > 10 and "Test #" in label:
+            short_label = f"#{label.split('#')[-1].strip()}"
+        elif len(label) > 10:
+            short_label = label[:9] + "…"
+        else:
+            short_label = label
 
         extra_attrs = ""
         tooltip_text = f"{html.escape(label)}: {val:.2f}s"
@@ -97,15 +114,18 @@ def generate_duration_bar_chart_svg(items: List[Any]) -> str:
         else:
             extra_attrs = ' class="bar-group"'
 
+        font_size_val = 10 if bar_slot >= 38 else 9
+
         svg_parts.extend([
             f'  <g{extra_attrs} tabindex="0">',
             f'    <rect x="{bar_x:.1f}" y="{bar_y:.1f}" width="{bar_width:.1f}" height="{max(bar_h, 2):.1f}" rx="4" fill="url(#{grad_id})">',
             f'      <title>{tooltip_text}</title>',
             '    </rect>',
-            f'    <text x="{bar_x + bar_width/2:.1f}" y="{bar_y - 6:.1f}" text-anchor="middle" font-size="10" font-weight="700" fill="#f8fafc" font-family="monospace">{val:.1f}s</text>',
-            f'    <text x="{bar_x + bar_width/2:.1f}" y="{baseline_y + 16:.1f}" text-anchor="middle" font-size="10" font-weight="500" fill="#94a3b8" font-family="system-ui, sans-serif">{html.escape(short_label)}</text>',
+            f'    <text x="{bar_x + bar_width/2:.1f}" y="{bar_y - 6:.1f}" text-anchor="middle" font-size="{font_size_val}" font-weight="700" fill="var(--text-primary, #e6edf3)" class="chart-text-main" font-family="monospace">{val:.1f}s</text>',
+            f'    <text x="{bar_x + bar_width/2:.1f}" y="{baseline_y + 16:.1f}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--text-secondary, #8b949e)" class="chart-text-sub" font-family="system-ui, sans-serif">{html.escape(short_label)}</text>',
             '  </g>',
         ])
 
     svg_parts.append('</svg>')
+    svg_parts.append('</div>')
     return "\n".join(svg_parts)

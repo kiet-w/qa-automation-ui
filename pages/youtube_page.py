@@ -3,13 +3,14 @@ import random
 import time
 from pathlib import Path
 from playwright.sync_api import Page
+from pages.base_page import BasePage
 
 
-class YouTubePage:
+class YouTubePage(BasePage):
     """Encapsulates locators and interactions on YouTube and channels."""
 
     def __init__(self, page: Page):
-        self.page = page
+        super().__init__(page)
 
     @property
     def search_input(self):

@@ -36,15 +36,37 @@ def find_video_for_test(
     all_videos: List[Path],
     test_index: int,
     total_tests: int,
+    test_metadata: Optional[dict] = None,
 ) -> Optional[Path]:
     """
     Matches a test case to its corresponding .webm video recording in test-results/.
-    Uses multiple heuristics:
+    Uses multiple strategies:
+    0. Direct metadata match: check test_metadata['video_path'] directly (stored by conftest/fixture).
     1. Directory name contains slugified test function name.
     2. Directory name contains slugified nodeid fragments.
     3. Direct single-test 1:1 mapping fallback.
     4. Index-based pairing if counts match.
     """
+    # 0. Check direct video_path in test_metadata (stored by conftest)
+    if test_metadata and isinstance(test_metadata, dict):
+        raw_video_path = test_metadata.get("video_path")
+        if raw_video_path:
+            p = Path(raw_video_path)
+            if p.exists() and p.is_file():
+                return p.resolve()
+            # Also check relative to test_results_dir or test_results_dir.parent
+            if test_results_dir:
+                cand1 = test_results_dir / p.name
+                if cand1.exists() and cand1.is_file():
+                    return cand1.resolve()
+                cand2 = test_results_dir / p
+                if cand2.exists() and cand2.is_file():
+                    return cand2.resolve()
+                if test_results_dir.exists():
+                    for sub_v in test_results_dir.glob(f"**/{p.name}"):
+                        if sub_v.exists() and sub_v.is_file():
+                            return sub_v.resolve()
+
     if not all_videos:
         return None
 
@@ -82,10 +104,11 @@ def resolve_screenshot_path(
     reports_dir: Path,
     workspace_dir: Path,
     step_title: str = "",
+    test_name: str = "",
 ) -> Optional[Path]:
     """
     Locates screenshot on disk using multiple fallback resolution strategies.
-    Supports relative paths, absolute paths, reports/ subdirectories, and Step 5 convention.
+    Supports relative paths, absolute paths, reports/ subdirectories, test-specific slugs, and Step 5 convention.
     """
     candidates: List[Path] = []
 
@@ -99,10 +122,20 @@ def resolve_screenshot_path(
             reports_dir / "screenshots" / p.name,
         ])
 
+    # Fallback with test_name slug if provided
+    if test_name:
+        slug = slugify(test_name)
+        candidates.extend([
+            reports_dir / f"execution_step5_{slug}.png",
+            reports_dir / "screenshots" / f"execution_step5_{slug}.png",
+            workspace_dir / "reports" / f"execution_step5_{slug}.png",
+        ])
+
     # Fallback convention for Step 5 / target action screenshot evidence
     if "step 5" in step_title.lower() or "defined page actions" in step_title.lower():
         candidates.extend([
             reports_dir / "execution_step5.png",
+            reports_dir / "screenshots" / "execution_step5.png",
             workspace_dir / "reports" / "execution_step5.png",
         ])
 

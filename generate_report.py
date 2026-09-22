@@ -26,7 +26,7 @@ def main():
     reports_dir = workspace_dir / "reports"
 
     json_path = Path(sys.argv[1]) if len(sys.argv) > 1 else (reports_dir / "report.json")
-    output_html_path = Path(sys.argv[2]) if len(sys.argv) > 2 else (reports_dir / "execution_report.html")
+    output_html_path = Path(sys.argv[2]) if len(sys.argv) > 2 else None
 
     generator = ReportGenerator(workspace_dir=workspace_dir)
     try:

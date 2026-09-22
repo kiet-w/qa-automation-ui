@@ -1,0 +1,165 @@
+{
+  "test_suite": "US02 - 20 Parallel Test Cases Showcase",
+  "scenarios": [
+    {
+      "id": "TC01",
+      "jira_id": "PROJ-2001",
+      "title": "Search Python Programming Language",
+      "keyword": "Python programming language",
+      "expected_fragment": "Python",
+      "category": "Backend"
+    },
+    {
+      "id": "TC02",
+      "jira_id": "PROJ-2002",
+      "title": "Search Playwright Automation Framework",
+      "keyword": "Playwright test automation",
+      "expected_fragment": "Playwright",
+      "category": "QA Automation"
+    },
+    {
+      "id": "TC03",
+      "jira_id": "PROJ-2003",
+      "title": "Search Docker Containers",
+      "keyword": "Docker container engine",
+      "expected_fragment": "Docker",
+      "category": "DevOps"
+    },
+    {
+      "id": "TC04",
+      "jira_id": "PROJ-2004",
+      "title": "Search Kubernetes Orchestration",
+      "keyword": "Kubernetes container orchestration",
+      "expected_fragment": "Kubernetes",
+      "category": "DevOps"
+    },
+    {
+      "id": "TC05",
+      "jira_id": "PROJ-2005",
+      "title": "Search Linux Operating System",
+      "keyword": "Linux operating system",
+      "expected_fragment": "Linux",
+      "category": "System"
+    },
+    {
+      "id": "TC06",
+      "jira_id": "PROJ-2006",
+      "title": "Search Git Version Control",
+      "keyword": "Git version control",
+      "expected_fragment": "Git",
+      "category": "Tools"
+    },
+    {
+      "id": "TC07",
+      "jira_id": "PROJ-2007",
+      "title": "Search PostgreSQL Database",
+      "keyword": "PostgreSQL relational database",
+      "expected_fragment": "PostgreSQL",
+      "category": "Database"
+    },
+    {
+      "id": "TC08",
+      "jira_id": "PROJ-2008",
+      "title": "Search Redis In-Memory Cache",
+      "keyword": "Redis in-memory cache",
+      "expected_fragment": "Redis",
+      "category": "Database"
+    },
+    {
+      "id": "TC09",
+      "jira_id": "PROJ-2009",
+      "title": "Search FastAPI Framework",
+      "keyword": "FastAPI web framework",
+      "expected_fragment": "FastAPI",
+      "category": "Backend"
+    },
+    {
+      "id": "TC10",
+      "jira_id": "PROJ-2010",
+      "title": "Search React UI Library",
+      "keyword": "React user interface library",
+      "expected_fragment": "React",
+      "category": "Frontend"
+    },
+    {
+      "id": "TC11",
+      "jira_id": "PROJ-2011",
+      "title": "Search Next.js Framework",
+      "keyword": "Next.js web framework",
+      "expected_fragment": "Next",
+      "category": "Frontend"
+    },
+    {
+      "id": "TC12",
+      "jira_id": "PROJ-2012",
+      "title": "Search TypeScript Language",
+      "keyword": "TypeScript JavaScript superset",
+      "expected_fragment": "TypeScript",
+      "category": "Language"
+    },
+    {
+      "id": "TC13",
+      "jira_id": "PROJ-2013",
+      "title": "Search Rust Programming",
+      "keyword": "Rust systems programming",
+      "expected_fragment": "Rust",
+      "category": "Language"
+    },
+    {
+      "id": "TC14",
+      "jira_id": "PROJ-2014",
+      "title": "Search Go Programming Language",
+      "keyword": "Go programming language golang",
+      "expected_fragment": "Go",
+      "category": "Language"
+    },
+    {
+      "id": "TC15",
+      "jira_id": "PROJ-2015",
+      "title": "Search GraphQL Query Language",
+      "keyword": "GraphQL query language API",
+      "expected_fragment": "GraphQL",
+      "category": "API"
+    },
+    {
+      "id": "TC16",
+      "jira_id": "PROJ-2016",
+      "title": "Search Apache Kafka Streaming",
+      "keyword": "Apache Kafka event streaming",
+      "expected_fragment": "Kafka",
+      "category": "BigData"
+    },
+    {
+      "id": "TC17",
+      "jira_id": "PROJ-2017",
+      "title": "Search Terraform Infrastructure",
+      "keyword": "Terraform infrastructure as code",
+      "expected_fragment": "Terraform",
+      "category": "Cloud"
+    },
+    {
+      "id": "TC18",
+      "jira_id": "PROJ-2018",
+      "title": "Search Cloudflare Platform",
+      "keyword": "Cloudflare edge platform",
+      "expected_fragment": "Cloudflare",
+      "category": "Cloud"
+    },
+    {
+      "id": "TC19",
+      "jira_id": "PROJ-2019",
+      "title": "Search Nginx Web Server",
+      "keyword": "Nginx HTTP web server",
+      "expected_fragment": "Nginx",
+      "category": "DevOps"
+    },
+    {
+      "id": "TC20",
+      "jira_id": "PROJ-2020",
+      "title": "Search MongoDB Database",
+      "keyword": "MongoDB document database",
+      "expected_fragment": "MongoDB",
+      "category": "Database"
+    }
+  ]
+}

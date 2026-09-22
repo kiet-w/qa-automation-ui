@@ -1,317 +1,434 @@
-        // Inline Dictionary for Instant Bilingual Switching (EN / VI)
-        const translations = {
-            en: {
-                page_title: "UI Automation Execution Report",
-                header_title: "UI Automation Execution Report",
-                header_subtitle: "Playwright + Pytest Offline Test Intelligence",
-                kpi_total: "Total Tests",
-                kpi_passed: "Passed",
-                kpi_failed: "Failed",
-                kpi_duration: "Total Duration",
-                kpi_rate: "Pass Rate",
-                lbl_collected: "Collected tests",
-                lbl_success_runs: "Successful runs",
-                lbl_error_runs: "Requires attention",
-                lbl_wall_time: "Execution wall time",
-                lbl_reliability: "Quality rating",
-                chart_donut_title: "Result Distribution",
-                chart_bar_title: "Execution Duration Breakdown (Seconds)",
-                pass_rate: "PASS RATE",
-                lbl_legend_pass: "Passed",
-                lbl_legend_fail: "Failed",
-                lbl_legend_skip: "Skipped",
-                badge_offline_svg: "Pure SVG",
-                pipeline_title: "Interactive Step Execution Pipeline",
-                pipeline_hint: "Click any node or bar to seek video to that step",
-                video_title: "Execution Video Recording",
-                video_badge: "WebM Playback (Offline)",
-                steps_title: "Execution Steps & Evidence",
-                lbl_steps_recorded: "steps recorded",
-                screenshot_evidence: "Screenshot Evidence:",
-                click_to_zoom: "Click image to view full resolution",
-                expand_image: "Enlarge",
-                step_error_label: "Step Failure:",
-                traceback_title: "Failure Traceback",
-                lbl_duration: "Duration:",
-                env_browser: "Browser:",
-                env_python: "Python:",
-                env_platform: "Platform:",
-                env_executed: "Executed At:",
-                footer_signature: "Self-contained Playwright Test Report Generator",
-                no_duration_data: "No duration data available.",
-                no_steps: "No detailed steps recorded.",
-                video_missing_file: "Video recording file exists on disk but could not be embedded."
-            },
-            vi: {
-                page_title: "Báo Cáo Thực Thi Kiểm Thử Tự Động",
-                header_title: "Báo Cáo Thực Thi Kiểm Thử Tự Động",
-                header_subtitle: "Bảng Điều Khiển Kiểm Thử Playwright + Pytest Offline",
-                kpi_total: "Tổng Số Test",
-                kpi_passed: "Thành Công",
-                kpi_failed: "Thất Bại",
-                kpi_duration: "Tổng Thời Gian",
-                kpi_rate: "Tỷ Lệ Đạt",
-                lbl_collected: "Tổng số test case",
-                lbl_success_runs: "Lượt chạy thành công",
-                lbl_error_runs: "Cần kiểm tra lại",
-                lbl_wall_time: "Thời gian thực thi",
-                lbl_reliability: "Đánh giá chất lượng",
-                chart_donut_title: "Phân Bố Kết Quả Kiểm Thử",
-                chart_bar_title: "Biểu Đồ Thời Gian Thực Thi (Giây)",
-                pass_rate: "TỶ LỆ ĐẠT",
-                lbl_legend_pass: "Thành công",
-                lbl_legend_fail: "Thất bại",
-                lbl_legend_skip: "Bỏ qua",
-                badge_offline_svg: "SVG Thuần",
-                pipeline_title: "Sơ Đồ Luồng Thực Thi Các Bước",
-                pipeline_hint: "Nhấn vào từng node hoặc cột để tua video đến bước đó",
-                video_title: "Video Ghi Hình Quá Trình Chạy",
-                video_badge: "WebM Playback (Nội Tuyến)",
-                steps_title: "Chi Tiết Từng Bước & Bằng Chứng",
-                lbl_steps_recorded: "bước đã ghi nhận",
-                screenshot_evidence: "Ảnh Chụp Bằng Chứng:",
-                click_to_zoom: "Nhấn vào ảnh để xem kích thước đầy đủ",
-                expand_image: "Phóng to",
-                step_error_label: "Lỗi Tại Bước Này:",
-                traceback_title: "Nhật Ký Truy Vết Lỗi (Traceback)",
-                lbl_duration: "Thời gian:",
-                env_browser: "Trình duyệt:",
-                env_python: "Python:",
-                env_platform: "Hệ điều hành:",
-                env_executed: "Thời điểm chạy:",
-                footer_signature: "Hệ thống Báo Cáo Tự Động Playwright - 100% Tự Chứa",
-                no_duration_data: "Không có dữ liệu thời gian.",
-                no_steps: "Chưa ghi nhận bước kiểm thử nào.",
-                video_missing_file: "Tìm thấy file video trên đĩa nhưng chưa nhúng được."
-            }
-        };
+(function () {
+"use strict";
 
-        let currentLang = 'en';
+/**
+ * reporting/assets/js/i18n.js - Bilingual Translations (EN / VI).
+ */
+const translations = {
+    en: {
+        report_title: "ExtentReports",
+        report_subtitle: "UI Automation Test Report",
+        kpi_tests: "TESTS",
+        kpi_steps: "STEPS",
+        kpi_start_time: "START TIME",
+        kpi_duration: "DURATION",
+        lbl_passed: "passed",
+        lbl_failed: "failed",
+        lbl_skipped: "skipped",
+        chart_status_title: "Tests & Steps Status",
+        chart_duration_title: "Timeline & Step Durations",
+        pipeline_title: "Step Execution Pipeline",
+        pipeline_hint: "Click any step node to seek video to that step",
+        sysinfo_title: "Environment & System Information",
+        th_param: "Parameter",
+        th_value: "Value",
+        steps_table_title: "Step Execution Log & Evidence",
+        th_status: "Status",
+        th_timestamp: "Timestamp",
+        th_details: "Step Details",
+        th_evidence: "Evidence",
+        video_title: "Execution Video Recording",
+        tag_expected: "Expected:",
+        tag_actual: "Actual:",
+        tag_error: "Error:",
+        btn_zoom: "Enlarge Fullscreen",
+        click_to_zoom: "Click image to view in full resolution",
+        lbl_screenshot_evidence: "Screenshot Evidence Deliverable",
+        lbl_legend_pass: "Passed",
+        lbl_legend_fail: "Failed",
+        lbl_legend_skip: "Skipped",
+        pass_rate: "PASS RATE",
+        toast_seek: "Jumped to Step",
+        test_suite_title: "Test Cases & Scenarios",
+        filter_all: "All",
+        filter_passed: "Passed",
+        filter_failed: "Failed",
+        btn_expand_all: "Expand All",
+        btn_collapse_all: "Collapse All",
+        no_video_rec: "No video recording available for this test case"
+    },
+    vi: {
+        report_title: "ExtentReports",
+        report_subtitle: "Báo Cáo Tự Động Hóa Giao Diện",
+        kpi_tests: "BÀI TEST",
+        kpi_steps: "CÁC BƯỚC",
+        kpi_start_time: "THỜI GIAN BẮT ĐẦU",
+        kpi_duration: "THỜI LƯỢNG",
+        lbl_passed: "thành công",
+        lbl_failed: "thất bại",
+        lbl_skipped: "bỏ qua",
+        chart_status_title: "Tỷ Lệ Trạng Thái Kiểm Thử",
+        chart_duration_title: "Thời Lượng Từng Bước Thực Thi",
+        pipeline_title: "Sơ Đồ Luồng Thực Thi Các Bước",
+        pipeline_hint: "Nhấn vào từng node để tua video đến bước đó",
+        sysinfo_title: "Thông Tin Môi Trường & Hệ Thống",
+        th_param: "Tham Số",
+        th_value: "Giá Trị",
+        steps_table_title: "Nhật Ký Thực Thi Từng Bước & Bằng Chứng",
+        th_status: "Trạng Thái",
+        th_timestamp: "Thời Điểm",
+        th_details: "Chi Tiết Bước",
+        th_evidence: "Bằng Chứng",
+        video_title: "Video Ghi Hình Quá Trình Chạy",
+        tag_expected: "Kỳ vọng:",
+        tag_actual: "Thực tế:",
+        tag_error: "Lỗi:",
+        btn_zoom: "Phóng to toàn màn hình",
+        click_to_zoom: "Nhấn vào ảnh để xem kích thước đầy đủ",
+        lbl_screenshot_evidence: "Ảnh Chụp Bằng Chứng Kết Quả",
+        lbl_legend_pass: "Thành công",
+        lbl_legend_fail: "Thất bại",
+        lbl_legend_skip: "Bỏ qua",
+        pass_rate: "TỶ LỆ ĐẠT",
+        toast_seek: "Đã tua tới Bước",
+        test_suite_title: "Danh Sách Kịch Bản Kiểm Thử",
+        filter_all: "Tất Cả",
+        filter_passed: "Thành Công",
+        filter_failed: "Thất Bại",
+        btn_expand_all: "Bung Tất Cả",
+        btn_collapse_all: "Thu Gọn",
+        no_video_rec: "Không có video ghi hình cho bài test này"
+    }
+};
 
-        function setLanguage(lang) {
-            if (!translations[lang]) return;
-            currentLang = lang;
+let currentLang = localStorage.getItem("extent-lang") || "en";
 
-            // Update all elements with data-i18n attribute
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (translations[lang][key]) {
-                    el.textContent = translations[lang][key];
-                }
-            });
+window.toggleLanguage = function () {
+    currentLang = currentLang === "en" ? "vi" : "en";
+    localStorage.setItem("extent-lang", currentLang);
+    applyLanguage(currentLang);
+};
 
-            // Toggle active state on buttons
-            const btnEn = document.getElementById('btn-lang-en');
-            const btnVi = document.getElementById('btn-lang-vi');
-            if (btnEn && btnVi) {
-                btnEn.classList.toggle('active', lang === 'en');
-                btnVi.classList.toggle('active', lang === 'vi');
-            }
-
-            document.documentElement.lang = lang;
-            try {
-                localStorage.setItem('execution_report_lang', lang);
-            } catch(e) {}
+function applyLanguage(lang) {
+    const dict = translations[lang] || translations.en;
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+            el.textContent = dict[key];
         }
+    });
 
-        // Format seconds into mm:ss.s format
-        function formatTime(seconds) {
-            if (isNaN(seconds) || seconds < 0) return "00:00.0";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            const tenths = Math.floor((seconds % 1) * 10);
-            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${tenths}`;
+    const langBtn = document.getElementById("lang-btn");
+    if (langBtn) {
+        langBtn.textContent = lang.toUpperCase();
+    }
+}
+
+
+/**
+ * reporting/assets/js/views.js - Smooth scroll navigation, active spy, theme toggling, toasts, and shortcuts.
+ */
+
+// Smooth Scroll to Section on Single Page
+window.scrollToSection = function (sectionId) {
+    const el = document.getElementById(sectionId);
+    if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    // Update active nav button
+    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+    const map = {
+        "section-kpi": "nav-btn-kpi",
+        "section-analytics": "nav-btn-analytics",
+        "section-pipeline": "nav-btn-pipeline",
+        "section-video": "nav-btn-video",
+        "section-steps": "nav-btn-steps",
+        "section-system": "nav-btn-system",
+    };
+    const targetBtnId = map[sectionId];
+    if (targetBtnId) {
+        const btn = document.getElementById(targetBtnId);
+        if (btn) btn.classList.add("active");
+    }
+};
+
+// Backward-compatible switchView
+window.switchView = function (viewName) {
+    if (viewName === "dashboard") {
+        window.scrollToSection("section-kpi");
+    } else if (viewName === "tests") {
+        window.scrollToSection("section-video");
+    }
+};
+
+// Accordion Controls (Multi-Test View)
+window.toggleTestCard = function (idx) {
+    const card = document.getElementById(`test-card-${idx}`);
+    if (!card) return;
+    const isCollapsed = card.classList.contains("collapsed");
+    if (isCollapsed) {
+        card.classList.remove("collapsed");
+        const header = card.querySelector(".test-accordion-header");
+        if (header) header.setAttribute("aria-expanded", "true");
+    } else {
+        card.classList.add("collapsed");
+        const header = card.querySelector(".test-accordion-header");
+        if (header) header.setAttribute("aria-expanded", "false");
+    }
+};
+window.toggleAccordion = window.toggleTestCard;
+
+window.expandAllTests = function () {
+    document.querySelectorAll(".test-item-card").forEach(card => {
+        card.classList.remove("collapsed");
+        const header = card.querySelector(".test-accordion-header");
+        if (header) header.setAttribute("aria-expanded", "true");
+    });
+};
+
+window.collapseAllTests = function () {
+    document.querySelectorAll(".test-item-card").forEach(card => {
+        card.classList.add("collapsed");
+        const header = card.querySelector(".test-accordion-header");
+        if (header) header.setAttribute("aria-expanded", "false");
+    });
+};
+
+// Status Filter (All / Passed / Failed)
+window.filterTests = function (status) {
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        if (btn.getAttribute("data-filter") === status) {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
         }
+    });
 
-        let seekToastTimer = null;
-        function showSeekToast(timeSec, stepIdx) {
-            const toast = document.getElementById('seekToast');
-            const textEl = document.getElementById('seekToastText');
-            if (!toast || !textEl) return;
-
-            const timeStr = formatTime(timeSec);
-            const stepPrefix = currentLang === 'vi' ? 'Bước' : 'Step';
-            const actionText = currentLang === 'vi' ? 'Đã tua video đến' : 'Video seeked to';
-            textEl.textContent = `${actionText} ${timeStr} (${stepPrefix} ${stepIdx + 1})`;
-
-            toast.classList.add('visible');
-            if (seekToastTimer) clearTimeout(seekToastTimer);
-            seekToastTimer = setTimeout(() => {
-                toast.classList.remove('visible');
-            }, 2400);
+    document.querySelectorAll(".test-item-card").forEach(card => {
+        const cardStatus = card.getAttribute("data-status") || "";
+        if (status === "all" || cardStatus === status) {
+            card.classList.remove("is-hidden");
+        } else {
+            card.classList.add("is-hidden");
         }
+    });
+};
 
-        // Main Seek Video & Synchronize Diagram function
-        function seekVideoAndScroll(timeSec, cardId, testIdx, stepIdx) {
-            const video = document.getElementById(`video-player-${testIdx}`) || document.querySelector('.video-player');
-            const container = document.getElementById(`video-container-${testIdx}`) || (video ? video.closest('.video-container') : null);
+// Theme Toggle (Light / Dark)
+window.toggleTheme = function () {
+    const isDark = document.body.getAttribute("data-theme") === "dark";
+    const newTheme = isDark ? "light" : "dark";
+    if (newTheme === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+    } else {
+        document.body.removeAttribute("data-theme");
+    }
+    localStorage.setItem("extent-theme", newTheme);
+    updateThemeIcon(newTheme);
+};
 
-            if (!video || !container) return;
+function updateThemeIcon(theme) {
+    const iconContainer = document.getElementById("theme-icon-container");
+    if (!iconContainer) return;
+    if (theme === "dark") {
+        // Sun icon for switching to light
+        iconContainer.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+    } else {
+        // Moon icon for switching to dark
+        iconContainer.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+    }
+}
 
-            // 1. Pause video immediately and seek to target time so user does not miss frames while moving
-            video.pause();
-            video.currentTime = Math.max(0, timeSec);
+// Toast notification
+function showSeekToast(msg) {
+    let toast = document.getElementById("seekToast");
+    if (!toast) return;
+    const textSpan = document.getElementById("seekToastText");
+    if (textSpan) textSpan.textContent = msg;
+    toast.classList.add("active");
+    clearTimeout(window._toastTimeout);
+    window._toastTimeout = setTimeout(() => {
+        toast.classList.remove("active");
+    }, 2200);
+}
 
-            // 2. Immediately synchronize active state with SVG diagram and step cards
-            syncVideoWithDiagram(testIdx, timeSec);
-
-            // 3. Highlight the corresponding step card below
-            if (cardId) {
-                const card = document.getElementById(cardId);
-                if (card) {
-                    card.classList.add('step-highlight');
-                    setTimeout(() => {
-                        card.classList.remove('step-highlight');
-                    }, 3000);
-                }
-            }
-
-            // 4. Show floating toast notification
-            showSeekToast(timeSec, stepIdx);
-
-            // 5. Add pulse highlight effect on video container
-            container.classList.remove('video-seek-pulse');
-            void container.offsetWidth; // force DOM reflow to restart animation
-            container.classList.add('video-seek-pulse');
-
-            // 6. Smooth scroll viewport to center the video
-            const rect = container.getBoundingClientRect();
-            const isAlreadyCentered = (
-                rect.top >= 40 &&
-                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) - 40
-            );
-
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // 7. ONLY play video after arriving at the video location
-            let playbackStarted = false;
-            const startPlayback = () => {
-                if (playbackStarted) return;
-                playbackStarted = true;
-                video.play().catch(() => {});
+// Scroll Spy to highlight active navigation link
+window.addEventListener("scroll", function () {
+    const sections = ["section-kpi", "section-analytics", "section-pipeline", "section-video", "section-steps", "section-system"];
+    const scrollPos = window.scrollY + 120;
+    for (let i = sections.length - 1; i >= 0; i--) {
+        const sec = document.getElementById(sections[i]);
+        if (sec && sec.offsetTop <= scrollPos) {
+            const map = {
+                "section-kpi": "nav-btn-kpi",
+                "section-analytics": "nav-btn-analytics",
+                "section-pipeline": "nav-btn-pipeline",
+                "section-video": "nav-btn-video",
+                "section-steps": "nav-btn-steps",
+                "section-system": "nav-btn-system",
             };
+            document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+            const btn = document.getElementById(map[sections[i]]);
+            if (btn) btn.classList.add("active");
+            break;
+        }
+    }
+}, { passive: true });
 
-            if (isAlreadyCentered) {
-                // Video is already in direct view, start after short 150ms visual pause
-                setTimeout(startPlayback, 150);
-            } else {
-                // Wait for smooth scroll to finish before playing video
-                let scrollTimer = null;
-                const onScrollFinished = () => {
-                    clearTimeout(scrollTimer);
-                    scrollTimer = setTimeout(() => {
-                        window.removeEventListener('scroll', onScrollFinished);
-                        startPlayback();
-                    }, 120);
-                };
+// Keyboard Shortcuts (ExtentReports standard)
+document.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
 
-                window.addEventListener('scroll', onScrollFinished, { passive: true });
+    if (e.key === "d" || e.key === "D") {
+        window.scrollToSection("section-kpi");
+    } else if (e.key === "t" || e.key === "T") {
+        window.scrollToSection("section-steps");
+    } else if (e.key === "v" || e.key === "V") {
+        window.scrollToSection("section-video");
+    } else if (e.key === "l" || e.key === "L") {
+        window.toggleTheme();
+    } else if (e.key === "Escape") {
+        if (typeof window.closeLightbox === "function") {
+            window.closeLightbox();
+        }
+    }
+});
 
-                // Fallback guarantee in case scroll completes quickly or native scrollend is missing
-                setTimeout(() => {
-                    window.removeEventListener('scroll', onScrollFinished);
-                    startPlayback();
-                }, 650);
-            }
+
+/**
+ * reporting/assets/js/video.js - Video seeking and 2-way playback synchronization.
+ */
+
+// Seek Video & Scroll
+window.seekVideoAndScroll = function (startTime, targetId, testIdx, stepIdx) {
+    // Automatically switch to tests view if currently on dashboard
+    window.switchView("tests");
+
+    // 1. Ensure target test card is expanded if currently collapsed
+    const testCard = document.getElementById(`test-card-${testIdx}`);
+    if (testCard && testCard.classList.contains("collapsed")) {
+        testCard.classList.remove("collapsed");
+        const header = testCard.querySelector(".test-accordion-header");
+        if (header) header.setAttribute("aria-expanded", "true");
+    }
+
+    const videoPlayer = document.getElementById(`video-player-${testIdx}`);
+    const videoSection = document.getElementById(`video-section-${testIdx}`);
+
+    if (videoPlayer) {
+        const targetOffset = Math.max(0, parseFloat(startTime) || 0);
+
+        // Highlight table row
+        document.querySelectorAll(".step-log-row").forEach(r => r.classList.remove("active-sync-row"));
+        const targetRow = document.getElementById(`step-row-${testIdx}-${stepIdx}`);
+        if (targetRow) {
+            targetRow.classList.add("active-sync-row");
         }
 
-        // Real-time synchronization while video is playing
-        function syncVideoWithDiagram(testIdx, currentTime) {
-            // Update timestamp readout
-            const timeDisplay = document.getElementById(`video-time-display-${testIdx}`);
-            if (timeDisplay) {
-                timeDisplay.textContent = formatTime(currentTime);
-            }
-
-            // Sync pipeline SVG nodes
-            const nodes = document.querySelectorAll(`.pipeline-node[data-test-idx="${testIdx}"]`);
-            nodes.forEach(node => {
-                const start = parseFloat(node.getAttribute('data-start') || '0');
-                const end = parseFloat(node.getAttribute('data-end') || '0');
-                if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
-                    node.classList.add('active-sync-step');
-                } else {
-                    node.classList.remove('active-sync-step');
-                }
-            });
-
-            // Sync Duration Bar Chart bars
-            const bars = document.querySelectorAll(`.bar-group[data-test-idx="${testIdx}"]`);
-            bars.forEach(bar => {
-                const start = parseFloat(bar.getAttribute('data-start') || '0');
-                const end = parseFloat(bar.getAttribute('data-end') || '0');
-                if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
-                    bar.classList.add('active-sync-bar');
-                } else {
-                    bar.classList.remove('active-sync-bar');
-                }
-            });
-
-            // Sync step cards
-            const cards = document.querySelectorAll(`.step-card[data-test-idx="${testIdx}"]`);
-            cards.forEach(card => {
-                const start = parseFloat(card.getAttribute('data-start') || '0');
-                const end = parseFloat(card.getAttribute('data-end') || '0');
-                if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
-                    card.classList.add('active-playing-card');
-                } else {
-                    card.classList.remove('active-playing-card');
-                }
-            });
+        // Scroll to video first
+        if (videoSection) {
+            videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (testCard) {
+            testCard.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
-        // Smooth scroll to step card when pipeline node clicked
-        function scrollToStep(targetId) {
-            const card = document.getElementById(targetId);
-            if (card) {
-                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                card.classList.add('step-highlight');
-                setTimeout(() => {
-                    card.classList.remove('step-highlight');
-                }, 2200);
+        // Seek after scroll begins
+        setTimeout(() => {
+            videoPlayer.currentTime = targetOffset;
+            const playPromise = videoPlayer.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {});
             }
+            const dict = (typeof translations !== "undefined" && translations[currentLang]) ? translations[currentLang] : {};
+            const prefix = dict.toast_seek || "Jumped to Step";
+            if (typeof showSeekToast === "function") {
+                showSeekToast(`${prefix} ${stepIdx + 1}: ${targetOffset.toFixed(1)}s`);
+            }
+        }, 300);
+    } else if (testCard) {
+        // Fallback when no video is attached: scroll to step row or test card
+        const targetRow = document.getElementById(`step-row-${testIdx}-${stepIdx}`);
+        if (targetRow) {
+            document.querySelectorAll(".step-log-row").forEach(r => r.classList.remove("active-sync-row"));
+            targetRow.classList.add("active-sync-row");
+            targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+            testCard.scrollIntoView({ behavior: "smooth", block: "start" });
         }
+    }
+};
 
-        // Lightbox Modal Controls
-        function openLightbox(imgSrc, title) {
-            const modal = document.getElementById('lightboxModal');
-            const img = document.getElementById('lightboxImg');
-            const titleEl = document.getElementById('lightboxTitle');
-
-            if (modal && img) {
-                img.src = imgSrc;
-                if (titleEl) titleEl.textContent = title || 'Execution Evidence';
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
+// Synchronize while video is playing
+window.syncVideoWithDiagram = function (testIdx, currentTime) {
+    // 1. Sync pipeline nodes
+    const nodes = document.querySelectorAll(`.pipeline-node[data-test-idx="${testIdx}"]`);
+    nodes.forEach(node => {
+        const start = parseFloat(node.getAttribute("data-start") || "0");
+        const end = parseFloat(node.getAttribute("data-end") || "0");
+        if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
+            node.classList.add("active-sync-step");
+        } else {
+            node.classList.remove("active-sync-step");
         }
+    });
 
-        function closeLightbox() {
-            const modal = document.getElementById('lightboxModal');
-            if (modal) {
-                modal.classList.remove('active');
-                document.body.style.overflow = '';
-            }
+    // 2. Sync bar chart
+    const bars = document.querySelectorAll(`.bar-group[data-test-idx="${testIdx}"]`);
+    bars.forEach(bar => {
+        const start = parseFloat(bar.getAttribute("data-start") || "0");
+        const end = parseFloat(bar.getAttribute("data-end") || "0");
+        if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
+            bar.classList.add("active-sync-bar");
+        } else {
+            bar.classList.remove("active-sync-bar");
         }
+    });
 
-        function handleLightboxClick(event) {
-            if (event.target.id === 'lightboxModal') {
-                closeLightbox();
-            }
+    // 3. Sync Step Log table rows
+    const rows = document.querySelectorAll(`.step-log-row[data-test-idx="${testIdx}"]`);
+    rows.forEach(row => {
+        const start = parseFloat(row.getAttribute("data-start") || "0");
+        const end = parseFloat(row.getAttribute("data-end") || "0");
+        if (currentTime >= start && (currentTime < end || (start === end && currentTime >= start))) {
+            row.classList.add("active-sync-row");
+        } else {
+            row.classList.remove("active-sync-row");
         }
+    });
+};
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeLightbox();
-            }
-        });
 
-        // Initialize language from localStorage if available
-        document.addEventListener('DOMContentLoaded', () => {
-            try {
-                const saved = localStorage.getItem('execution_report_lang');
-                if (saved === 'vi' || saved === 'en') {
-                    setLanguage(saved);
-                }
-            } catch(e) {}
-        });
+/**
+ * reporting/assets/js/lightbox.js - Evidence screenshot modal viewer.
+ */
+
+window.openLightbox = function (imgSrc, title) {
+    const modal = document.getElementById("lightboxModal");
+    const modalImg = document.getElementById("lightboxImg");
+    if (modal && modalImg) {
+        modalImg.src = imgSrc;
+        modal.classList.add("active");
+    }
+};
+
+window.closeLightbox = function () {
+    const modal = document.getElementById("lightboxModal");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+};
+
+
+/**
+ * reporting/assets/js/main.js - DOM initialization on page load.
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Initialize Theme
+    const savedTheme = localStorage.getItem("extent-theme") || "dark";
+    if (savedTheme === "dark") {
+        document.body.setAttribute("data-theme", "dark");
+    } else {
+        document.body.removeAttribute("data-theme");
+    }
+    if (typeof updateThemeIcon === "function") {
+        updateThemeIcon(savedTheme);
+    }
+
+    // 2. Initialize Language
+    if (typeof applyLanguage === "function" && typeof currentLang !== "undefined") {
+        applyLanguage(currentLang);
+    }
+});
+
+})();

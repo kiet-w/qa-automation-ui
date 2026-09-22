@@ -12,5 +12,31 @@
   "target_action": {
     "channel_search": "VTV24",
     "filter_mode": "Latest"
-  }
+  },
+  "parallel_scenarios": [
+    {
+      "scenario_id": "US01-TC01",
+      "jira_id": "PROJ-1041",
+      "title": "Bing Search Facebook & YouTube VTV Oldest Video",
+      "term_1": "Facebook",
+      "term_2": "YouTube",
+      "expected_fragment_1": "Facebook",
+      "expected_fragment_2": "YouTube",
+      "channel": "VTV24",
+      "filter_mode": "Oldest",
+      "evidence_name": "execution_step5_tc01.png"
+    },
+    {
+      "scenario_id": "US01-TC02",
+      "jira_id": "PROJ-1042",
+      "title": "Bing Search Wikipedia & YouTube VTV Latest Video",
+      "term_1": "Wikipedia",
+      "term_2": "YouTube",
+      "expected_fragment_1": "Wikipedia",
+      "expected_fragment_2": "YouTube",
+      "channel": "VTV24",
+      "filter_mode": "Latest",
+      "evidence_name": "execution_step5_tc02.png"
+    }
+  ]
 }

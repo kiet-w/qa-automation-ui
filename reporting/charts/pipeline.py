@@ -16,7 +16,7 @@ def generate_pipeline_svg(steps: List[Dict[str, Any]], test_idx: int = 0) -> str
     """
     n = len(steps)
     if n == 0:
-        return '<div class="no-steps-hint" data-i18n="no_steps">No detailed steps recorded.</div>'
+        return '<div class="no-steps-hint" style="color: var(--text-secondary, #8b949e);" data-i18n="no_steps">No detailed steps recorded.</div>'
 
     total_width = max(880, n * 170)
     height = 145
@@ -28,11 +28,11 @@ def generate_pipeline_svg(steps: List[Dict[str, Any]], test_idx: int = 0) -> str
         '<div class="pipeline-scroll-wrapper">',
         f'<svg viewBox="0 0 {total_width} {height}" class="pipeline-svg" width="{total_width}" height="{height}" xmlns="http://www.w3.org/2000/svg">',
         '  <defs>',
-        '    <filter id="node-glow" x="-30%" y="-30%" width="160%" height="160%">',
-        '      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#10b981" flood-opacity="0.4"/>',
+        '    <filter id="node-glow" x="-20%" y="-20%" width="140%" height="140%">',
+        '      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>',
         '    </filter>',
-        '    <filter id="active-pulse-glow" x="-50%" y="-50%" width="200%" height="200%">',
-        '      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#38bdf8" flood-opacity="0.8"/>',
+        '    <filter id="active-pulse-glow" x="-30%" y="-30%" width="160%" height="160%">',
+        '      <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#3fb950" flood-opacity="0.4"/>',
         '    </filter>',
         '  </defs>',
     ]
@@ -47,17 +47,20 @@ def generate_pipeline_svg(steps: List[Dict[str, Any]], test_idx: int = 0) -> str
         next_status = steps[i + 1].get("status", "passed").lower()
 
         if curr_status == "passed" and next_status == "passed":
-            line_color = "#10b981"
+            line_color = "var(--status-pass, #3fb950)"
             dash = ""
         elif "failed" in (curr_status, next_status):
-            line_color = "#ef4444"
+            line_color = "var(--status-fail, #f85149)"
             dash = 'stroke-dasharray="6,4"'
+        elif "skipped" in (curr_status, next_status):
+            line_color = "var(--status-skip, #d29922)"
+            dash = 'stroke-dasharray="4,4"'
         else:
-            line_color = "#475569"
+            line_color = "var(--border-color, #30363d)"
             dash = 'stroke-dasharray="4,4"'
 
         svg_parts.append(
-            f'  <line x1="{x1 + 22:.1f}" y1="{y}" x2="{x2 - 22:.1f}" y2="{y}" stroke="{line_color}" stroke-width="4" stroke-linecap="round" {dash}/>'
+            f'  <line x1="{x1 + 22:.1f}" y1="{y}" x2="{x2 - 22:.1f}" y2="{y}" stroke="{line_color}" stroke-width="3.5" stroke-linecap="round" {dash}/>'
         )
 
     # Nodes and step labels
@@ -80,19 +83,19 @@ def generate_pipeline_svg(steps: List[Dict[str, Any]], test_idx: int = 0) -> str
         card_target_id = f"step-card-{test_idx}-{i}"
 
         if status == "passed":
-            fill_color = "#10b981"
+            fill_color = "var(--status-pass, #3fb950)"
             icon_svg = (
                 f'<path d="M {x - 6:.1f} {y:.1f} L {x - 1:.1f} {y + 5:.1f} L {x + 7:.1f} {y - 4:.1f}" '
                 f'fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
             )
         elif status == "failed":
-            fill_color = "#ef4444"
+            fill_color = "var(--status-fail, #f85149)"
             icon_svg = (
                 f'<path d="M {x - 5:.1f} {y - 5:.1f} L {x + 5:.1f} {y + 5:.1f} M {x + 5:.1f} {y - 5:.1f} L {x - 5:.1f} {y + 5:.1f}" '
                 f'fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>'
             )
         else:
-            fill_color = "#94a3b8"
+            fill_color = "var(--status-skip, #d29922)"
             icon_svg = (
                 f'<line x1="{x - 5:.1f}" y1="{y:.1f}" x2="{x + 5:.1f}" y2="{y:.1f}" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>'
             )
@@ -107,16 +110,16 @@ def generate_pipeline_svg(steps: List[Dict[str, Any]], test_idx: int = 0) -> str
             f'onclick="seekVideoAndScroll({start_time:.2f}, \'{card_target_id}\', {test_idx}, {i})" '
             f'role="button" tabindex="0" title="{node_tooltip}">',
             f'    <!-- Outer halo & active pulse circle -->',
-            f'    <circle class="pipeline-node-halo" cx="{x:.1f}" cy="{y}" r="26" fill="#0f172a" stroke="{fill_color}" stroke-width="2.5" opacity="0.95"/>',
+            f'    <circle class="pipeline-node-halo" cx="{x:.1f}" cy="{y}" r="26" fill="rgba(148, 163, 184, 0.08)" stroke="{fill_color}" stroke-width="2" opacity="0.9"/>',
             f'    <circle class="pipeline-node-core" cx="{x:.1f}" cy="{y}" r="19" fill="{fill_color}"/>',
             f'    {icon_svg}',
             f'    <!-- Step Number Header -->',
-            f'    <text x="{x:.1f}" y="{y + 40}" text-anchor="middle" font-size="12" font-weight="700" fill="#f8fafc" font-family="system-ui, sans-serif">{step_num_text}</text>',
+            f'    <text x="{x:.1f}" y="{y + 40}" text-anchor="middle" font-size="12" font-weight="700" fill="var(--text-primary, #e6edf3)" class="chart-text-main" font-family="system-ui, -apple-system, sans-serif">{step_num_text}</text>',
             f'    <!-- Step Short Description -->',
-            f'    <text x="{x:.1f}" y="{y + 56}" text-anchor="middle" font-size="10.5" font-weight="500" fill="#94a3b8" font-family="system-ui, sans-serif">{html.escape(short_title)}</text>',
+            f'    <text x="{x:.1f}" y="{y + 56}" text-anchor="middle" font-size="10.5" font-weight="500" fill="var(--text-secondary, #8b949e)" class="chart-text-sub" font-family="system-ui, -apple-system, sans-serif">{html.escape(short_title)}</text>',
             f'    <!-- Duration and seek timing pill -->',
-            f'    <rect x="{x - 32:.1f}" y="{y + 64}" width="64" height="18" rx="9" fill="#1e293b" stroke="#334155" stroke-width="1"/>',
-            f'    <text x="{x:.1f}" y="{y + 76}" text-anchor="middle" font-size="9" font-weight="700" fill="#38bdf8" font-family="monospace">▶ {start_time:.1f}s ({duration:.1f}s)</text>',
+            f'    <rect x="{x - 32:.1f}" y="{y + 64}" width="64" height="18" rx="9" fill="rgba(148, 163, 184, 0.08)" stroke="var(--border-color, #30363d)" stroke-width="1"/>',
+            f'    <text x="{x:.1f}" y="{y + 76}" text-anchor="middle" font-size="9" font-weight="700" fill="var(--text-secondary, #8b949e)" font-family="monospace">▶ {start_time:.1f}s ({duration:.1f}s)</text>',
             '  </g>',
         ])
 
