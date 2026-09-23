@@ -56,7 +56,7 @@ def determine_report_json_path(user_args: list[str], default_path: str = "report
                 if idx + 1 < len(parts):
                     candidate = parts[idx + 1]
                     ticket = candidate if not candidate.endswith(".py") else Path(arg).parent.name
-                    if ticket and not ticket.startswith(("_", ".")):
+                    if ticket and not ticket.startswith(("_", ".")) and ticket != "tests":
                         return f"reports/{ticket}/report.json"
 
     # If no ticket specified in args, check if exactly one ticket folder exists in tests/

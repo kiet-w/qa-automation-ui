@@ -1,0 +1,157 @@
+{
+  "html_relative_path": "curricula_trainer_account.html",
+  "valid_singapore_resident": {
+    "preferred_name": "Tan Wei Ling",
+    "gender": "Female",
+    "id_type": "NRIC",
+    "id_number": "S1234567A",
+    "id_document": "data/fixtures/valid_id.png",
+    "nationality": "Singaporean",
+    "dob": "1992-08-15",
+    "race": "Chinese",
+    "birth_country": "Singapore",
+    "tax_resident": "Yes",
+    "primary_email": "tan.weiling@curricula.edu.sg",
+    "primary_code": "+65",
+    "primary_phone": "91234567",
+    "secondary_code": "+65",
+    "secondary_phone": "62345678",
+    "emergency_name": "Tan Ah Kow",
+    "emergency_relationship": "Father",
+    "emergency_code": "+65",
+    "emergency_phone": "98765432",
+    "residential_type": "Singapore",
+    "postal_code": "120047",
+    "block_number": "142",
+    "building_name": "Commonwealth Residences",
+    "street_name": "Commonwealth Drive",
+    "floor_number": "08",
+    "unit_number": "205",
+    "floor_not_applicable": false
+  },
+  "valid_singapore_resident_floor_na": {
+    "preferred_name": "Lim Kok Leong",
+    "gender": "Male",
+    "id_type": "NRIC",
+    "id_number": "S7654321B",
+    "id_document": "data/fixtures/valid_id.pdf",
+    "nationality": "Singaporean",
+    "dob": "1988-12-03",
+    "race": "Chinese",
+    "birth_country": "Singapore",
+    "tax_resident": "Yes",
+    "primary_email": "lim.kl@curricula.edu.sg",
+    "primary_code": "+65",
+    "primary_phone": "82345678",
+    "emergency_name": "Lim May Lin",
+    "emergency_relationship": "Spouse",
+    "emergency_code": "+65",
+    "emergency_phone": "87654321",
+    "residential_type": "Singapore",
+    "postal_code": "569933",
+    "block_number": "10",
+    "street_name": "Ang Mo Kio Avenue 5",
+    "floor_not_applicable": true
+  },
+  "valid_non_singapore_resident": {
+    "preferred_name": "Nguyen Van Binh",
+    "gender": "Male",
+    "id_type": "Passport",
+    "id_number": "C87654321",
+    "id_document": "data/fixtures/valid_id.png",
+    "nationality": "Vietnamese",
+    "dob": "1995-04-20",
+    "race": "Others",
+    "birth_country": "Vietnam",
+    "tax_resident": "No",
+    "primary_email": "nguyen.binh@curricula.vn",
+    "primary_code": "+84",
+    "primary_phone": "901234567",
+    "emergency_name": "Tran Thi Mai",
+    "emergency_relationship": "Mother",
+    "emergency_code": "+84",
+    "emergency_phone": "912345678",
+    "residential_type": "Non-Singapore",
+    "country_region": "Vietnam",
+    "address1": "72 Le Thanh Ton Street",
+    "address2": "Ben Nghe Ward, District 1",
+    "city": "Ho Chi Minh City",
+    "state_province": "Ho Chi Minh"
+  },
+  "valid_malaysia_resident": {
+    "preferred_name": "Chong Chee Keong",
+    "gender": "Male",
+    "id_type": "Passport",
+    "id_number": "A12345678",
+    "id_document": "data/fixtures/valid_id.png",
+    "nationality": "Malaysian",
+    "dob": "1990-11-10",
+    "race": "Chinese",
+    "birth_country": "Malaysia",
+    "tax_resident": "No",
+    "primary_email": "chong.ck@curricula.my",
+    "primary_code": "+60",
+    "primary_phone": "123456789",
+    "emergency_name": "Chong Wei",
+    "emergency_relationship": "Sibling",
+    "emergency_code": "+60",
+    "emergency_phone": "198765432",
+    "residential_type": "Non-Singapore",
+    "country_region": "Malaysia",
+    "address1": "15 Jalan Ampang",
+    "address2": "KLCC",
+    "city": "Kuala Lumpur",
+    "state_province": "Federal Territory"
+  },
+  "postal_code_auto_populates": [
+    {
+      "postal_code": "120047",
+      "expected_block": "142",
+      "expected_street": "Commonwealth Drive"
+    },
+    {
+      "postal_code": "238801",
+      "expected_block": "391B",
+      "expected_street": "Orchard Road"
+    },
+    {
+      "postal_code": "569933",
+      "expected_block": "10",
+      "expected_street": "Ang Mo Kio Avenue 5"
+    }
+  ],
+  "invalid_emails": [
+    "plainaddress",
+    "@missingusername.com",
+    "username@.com",
+    "user name@domain.com"
+  ],
+  "invalid_singapore_phones": [
+    "1234567",
+    "123456789",
+    "abcdefgh",
+    "9123 456"
+  ],
+  "invalid_foreign_phones": [
+    "1234567",
+    "12345 678",
+    "phone-number"
+  ],
+  "invalid_postal_codes": [
+    "12345",
+    "1234567",
+    "ABCDEF",
+    "12 345"
+  ],
+  "invalid_unit_numbers": [
+    "12A",
+    "B1-02",
+    "Unit#4",
+    "04/12"
+  ],
+  "invalid_floor_numbers": [
+    "123456",
+    "04A",
+    "Fl-1"
+  ]
+}

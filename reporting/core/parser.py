@@ -194,9 +194,12 @@ def process_report_data(
             else f"US-{t_idx + 1:02d}: Automated UI Scenario {t_idx + 1}"
         )
 
+        run_results_dir = reports_dir / "test-results" / run_id
+        target_results_dir = run_results_dir if run_results_dir.exists() else (reports_dir / "test-results")
+
         video_path = find_video_for_test(
             test_nodeid=nodeid,
-            test_results_dir=reports_dir / "test-results",
+            test_results_dir=target_results_dir,
             all_videos=all_videos,
             test_index=t_idx,
             total_tests=len(raw_tests),

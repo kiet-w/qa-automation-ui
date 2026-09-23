@@ -132,10 +132,26 @@ class TestBingSearchParallel(BaseTest):
                 self.youtube.sort_by_latest()
                 video_title = self.youtube.play_latest_video()
 
-            assert "watch" in self.youtube.page.url, "Video playback page was not opened"
+            # 3-Layer Strict Assertion (Zero Hallucination)
+            # Layer 1: Video title must be genuinely extracted from the sorted channel grid
+            assert video_title and len(video_title.strip()) > 0, (
+                "Verification Failure (Layer 1): Video title is empty. Grid failed to load or sorting failed."
+            )
+
+            # Layer 2: Current browser URL must strictly contain video playback path
+            current_url = self.youtube.page.url
+            assert "/watch" in current_url, (
+                f"Verification Failure (Layer 2): Expected video playback URL with '/watch', got: '{current_url}'"
+            )
+
+            # Layer 3: HTML5 main video element must be present in the player DOM
+            player_loc = self.youtube.page.locator("video.html5-main-video, video").first
+            assert player_loc.count() > 0, (
+                "Verification Failure (Layer 3): HTML5 video player element not found on playback page"
+            )
 
             # Capture execution screenshot evidence into the ticket's isolated reports directory
-            evidence_path = self.get_report_path(evidence_name)
+            evidence_path = self.get_report_path(evidence_name, test_scoped=True)
             self.youtube.take_screenshot(evidence_path)
             self.step.attach_screenshot(evidence_path)
             self.step.set_actual(

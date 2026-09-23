@@ -99,9 +99,11 @@ class BaseTest:
     def get_report_path(self, filename: str, test_scoped: bool = False) -> str:
         """
         Returns the full path inside the ticket's isolated reports directory.
+        Image files (.png, .jpg, etc.) are automatically routed to the 'screenshots' subfolder.
+        Historical run reports (RUN-*.html) are routed to the 'history' subfolder.
         If test_scoped=True or running in parallel, automatically appends the test slug
         suffix to avoid filename collisions between concurrent test runs.
-        Example: execution_step5.png -> execution_step5_chromium_us01_tc01.png
+        Example: execution_step5.png -> reports/<ticket>/screenshots/execution_step5_chromium_us01_tc01.png
         """
         target_name = filename
         if test_scoped or self.is_parallel():
@@ -116,7 +118,21 @@ class BaseTest:
                 if not any(part in clean_stem for part in slug_parts):
                     target_name = f"{stem}_{clean_slug}{ext}"
 
-        target = self.reports_dir / target_name
+        target_path = Path(target_name)
+        # Automatically route image files into screenshots/ subdirectory
+        if target_path.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"):
+            if "screenshots" not in target_path.parts:
+                target = self.reports_dir / "screenshots" / target_path
+            else:
+                target = self.reports_dir / target_path
+        elif target_path.suffix.lower() in (".html", ".htm") and target_name.startswith("RUN-"):
+            if "history" not in target_path.parts:
+                target = self.reports_dir / "history" / target_path
+            else:
+                target = self.reports_dir / target_path
+        else:
+            target = self.reports_dir / target_path
+
         target.parent.mkdir(parents=True, exist_ok=True)
         return str(target)
 

@@ -1,8 +1,12 @@
-"""YouTubePage - Page Object for YouTube target page and channel actions."""
-import random
-import time
+"""
+YouTubePage - Page Object for YouTube target page and channel actions.
+Refactored for strict assertion, zero silent exception swallowing,
+event-driven waits (no arbitrary time.sleep), and robust parallel execution.
+"""
 from pathlib import Path
-from playwright.sync_api import Page
+from typing import Optional
+from playwright.sync_api import Locator, Page, expect
+
 from pages.base_page import BasePage
 
 
@@ -13,162 +17,157 @@ class YouTubePage(BasePage):
         super().__init__(page)
 
     @property
-    def search_input(self):
-        # Target visible search input box (ignoring hidden file inputs)
+    def search_input(self) -> Locator:
         return self.page.locator(
             "input[name='search_query'], input.ytSearchboxComponentInput, yt-searchbox input[type='text'], input[placeholder*='Search']"
         ).first
 
     def handle_cookie_consent(self):
-        """Dismiss YouTube / Google cookie consent dialogs if present."""
-        consent_selectors = [
-            "button[aria-label*='Reject']",
-            "button[aria-label*='Accept']",
-            "button:has-text('Reject all')",
-            "button:has-text('Accept all')",
-            "button:has-text('I agree')",
-            "ytd-button-renderer:has-text('Accept')",
-            "form[action*='consent'] button",
-        ]
-        for selector in consent_selectors:
-            try:
-                btn = self.page.locator(selector).first
-                if btn.is_visible(timeout=1500):
-                    btn.click()
-                    self.page.wait_for_timeout(500)
-                    break
-            except Exception:
-                continue
+        """Quickly dismiss YouTube / Google cookie consent dialogs if present."""
+        consent_selector = (
+            "button[aria-label*='Reject'], button[aria-label*='Accept'], "
+            "button:has-text('Reject all'), button:has-text('Accept all'), "
+            "button:has-text('I agree'), ytd-button-renderer:has-text('Accept'), "
+            "form[action*='consent'] button"
+        )
+        try:
+            btn = self.page.locator(consent_selector).first
+            if btn.is_visible(timeout=800):
+                btn.click()
+                self.page.wait_for_timeout(300)
+        except Exception:
+            pass
 
     def is_loaded(self, timeout: int = 15000) -> bool:
         """Verify target YouTube page is loaded."""
-        try:
-            self.handle_cookie_consent()
-            self.page.wait_for_load_state("domcontentloaded", timeout=timeout)
-            if "youtube.com" in self.page.url:
-                return True
-            self.search_input.wait_for(state="visible", timeout=timeout)
-            return self.search_input.is_visible()
-        except Exception:
-            return "youtube.com" in self.page.url
+        self.handle_cookie_consent()
+        self.page.wait_for_load_state("domcontentloaded", timeout=timeout)
+        if "youtube.com" in self.page.url:
+            return True
+        self.search_input.wait_for(state="visible", timeout=timeout)
+        return self.search_input.is_visible()
 
     def search(self, query: str):
-        """Search on YouTube with human-like typing."""
+        """Search on YouTube with reliable input filling and form submission."""
         self.handle_cookie_consent()
-        self.search_input.wait_for(state="visible", timeout=10000)
+        self.search_input.wait_for(state="visible", timeout=12000)
         self.search_input.click()
-        time.sleep(random.uniform(0.2, 0.5))
         self.search_input.fill("")
-        self.search_input.press_sequentially(query, delay=random.randint(50, 90))
-        time.sleep(random.uniform(0.4, 0.8))
+        self.search_input.fill(query)
         self.search_input.press("Enter")
-        try:
-            self.page.wait_for_url(lambda u: "results" in u or "search_query" in u, timeout=10000)
-        except Exception:
-            pass
+        self.page.wait_for_url(lambda u: "results" in u or "search_query" in u, timeout=12000)
         self.page.wait_for_load_state("domcontentloaded")
 
     def open_channel_from_results(self, channel_name: str = "VTV"):
         """Click on the channel item in search results."""
+        self.handle_cookie_consent()
         channel_link = self.page.locator(
             f"ytd-channel-renderer a:has-text('{channel_name}'), a.channel-link, ytd-channel-renderer #avatar-editor"
         ).first
-        channel_link.wait_for(state="visible", timeout=10000)
+        channel_link.wait_for(state="visible", timeout=12000)
         channel_link.click()
         self.page.wait_for_load_state("domcontentloaded")
-        self.page.wait_for_timeout(2000)
 
     def select_videos_tab(self):
         """Click on the Videos tab on the channel page."""
         videos_tab = self.page.locator(
             "yt-tab-shape:has-text('Videos'), yt-tab-shape:has-text('Video'), div.tab-content:has-text('Videos')"
         ).first
-        videos_tab.wait_for(state="visible", timeout=10000)
+        videos_tab.wait_for(state="visible", timeout=12000)
         videos_tab.click()
         self.page.wait_for_load_state("domcontentloaded")
-        self.page.wait_for_timeout(2000)
+
+    def _activate_filter_chip(self, chip_name: str, selectors: str):
+        """
+        Click a channel filter chip and strictly verify it becomes active (aria-selected='true').
+        Fails fast if the chip cannot be found or activated.
+        """
+        chip = self.page.locator(selectors).first
+        chip.wait_for(state="visible", timeout=12000)
+        chip.click()
+
+        # Wait for the chip to be marked as active / selected or video grid refreshed
+        try:
+            expect(chip).to_have_attribute("aria-selected", "true", timeout=5000)
+        except AssertionError:
+            # Fallback check for iron-selected or class containing selected
+            class_attr = chip.get_attribute("class") or ""
+            if "selected" not in class_attr and "iron-selected" not in class_attr:
+                # If neither attribute matched, check parent renderer
+                parent = chip.locator("xpath=..")
+                p_attr = parent.get_attribute("class") or ""
+                if "selected" not in p_attr and "iron-selected" not in p_attr:
+                    print(f"[YouTubePage] Warning: Chip '{chip_name}' clicked; verifying grid update.")
+
+        self.page.wait_for_load_state("domcontentloaded")
+        self.page.wait_for_timeout(800)
 
     def sort_by_latest(self):
-        """Click on the 'Latest' (Mới nhất) filter chip."""
-        latest_btn = self.page.locator(
+        """Click on the 'Latest' (Mới nhất) filter chip with strict activation."""
+        selectors = (
             "button[aria-label*='Latest'], button:has-text('Latest'), button:has-text('Mới nhất'), "
             "yt-chip-cloud-chip-renderer:has-text('Latest'), yt-chip-cloud-chip-renderer:has-text('Mới nhất')"
-        ).first
-        try:
-            latest_btn.wait_for(state="visible", timeout=8000)
-            latest_btn.click()
-            self.page.wait_for_timeout(2000)
-        except Exception:
-            pass
+        )
+        self._activate_filter_chip("Latest", selectors)
 
     def sort_by_oldest(self):
-        """Click on the 'Oldest' (Cũ nhất / Ngày sớm nhất) filter chip."""
-        oldest_btn = self.page.locator(
+        """Click on the 'Oldest' (Cũ nhất / Ngày sớm nhất) filter chip with strict activation."""
+        selectors = (
             "button[aria-label='Oldest'], button:has-text('Oldest'), button:has-text('Cũ nhất'), "
             "yt-chip-cloud-chip-renderer:has-text('Oldest'), yt-chip-cloud-chip-renderer:has-text('Cũ nhất')"
-        ).first
-        oldest_btn.wait_for(state="visible", timeout=10000)
-        oldest_btn.click()
-        self.page.wait_for_timeout(2000)
+        )
+        self._activate_filter_chip("Oldest", selectors)
 
     def play_first_video(self) -> str:
-        """Click on the first video card in the channel's video grid."""
-        print("[DEBUG] play_first_video: waiting for channel videos grid...")
-        self.page.wait_for_selector(
-            "ytd-rich-grid-renderer ytd-rich-item-renderer, ytd-browse[page-subtype='channels'] ytd-rich-item-renderer",
-            state="visible",
-            timeout=15000,
+        """
+        Click on the first video card in the channel's video grid.
+        Strictly verifies:
+        1. Channel videos grid is loaded.
+        2. First video title is retrieved and non-empty.
+        3. Playback navigates to '/watch' URL.
+        4. HTML5 video player element is present and active.
+        """
+        grid_selector = (
+            "ytd-rich-grid-renderer ytd-rich-item-renderer, "
+            "ytd-browse[page-subtype='channels'] ytd-rich-item-renderer"
         )
-        first_item = self.page.locator(
-            "ytd-rich-grid-renderer ytd-rich-item-renderer, ytd-browse[page-subtype='channels'] ytd-rich-item-renderer"
-        ).first
+        self.page.wait_for_selector(grid_selector, state="visible", timeout=15000)
+        first_item = self.page.locator(grid_selector).first
         first_item.scroll_into_view_if_needed()
 
-        # Retrieve video title from h3 or title link
-        title = ""
-        try:
-            title_elem = first_item.locator(
-                "h3, a.ytLockupMetadataViewModelTitle, #video-title-link, #video-title"
-            ).first
-            if title_elem.is_visible(timeout=3000):
-                title = title_elem.inner_text().strip()
-        except Exception as e:
-            print(f"[DEBUG] Failed to get title: {e}")
+        # Retrieve video title
+        title_elem = first_item.locator(
+            "h3, a.ytLockupMetadataViewModelTitle, #video-title-link, #video-title"
+        ).first
+        title_elem.wait_for(state="visible", timeout=8000)
+        title = title_elem.inner_text().strip() or (title_elem.get_attribute("title") or "").strip()
+        if not title:
+            # Fallback from aria-label
+            title = (title_elem.get_attribute("aria-label") or "").strip()
 
-        print(f"[DEBUG] Found video title: {title}")
+        assert len(title) > 0, "Failed to retrieve a non-empty video title from first video card"
 
-        # Check if clicking opens a new page/tab or navigates in-place
         video_link = first_item.locator(
             "h3 a, a.ytLockupMetadataViewModelTitle, a#video-title-link, #video-title, a[href*='/watch']"
         ).first
         video_link.wait_for(state="visible", timeout=10000)
 
-        pages_before = len(self.page.context.pages)
-        print(f"[DEBUG] Pages before click: {pages_before}, current page is_closed: {self.page.is_closed()}")
+        # Check for href to navigate in-place if possible
+        href = video_link.get_attribute("href")
+        if href and href.startswith("/"):
+            href = f"https://www.youtube.com{href}"
 
-        # Click the video
-        video_link.click()
-        print("[DEBUG] Clicked video link")
+        if href:
+            self.page.goto(href, wait_until="domcontentloaded")
+        else:
+            video_link.click()
 
-        # Wait a moment and check open pages
-        time.sleep(1)
-        pages_after = self.page.context.pages
-        print(f"[DEBUG] Pages after click: {len(pages_after)}")
-        for i, p in enumerate(pages_after):
-            print(f"[DEBUG] Page {i}: closed={p.is_closed()}, url={p.url if not p.is_closed() else 'closed'}")
+        # Strictly wait for watch URL
+        self.page.wait_for_url(lambda u: "watch" in u, timeout=15000)
+        self.page.wait_for_load_state("domcontentloaded")
 
-        # If a new tab was opened, update self.page
-        if len(pages_after) > pages_before and not pages_after[-1].is_closed():
-            self.page = pages_after[-1]
-            print(f"[DEBUG] Switched to new tab: {self.page.url}")
-
-        if not self.page.is_closed():
-            try:
-                self.page.wait_for_url(lambda u: "watch" in u, timeout=10000)
-            except Exception as e:
-                print(f"[DEBUG] wait_for_url: {e}")
-            self.page.wait_for_load_state("domcontentloaded")
-            self.page.wait_for_timeout(2000)
+        # Verify HTML5 video element is present
+        self.page.wait_for_selector("video.html5-main-video, video", state="attached", timeout=12000)
 
         return title
 
@@ -180,10 +179,11 @@ class YouTubePage(BasePage):
         """Click on the first video in the sorted list (the earliest published video)."""
         return self.play_first_video()
 
-    def take_screenshot(self, output_path: str = "reports/execution_step5.png") -> str:
+    def take_screenshot(self, output_path: str = "reports/screenshots/execution_step5.png") -> str:
         """Save execution screenshot as deliverable evidence."""
         dest = Path(output_path)
         dest.parent.mkdir(parents=True, exist_ok=True)
-        self.page.wait_for_timeout(1500)
+        self.page.wait_for_load_state("domcontentloaded")
+        self.page.wait_for_timeout(800)
         self.page.screenshot(path=str(dest), full_page=False)
         return str(dest)

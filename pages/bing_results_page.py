@@ -38,17 +38,21 @@ class BingResultsPage(BasePage):
 
     def access_first_result(self) -> Page:
         """
-        Click on the first search result link in the same tab.
-        Removes target='_blank' so the entire journey stays in 1 single tab,
-        ensuring Playwright records exactly ONE unified video from start to finish.
+        Navigate to the first search result URL in the same tab.
+        Extracts href attribute directly and navigates in-place,
+        guaranteeing exactly ONE unified tab and video recording.
         """
         self.wait_for_results()
-        try:
-            self.first_result_link.evaluate("el => el.removeAttribute('target')")
-        except Exception:
-            pass
-        self.first_result_link.click()
-        self.page.wait_for_load_state("domcontentloaded")
+        href = self.first_result_link.get_attribute("href")
+        if href:
+            self.page.goto(href, wait_until="domcontentloaded")
+        else:
+            try:
+                self.first_result_link.evaluate("el => el.removeAttribute('target')")
+            except Exception:
+                pass
+            self.first_result_link.click()
+            self.page.wait_for_load_state("domcontentloaded")
         return self.page
 
     def search_again(self, keyword: str):

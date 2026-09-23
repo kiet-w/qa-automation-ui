@@ -116,26 +116,29 @@ def resolve_screenshot_path(
         p = Path(screenshot_path)
         candidates.extend([
             p,
-            workspace_dir / p,
+            reports_dir / "screenshots" / p.name,
             reports_dir / p,
             reports_dir / p.name,
-            reports_dir / "screenshots" / p.name,
+            workspace_dir / p,
+            workspace_dir / "reports" / "screenshots" / p.name,
         ])
 
     # Fallback with test_name slug if provided
     if test_name:
         slug = slugify(test_name)
         candidates.extend([
-            reports_dir / f"execution_step5_{slug}.png",
             reports_dir / "screenshots" / f"execution_step5_{slug}.png",
+            reports_dir / f"execution_step5_{slug}.png",
+            workspace_dir / "reports" / "screenshots" / f"execution_step5_{slug}.png",
             workspace_dir / "reports" / f"execution_step5_{slug}.png",
         ])
 
     # Fallback convention for Step 5 / target action screenshot evidence
     if "step 5" in step_title.lower() or "defined page actions" in step_title.lower():
         candidates.extend([
-            reports_dir / "execution_step5.png",
             reports_dir / "screenshots" / "execution_step5.png",
+            reports_dir / f"execution_step5.png",
+            workspace_dir / "reports" / "screenshots" / "execution_step5.png",
             workspace_dir / "reports" / "execution_step5.png",
         ])
 

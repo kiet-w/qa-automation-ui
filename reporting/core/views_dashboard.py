@@ -28,9 +28,9 @@ def build_extent_kpi_and_charts_html(parsed: Dict[str, Any]) -> str:
     skipped_tests = parsed.get("skipped", 0)
 
     steps = parsed.get("primary_steps", [])
-    total_steps = len(steps)
-    passed_steps = sum(1 for s in steps if s.get("status") == "passed")
-    failed_steps = sum(1 for s in steps if s.get("status") == "failed")
+    total_steps = parsed.get("total_steps") or len(steps)
+    passed_steps = parsed.get("passed_steps", sum(1 for s in steps if s.get("status") == "passed"))
+    failed_steps = parsed.get("failed_steps", sum(1 for s in steps if s.get("status") == "failed"))
 
     total_duration = parsed.get("total_duration", 0.0)
     created_str = parsed.get("created_str", "-")
@@ -165,6 +165,7 @@ def build_extent_kpi_and_charts_html(parsed: Dict[str, Any]) -> str:
                     <polyline points="12 6 12 12 14 14"></polyline>
                 </svg>
                 <span data-i18n="pipeline_title">Step Execution Pipeline</span>
+                {f'<span class="test-pill" style="margin-left: 8px; font-size: 11px; color: var(--text-secondary); background: var(--bg-card-subtle); border: 1px solid var(--border-color);">Test #1 Flow</span>' if total_tests > 1 else ''}
             </div>
             <span style="font-size: 11.5px; color: var(--text-secondary);" data-i18n="pipeline_hint">Click any step node to seek video to that step</span>
         </div>

@@ -1,9 +1,12 @@
 """conftest.py - Shared fixtures, Brave browser setup, and reporting hooks."""
 import json
+import os
+from datetime import datetime
 from pathlib import Path
 import shutil
 import time
 from typing import Optional
+import uuid
 import pytest
 from playwright.sync_api import Page
 from playwright_stealth import Stealth
@@ -61,8 +64,7 @@ def detect_ticket_folder_from_args(config) -> Optional[str]:
                 candidate = parts[idx + 1]
                 if not candidate.endswith(".py"):
                     return candidate
-                # E.g. tests/us01_bing_search/test_bing_search.py
-                return candidate
+                return None
         elif (WORKSPACE_DIR / "tests" / arg).is_dir():
             return Path(arg).name
     return None
@@ -75,10 +77,24 @@ def pytest_configure(config):
     ticket_reports_dir = (DEFAULT_REPORTS_DIR / ticket) if ticket else DEFAULT_REPORTS_DIR
     config._ticket_reports_dir = ticket_reports_dir
 
-    # Isolate video recordings and Playwright artifacts
+    # Generate or reuse run_id for this test session
+    run_id = getattr(config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID")
+    if not run_id:
+        now = datetime.now()
+        hash_suffix = uuid.uuid4().hex[:6].upper()
+        run_id = f"RUN-{now.strftime('%Y%m%d')}-{hash_suffix}"
+        os.environ["PYTEST_RUN_ID"] = run_id
+    config._run_id = run_id
+
+    # Isolate video recordings and Playwright artifacts into test-results/<run_id>
     curr_out = getattr(config.option, "output", None)
-    if not curr_out or curr_out in ("reports/test-results", str(DEFAULT_REPORTS_DIR / "test-results")):
-        config.option.output = str(ticket_reports_dir / "test-results")
+    default_outputs = (
+        "reports/test-results",
+        str(DEFAULT_REPORTS_DIR / "test-results"),
+        str(ticket_reports_dir / "test-results"),
+    )
+    if not curr_out or curr_out in default_outputs:
+        config.option.output = str(ticket_reports_dir / "test-results" / run_id)
 
     # Isolate JSON report per ticket
     curr_json = getattr(config.option, "json_report_file", None)
@@ -111,10 +127,24 @@ def pytest_collection_finish(session):
             config._ticket_name = ticket
             ticket_reports_dir = DEFAULT_REPORTS_DIR / ticket
             config._ticket_reports_dir = ticket_reports_dir
-            if getattr(config.option, "output", None) in ("reports/test-results", str(DEFAULT_REPORTS_DIR / "test-results")):
-                config.option.output = str(ticket_reports_dir / "test-results")
+            run_id = getattr(config, "_run_id", "RUN-DEFAULT")
+            curr_out = getattr(config.option, "output", None)
+            default_outputs = (
+                "reports/test-results",
+                str(DEFAULT_REPORTS_DIR / "test-results"),
+                str(ticket_reports_dir / "test-results"),
+            )
+            if not curr_out or curr_out in default_outputs or curr_out.endswith("test-results"):
+                config.option.output = str(ticket_reports_dir / "test-results" / run_id)
             if getattr(config.option, "json_report_file", None) in ("reports/report.json", str(DEFAULT_REPORTS_DIR / "report.json")):
                 config.option.json_report_file = str(ticket_reports_dir / "report.json")
+
+
+def pytest_json_modifyreport(json_report):
+    """Ensure run_id is saved in the pytest JSON report metadata."""
+    run_id = os.environ.get("PYTEST_RUN_ID")
+    if run_id:
+        json_report["run_id"] = run_id
 
 
 class StepTracker:
@@ -363,11 +393,19 @@ def setup_page(page: Page, json_metadata, request):
     stealth = Stealth()
     stealth.apply_stealth_sync(page)
 
-    # 2. Auto-dismiss cookie consent overlays (Bing/Google)
+    # 2. Auto-dismiss cookie consent overlays (Bing/Google/YouTube)
     page.add_init_script("""
         const observer = new MutationObserver(() => {
-            const btn = document.querySelector('#bnp_btn_accept a, #bnp_btn_reject a, #bnp_cookie_banner a');
-            if (btn) btn.click();
+            const btn = document.querySelector(
+                '#bnp_btn_accept a, #bnp_btn_reject a, #bnp_cookie_banner a, ' +
+                'button[aria-label*="Reject"], button[aria-label*="Accept"], ' +
+                'button[aria-label*="Từ chối"], button[aria-label*="Chấp nhận"], ' +
+                'ytd-button-renderer button[aria-label*="Accept"], ' +
+                'form[action*="consent"] button'
+            );
+            if (btn && btn.offsetParent !== null) {
+                try { btn.click(); } catch(e) {}
+            }
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
     """)
@@ -391,11 +429,16 @@ def setup_page(page: Page, json_metadata, request):
             except Exception:
                 pass
 
-            # If output directory is defined, save/copy video to test-scoped artifact folder
+            # If output directory is defined, save/copy video to test-scoped artifact folder inside run_id
             reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
-            test_results_dir = Path(getattr(request.config.option, "output", reports_dir / "test-results"))
-            node_slug = re.sub(r"[^\w]+", "-", request.node.nodeid.lower()).strip("-")
-            target_video_dir = test_results_dir / node_slug
+            run_id = getattr(request.config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID", "RUN-UNKNOWN")
+            test_results_dir = Path(getattr(request.config.option, "output", reports_dir / "test-results" / run_id))
+            clean_slug = re.sub(r"[^\w]+", "-", request.node.nodeid.lower()).strip("-")
+
+            if test_results_dir.name != run_id and run_id not in test_results_dir.parts:
+                target_video_dir = test_results_dir / run_id / clean_slug
+            else:
+                target_video_dir = test_results_dir / clean_slug
             target_video_file = target_video_dir / "video.webm"
 
             try:
@@ -421,10 +464,9 @@ def search_data():
 
 def pytest_sessionstart(session):
     """
-    Clear old test artifacts and videos before starting a new test session.
-    Only clears artifacts within the active ticket's reports directory.
-    Safe for pytest-xdist: ONLY executes cleanup on the controller (master) process,
-    never inside xdist worker processes.
+    Ensure test artifact directories exist.
+    Preserves historical runs and prior run_id test-results without wiping them.
+    Safe for pytest-xdist: ONLY executes setup on the controller (master) process.
     """
     if hasattr(session.config, "workerinput"):
         # Worker process: never clean or delete directories!
@@ -433,10 +475,93 @@ def pytest_sessionstart(session):
     reports_dir = getattr(session.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
     reports_dir.mkdir(parents=True, exist_ok=True)
     (reports_dir / "screenshots").mkdir(parents=True, exist_ok=True)
+    (reports_dir / "history").mkdir(parents=True, exist_ok=True)
+    (reports_dir / "test-results").mkdir(parents=True, exist_ok=True)
 
+    run_id = getattr(session.config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID")
+    if run_id:
+        (reports_dir / "test-results" / run_id).mkdir(parents=True, exist_ok=True)
+
+
+def organize_test_results_by_run_id(reports_dir: Path, run_id: str, report_json_path: Optional[Path] = None):
+    """
+    Ensure all test results (videos, Playwright artifacts) are strictly organized
+    under reports/<ticket>/test-results/<run_id>/.
+    Consolidates any duplicate video directories and updates report.json paths.
+    """
     test_results_dir = reports_dir / "test-results"
-    if test_results_dir.exists():
-        shutil.rmtree(test_results_dir, ignore_errors=True)
+    test_results_dir.mkdir(parents=True, exist_ok=True)
+
+    run_dir = test_results_dir / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # 1. Move any test case directories directly under test-results into run_dir
+    # (ignoring any existing RUN-* folders)
+    for item in list(test_results_dir.iterdir()):
+        if item.is_dir() and item.name != run_id and not item.name.startswith("RUN-"):
+            dest = run_dir / item.name
+            try:
+                if not dest.exists():
+                    shutil.move(str(item), str(dest))
+                else:
+                    for sub in item.iterdir():
+                        sub_dest = dest / sub.name
+                        if not sub_dest.exists():
+                            shutil.move(str(sub), str(sub_dest))
+                    shutil.rmtree(item, ignore_errors=True)
+            except Exception as e:
+                print(f"[conftest] Warning moving {item.name} to {run_id}: {e}")
+
+    # 2. Deduplicate hyphen vs underscore duplicate folders inside run_dir
+    subdirs = [d for d in run_dir.iterdir() if d.is_dir()]
+    dir_map = {}
+    for d in subdirs:
+        norm_key = re.sub(r"[_\W]+", "-", d.name.lower()).strip("-")
+        dir_map.setdefault(norm_key, []).append(d)
+
+    for norm_key, dirs in dir_map.items():
+        if len(dirs) > 1:
+            best_dir = next((d for d in dirs if (d / "video.webm").exists()), dirs[0])
+            for d in dirs:
+                if d != best_dir:
+                    for f in d.iterdir():
+                        target_f = best_dir / f.name
+                        if not target_f.exists():
+                            shutil.move(str(f), str(target_f))
+                    shutil.rmtree(d, ignore_errors=True)
+
+    # 3. Synchronize report.json to reference run_id and updated video paths
+    if report_json_path and report_json_path.exists():
+        try:
+            with open(report_json_path, "r", encoding="utf-8") as f:
+                report_data = json.load(f)
+
+            updated = False
+            if report_data.get("run_id") != run_id:
+                report_data["run_id"] = run_id
+                updated = True
+
+            for test in report_data.get("tests", []):
+                meta = test.get("metadata", {})
+                v_path = meta.get("video_path")
+                if v_path:
+                    vp = Path(v_path)
+                    if run_id not in vp.parts:
+                        matched = list(run_dir.glob(f"**/{vp.name}"))
+                        if matched:
+                            meta["video_path"] = str(matched[0].resolve())
+                            updated = True
+                        else:
+                            cand = run_dir / vp.parent.name / vp.name
+                            if cand.exists():
+                                meta["video_path"] = str(cand.resolve())
+                                updated = True
+
+            if updated:
+                with open(report_json_path, "w", encoding="utf-8") as f:
+                    json.dump(report_data, f, indent=2)
+        except Exception as err:
+            print(f"[conftest] Warning updating report.json: {err}")
 
 
 @pytest.hookimpl(trylast=True)
@@ -446,17 +571,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         return
 
     reports_dir = getattr(config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
-    test_results_dir = reports_dir / "test-results"
-    if test_results_dir.exists():
-        videos = list(test_results_dir.glob("**/*.webm"))
-        if videos:
-            terminalreporter.write_sep("=", "📹 [VIDEO MỚI ĐÃ ĐƯỢC GHI HÌNH THÀNH CÔNG (FULL HD 1080p)]", bold=True, green=True)
-            for v in sorted(videos):
-                try:
-                    rel_v = v.relative_to(WORKSPACE_DIR)
-                except Exception:
-                    rel_v = v
-                terminalreporter.write_line(f"   -> {rel_v}")
+    run_id = getattr(config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID", "RUN-UNKNOWN")
 
     json_file_path = getattr(config.option, "json_report_file", None)
     report_json = Path(json_file_path) if json_file_path else (reports_dir / "report.json")
@@ -469,14 +584,29 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         except Exception:
             pass
 
+    # Organize all test-results into reports/<ticket>/test-results/<run_id>/
+    organize_test_results_by_run_id(reports_dir=reports_dir, run_id=run_id, report_json_path=report_json)
+
+    run_results_dir = reports_dir / "test-results" / run_id
+    if run_results_dir.exists():
+        videos = list(run_results_dir.glob("**/*.webm"))
+        if videos:
+            terminalreporter.write_sep("=", f"📹 [VIDEO ĐÃ ĐƯỢC LƯU VÀO RUN ID: {run_id} (FULL HD 1080p)]", bold=True, green=True)
+            for v in sorted(videos):
+                try:
+                    rel_v = v.relative_to(WORKSPACE_DIR)
+                except Exception:
+                    rel_v = v
+                terminalreporter.write_line(f"   -> {rel_v}")
+
     if report_json.exists():
         try:
             from reporting import ReportGenerator
             generator = ReportGenerator(workspace_dir=WORKSPACE_DIR, reports_dir=reports_dir)
             out_html = generator.generate(json_path=report_json)
             terminalreporter.write_sep("=", "✅ [BÁO CÁO ENTERPRISE HTML ĐÃ ĐƯỢC TẠO THÀNH CÔNG]", bold=True, green=True)
-            terminalreporter.write_line(f"   File báo cáo (Run ID): {out_html}")
             terminalreporter.write_line(f"   File mới nhất        : {reports_dir / 'execution_report.html'}")
+            terminalreporter.write_line(f"   File lịch sử (Run ID): {out_html}")
         except Exception as err:
             terminalreporter.write_line(f"[Auto-Report] Lỗi khi tạo báo cáo: {err}", red=True)
 
@@ -489,7 +619,8 @@ def delete_output_dir():
 
 @pytest.fixture(scope="session", autouse=True)
 def ensure_reports_dir(request):
-    """Ensure reports directory and screenshots directory exist for test evidence and artifacts."""
+    """Ensure reports directory, screenshots, and history directory exist for test evidence and artifacts."""
     reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
     reports_dir.mkdir(parents=True, exist_ok=True)
     (reports_dir / "screenshots").mkdir(parents=True, exist_ok=True)
+    (reports_dir / "history").mkdir(parents=True, exist_ok=True)

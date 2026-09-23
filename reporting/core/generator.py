@@ -36,11 +36,17 @@ class ReportGenerator:
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         report_data = load_report_json(json_file)
 
+        # Scope video search to specific run_id subfolder if present
+        run_id_hint = report_data.get("run_id")
+        run_test_results = (self.test_results_dir / run_id_hint) if run_id_hint else None
+        search_dir = run_test_results if (run_test_results and run_test_results.exists()) else self.test_results_dir
+
         all_videos: List[Path] = []
-        if self.test_results_dir.exists():
-            all_videos = sorted(list(self.test_results_dir.glob("**/*.webm")))
+        if search_dir.exists():
+            all_videos = sorted(list(search_dir.glob("**/*.webm")))
             if all_videos:
-                print(f"📹 Found {len(all_videos)} video recording(s) in {self.test_results_dir.name}")
+                folder_label = search_dir.relative_to(self.workspace_dir) if self.workspace_dir in search_dir.parents else search_dir.name
+                print(f"📹 Found {len(all_videos)} video recording(s) in {folder_label}")
                 for v in all_videos:
                     size_mb = v.stat().st_size / (1024 * 1024)
                     print(f"   -> {v.name} ({size_mb:.2f} MB)")
@@ -53,7 +59,13 @@ class ReportGenerator:
         )
 
         run_id = parsed_data.get("run_id", "RUN-UNKNOWN")
-        target_html = output_html_path or (self.reports_dir / f"{run_id}.html")
+        history_dir = self.reports_dir / "history"
+        history_dir.mkdir(parents=True, exist_ok=True)
+
+        if output_html_path:
+            target_html = Path(output_html_path)
+        else:
+            target_html = history_dir / f"{run_id}.html"
 
         print("=" * 65)
         print("🚀 [ExtentReports Generator]")
@@ -71,16 +83,24 @@ class ReportGenerator:
         with open(target_html, "w", encoding="utf-8") as f:
             f.write(full_html)
 
-        # Also maintain execution_report.html as the latest run reference
+        # Also maintain execution_report.html as the latest run reference at the root of reports_dir
         latest_html = self.reports_dir / "execution_report.html"
         if target_html.resolve() != latest_html.resolve():
             shutil.copyfile(target_html, latest_html)
 
+        # Also copy to root workspace reports/execution_report.html so accessing the standard path always shows the latest run!
+        root_reports_html = self.workspace_dir / "reports" / "execution_report.html"
+        if target_html.resolve() != root_reports_html.resolve():
+            root_reports_html.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(target_html, root_reports_html)
+
         file_size_mb = target_html.stat().st_size / (1024 * 1024)
         print("✅ ExtentReport successfully generated!")
-        print(f"   Run Report : {target_html}")
-        print(f"   Latest Link: {latest_html}")
-        print(f"   File Size  : {file_size_mb:.2f} MB (100% self-contained)")
+        print(f"   Run Report (History): {target_html}")
+        print(f"   Latest Report       : {latest_html}")
+        if root_reports_html.resolve() != latest_html.resolve():
+            print(f"   Root Report (Global): {root_reports_html}")
+        print(f"   File Size           : {file_size_mb:.2f} MB (100% self-contained)")
         print("=" * 65)
 
         return target_html

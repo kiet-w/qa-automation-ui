@@ -62,12 +62,11 @@ automation-ui/
 └── reports/             # Execution artifacts, reports, and evidence (ISOLATED PER TICKET)
     ├── .gitkeep         # Keeps directory tracked in Git
     └── us01_bing_search/ # Isolated ticket artifacts folder (created automatically on execution)
+        ├── execution_report.html # Final self-contained HTML report (latest run)
         ├── report.json           # Structured pytest execution log for this ticket
-        ├── execution_report.html # Final self-contained HTML report for this ticket
-        ├── RUN-*.html            # Timestamped run report with unique Run ID
-        ├── execution_step5.png   # Step 5 screenshot deliverable for this ticket
-        ├── screenshots/          # Step and failure screenshots
-        └── test-results/         # Playwright WebM video recordings (1920x1080 Full HD)
+        ├── history/              # Timestamped historical run reports (RUN-*.html)
+        ├── screenshots/          # ALL screenshots (deliverable evidence and failure captures)
+        └── test-results/         # Playwright WebM video recordings organized by Run ID (<run_id>/)
 ```
 
 ---
@@ -113,15 +112,15 @@ automation-ui/
 - **Role:** Isolated target folders for test outputs, logs, videos, and HTML deliverables.
 - **Isolation Mechanism:**
   - When running tests for `tests/us01_bing_search/`, all artifacts are automatically scoped to `reports/us01_bing_search/`.
-  - Artifacts include `report.json`, `execution_report.html`, `RUN-*.html`, `test-results/` (videos), and `screenshots/`.
-  - Running a ticket test will **only** clean up artifacts for that ticket; other tickets' artifacts are never touched or deleted.
+  - Artifacts include `report.json`, `execution_report.html`, `history/` (RUN-*.html), `test-results/<run_id>/` (videos), and `screenshots/` (all PNG images).
+  - Running a ticket test will **only** clean up artifacts for that ticket; other tickets' artifacts and historical run IDs are never touched or deleted.
 - **Rule:** Gitignored (except `.gitkeep`). Never commit generated test runs or large `.webm` files.
 
 ### `conftest.py` (Dynamic Configuration & Stealth Setup)
 - **Role:** Centralized fixtures, dynamic ticket path routing, anti-bot stealth hooks, and browser setup.
 - **Dynamic Ticket Detection:**
   - Automatically inspects CLI arguments or collected tests to detect the active ticket folder.
-  - Automatically configures Playwright `--output` to `reports/<ticket>/test-results/`.
+  - Automatically configures Playwright `--output` to `reports/<ticket>/test-results/<run_id>/`.
   - Automatically configures `--json-report-file` to `reports/<ticket>/report.json`.
 - **Display & Recording Standards:**
   - Viewport: 1920x1080 (Full HD).
