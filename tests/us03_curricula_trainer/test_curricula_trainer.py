@@ -19,6 +19,7 @@ import pytest
 
 from tests.base_test import BaseTest
 from pages.curricula_trainer_page import CurriculaTrainerPage
+from core import Exceptor, Interceptor, BusinessAssertionError, InfrastructureError
 
 WORKSPACE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_PATH = WORKSPACE_DIR / "data" / "curricula_trainer_data.json"
@@ -60,8 +61,8 @@ class TestCurriculaHappyPath(BaseTest):
             "Step 3: Scroll to Save button, submit form, and verify successful account creation",
             expected="Success box appears displaying Trainer ID matching 'TRN\\d{6}' and 'Status: Active'",
         ):
-            curricula.save()
-            assert curricula.is_success_visible(), "Expected success notification box to be visible"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_sg_form")
+            Exceptor.expect_success(curricula.get_state_snapshot(), context="HP-01 Valid SG Resident")
             success_text = curricula.get_success_text()
             self.assert_contains(success_text, "Trainer account has been created successfully")
             self.assert_contains(success_text, "Status: Active")
@@ -85,8 +86,8 @@ class TestCurriculaHappyPath(BaseTest):
             self.step.set_actual("Non-Singapore profile (Vietnam) filled")
 
         with self.step("Step 3: Scroll to Save button, submit, and verify successful international account creation"):
-            curricula.save()
-            assert curricula.is_success_visible(), "Expected success box for Non-Singapore submission"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_non_sg_form")
+            Exceptor.expect_success(curricula.get_state_snapshot(), context="HP-02 Non-SG Resident (Vietnam)")
             success_text = curricula.get_success_text()
             self.assert_contains(success_text, "Trainer account has been created successfully")
             evidence = self.get_report_path("hp02_non_sg_vn_success.png", test_scoped=True)
@@ -108,8 +109,8 @@ class TestCurriculaHappyPath(BaseTest):
             self.step.set_actual("Floor/Unit inputs confirmed disabled")
 
         with self.step("Step 3: Scroll to Save button, submit, and verify success without floor/unit inputs"):
-            curricula.save()
-            assert curricula.is_success_visible(), "Expected success box to appear"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_sg_floor_na")
+            Exceptor.expect_success(curricula.get_state_snapshot(), context="HP-03 SG Floor/Unit N/A")
             evidence = self.get_report_path("hp03_sg_floor_na_success.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
@@ -131,8 +132,8 @@ class TestCurriculaHappyPath(BaseTest):
             curricula.fill_full_form(data)
 
         with self.step("Step 3: Submit and confirm successful registration"):
-            curricula.save()
-            assert curricula.is_success_visible()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_non_sg_malaysia")
+            Exceptor.expect_success(curricula.get_state_snapshot(), context="TC04 Malaysia Resident with optional fields")
 
 
 @pytest.mark.curricula
@@ -170,26 +171,28 @@ class TestCurriculaUnhappyPathAndBugs(BaseTest):
             "Step 2: Scroll down to Save, submit form, and verify account creation",
             expected="Form should accept valid Singapore unit '#04-12A' and create Trainer Account successfully",
         ):
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_sg_alphanumeric_unit")
 
         with self.step(
             "Step 3: Defect Verification - Scroll to Floor/Unit error, highlight with red halo, and report bug",
             expected="System should allow alphanumeric unit '#04-12A'. If rejected, mark test as FAILED with [BUG DETECTED].",
         ):
-            if not curricula.is_success_visible():
+            snapshot = curricula.get_state_snapshot()
+            if not snapshot["success_visible"]:
                 curricula.scroll_to_error("floorUnit", highlight=True, pause_ms=1500)
-                err_text = curricula.get_error_text("floorUnit")
+                err_text = snapshot["visible_errors"].get("floorUnit", "")
                 evidence = self.get_report_path("up01_bug_unit_regex.png", test_scoped=True)
                 curricula.take_screenshot(evidence)
                 self.step.attach_screenshot(evidence)
                 self.step.set_actual(f"[PRODUCT DEFECT] Valid unit '12A' rejected with: '{err_text}'. Highlighted in red.")
-
-                assert curricula.is_success_visible(), (
-                    f"[PRODUCT BUG DETECTED] Valid Singapore unit '#04-12A' was incorrectly rejected "
-                    f"by numeric-only regex with error: '{err_text}'. Expected account creation to succeed!"
-                )
             else:
                 self.step.set_actual("[PASSED] Form accepted unit '12A'")
+
+            Exceptor.expect_bug_if_rejected(
+                snapshot,
+                field="floorUnit",
+                context="UP-01 Singapore Alphanumeric Unit '#04-12A' incorrectly rejected by numeric-only regex",
+            )
 
     def test_up02_future_date_of_birth_scroll_error(self):
         """
@@ -212,25 +215,25 @@ class TestCurriculaUnhappyPathAndBugs(BaseTest):
             "Step 2: Scroll to Save button, click submit, and verify submission is blocked",
             expected="Form rejects submission because birth date is in the future",
         ):
-            curricula.save()
-            assert not curricula.is_success_visible(), "Submission should fail with future DOB"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_future_dob")
 
         with self.step(
             "Step 3: Scroll up to Date of Birth field, highlight with red halo, and verify rejection",
-            expected="Viewport scrolls to Personal Info, highlights DOB and reports submission failure",
+            expected="Viewport scrolls to Personal Info, highlights DOB and reports submission rejection defense",
         ):
             curricula.scroll_to_error("dob", highlight=True, pause_ms=1500)
-            assert curricula.is_error_visible("dob"), "DOB error should be visible"
-            err_text = curricula.get_error_text("dob")
-            self.assert_contains(err_text, "Enter a valid date of birth")
-
+            snapshot = curricula.get_state_snapshot()
             evidence = self.get_report_path("up02_future_dob_error.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
-            self.step.set_actual(f"[SUBMISSION FAILED] Future birth date rejected with error: '{err_text}'. Highlighted in red.")
+            err_text = snapshot["visible_errors"].get("dob", "")
+            self.step.set_actual(f"[SUBMISSION REJECTED] Future birth date rejected with error: '{err_text}'. Highlighted in red.")
 
-            assert curricula.is_success_visible(), (
-                f"[UNHAPPY PATH / SUBMISSION FAILED] Account creation failed due to future DOB with error: '{err_text}'"
+            Exceptor.expect_rejection(
+                snapshot,
+                field="dob",
+                message_contains="Enter a valid date of birth",
+                context="UP-02 Future Date of Birth rejection defense",
             )
 
     def test_up03_malformed_email_scroll_error(self):
@@ -253,25 +256,25 @@ class TestCurriculaUnhappyPathAndBugs(BaseTest):
             "Step 2: Scroll down to Save, submit form, and verify submission is blocked",
             expected="Validation blocks submission due to invalid email format",
         ):
-            curricula.save()
-            assert not curricula.is_success_visible(), "Submission should fail with malformed email"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_malformed_email")
 
         with self.step(
             "Step 3: Scroll to Primary Email field, highlight with red halo, and verify rejection",
-            expected="Viewport scrolls to Contact Info, highlights primaryEmail and reports submission failure",
+            expected="Viewport scrolls to Contact Info, highlights primaryEmail and reports submission rejection defense",
         ):
             curricula.scroll_to_error("primaryEmail", highlight=True, pause_ms=1500)
-            assert curricula.is_error_visible("primaryEmail"), "Primary email error should be visible"
-            err_text = curricula.get_error_text("primaryEmail")
-            self.assert_contains(err_text, "Enter a valid email address")
-
+            snapshot = curricula.get_state_snapshot()
             evidence = self.get_report_path("up03_malformed_email_error.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
-            self.step.set_actual(f"[SUBMISSION FAILED] Malformed email rejected with error: '{err_text}'. Highlighted in red.")
+            err_text = snapshot["visible_errors"].get("primaryEmail", "")
+            self.step.set_actual(f"[SUBMISSION REJECTED] Malformed email rejected with error: '{err_text}'. Highlighted in red.")
 
-            assert curricula.is_success_visible(), (
-                f"[UNHAPPY PATH / SUBMISSION FAILED] Account creation failed due to invalid email with error: '{err_text}'"
+            Exceptor.expect_rejection(
+                snapshot,
+                field="primaryEmail",
+                message_contains="Enter a valid email address",
+                context="UP-03 Malformed email address rejection defense",
             )
 
     def test_up04_invalid_singapore_phone_length_scroll_error(self):
@@ -294,25 +297,25 @@ class TestCurriculaUnhappyPathAndBugs(BaseTest):
             "Step 2: Scroll down to Save, submit form, and verify submission is blocked",
             expected="Validation blocks submission due to invalid Singapore phone format",
         ):
-            curricula.save()
-            assert not curricula.is_success_visible(), "Submission should fail with 6-digit phone"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_short_sg_phone")
 
         with self.step(
             "Step 3: Scroll to Primary Phone field, highlight with red halo, and verify rejection",
-            expected="Viewport scrolls to Contact Info, highlights primaryPhone and reports submission failure",
+            expected="Viewport scrolls to Contact Info, highlights primaryPhone and reports submission rejection defense",
         ):
             curricula.scroll_to_error("primaryPhone", highlight=True, pause_ms=1500)
-            assert curricula.is_error_visible("primaryPhone"), "Primary phone error should be visible"
-            err_text = curricula.get_error_text("primaryPhone")
-            self.assert_contains(err_text, "Enter a valid contact number")
-
+            snapshot = curricula.get_state_snapshot()
             evidence = self.get_report_path("up04_invalid_sg_phone_error.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
-            self.step.set_actual(f"[SUBMISSION FAILED] Invalid phone rejected with error: '{err_text}'. Highlighted in red.")
+            err_text = snapshot["visible_errors"].get("primaryPhone", "")
+            self.step.set_actual(f"[SUBMISSION REJECTED] Invalid phone rejected with error: '{err_text}'. Highlighted in red.")
 
-            assert curricula.is_success_visible(), (
-                f"[UNHAPPY PATH / SUBMISSION FAILED] Account creation failed due to invalid Singapore phone with error: '{err_text}'"
+            Exceptor.expect_rejection(
+                snapshot,
+                field="primaryPhone",
+                message_contains="Enter a valid contact number",
+                context="UP-04 Invalid Singapore phone length rejection defense",
             )
 
     def test_up05_disallowed_file_extension_scroll_error(self):
@@ -335,25 +338,25 @@ class TestCurriculaUnhappyPathAndBugs(BaseTest):
             "Step 2: Scroll down to Save, submit form, and verify security rejection",
             expected="Form rejects upload because .exe is not allowed MIME type (JPG, PNG, PDF)",
         ):
-            curricula.save()
-            assert not curricula.is_success_visible(), "Submission should fail with .exe upload"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_disallowed_file")
 
         with self.step(
             "Step 3: Scroll up to ID Document upload area, highlight with red halo, and verify rejection",
-            expected="Viewport scrolls to Personal Info, highlights idDocument and reports submission failure",
+            expected="Viewport scrolls to Personal Info, highlights idDocument and reports submission rejection defense",
         ):
             curricula.scroll_to_error("idDocument", highlight=True, pause_ms=1500)
-            assert curricula.is_error_visible("idDocument"), "ID document error should be visible"
-            err_text = curricula.get_error_text("idDocument")
-            self.assert_contains(err_text, "Upload a valid document")
-
+            snapshot = curricula.get_state_snapshot()
             evidence = self.get_report_path("up05_disallowed_file_error.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
-            self.step.set_actual(f"[SUBMISSION FAILED] Disallowed file rejected with error: '{err_text}'. Highlighted in red.")
+            err_text = snapshot["visible_errors"].get("idDocument", "")
+            self.step.set_actual(f"[SUBMISSION REJECTED] Disallowed file rejected with error: '{err_text}'. Highlighted in red.")
 
-            assert curricula.is_success_visible(), (
-                f"[UNHAPPY PATH / SUBMISSION FAILED] Account creation failed due to disallowed file upload with error: '{err_text}'"
+            Exceptor.expect_rejection(
+                snapshot,
+                field="idDocument",
+                message_contains="valid document",
+                context="UP-05 Disallowed file extension rejection defense",
             )
 
     @pytest.mark.parametrize(
@@ -393,7 +396,7 @@ class TestCurriculaValidationAndErrors(BaseTest):
 
         with self.step("Step 1: Open form and submit blank"):
             curricula.open()
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_empty_form")
 
         with self.step("Step 2: Verify all mandatory validation errors are visible"):
             expected_error_keys = [
@@ -417,16 +420,20 @@ class TestCurriculaValidationAndErrors(BaseTest):
                 "streetName",
                 "floorUnit",
             ]
-            missing_errors = []
-            for key in expected_error_keys:
-                if not curricula.is_error_visible(key):
-                    missing_errors.append(key)
+            snapshot = curricula.get_state_snapshot()
+            missing_errors = [k for k in expected_error_keys if k not in snapshot["visible_errors"]]
 
             evidence = self.get_report_path("tc08_empty_form_errors.png", test_scoped=True)
             curricula.take_screenshot(evidence)
             self.step.attach_screenshot(evidence)
 
             assert not missing_errors, f"Validation errors missing for fields: {missing_errors}"
+            Exceptor.expect_rejection(
+                snapshot,
+                field="preferredName",
+                message_contains="required",
+                context="TC08 Empty Form Submission",
+            )
             self.step.set_actual(f"All {len(expected_error_keys)} required validation messages verified")
 
     def test_tc09_missing_mandatory_personal_info(self):
@@ -436,13 +443,14 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step("Step 1: Open page and set only preferred name"):
             curricula.open()
             curricula.set_preferred_name("Alex Tan")
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_partial_personal_info")
 
         with self.step("Step 2: Verify preferredName has no error but gender and ID type display errors"):
+            snapshot = curricula.get_state_snapshot()
             assert not curricula.is_error_visible("preferredName"), "preferredName should not have error"
-            assert curricula.is_error_visible("gender"), "gender should display error"
-            assert curricula.is_error_visible("idType"), "idType should display error"
-            assert curricula.is_error_visible("idNumber"), "idNumber should display error"
+            Exceptor.expect_rejection(snapshot, field="gender", message_contains="required", context="TC09 missing gender")
+            Exceptor.expect_rejection(snapshot, field="idType", message_contains="required", context="TC09 missing idType")
+            Exceptor.expect_rejection(snapshot, field="idNumber", message_contains="required", context="TC09 missing idNumber")
 
     def test_tc10_invalid_dob_future_date_rejected(self):
         """TC10: Future Date of Birth triggers 'Enter a valid date of birth.' validation."""
@@ -452,11 +460,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step(f"Step 1: Enter future date of birth '{future_date}'"):
             curricula.open()
             curricula.set_dob(future_date)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_future_dob")
 
         with self.step("Step 2: Verify DOB error is visible"):
-            assert curricula.is_error_visible("dob"), "DOB error should be visible for future date"
-            self.assert_contains(curricula.get_error_text("dob"), "Enter a valid date of birth")
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="dob",
+                message_contains="Enter a valid date of birth",
+                context="TC10 Future DOB rejection",
+            )
 
     @pytest.mark.parametrize(
         "invalid_email",
@@ -470,11 +483,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step(f"Step 1: Enter invalid email '{invalid_email}' and save"):
             curricula.open()
             curricula.set_primary_email(invalid_email)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_email")
 
         with self.step(f"Step 2: Verify email error displays for '{invalid_email}'"):
-            assert curricula.is_error_visible("primaryEmail"), f"Error expected for invalid email '{invalid_email}'"
-            self.assert_contains(curricula.get_error_text("primaryEmail"), "valid email address")
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="primaryEmail",
+                message_contains="valid email address",
+                context=f"TC11 invalid email {invalid_email}",
+            )
 
     @pytest.mark.parametrize(
         "phone",
@@ -488,10 +506,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step(f"Step 1: Set Singapore phone to '{phone}'"):
             curricula.open()
             curricula.set_primary_phone("+65", phone)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_sg_phone")
 
         with self.step(f"Step 2: Verify primary phone error for '{phone}'"):
-            assert curricula.is_error_visible("primaryPhone"), f"Error expected for invalid SG phone '{phone}'"
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="primaryPhone",
+                message_contains="Enter a valid contact number",
+                context=f"TC12 invalid SG phone {phone}",
+            )
 
     @pytest.mark.parametrize(
         "phone",
@@ -505,10 +529,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step(f"Step 1: Set Vietnam phone (+84) to '{phone}'"):
             curricula.open()
             curricula.set_primary_phone("+84", phone)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_foreign_phone")
 
         with self.step(f"Step 2: Verify foreign phone error for '{phone}'"):
-            assert curricula.is_error_visible("primaryPhone"), f"Error expected for foreign phone '{phone}'"
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="primaryPhone",
+                message_contains="Enter a valid contact number",
+                context=f"TC13 invalid foreign phone {phone}",
+            )
 
     def test_tc14_secondary_phone_optional_when_blank_invalid_when_malformed(self):
         """TC14: Secondary phone is optional when blank, but validates format when entered."""
@@ -516,13 +546,19 @@ class TestCurriculaValidationAndErrors(BaseTest):
 
         with self.step("Step 1: When secondary phone is blank, no secondaryPhone error"):
             curricula.open()
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_blank_secondary_phone")
             assert not curricula.is_error_visible("secondaryPhone"), "Secondary phone shouldn't error when blank"
 
         with self.step("Step 2: When secondary phone is malformed, error is triggered"):
             curricula.set_secondary_phone("+65", "123")  # too short
-            curricula.save()
-            assert curricula.is_error_visible("secondaryPhone"), "Secondary phone should error when invalid"
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_secondary_phone")
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="secondaryPhone",
+                message_contains="Enter a valid contact number",
+                context="TC14 secondary phone format",
+            )
 
     def test_tc15_missing_emergency_contact_validation(self):
         """TC15: Missing emergency contact name, relationship, or phone triggers error."""
@@ -530,12 +566,13 @@ class TestCurriculaValidationAndErrors(BaseTest):
 
         with self.step("Step 1: Open page and submit without emergency contact"):
             curricula.open()
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_missing_emergency_contact")
 
         with self.step("Step 2: Check emergency fields validation messages"):
-            assert curricula.is_error_visible("emergencyName")
-            assert curricula.is_error_visible("emergencyRelationship")
-            assert curricula.is_error_visible("emergencyPhone")
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(snapshot, field="emergencyName", message_contains="required", context="TC15 missing emergencyName")
+            Exceptor.expect_rejection(snapshot, field="emergencyRelationship", message_contains="required", context="TC15 missing emergencyRelationship")
+            Exceptor.expect_rejection(snapshot, field="emergencyPhone", message_contains="Enter a valid contact number", context="TC15 missing emergencyPhone")
 
     @pytest.mark.parametrize(
         "pc",
@@ -550,10 +587,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
             curricula.open()
             curricula.set_residential_type("Singapore")
             curricula.set_postal_code(pc, trigger_blur=True)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_postal_code")
 
         with self.step(f"Step 2: Verify postal code error for '{pc}'"):
-            assert curricula.is_error_visible("postalCode"), f"Postal code '{pc}' should trigger error"
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="postalCode",
+                message_contains="Enter a valid postal code",
+                context=f"TC16 invalid postal code {pc}",
+            )
 
     @pytest.mark.parametrize(
         "unit",
@@ -576,18 +619,22 @@ class TestCurriculaValidationAndErrors(BaseTest):
                 floor="04",
                 unit=unit,
             )
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_alphanumeric_unit")
 
         with self.step(f"Step 2: Defect detection - Unit '{unit}' rejected by numeric-only regex"):
-            if not curricula.is_success_visible():
+            snapshot = curricula.get_state_snapshot()
+            if not snapshot["success_visible"]:
                 curricula.scroll_to_error("floorUnit", highlight=True, pause_ms=1000)
-                err_text = curricula.get_error_text("floorUnit")
+                err_text = snapshot["visible_errors"].get("floorUnit", "")
                 self.step.set_actual(f"[DEFECT DETECTED] Unit '{unit}' was rejected by regex with: '{err_text}'")
-                assert curricula.is_success_visible(), (
-                    f"[PRODUCT BUG DETECTED] Unit '{unit}' was rejected by numeric-only regex with: '{err_text}'"
-                )
             else:
                 self.step.set_actual(f"Unit '{unit}' accepted")
+
+            Exceptor.expect_bug_if_rejected(
+                snapshot,
+                field="floorUnit",
+                context=f"TC17 Singapore alphanumeric unit '{unit}' rejected by numeric regex",
+            )
 
     def test_tc18_non_singapore_selecting_singapore_country_rejected(self):
         """TC18: In Non-Singapore mode, selecting Singapore as Country/Region is rejected."""
@@ -597,10 +644,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
             curricula.open()
             curricula.set_residential_type("Non-Singapore")
             curricula.select_country_region("Singapore")
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_non_sg_country_singapore")
 
         with self.step("Step 2: Verify countryRegion error is displayed"):
-            assert curricula.is_error_visible("countryRegion"), "Country Singapore should not be accepted for Non-SG"
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="countryRegion",
+                message_contains="required",
+                context="TC18 countryRegion Singapore in Non-SG mode",
+            )
 
     def test_tc19_non_singapore_missing_mandatory_address_fields(self):
         """TC19: Non-Singapore mode requires Address Line 1 and City."""
@@ -610,11 +663,12 @@ class TestCurriculaValidationAndErrors(BaseTest):
             curricula.open()
             curricula.set_residential_type("Non-Singapore")
             curricula.select_country_region("Vietnam")
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_non_sg_empty_address")
 
         with self.step("Step 2: Verify address1 and city errors are displayed"):
-            assert curricula.is_error_visible("address1"), "address1 should be required in Non-SG mode"
-            assert curricula.is_error_visible("city"), "city should be required in Non-SG mode"
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(snapshot, field="address1", message_contains="required", context="TC19 missing address1")
+            Exceptor.expect_rejection(snapshot, field="city", message_contains="required", context="TC19 missing city")
 
     def test_tc20_invalid_file_upload_extension_rejected(self):
         """TC20: Uploading a prohibited file type (.txt) triggers document validation error."""
@@ -624,11 +678,16 @@ class TestCurriculaValidationAndErrors(BaseTest):
         with self.step("Step 1: Upload .txt file and click Save"):
             curricula.open()
             curricula.upload_document(invalid_file)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_invalid_file_txt")
 
         with self.step("Step 2: Verify idDocument error message is visible"):
-            assert curricula.is_error_visible("idDocument"), "Invalid document extension should trigger error"
-            self.assert_contains(curricula.get_error_text("idDocument"), "valid document")
+            snapshot = curricula.get_state_snapshot()
+            Exceptor.expect_rejection(
+                snapshot,
+                field="idDocument",
+                message_contains="valid document",
+                context="TC20 invalid file extension .txt",
+            )
 
 
 @pytest.mark.curricula
@@ -755,10 +814,10 @@ class TestCurriculaUIInteractions(BaseTest):
         with self.step("Step 1: Complete and submit valid registration"):
             curricula.open()
             curricula.fill_full_form(data)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_valid_registration")
 
         with self.step("Step 2: Verify success DOM structure"):
-            assert curricula.is_success_visible()
+            Exceptor.expect_success(curricula.get_state_snapshot(), context="TC27 Valid registration DOM structure")
             trainer_id_span = self.page.locator("#successBox .trainer-id")
             assert trainer_id_span.is_visible(), ".trainer-id span should be visible"
             span_text = trainer_id_span.inner_text().strip()
@@ -819,7 +878,7 @@ class TestCurriculaBoundaryAndSecurity(BaseTest):
         with self.step("Step 1: Enter XSS payload into preferred name"):
             curricula.open()
             curricula.set_preferred_name(xss_payload)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_xss_payload")
 
         with self.step("Step 2: Verify JavaScript did not execute in document window"):
             executed = self.page.evaluate("() => window._xss_executed === true")
@@ -834,7 +893,7 @@ class TestCurriculaBoundaryAndSecurity(BaseTest):
         with self.step(f"Step 1: Enter SQLi payload '{sqli_payload}' into ID Number"):
             curricula.open()
             curricula.set_id_number(sqli_payload)
-            curricula.save()
+            Interceptor.run(lambda: curricula.save(), action_name="submit_sqli_payload")
 
         with self.step("Step 2: Verify form functions normally and accepts string value"):
             val = curricula.get_field_value(curricula.ID_NUMBER)

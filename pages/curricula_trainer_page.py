@@ -457,3 +457,25 @@ class CurriculaTrainerPage(BasePage):
         """Capture screenshot with settling pause to ensure all visual elements are rendered."""
         self.page.wait_for_timeout(500)
         return super().take_screenshot(filepath, full_page=full_page)
+
+    def get_state_snapshot(self) -> Dict[str, Any]:
+        """
+        Collect current UI state snapshot for Exceptor evaluation:
+        {
+            "success_visible": bool,
+            "visible_errors": {"field_id": "error message text", ...}
+        }
+        """
+        visible_errors: Dict[str, str] = {}
+        error_locators = self.page.locator(".error:visible")
+        count = error_locators.count()
+        for i in range(count):
+            loc = error_locators.nth(i)
+            key = loc.get_attribute("data-for") or f"unknown_{i}"
+            text = loc.inner_text().strip()
+            visible_errors[key] = text
+
+        return {
+            "success_visible": self.is_success_visible(),
+            "visible_errors": visible_errors,
+        }
