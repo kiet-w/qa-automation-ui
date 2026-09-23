@@ -546,16 +546,18 @@ def organize_test_results_by_run_id(reports_dir: Path, run_id: str, report_json_
                 v_path = meta.get("video_path")
                 if v_path:
                     vp = Path(v_path)
-                    if run_id not in vp.parts:
-                        matched = list(run_dir.glob(f"**/{vp.name}"))
+                    if not vp.exists() or run_id not in vp.parts:
+                        norm_parent = re.sub(r"[_\W]+", "-", vp.parent.name.lower()).strip("-")
+                        matched = None
+                        for d in run_dir.iterdir():
+                            if d.is_dir() and re.sub(r"[_\W]+", "-", d.name.lower()).strip("-") == norm_parent:
+                                cand = d / vp.name
+                                if cand.exists() and cand.is_file():
+                                    matched = cand
+                                    break
                         if matched:
-                            meta["video_path"] = str(matched[0].resolve())
+                            meta["video_path"] = str(matched.resolve())
                             updated = True
-                        else:
-                            cand = run_dir / vp.parent.name / vp.name
-                            if cand.exists():
-                                meta["video_path"] = str(cand.resolve())
-                                updated = True
 
             if updated:
                 with open(report_json_path, "w", encoding="utf-8") as f:

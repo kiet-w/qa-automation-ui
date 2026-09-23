@@ -54,18 +54,19 @@ def find_video_for_test(
             p = Path(raw_video_path)
             if p.exists() and p.is_file():
                 return p.resolve()
-            # Also check relative to test_results_dir or test_results_dir.parent
-            if test_results_dir:
-                cand1 = test_results_dir / p.name
-                if cand1.exists() and cand1.is_file():
-                    return cand1.resolve()
-                cand2 = test_results_dir / p
-                if cand2.exists() and cand2.is_file():
-                    return cand2.resolve()
-                if test_results_dir.exists():
-                    for sub_v in test_results_dir.glob(f"**/{p.name}"):
-                        if sub_v.exists() and sub_v.is_file():
-                            return sub_v.resolve()
+
+            # Check normalized parent folder comparison:
+            # Playwright or xdist can normalize folder names between underscores and hyphens
+            # e.g., tests-us03-curricula-trainer vs tests-us03_curricula_trainer
+            if test_results_dir and test_results_dir.exists():
+                norm_target_parent = re.sub(r"[_\W]+", "-", p.parent.name.lower()).strip("-")
+                for d in test_results_dir.iterdir():
+                    if d.is_dir():
+                        d_norm = re.sub(r"[_\W]+", "-", d.name.lower()).strip("-")
+                        if d_norm == norm_target_parent:
+                            cand = d / p.name
+                            if cand.exists() and cand.is_file():
+                                return cand.resolve()
 
     if not all_videos:
         return None
