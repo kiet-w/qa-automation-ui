@@ -96,7 +96,7 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
         t_video_b64 = test["video_b64"]
         t_steps = test["steps"]
         t_err = test["error_msg"]
-        jira_id = test.get("jira_id") or f"PROJ-{1042 + t_idx}"
+        jira_id = test.get("jira_id") or f"TC-{t_idx + 1:03d}"
         user_story = test.get("user_story") or f"US-{t_idx + 1:02d}: Automated UI Scenario {t_idx + 1}"
 
         if t_status == "PASSED":
@@ -206,6 +206,18 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                             <source src="{t_video_b64}" type="video/webm">
                             Your browser does not support WebM video playback.
                         </video>
+                    </div>
+                </div>
+            """
+        else:
+            card += f"""
+                <div class="video-card-section" id="video-section-{t_idx}" style="background: var(--bg-card-subtle); border: 1px dashed var(--border-color); border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); font-size: 13px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; flex-shrink: 0;">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                            <line x1="2" y1="2" x2="22" y2="22"></line>
+                        </svg>
+                        <span>No video recording available for this test scenario (strictly isolated).</span>
                     </div>
                 </div>
             """

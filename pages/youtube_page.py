@@ -103,7 +103,7 @@ class YouTubePage(BasePage):
         self.page.wait_for_timeout(800)
 
     def sort_by_latest(self):
-        """Click on the 'Latest' (Mới nhất) filter chip with strict activation."""
+        """Click on the 'Latest' filter chip with strict activation."""
         selectors = (
             "button[aria-label*='Latest'], button:has-text('Latest'), button:has-text('Mới nhất'), "
             "yt-chip-cloud-chip-renderer:has-text('Latest'), yt-chip-cloud-chip-renderer:has-text('Mới nhất')"
@@ -111,7 +111,7 @@ class YouTubePage(BasePage):
         self._activate_filter_chip("Latest", selectors)
 
     def sort_by_oldest(self):
-        """Click on the 'Oldest' (Cũ nhất / Ngày sớm nhất) filter chip with strict activation."""
+        """Click on the 'Oldest' filter chip with strict activation."""
         selectors = (
             "button[aria-label='Oldest'], button:has-text('Oldest'), button:has-text('Cũ nhất'), "
             "yt-chip-cloud-chip-renderer:has-text('Oldest'), yt-chip-cloud-chip-renderer:has-text('Cũ nhất')"

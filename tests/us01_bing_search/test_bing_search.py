@@ -21,7 +21,7 @@ class TestBingSearch(BaseTest):
         - Step 5: Perform defined page actions:
                   + Search for VTV channel on YouTube
                   + Open channel and navigate to Videos tab
-                  + Sort by Oldest (ngày sớm nhất)
+                  + Sort by Oldest
                   + Click to play the earliest video
                   + Capture screenshot evidence to reports/execution_step5.png
         """

@@ -9,6 +9,7 @@ Focused on single automation test execution:
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -120,44 +121,28 @@ def process_report_data(
     pass_rate = round((passed / total) * 100, 1) if total > 0 else 0.0
     overall_status = "PASSED" if (failed == 0 and total > 0) else ("FAILED" if failed > 0 else "UNKNOWN")
 
-    standard_expectations = {
-        1: {
-            "expected": "Bing search engine landing page loads with HTTP 200 and search input ready",
-            "actual": "Page loaded; search input '#sb_form_q' ready for user interaction",
-        },
-        2: {
-            "expected": "Keyword 1 (Facebook) submitted; first organic result title contains expected title fragment",
-            "actual": "Search executed; first organic result title verified",
-        },
-        3: {
-            "expected": "Keyword 2 (YouTube) submitted; first organic result title contains expected title fragment",
-            "actual": "Search executed; first organic result title verified",
-        },
-        4: {
-            "expected": "Target website accessed from search result and switched to target page context",
-            "actual": "Target page context opened; document state reached ready",
-        },
-        5: {
-            "expected": "Channel VTV opened, videos tab selected, target video played, and screenshot captured",
-            "actual": "VTV channel accessed, video playback initiated, proof screenshot saved to reports/execution_step5.png",
-        },
-    }
-
     raw_tests = report_data.get("tests", [])
     if not raw_tests and total > 0:
+        rep_story = None
+        for part in [reports_dir.name] + list(reports_dir.parts):
+            if re.match(r"^us\d+_", part.lower()):
+                rep_story = part
+                break
+        if rep_story:
+            m_rep = re.match(r"^us(\d+)_(.+)", rep_story, re.IGNORECASE)
+            rep_us_title = f"US-{int(m_rep.group(1)):02d}: {m_rep.group(2).replace('_', ' ').title()}" if m_rep else rep_story.title()
+        else:
+            rep_us_title = "Automated UI Test Suite"
+
         raw_tests = [{
-            "nodeid": "tests/test_bing_search.py::test_user_story_1_bing_search_and_access_target",
+            "nodeid": f"tests/{rep_story or 'suite'}::test_suite_execution",
             "outcome": "passed" if failed == 0 else "failed",
             "duration": total_duration,
             "metadata": {
-                "jira_id": "PROJ-1042",
-                "user_story": "US-01: Cross-Platform Search & Channel Verification",
+                "jira_id": f"{rep_story.split('_')[0].upper() if rep_story else 'QA'}-001",
+                "user_story": rep_us_title,
                 "steps": [
-                    {"title": "Step 1: Navigate to bing.com", "status": "passed", "duration": 4.15, "screenshot": None, "error": None},
-                    {"title": "Step 2: Search for {Keyword1} (Facebook) and verify results", "status": "passed", "duration": 4.82, "screenshot": None, "error": None},
-                    {"title": "Step 3: Search for {Keyword2} (YouTube) and verify results", "status": "passed", "duration": 5.11, "screenshot": None, "error": None},
-                    {"title": "Step 4: Access the target website (YouTube)", "status": "passed", "duration": 5.64, "screenshot": None, "error": None},
-                    {"title": "Step 5: Perform defined page actions on VTV YouTube channel", "status": "passed", "duration": 8.93, "screenshot": "reports/execution_step5.png", "error": None},
+                    {"title": f"Execute test scenarios for {rep_us_title}", "status": "passed" if failed == 0 else "failed", "duration": total_duration, "screenshot": None, "error": None},
                 ]
             }
         }]
@@ -188,11 +173,36 @@ def process_report_data(
             elif "video" in t:
                 metadata["video_path"] = t["video"]
 
-        jira_id = metadata.get("jira_id") or f"PROJ-{1042 + t_idx}"
-        user_story = metadata.get("user_story") or (
-            "US-01: Cross-Platform Search & Channel Verification" if t_idx == 0
-            else f"US-{t_idx + 1:02d}: Automated UI Scenario {t_idx + 1}"
-        )
+        tc_match = re.search(r"(?:test_)?((?:tc|hp|us)[_-]?[a-z0-9]+)", test_name, re.IGNORECASE)
+        dynamic_tc_id = None
+        if tc_match:
+            raw_id = tc_match.group(1).upper().replace("_", "-")
+            m_code = re.match(r"^([A-Z]+)(\d+.*)$", raw_id)
+            if m_code:
+                dynamic_tc_id = f"{m_code.group(1)}-{m_code.group(2)}"
+            else:
+                dynamic_tc_id = raw_id
+
+        node_parts = Path(nodeid.split("::")[0]).parts
+        story_part = next((p for p in node_parts if re.match(r"^us\d+_", p.lower())), None)
+        if not story_part:
+            for part in [reports_dir.name] + list(reports_dir.parts):
+                if re.match(r"^us\d+_", part.lower()):
+                    story_part = part
+                    break
+
+        if story_part:
+            m_us = re.match(r"^us(\d+)_(.+)", story_part, re.IGNORECASE)
+            if m_us:
+                us_num, us_name = m_us.groups()
+                dynamic_us = f"US-{int(us_num):02d}: {us_name.replace('_', ' ').title()}"
+            else:
+                dynamic_us = story_part.replace("_", " ").title()
+        else:
+            dynamic_us = f"US-{t_idx + 1:02d}: Automated UI Scenario {t_idx + 1}"
+
+        jira_id = metadata.get("jira_id") or dynamic_tc_id or f"TC-{t_idx + 1:03d}"
+        user_story = metadata.get("user_story") or dynamic_us
 
         run_results_dir = reports_dir / "test-results" / run_id
         target_results_dir = run_results_dir if run_results_dir.exists() else (reports_dir / "test-results")
@@ -255,13 +265,24 @@ def process_report_data(
             )
             screen_b64 = file_to_base64_data_url(screen_file, "image/png") if screen_file else None
 
-            step_num = s_idx + 1
-            std_spec = standard_expectations.get(step_num, {})
-            step_expected = s.get("expected") or std_spec.get("expected", "Step completes without unhandled errors")
-            if s_status == "passed":
-                step_actual = s.get("actual") or std_spec.get("actual", f"Completed in {s_dur:.2f}s with status PASSED")
+            # Dynamically determine step expected and actual outcomes without hardcoding
+            raw_expected = s.get("expected")
+            if raw_expected:
+                step_expected = raw_expected
             else:
-                step_actual = s.get("actual") or f"FAILED: {s_err or 'Condition assertion failed'}"
+                clean_title = re.sub(r"^Step\s*\d+\s*:\s*", "", s_title, flags=re.IGNORECASE).strip()
+                step_expected = f"Execute '{clean_title}' successfully with expected UI state verified"
+
+            raw_actual = s.get("actual")
+            if s_status != "passed":
+                if raw_actual and str(raw_actual).startswith("FAILED:"):
+                    step_actual = str(raw_actual)
+                else:
+                    step_actual = f"FAILED: {s_err or raw_actual or 'Step validation failed'}"
+            elif raw_actual:
+                step_actual = str(raw_actual)
+            else:
+                step_actual = f"Step completed successfully in {s_dur:.2f}s with status PASSED"
 
             processed_steps.append({
                 "index": s_idx + 1,

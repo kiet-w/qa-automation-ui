@@ -98,7 +98,7 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
     Outputs stream directly to terminal console in real-time.
     """
     print(f"\n{BOLD}{CYAN}{'=' * 68}{RESET}")
-    print(f"{BOLD}{CYAN}▶ PHA 1: THỰC THI KIỂM THỬ VỚI PYTEST{RESET}")
+    print(f"{BOLD}{CYAN}▶ PHASE 1: EXECUTING TESTS WITH PYTEST{RESET}")
     print(f"{BOLD}{CYAN}{'=' * 68}{RESET}")
 
     # Resolve pytest binary or python executable
@@ -128,7 +128,7 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
     cmd.extend(user_args)
 
     cmd_display = " ".join(cmd)
-    print(f"{GRAY}Lệnh thực thi: {cmd_display}{RESET}\n")
+    print(f"{GRAY}Execution command: {cmd_display}{RESET}\n")
 
     # Run subprocess synchronously, streaming stdout and stderr live to console
     start_time = time.time()
@@ -141,13 +141,13 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
             stderr=None,
         )
         duration = time.time() - start_time
-        print(f"\n{GRAY}Pytest đã kết thúc sau {duration:.2f}s (Return Code: {proc.returncode}){RESET}")
+        print(f"\n{GRAY}Pytest completed in {duration:.2f}s (Return Code: {proc.returncode}){RESET}")
         return proc.returncode
     except FileNotFoundError:
-        print(f"{RED}[LỖI] Không tìm thấy thực thi 'pytest'. Vui lòng cài đặt pytest hoặc kích hoạt virtual environment!{RESET}")
+        print(f"{RED}[ERROR] 'pytest' executable not found. Please install pytest or activate virtual environment!{RESET}")
         return 1
     except KeyboardInterrupt:
-        print(f"\n{YELLOW}[HỦY] Người dùng đã dừng thực thi kiểm thử bằng Ctrl+C.{RESET}")
+        print(f"\n{YELLOW}[CANCELLED] Test execution interrupted by user (Ctrl+C).{RESET}")
         return 130
 
 
@@ -158,24 +158,24 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
     Reports success message with absolute and relative paths.
     """
     print(f"\n{BOLD}{CYAN}{'=' * 68}{RESET}")
-    print(f"{BOLD}{CYAN}▶ PHA 2: SINH BÁO CÁO KIỂM THỬ HTML{RESET}")
+    print(f"{BOLD}{CYAN}▶ PHASE 2: GENERATING HTML EXECUTION REPORT{RESET}")
     print(f"{BOLD}{CYAN}{'=' * 68}{RESET}")
 
     report_script = base_dir / "generate_report.py"
     if not report_script.exists():
-        print(f"{YELLOW}[CẢNH BÁO] Không tìm thấy '{report_script.name}'. Bỏ qua bước tạo HTML report.{RESET}")
+        print(f"{YELLOW}[WARNING] '{report_script.name}' not found. Skipping HTML report generation.{RESET}")
         return False
 
     report_json_file = base_dir / report_json_path
     if not report_json_file.exists():
-        print(f"{YELLOW}[CẢNH BÁO] Không tìm thấy file dữ liệu JSON '{report_json_path}'. Bỏ qua bước tạo HTML report.{RESET}")
+        print(f"{YELLOW}[WARNING] JSON report file '{report_json_path}' not found. Skipping HTML report generation.{RESET}")
         return False
 
     venv_python = base_dir / ".venv" / "bin" / "python"
     python_bin = str(venv_python) if venv_python.exists() else (sys.executable or "python")
     cmd = [python_bin, "generate_report.py", report_json_path]
     cmd_display = " ".join(cmd)
-    print(f"{GRAY}Lệnh thực thi: {cmd_display}{RESET}\n")
+    print(f"{GRAY}Execution command: {cmd_display}{RESET}\n")
 
     try:
         proc = subprocess.run(
@@ -190,18 +190,18 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
         if proc.returncode == 0 and expected_html.exists():
             rel_html = os.path.relpath(expected_html, base_dir)
             abs_html = str(expected_html.resolve())
-            print(f"\n{GREEN}{BOLD}✓ Báo cáo kiểm thử HTML đã được tạo thành công!{RESET}")
-            print(f"  • Đường dẫn tương đối: {CYAN}{rel_html}{RESET}")
-            print(f"  • Đường dẫn tuyệt đối: {CYAN}{abs_html}{RESET}\n")
+            print(f"\n{GREEN}{BOLD}✓ HTML execution report generated successfully!{RESET}")
+            print(f"  • Relative path: {CYAN}{rel_html}{RESET}")
+            print(f"  • Absolute path: {CYAN}{abs_html}{RESET}\n")
             return True
         elif proc.returncode == 0:
-            print(f"\n{GREEN}{BOLD}✓ Script sinh báo cáo đã chạy hoàn tất!{RESET}")
+            print(f"\n{GREEN}{BOLD}✓ Report generation completed successfully!{RESET}")
             return True
         else:
-            print(f"\n{RED}[LỖI] Script sinh báo cáo thất bại với mã lỗi: {proc.returncode}{RESET}")
+            print(f"\n{RED}[ERROR] Report generation failed with exit code: {proc.returncode}{RESET}")
             return False
     except Exception as e:
-        print(f"\n{RED}[LỖI] Không thể khởi chạy script sinh báo cáo: {e}{RESET}")
+        print(f"\n{RED}[ERROR] Could not launch report generation script: {e}{RESET}")
         return False
 
 
@@ -251,28 +251,28 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
     status_text = "PASSED" if pytest_returncode == 0 else "FAILED"
 
     print(f"\n{BOLD}{CYAN}{'=' * 68}{RESET}")
-    print(f"{BOLD}{CYAN}📊 TỔNG KẾT KẾT QUẢ KIỂM THỬ (TEST EXECUTION SUMMARY){RESET}")
+    print(f"{BOLD}{CYAN}📊 TEST EXECUTION SUMMARY{RESET}")
     print(f"{BOLD}{CYAN}{'=' * 68}{RESET}")
-    print(f"  Trạng thái tổng thể : {status_color}{BOLD}[{status_text}]{RESET}")
-    print(f"  Mã thoát (Exit Code): {status_color}{pytest_returncode}{RESET}")
+    print(f"  Overall Status : {status_color}{BOLD}[{status_text}]{RESET}")
+    print(f"  Exit Code      : {status_color}{pytest_returncode}{RESET}")
 
     if total > 0 or passed > 0 or failed > 0:
-        print(f"  Tổng số bài test    : {BOLD}{total}{RESET}")
-        print(f"  Thành công (Passed) : {GREEN}{BOLD}{passed}{RESET}")
+        print(f"  Total Tests    : {BOLD}{total}{RESET}")
+        print(f"  Passed         : {GREEN}{BOLD}{passed}{RESET}")
         if failed > 0:
-            print(f"  Thất bại (Failed)   : {RED}{BOLD}{failed}{RESET}")
+            print(f"  Failed         : {RED}{BOLD}{failed}{RESET}")
         else:
-            print(f"  Thất bại (Failed)   : {GRAY}0{RESET}")
+            print(f"  Failed         : {GRAY}0{RESET}")
         if skipped > 0:
-            print(f"  Bỏ qua (Skipped)    : {YELLOW}{skipped}{RESET}")
+            print(f"  Skipped        : {YELLOW}{skipped}{RESET}")
         if error > 0:
-            print(f"  Lỗi hệ thống (Error): {RED}{error}{RESET}")
+            print(f"  Error          : {RED}{error}{RESET}")
 
     if duration is not None:
-        print(f"  Thời gian thực thi  : {BOLD}{duration:.2f}s{RESET}")
+        print(f"  Execution Time : {BOLD}{duration:.2f}s{RESET}")
 
     if tests_summary and len(tests_summary) > 1:
-        print(f"\n  {BOLD}Chi tiết kịch bản song song ({len(tests_summary)} test cases):{RESET}")
+        print(f"\n  {BOLD}Parallel Scenario Breakdown ({len(tests_summary)} test cases):{RESET}")
         for name, outcome, dur in tests_summary:
             symbol = f"{GREEN}✓{RESET}" if outcome == "PASSED" else f"{RED}✗{RESET}"
             out_color = GREEN if outcome == "PASSED" else RED
@@ -291,19 +291,19 @@ def main():
 
     env = setup_environment(base_dir)
 
-    # Pha 1: Chạy Pytest
+    # Phase 1: Run Pytest
     pytest_returncode = run_pytest_phase(base_dir, env, user_args, report_json_path)
 
-    # Xác định đường dẫn file JSON thực tế đã được sinh
+    # Determine the actual generated JSON report path
     actual_json_path = resolve_actual_report_json(base_dir, report_json_path)
 
-    # Pha 2: Sinh Báo cáo HTML
+    # Phase 2: Generate HTML Report
     run_report_phase(base_dir, env, actual_json_path)
 
-    # Pha 3: Tóm tắt kết quả trên Terminal
+    # Phase 3: Display terminal summary
     print_summary(base_dir, pytest_returncode, actual_json_path)
 
-    # Thoát với đúng mã lỗi của Pytest cho CI/CD
+    # Propagate pytest exit code for CI/CD
     sys.exit(pytest_returncode)
 
 

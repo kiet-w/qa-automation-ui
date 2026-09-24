@@ -1,14 +1,14 @@
 """
-core/exceptor.py - Gatekeeper duy nhất đánh giá kỳ vọng nghiệp vụ / UI (Business Assertion Gate).
+core/exceptor.py - Central Business Assertion Gatekeeper (Exceptor).
 
-Tách biệt hoàn toàn việc thu thập dữ liệu (Page Object) và đánh giá đúng/sai (Exceptor).
-Chỉ làm việc trên `snapshot` dữ liệu thu thập sẵn, không tự gọi lại Playwright.
+Decouples UI data collection (Page Object) from business validation logic (Exceptor).
+Operates exclusively on static UI state snapshots without invoking Playwright directly.
 
-Cung cấp các phương thức theo đúng ý định kiểm thử (Intent-driven assertion methods):
-- expect_success: Kỳ vọng thao tác thành công (Happy path).
-- expect_rejection: Kỳ vọng bị từ chối đúng field và thông điệp lỗi (Unhappy path).
-- expect_bug_if_rejected: Kỳ vọng thành công, nếu bị từ chối thì báo [BUG DETECTED].
-- expect_bug_if_accepted: Kỳ vọng bị từ chối, nếu lại thành công thì báo [BUG DETECTED].
+Provides intent-driven assertion methods:
+- expect_success: Expects action to succeed with success indicator visible and no errors (Happy path).
+- expect_rejection: Expects action to be rejected with expected field error (Unhappy path).
+- expect_bug_if_rejected: Expects action to succeed; if rejected, raises [BUG DETECTED].
+- expect_bug_if_accepted: Expects action to fail; if accepted, raises [BUG DETECTED] (Validation Bypass).
 """
 from typing import Any, Dict, Union, Tuple, Optional
 from core.exceptions import BusinessAssertionError
@@ -16,14 +16,14 @@ from core.exceptions import BusinessAssertionError
 
 class Exceptor:
     """
-    Cửa khẩu duy nhất quyết định pass/fail về mặt nghiệp vụ.
-    Nhận snapshot trạng thái UI và kiểm tra theo các phương thức kỳ vọng.
+    Central gatekeeper deciding test pass/fail outcome for business expectations.
+    Consumes UI state snapshots and validates against expected conditions.
     """
 
     @staticmethod
     def _parse_snapshot(snapshot: Union[Dict[str, Any], object]) -> Tuple[bool, Dict[str, str]]:
         """
-        Helper trích xuất thông tin từ snapshot (hỗ trợ cả Dict và Object).
+        Helper method to extract fields from snapshot (supports both dict and object).
         """
         if isinstance(snapshot, dict):
             success_visible = bool(snapshot.get("success_visible", False))
@@ -40,15 +40,15 @@ class Exceptor:
     @classmethod
     def expect_success(cls, snapshot: Union[Dict[str, Any], object], context: str = "") -> None:
         """
-        Kỳ vọng: Thao tác phải THÀNH CÔNG (Happy path).
-        Kiểm tra: success_visible = True, và không có thông điệp lỗi nào hiển thị trên form.
+        Expectation: Action must SUCCEED (Happy path).
+        Verifies: success_visible is True, and visible_errors is empty.
 
         Args:
-            snapshot: Snapshot dữ liệu UI ({ "success_visible": bool, "visible_errors": dict })
-            context: Ngữ cảnh của test case / bước kiểm thử.
+            snapshot: UI data snapshot ({ "success_visible": bool, "visible_errors": dict }).
+            context: Test case or step context description.
 
         Raises:
-            BusinessAssertionError: Khi thao tác không thành công hoặc tồn tại lỗi trên UI.
+            BusinessAssertionError: When action failed or UI validation errors exist.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
 
@@ -71,17 +71,17 @@ class Exceptor:
         context: str = "",
     ) -> None:
         """
-        Kỳ vọng: Thao tác phải BỊ TỪ CHỐI (Unhappy path — input sai, hệ thống phải chặn đúng).
-        Kiểm tra: success_visible = False, lỗi hiển thị đúng tại `field`, và nội dung chứa `message_contains`.
+        Expectation: Action must be REJECTED (Unhappy path - invalid input properly blocked).
+        Verifies: success_visible is False, error is displayed on `field`, and error text contains `message_contains`.
 
         Args:
-            snapshot: Snapshot dữ liệu UI ({ "success_visible": bool, "visible_errors": dict })
-            field: ID / tên trường dữ liệu kỳ vọng bị báo lỗi.
-            message_contains: Chuỗi con kỳ vọng xuất hiện trong thông điệp lỗi của field.
-            context: Ngữ cảnh kiểm thử.
+            snapshot: UI data snapshot ({ "success_visible": bool, "visible_errors": dict }).
+            field: Expected error field identifier (e.g. 'primaryPhone').
+            message_contains: Expected substring in the field's validation error message.
+            context: Test execution context.
 
         Raises:
-            BusinessAssertionError: Khi thao tác lại thành công, hoặc sai field lỗi, hoặc nội dung lỗi không khớp.
+            BusinessAssertionError: When action unexpectedly succeeded or error message/field mismatches.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
         actual_field_msg = visible_errors.get(field)
@@ -115,16 +115,16 @@ class Exceptor:
         context: str = "",
     ) -> None:
         """
-        Dùng cho Bug-Hunting: Input này ĐÚNG theo thực tế nghiệp vụ.
-        Nếu hệ thống lại từ chối (rejection), đó chính là BUG THẬT của hệ thống!
+        Used for Bug-Hunting: Input is VALID according to business specifications.
+        If system rejects the action, a true defect is present in the system!
 
         Args:
-            snapshot: Snapshot dữ liệu UI.
-            field: Tên trường dự đoán bị hệ thống báo lỗi nhầm (nếu có).
-            context: Ngữ cảnh kiểm thử.
+            snapshot: UI data snapshot.
+            field: Target field suspected of improper validation (optional).
+            context: Test execution context.
 
         Raises:
-            BusinessAssertionError: Gắn nhãn [BUG DETECTED] khi bị từ chối.
+            BusinessAssertionError: Tagged with [BUG DETECTED] when rejected.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
 
@@ -147,15 +147,15 @@ class Exceptor:
         context: str = "",
     ) -> None:
         """
-        Dùng cho Bug-Hunting: Input này SAI theo thực tế nghiệp vụ.
-        Nếu hệ thống lại chấp nhận (submit thành công), đó là lỗ hổng validation (BUG THẬT)!
+        Used for Bug-Hunting: Input is INVALID according to business specifications.
+        If system accepts the submission, a validation bypass defect is detected!
 
         Args:
-            snapshot: Snapshot dữ liệu UI.
-            context: Ngữ cảnh kiểm thử.
+            snapshot: UI data snapshot.
+            context: Test execution context.
 
         Raises:
-            BusinessAssertionError: Gắn nhãn [BUG DETECTED] khi hệ thống lỡ chấp nhận.
+            BusinessAssertionError: Tagged with [BUG DETECTED] when improperly accepted.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
 

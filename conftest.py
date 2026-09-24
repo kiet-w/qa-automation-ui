@@ -277,6 +277,7 @@ class _StepContext:
         if exc_type is not None:
             self.step_data["status"] = "failed"
             self.step_data["error"] = str(exc_val)
+            self.step_data["actual"] = f"FAILED: {str(exc_val)}"
 
             fail_filename = f"fail_{prefix}step_{self.step_index}_{timestamp}.png"
             fail_path = self.tracker.screenshots_dir / fail_filename
@@ -409,49 +410,81 @@ def setup_page(page: Page, json_metadata, request):
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
     """)
-    yield page
-
-    # Teardown: Safely close context and record video path 1:1 per test
+    test_failed = False
     try:
-        video = getattr(page, "video", None)
-        context = getattr(page, "context", None)
+        yield page
+    except BaseException:
+        test_failed = True
+        raise
+    finally:
+        # 1. Auto-capture Final Evidence Screenshot if test passed and last step has no screenshot
+        try:
+            step_tracker = request.node.funcargs.get("step")
+            if not test_failed and step_tracker and getattr(step_tracker, "steps", None):
+                last_step = step_tracker.steps[-1]
+                if not last_step.get("screenshot"):
+                    active_page = getattr(step_tracker, "page", None) or page
+                    if active_page and not active_page.is_closed():
+                        prefix = f"{step_tracker.test_slug}_" if step_tracker.test_slug else ""
+                        evidence_filename = f"{prefix}evidence.png"
+                        evidence_path = step_tracker.screenshots_dir / evidence_filename
+                        evidence_path.parent.mkdir(parents=True, exist_ok=True)
+                        active_page.screenshot(path=str(evidence_path), full_page=False)
+                        try:
+                            rel_evidence_path = str(evidence_path.relative_to(WORKSPACE_DIR))
+                        except Exception:
+                            rel_evidence_path = str(evidence_path)
+                        last_step["screenshot"] = rel_evidence_path
+        except Exception as err:
+            print(f"[conftest] Warning in auto-capture final evidence screenshot: {err}")
 
-        if context:
-            try:
-                context.close()
-            except Exception:
-                pass
+        # 2. Teardown: Safely close context and record video path 1:1 per test
+        try:
+            active_page = None
+            step_tracker = request.node.funcargs.get("step")
+            if step_tracker:
+                active_page = getattr(step_tracker, "page", None)
+            target_page_for_video = active_page or page
 
-        if video:
-            video_path = None
-            try:
-                video_path = video.path()
-            except Exception:
-                pass
+            video = getattr(target_page_for_video, "video", None) or getattr(page, "video", None)
+            context = getattr(page, "context", None)
 
-            # If output directory is defined, save/copy video to test-scoped artifact folder inside run_id
-            reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
-            run_id = getattr(request.config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID", "RUN-UNKNOWN")
-            test_results_dir = Path(getattr(request.config.option, "output", reports_dir / "test-results" / run_id))
-            clean_slug = re.sub(r"[^\w]+", "-", request.node.nodeid.lower()).strip("-")
+            if context:
+                try:
+                    context.close()
+                except Exception:
+                    pass
 
-            if test_results_dir.name != run_id and run_id not in test_results_dir.parts:
-                target_video_dir = test_results_dir / run_id / clean_slug
-            else:
-                target_video_dir = test_results_dir / clean_slug
-            target_video_file = target_video_dir / "video.webm"
+            if video:
+                video_path = None
+                try:
+                    video_path = video.path()
+                except Exception:
+                    pass
 
-            try:
-                target_video_dir.mkdir(parents=True, exist_ok=True)
-                video.save_as(str(target_video_file))
-                recorded_path = str(target_video_file)
-            except Exception:
-                recorded_path = str(video_path) if video_path else None
+                # If output directory is defined, save/copy video to test-scoped artifact folder inside run_id
+                reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
+                run_id = getattr(request.config, "_run_id", None) or os.environ.get("PYTEST_RUN_ID", "RUN-UNKNOWN")
+                test_results_dir = Path(getattr(request.config.option, "output", reports_dir / "test-results" / run_id))
+                clean_slug = re.sub(r"[^\w]+", "-", request.node.nodeid.lower()).strip("-")
 
-            if recorded_path:
-                json_metadata["video_path"] = recorded_path
-    except Exception as err:
-        print(f"[conftest] Warning in test video teardown: {err}")
+                if test_results_dir.name != run_id and run_id not in test_results_dir.parts:
+                    target_video_dir = test_results_dir / run_id / clean_slug
+                else:
+                    target_video_dir = test_results_dir / clean_slug
+                target_video_file = target_video_dir / "video.webm"
+
+                try:
+                    target_video_dir.mkdir(parents=True, exist_ok=True)
+                    video.save_as(str(target_video_file))
+                    recorded_path = str(target_video_file.resolve())
+                except Exception:
+                    recorded_path = str(Path(video_path).resolve()) if video_path else None
+
+                if recorded_path:
+                    json_metadata["video_path"] = recorded_path
+        except Exception as err:
+            print(f"[conftest] Warning in test video teardown: {err}")
 
 
 @pytest.fixture(scope="session")
@@ -593,7 +626,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     if run_results_dir.exists():
         videos = list(run_results_dir.glob("**/*.webm"))
         if videos:
-            terminalreporter.write_sep("=", f"📹 [VIDEO ĐÃ ĐƯỢC LƯU VÀO RUN ID: {run_id} (FULL HD 1080p)]", bold=True, green=True)
+            terminalreporter.write_sep("=", f"📹 [VIDEO RECORDING SAVED TO RUN ID: {run_id} (FULL HD 1080p)]", bold=True, green=True)
             for v in sorted(videos):
                 try:
                     rel_v = v.relative_to(WORKSPACE_DIR)
@@ -606,11 +639,11 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
             from reporting import ReportGenerator
             generator = ReportGenerator(workspace_dir=WORKSPACE_DIR, reports_dir=reports_dir)
             out_html = generator.generate(json_path=report_json)
-            terminalreporter.write_sep("=", "✅ [BÁO CÁO ENTERPRISE HTML ĐÃ ĐƯỢC TẠO THÀNH CÔNG]", bold=True, green=True)
-            terminalreporter.write_line(f"   File mới nhất        : {reports_dir / 'execution_report.html'}")
-            terminalreporter.write_line(f"   File lịch sử (Run ID): {out_html}")
+            terminalreporter.write_sep("=", "✅ [ENTERPRISE HTML REPORT SUCCESSFULLY GENERATED]", bold=True, green=True)
+            terminalreporter.write_line(f"   Latest Report        : {reports_dir / 'execution_report.html'}")
+            terminalreporter.write_line(f"   Historical Run Report: {out_html}")
         except Exception as err:
-            terminalreporter.write_line(f"[Auto-Report] Lỗi khi tạo báo cáo: {err}", red=True)
+            terminalreporter.write_line(f"[Auto-Report] Error generating report: {err}", red=True)
 
 
 @pytest.fixture(scope="session", autouse=True)

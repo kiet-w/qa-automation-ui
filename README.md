@@ -1,55 +1,59 @@
 # Enterprise QA Automation UI Framework
 
-Framework kiểm thử tự động giao diện (UI Automation) chuẩn doanh nghiệp xây dựng trên nền tảng **Python**, **Playwright** và **Pytest**. Áp dụng mô hình **Page Object Model (POM)** kết hợp kiến trúc thành phần UI tái sử dụng (**Component-based**), kiến trúc kiểm thử phân lập theo Ticket (**Ticket-Isolated Architecture**), cùng hệ sinh thái độc lập gồm **Requirements Traceability**, bộ đôi giám sát lỗi **Exceptor & Interceptor**, và công cụ sinh báo cáo **ExtentReports HTML 100% Offline**.
+Enterprise-grade UI Automation Framework built on **Python**, **Playwright**, and **Pytest**. Features the **Page Object Model (POM)** combined with **Component-based** reusable UI architecture, **Ticket-Isolated Test Execution**, **Requirements Traceability Matrix**, an independent dual-gate error supervisory ecosystem (**Exceptor & Interceptor**), and a **100% Offline Self-Contained ExtentReports HTML Engine**.
+
+> 📌 **Course Evaluator / Grader?**  
+> - For the complete grading roadmap, deliverable checklist, and rapid evaluation guide, start with **[`docs/INSTRUCTIONS_FOR_EVALUATION.md`](docs/INSTRUCTIONS_FOR_EVALUATION.md)**.
+> - For deep architectural blueprints and technical specifications, refer to **[`docs/AGENTS.md`](docs/AGENTS.md)**.
 
 ---
 
-## 📑 Mục lục (Table of Contents)
+## 📑 Table of Contents
 
-1. [Điểm nổi bật của Framework](#-điểm-nổi-bật-của-framework)
-2. [Kiến trúc & Các Module Cốt lõi](#-kiến-trúc--các-module-cốt-lõi)
-   - [Module Exceptor — Cửa khẩu phán quyết nghiệp vụ](#1-module-exceptor--business-assertion-gate)
-   - [Module Interceptor — Giám sát lỗi kỹ thuật hạ tầng](#2-module-interceptor--infrastructure-supervisor)
-   - [Error Catalog — Danh mục phân loại lỗi & gợi ý debug](#3-error-catalog--danh-mục-phân-loại-lỗi)
-   - [Requirements-First & Ma trận đối chiếu (Traceability Matrix)](#4-requirements-first--ma-trận-đối-chiếu-traceability-matrix)
-   - [Báo cáo ExtentReports HTML tự chứa (100% Offline)](#5-báo-cáo-extentreports-html-100-offline)
-3. [Cấu trúc Thư mục Dự án](#-cấu-trúc-thư-mục-dự-án)
-4. [Hướng dẫn Cài đặt & Khởi tạo](#-hướng-dẫn-cài-đặt--khởi-tạo)
-5. [Hướng dẫn Thực thi Kiểm thử](#-hướng-dẫn-thực-thi-kiểm-thử)
-   - [Chạy theo User Story / Ticket cụ thể](#1-chạy-theo-user-story--ticket-cụ-thể)
-   - [Chạy song song đa tiến trình (pytest-xdist)](#2-chạy-song-song-đa-tiến-trình-parallel-workers)
-   - [Chạy bộ Unit Test nội bộ của Framework](#3-chạy-bộ-unit-test-của-framework)
-   - [Chạy ở chế độ có giao diện (Headed Mode)](#4-chạy-ở-chế-độ-có-giao-diện-headed-mode)
-   - [Tái sinh báo cáo HTML không cần chạy lại test](#5-tái-sinh-báo-cáo-html-không-cần-chạy-lại-test)
-6. [Quy chuẩn Phát triển Test Case Mới](#-quy-chuẩn-phát-triển-test-case-mới)
-
----
-
-## 🌟 Điểm nổi bật của Framework
-
-- **Tách bạch lỗi Nghiệp vụ vs Lỗi Hạ tầng**: Không còn gộp chung mọi lỗi thành "Failed". Phân biệt rành mạch giữa **Lỗi sản phẩm thật (Bug)** và **Lỗi môi trường/mạng/timeout (Infrastructure Error)**.
-- **Triệt tiêu lỗi Đảo ngược Logic (Reversed Assertion)**: Thay thế hoàn toàn các lệnh `assert x == True/False` thô bằng 4 phương thức khai báo kỳ vọng theo đúng ý định kiểm thử (`expect_success`, `expect_rejection`, `expect_bug_if_rejected`, `expect_bug_if_accepted`).
-- **Nguồn tham chiếu cố định (Source of Truth)**: Mọi test case đều bắt nguồn từ tài liệu `AC.md` và bảng `traceability_matrix.md` trước khi code được viết.
-- **Báo cáo HTML Tự Chứa 100% (Zero External CDN)**: Toàn bộ video WebM Full HD (1080p), ảnh chụp bằng chứng (Screenshots), các biểu đồ toán học Pure SVG (Donut, Bar, Pipeline, Diagram, Trend) và CSS/JS đều được nhúng trực tiếp (Base64 Data URI) vào một file HTML duy nhất. Không phụ thuộc Internet, Chart.js, Tailwind CDN hay Google Fonts.
-- **Đồng bộ Tương tác 2 chiều (Diagram to Video Sync)**: Bấm vào từng bước trên sơ đồ quy trình tương tác sẽ tự động cuộn đến video, tua đến mốc thời gian chính xác và phát lại.
-- **Hỗ trợ Song ngữ Thông minh (EN / VI)**: Chuyển đổi ngôn ngữ hiển thị báo cáo tức thì chỉ với một nút bấm.
-- **Thực thi Song song Hiệu năng cao**: Tối ưu hóa cho `pytest-xdist` với cơ chế mapping video 1:1 độc lập, tự động chuyển chế độ Headless khi chạy đa luồng (`-n > 1`).
+1. [Key Framework Highlights](#-key-framework-highlights)
+2. [Architecture & Core Modules](#-architecture--core-modules)
+   - [Exceptor Module — Business Assertion Gate](#1-exceptor-module--business-assertion-gate)
+   - [Interceptor Module — Infrastructure Supervisor](#2-interceptor-module--infrastructure-supervisor)
+   - [Error Catalog — Classification & Diagnostics](#3-error-catalog--classification--diagnostics)
+   - [Requirements-First & Traceability Matrix](#4-requirements-first--traceability-matrix)
+   - [ExtentReports HTML Engine (100% Offline)](#5-extentreports-html-engine-100-offline)
+3. [Project Directory Structure](#-project-directory-structure)
+4. [Installation & Setup](#-installation--setup)
+5. [Test Execution Guide](#-test-execution-guide)
+   - [Run Specific User Story / Ticket](#1-run-specific-user-story--ticket)
+   - [Run Parallel Tests (pytest-xdist)](#2-run-parallel-tests-pytest-xdist)
+   - [Run Internal Framework Unit Tests](#3-run-internal-framework-unit-tests)
+   - [Run with Visible Browser (Headed Mode)](#4-run-with-visible-browser-headed-mode)
+   - [Regenerate HTML Report Without Re-running Tests](#5-regenerate-html-report-without-re-running-tests)
+6. [Standards for Developing New Test Cases](#-standards-for-developing-new-test-cases)
 
 ---
 
-## 🏗 Kiến trúc & Các Module Cốt lõi
+## 🌟 Key Framework Highlights
+
+- **Decoupled Business vs. Infrastructure Errors**: Eliminates generic "Failed" outcomes. Distinctly separates **True Application Defects (Bugs)** from **Environmental / Network / Timeout Failures (Infrastructure Errors)**.
+- **Elimination of Reversed Assertions**: Replaces raw `assert x == True/False` assertions with 4 intent-driven assertion methods (`expect_success`, `expect_rejection`, `expect_bug_if_rejected`, `expect_bug_if_accepted`).
+- **Single Source of Truth**: All test cases originate directly from formal specification documents (`AC.md`) and a 1:1 mapped `traceability_matrix.md` before implementation.
+- **100% Self-Contained Offline HTML Report (Zero External CDN)**: Full HD (1080p) WebM videos, screenshot evidence, Pure mathematical SVG charts (Donut, Bar, Pipeline, Diagram, Trend), CSS, and JS are embedded directly as Base64 Data URIs into a single HTML file. No dependencies on internet access, Chart.js, Tailwind CDN, or Google Fonts.
+- **Two-Way Interactive Diagram-to-Video Sync**: Clicking on any step in the interactive execution pipeline diagram automatically scrolls to the embedded video player, seeks to the exact step timestamp, and begins playback.
+- **Built-in Bilingual Support (EN / VI)**: Instant on-the-fly language toggle between English and Vietnamese.
+- **High-Performance Parallel Execution**: Fully optimized for `pytest-xdist` with independent 1:1 video mapping and automatic headless fallback during multi-worker runs (`-n > 1`).
+
+---
+
+## 🏗 Architecture & Core Modules
 
 ```text
        ┌────────────────────────────────────────────────────────┐
        │             User Story Requirements (AC.md)            │
        └───────────────────────────┬────────────────────────────┘
-                                   │  1. Map Ý định kiểm thử
+                                   │  1. Map Test Intent
                                    ▼
        ┌────────────────────────────────────────────────────────┐
        │       Traceability Matrix (traceability_matrix.md)     │
-       │   [Gán nhãn: expect_success / expect_rejection / ...]  │
+       │   [Assign: expect_success / expect_rejection / ...]    │
        └───────────────────────────┬────────────────────────────┘
-                                   │  2. Chỉ định phương thức
+                                   │  2. Direct Method Assignment
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           TEST CASE EXECUTION                           │
@@ -62,7 +66,7 @@ Framework kiểm thử tự động giao diện (UI Automation) chuẩn doanh ng
 │                 ▼                                     ▼                 │
 │   ┌───────────────────────────┐         ┌───────────────────────────┐   │
 │   │        Interceptor        │         │         Exceptor          │   │
-│   │ (Bắt lỗi kỹ thuật hạ tầng)│         │ (Phán quyết lỗi nghiệp vụ)│   │
+│   │ (Catches technical infra) │         │(Adjudicates business rule)│   │
 │   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
 └─────────────────┼─────────────────────────────────────┼─────────────────┘
                   │                                     │
@@ -73,300 +77,315 @@ Framework kiểm thử tự động giao diện (UI Automation) chuẩn doanh ng
      └────────────────────────┘            └────────────────────────┘
 ```
 
-### 1. Module `Exceptor` — Business Assertion Gate
-Tệp tin: `core/exceptor.py`
+### 1. `Exceptor` Module — Business Assertion Gate
+File: `core/exceptor.py`
 
-Là **cửa khẩu duy nhất** quyết định Pass/Fail về mặt nghiệp vụ. Exceptor hoạt động thuần túy trên `snapshot` trạng thái UI đã thu thập từ Page Object, hoàn toàn không gọi lại Playwright bên trong.
+The **sole authority** deciding pass/fail status for business behavior. The Exceptor operates strictly on static UI state `snapshots` collected by Page Objects, without invoking Playwright interactions directly.
 
 ```python
 from core import Exceptor
 
-# 1. Happy Path: Kỳ vọng thao tác thành công
-Exceptor.expect_success(snapshot, context="Lưu form hợp lệ")
+# 1. Happy Path: Expect action to succeed
+Exceptor.expect_success(snapshot, context="Valid form submission")
 
-# 2. Unhappy Path: Kỳ vọng bị từ chối đúng trường và đúng nội dung lỗi
+# 2. Unhappy Path: Expect rejection on specified field with specific error message
 Exceptor.expect_rejection(
     snapshot,
     field="primaryPhone",
     message_contains="Enter a valid contact number",
-    context="Nhập số điện thoại sai độ dài",
+    context="Invalid phone length validation",
 )
 
-# 3. Bug Hunting: Input hợp lệ thực tế nhưng hệ thống lại chặn -> Raise [BUG DETECTED]
+# 3. Bug Hunting: Valid business input incorrectly rejected -> Raises [BUG DETECTED]
 Exceptor.expect_bug_if_rejected(
     snapshot,
     field="unitNumber",
-    context="Nhập số căn hộ Singapore Alphanumeric #04-12A",
+    context="Singapore alphanumeric unit number #04-12A",
 )
 
-# 4. Bug Hunting: Input sai thực tế nhưng hệ thống lại cho qua -> Raise [BUG DETECTED]
+# 4. Bug Hunting: Invalid business input improperly accepted -> Raises [BUG DETECTED]
 Exceptor.expect_bug_if_accepted(
     snapshot,
-    context="Nhập số điện thoại Singapore bắt đầu bằng đầu số 1",
+    context="Singapore phone number starting with digit 1",
 )
 ```
 
-Khi điều kiện kiểm tra không thỏa mãn, Exceptor ném ra ngoại lệ `BusinessAssertionError` (kế thừa từ `AssertionError`), giúp Pytest nhận diện là lỗi kiểm thử chuẩn mà không nhầm lẫn với lỗi code hệ thống.
+When conditions are violated, the Exceptor raises `BusinessAssertionError` (inherits from `AssertionError`), ensuring Pytest detects standard test failures distinct from internal execution crashes.
 
 ---
 
-### 2. Module `Interceptor` — Infrastructure Supervisor
-Tệp tin: `core/interceptor.py`
+### 2. `Interceptor` Module — Infrastructure Supervisor
+File: `core/interceptor.py`
 
-Bọc quanh một thao tác Playwright cụ thể (`click`, `fill`, `save`, `navigate`...) một cách tường minh, nhằm bắt các lỗi kỹ thuật phát sinh ngoài ý muốn và ném ra ngoại lệ `InfrastructureError` (kế thừa `Exception`, KHÔNG kế thừa `AssertionError`).
+Explicitly wraps Playwright interactions (`click`, `fill`, `save`, `navigate`...) to catch technical failures, classify them via the Error Catalog, and raise `InfrastructureError` (inherits from `Exception`, NOT `AssertionError`).
 
 ```python
 from core import Interceptor
 
-# Bọc hành động Playwright cần giám sát
+# Wrap Playwright action under supervisor
 result = Interceptor.run(
     lambda: curricula_page.save(),
     action_name="save_curricula_form",
-    context="Nhấn nút Save để hoàn tất tạo tài khoản",
+    context="Click Save button to finalize account creation",
 )
 ```
 
-**Đặc điểm:**
-- Giữ nguyên thông tin và traceback của exception gốc thông qua thuộc tính `original_exception` và cơ chế `raise ... from exc`.
-- Thông báo lỗi hiển thị có tiền tố nhận diện chuẩn dạng: `[INFRA ERROR:<CATEGORY>]`.
+**Features:**
+- Preserves root-cause traceback via `original_exception` attribute and `raise ... from exc`.
+- Standardized error logging format: `[INFRA ERROR:<CATEGORY>]`.
 
 ---
 
-### 3. Error Catalog — Danh mục phân loại lỗi
-Tệp tin: `core/catalog.py`
+### 3. Error Catalog — Classification & Diagnostics
+File: `core/catalog.py`
 
-Registry tập trung tra cứu và phân loại lỗi kỹ thuật Playwright/Python thành các danh mục chuẩn:
+Centralized registry classifying Playwright/Python technical exceptions into standardized categories:
 
-| Danh mục (Category) | Điều kiện nhận diện (Pattern / Class) | Gợi ý khắc phục (Diagnostic Hint) |
+| Category | Detection Criteria (Pattern / Class) | Diagnostic Hint |
 |---|---|---|
-| `TIMEOUT` | Class `TimeoutError` hoặc thông điệp chứa `Timeout \d+ms exceeded` | Phần tử không xuất hiện/sẵn sàng kịp thời gian chờ; kiểm tra lại selector hoặc tăng timeout. |
-| `BROWSER_CRASH` | Thông điệp chứa `Target closed`, `Target page, context or browser has been closed` | Trình duyệt hoặc tab bị đóng đột ngột giữa lúc thao tác. |
-| `STALE_ELEMENT` | Thông điệp chứa `Element is not attached to the DOM`, `stale element` | DOM đã thay đổi do trang re-render, locator cũ không còn hợp lệ. |
-| `NETWORK` | Thông điệp chứa `net::ERR_`, `NS_ERROR_CONNECTION_REFUSED` | Lỗi kết nối mạng khi tải trang hoặc tài nguyên từ xa. |
-| `UNKNOWN` | Các ngoại lệ không khớp quy tắc nào ở trên | Lỗi hạ tầng chưa được phân loại — cần bổ sung thêm vào catalog. |
+| `TIMEOUT` | Class `TimeoutError` or message matches `Timeout \d+ms exceeded` | Element did not appear/become ready in time; check selector or increase timeout. |
+| `BROWSER_CRASH` | Message contains `Target closed`, `browser has been closed` | Browser or target page closed unexpectedly during execution. |
+| `STALE_ELEMENT` | Message contains `Element is not attached to the DOM`, `stale element` | DOM changed (re-rendered); locator reference is detached from the DOM. |
+| `NETWORK` | Message contains `net::ERR_`, `NS_ERROR_CONNECTION_REFUSED` | Network connection failure occurred while requesting resource. |
+| `UNKNOWN` | Unmatched exceptions | Unclassified infrastructure error — add to catalog once root cause is diagnosed. |
 
-> **Khả năng mở rộng:** Để thêm một rule phân loại lỗi mới, chỉ cần thêm 1 phần tử `ErrorRule(...)` vào danh sách `ERROR_RULES` trong `core/catalog.py`.
-
----
-
-### 4. Requirements-First & Ma trận đối chiếu (Traceability Matrix)
-Thư mục: `tests/<ticket_folder>/requirements/`
-
-Trước khi viết bất kỳ dòng code kiểm thử nào, mỗi User Story đều có 2 file tài liệu làm **nguồn tham chiếu cố định (Source of Truth)**:
-1. `<ticket>_AC.md`: Liệt kê nguyên văn từng tiêu chí chấp nhận (**AC-01, AC-02, ...**) của nghiệp vụ.
-2. `<ticket>_traceability_matrix.md`: Bảng đối chiếu từng AC với hành vi thực tế của hệ thống trên form, đánh giá `✅ Khớp` hoặc `❌ Không khớp`, và **chỉ định chính xác hàm Exceptor cần gọi**.
+> **Extensibility:** Add a new `ErrorRule(...)` to `ERROR_RULES` in `core/catalog.py` to register custom error classification rules.
 
 ---
 
-### 5. Báo cáo ExtentReports HTML (100% Offline)
-Thư mục: `reporting/`
+### 4. Requirements-First & Traceability Matrix
+Folder: `tests/<ticket_folder>/requirements/`
 
-Công cụ sinh báo cáo HTML độc lập, được đóng gói hoàn toàn:
-- **Tự chứa toàn bộ dữ liệu**: Video WebM Full HD và ảnh screenshot được mã hóa Base64 Data URI trực tiếp vào file HTML.
-- **Biểu đồ Pure SVG**: Thuật toán vẽ SVG nội tại cho Donut Chart (Pass rate), Bar Chart (Thời lượng từng step), Pipeline (Sơ đồ quy trình), Architecture Diagram và Multi-Run Trend Chart.
-- **Phân lập theo Ticket**: Kết quả và bằng chứng của từng ticket được cô lập hoàn toàn tại `reports/<ticket>/`, không ghi đè lẫn nhau.
+Prior to implementation, each ticket/User Story defines two formal artifacts as the **Source of Truth**:
+1. `<ticket>_AC.md`: Complete verbatim listing of all Acceptance Criteria (**AC-01, AC-02, ...**).
+2. `<ticket>_traceability_matrix.md`: 1:1 cross-reference table mapping each AC to actual form behavior, evaluation status (`✅ Match` or `❌ Mismatch`), and the **exact Exceptor method to invoke**.
 
 ---
 
-## 📁 Cấu trúc Thư mục Dự án
+### 5. ExtentReports HTML Engine (100% Offline)
+Folder: `reporting/`
+
+Self-contained HTML reporting engine:
+- **Zero External Dependencies**: Full HD WebM videos and screenshots are embedded as Base64 Data URIs directly into the final HTML document.
+- **Pure SVG Mathematical Renderers**: In-house SVG generation algorithms for Donut Chart (Pass rate), Bar Chart (Step duration), Pipeline (Step flow), Architecture Diagram, and Multi-Run Trend Chart.
+- **Ticket Isolation**: Artifacts are automatically isolated under `reports/<ticket>/` without cross-ticket collisions.
+
+---
+
+## 📁 Project Directory Structure
 
 ```text
 automation-ui/
-├── AGENTS.md                                # Quy chuẩn kiến trúc & hướng dẫn dành cho AI Agents
-├── README.md                                # Tài liệu hướng dẫn toàn diện của framework
-├── requirements.txt                         # Danh sách thư viện Python
-├── pytest.ini                               # Cấu hình Pytest, browser options, json report
-├── conftest.py                              # Fixtures dùng chung, ticket router, video/screenshot hooks
-├── run_tests.py                             # Script điều phối thực thi kiểm thử 2 pha
-├── generate_report.py                       # CLI entrypoint sinh báo cáo HTML độc lập
-├── example_usage.py                         # File ví dụ mẫu cách dùng Exceptor & Interceptor
-├── curricula_trainer_account.html           # Ứng dụng web mẫu Curricula Trainer Account
+├── README.md                                # Central framework documentation & entrypoint
+├── requirements.txt                         # Python package dependencies
+├── pytest.ini                               # Pytest configuration, browser modes, reporting flags
+├── conftest.py                              # Shared fixtures, ticket detection, video/screenshot hooks
+├── run_tests.py                             # Two-phase test execution orchestrator
+├── generate_report.py                       # CLI entrypoint for HTML report generation
+├── curricula_trainer_account.html           # Local web application for User Story 2 (Trainer Account)
 │
-├── core/                                    # Gói module cốt lõi phân lập lỗi
-│   ├── __init__.py                          # Export Exceptor, Interceptor, classify, exceptions
-│   ├── exceptions.py                        # BusinessAssertionError, InfrastructureError
-│   ├── catalog.py                           # Error Catalog & hàm classify()
-│   ├── exceptor.py                          # Exceptor phán quyết nghiệp vụ
-│   └── interceptor.py                       # Interceptor giám sát hạ tầng
+├── docs/                                    # 📁 Complete Documentation & Specifications
+│   ├── INSTRUCTIONS_FOR_EVALUATION.md       # Quickstart, Deliverables checklist & grading roadmap
+│   ├── AGENTS.md                            # Deep architectural source of truth & agent guidelines
+│   ├── us01_bing_search/                    # 📁 User Story 01: Bing Search -> YouTube Navigation
+│   │   └── README.md                        # US01 specs, step breakdown, parallel DDT guide
+│   └── us04_curricula_trainer/              # 📁 User Story 04: Curricula Trainer Account Form
+│       ├── README.md                        # US04 overview, 7 test suites, execution commands
+│       ├── test_cases/                      # 68 Test Cases, AC specifications, Traceability Matrix
+│       ├── defects_and_analysis/            # Bug Matrix, Severity Matrix, D4 Answer Key
+│       └── ai_prompts/                      # AI Generation Prompts (Deliverable 0)
 │
-├── components/                              # Các UI widget tái sử dụng giữa nhiều trang
+├── examples/                                # 📁 Usage Demonstrations
+│   └── example_usage.py                     # Demo script showing Exceptor & Interceptor usage
+│
+├── core/                                    # Gatekeeper architecture: Exceptor, Interceptor, Catalog
+│   ├── __init__.py                          # Package exports
+│   ├── exceptions.py                        # BusinessAssertionError vs InfrastructureError
+│   ├── catalog.py                           # Infrastructure Error Catalog and classify()
+│   ├── exceptor.py                          # Business Assertion Gate (expect_success, expect_rejection, etc.)
+│   └── interceptor.py                       # Infrastructure supervisor (wraps Playwright calls)
+│
+├── components/                              # Reusable UI widgets across pages
 │   ├── __init__.py
-│   └── search_box.py                        # Search bar component (gõ phím người dùng tự nhiên)
+│   └── search_box.py                        # Search bar component with human typing cadence
 │
-├── pages/                                   # Page Objects (Tương tác giao diện & định vị element)
+├── pages/                                   # Page Objects (Locators and browser interactions)
 │   ├── __init__.py
-│   ├── base_page.py                         # BasePage cung cấp click, fill, wait, screenshot, highlight
-│   ├── bing_home_page.py                    # Trang chủ Bing
-│   ├── bing_results_page.py                 # Trang kết quả tìm kiếm Bing
-│   ├── youtube_page.py                      # Trang YouTube target
-│   └── curricula_trainer_page.py            # Trang tạo tài khoản Curricula Trainer
+│   ├── base_page.py                         # BasePage: click, fill, wait, screenshot, highlight
+│   ├── bing_home_page.py                    # Bing landing page actions
+│   ├── bing_results_page.py                 # Bing search results page
+│   ├── youtube_page.py                      # Target YouTube page and channel actions
+│   └── curricula_trainer_page.py            # Curricula Trainer Account form Page Object
 │
-├── data/                                    # Dữ liệu kiểm thử JSON
-│   ├── search_data.json                     # Từ khóa tìm kiếm cho US01
-│   ├── parallel_20_data.json                # Bộ dữ liệu 20 test song song US02
-│   ├── curricula_trainer_data.json          # Bộ hồ sơ kiểm thử US03 (Singapore, Non-SG, Boundary)
-│   └── fixtures/                            # Tệp đính kèm kiểm thử (PDF, PNG, file exe độc hại)
+├── data/                                    # Input test fixtures (JSON)
+│   ├── search_data.json                     # Search keywords for User Story 1
+│   ├── curricula_trainer_data.json          # Profiles for User Story 2 (Singapore, Non-SG, Boundaries)
+│   └── fixtures/                            # Upload test files (PDF, PNG, invalid files)
 │
-├── tests/                                   # Các test suite phân lập theo User Story / Ticket
+├── tests/                                   # Test suites organized by User Story / Ticket
 │   ├── __init__.py
 │   ├── base_test.py                         # BaseTest: setup autouse, report helpers, step tracking
-│   ├── unit/                                # Unit test nội bộ kiểm thử chính framework
-│   │   ├── __init__.py
-│   │   ├── test_exceptor.py                 # 12 bài test kiểm tra logic của Exceptor
-│   │   ├── test_interceptor.py              # 7 bài test kiểm tra cơ chế bắt lỗi của Interceptor
-│   │   └── test_catalog.py                  # 7 bài test kiểm tra Error Catalog và tính mở rộng
-│   ├── us01_bing_search/                    # Kịch bản kiểm thử User Story 1
-│   │   ├── __init__.py
-│   │   ├── test_bing_search.py
-│   │   └── test_bing_search_parallel.py
-│   ├── us02_parallel_20/                    # Kịch bản kiểm thử 20 test song song
-│   │   ├── __init__.py
-│   │   └── test_parallel_20.py
-│   └── us03_curricula_trainer/              # Kịch bản kiểm thử Curricula Trainer Account
-│       ├── __init__.py
-│       ├── requirements/                    # Nguồn tham chiếu cố định (Source of Truth)
-│       │   ├── us03_curricula_trainer_AC.md
-│       │   └── us03_curricula_trainer_traceability_matrix.md
-│       └── test_curricula_trainer.py
+│   ├── unit/                                # Internal framework unit tests (Exceptor, Interceptor, Catalog)
+│   │   ├── test_exceptor.py
+│   │   ├── test_interceptor.py
+│   │   └── test_catalog.py
+│   ├── us01_bing_search/                    # User Story 1: Bing Search -> YouTube channel actions
+│   │   └── test_bing_search.py
+│   └── us04_curricula_trainer/              # User Story 2: Curricula Trainer Account form (7 Suites)
+│       ├── requirements/                    # Source of Truth specifications
+│       │   ├── us04_curricula_trainer_AC.md
+│       │   └── us04_curricula_trainer_traceability_matrix.md
+│       ├── test_ts01_personal_info.py
+│       ├── test_ts02_contact_info.py
+│       ├── test_ts03_emergency_contact.py
+│       ├── test_ts04_singapore_address.py
+│       ├── test_ts05_non_singapore_address.py
+│       ├── test_ts06_save_action.py
+│       └── test_ts07_cancel_action.py
 │
-├── reporting/                               # HTML Report Engine (100% Offline)
+├── reporting/                               # Offline ExtentReports HTML Engine
 │   ├── __init__.py
-│   ├── core/                                # Xử lý dữ liệu JSON, media encoder, document builder
+│   ├── core/                                # Data parsing, Base64 encoding, document assembly
 │   ├── charts/                              # Pure SVG Renderers: donut, bar, pipeline, diagram, trend
-│   └── assets/                              # report.css, report.js (hỗ trợ lightbox, song ngữ EN/VI)
+│   └── assets/                              # Inlined CSS and JS (video sync, bilingual EN/VI)
 │
-└── reports/                                 # Artifacts sinh ra sau khi chạy (Được cô lập theo ticket)
+└── reports/                                 # Generated test artifacts (Isolated per ticket)
     ├── .gitkeep
-    ├── us01_bing_search/                    # Báo cáo, log, video, ảnh của US01
-    ├── us03_curricula_trainer/              # Báo cáo, log, video, ảnh của US03
-    └── unit/                                # Báo cáo kết quả của bộ unit tests
+    ├── us01_bing_search/                    # US01 reports, videos, screenshots
+    ├── us04_curricula_trainer/              # US04 reports, videos, screenshots
+    └── unit/                                # Unit test execution artifacts
 ```
 
 ---
 
-## 🚀 Hướng dẫn Cài đặt & Khởi tạo
+## 🚀 Installation & Setup
 
-1. **Khởi tạo môi trường ảo Python (Python 3.10+)**:
+1. **Create and activate a Python virtual environment (Python 3.10+)**:
    ```bash
    python3 -m venv .venv
-   source .venv/bin/activate       # Trên Linux / macOS
-   # hoặc: .venv\Scripts\activate   # Trên Windows
+   source .venv/bin/activate       # On Linux / macOS
+   # or: .venv\Scripts\activate   # On Windows
    ```
 
-2. **Cài đặt các thư viện phụ thuộc**:
+2. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Cài đặt Browser Driver của Playwright**:
+3. **Install Playwright Browser Binaries**:
    ```bash
    playwright install chromium
    ```
+   *(On clean Linux environments, run `playwright install-deps` if system graphics libraries are needed).*
 
 ---
 
-## 🎯 Hướng dẫn Thực thi Kiểm thử
+## 🎯 Test Execution Guide
 
-Script điều phối `run_tests.py` quản lý toàn bộ quy trình:
-- **Pha 1**: Chạy Pytest, stream log real-time và tạo file `report.json` phân lập theo ticket.
-- **Pha 2**: Tự động kích hoạt `generate_report.py` để đóng gói HTML report tự chứa kèm video và ảnh Base64.
-- **Pha 3**: In bảng tổng kết ANSI Dashboard trực tiếp trên terminal.
+The `run_tests.py` orchestrator coordinates the complete two-phase lifecycle:
+- **Phase 1**: Executes Pytest with live terminal streaming and generates ticket-isolated `report.json`.
+- **Phase 2**: Automatically triggers `generate_report.py` to assemble the self-contained HTML report with Base64 embedded media.
+- **Phase 3**: Renders an ANSI summary dashboard with test statistics and exit codes.
 
-### 1. Chạy theo User Story / Ticket cụ thể
-Để chạy một ticket cụ thể và xuất báo cáo riêng biệt vào `reports/<ticket>/`:
-
+### 1. Run Specific User Story / Ticket
 ```bash
-# Chạy User Story 1 (Bing Search)
-python run_tests.py tests/us01_bing_search/
+# Run User Story 2 (Curricula Trainer Account Form - All 7 Suites)
+python run_tests.py tests/us04_curricula_trainer/
 
-# Chạy User Story 3 (Curricula Trainer Account)
-python run_tests.py tests/us03_curricula_trainer/
+# Run specific suite (e.g. Personal Information)
+python run_tests.py tests/us04_curricula_trainer/test_ts01_personal_info.py
+
+# Run User Story 1 (Bing Search -> YouTube)
+python run_tests.py tests/us01_bing_search/test_bing_search.py
 ```
 
-### 2. Chạy song song đa tiến trình (Parallel Workers)
-Tận dụng sức mạnh đa nhân CPU với `pytest-xdist`:
-
+### 2. Run Parallel Tests (pytest-xdist)
 ```bash
-# Chạy 4 workers đồng thời
-python run_tests.py tests/us02_parallel_20/ -n 4
+# Run tests with 4 parallel worker processes
+python run_tests.py tests/us04_curricula_trainer/ -n 4
 
-# Chạy toàn bộ test suite với tối đa số worker tương ứng số core CPU
+# Run with maximum available CPU cores
 python run_tests.py -n auto
 ```
 
-### 3. Chạy bộ Unit Test của Framework
-Kiểm tra tính toàn vẹn của các module `Exceptor`, `Interceptor` và `Catalog`:
-
+### 3. Run Internal Framework Unit Tests
+Verify the integrity of `Exceptor`, `Interceptor`, and `Catalog`:
 ```bash
 python run_tests.py tests/unit/
-# Hoặc chạy trực tiếp qua pytest:
-pytest tests/unit/
 ```
 
-### 4. Chạy ở chế độ có giao diện (Headed Mode)
-Hữu ích khi cần quan sát trực tiếp trình duyệt trong lúc debug:
-
+### 4. Run with Visible Browser (Headed Mode)
 ```bash
-python run_tests.py tests/us01_bing_search/ --headed
+python run_tests.py tests/us04_curricula_trainer/test_ts01_personal_info.py -k "test_tc_pi_001" --headed
 ```
 
-### 5. Tái sinh báo cáo HTML không cần chạy lại test
-Khi đã có file dữ liệu `report.json` trước đó, bạn có thể tái tạo lại file HTML bất cứ lúc nào:
-
+### 5. Regenerate HTML Report Without Re-running Tests
 ```bash
-# Sinh báo cáo cho một ticket cụ thể:
-python generate_report.py reports/us03_curricula_trainer/report.json
-
-# Hoặc sinh báo cáo cho thư mục reports mặc định:
-python generate_report.py
+# Generate report from an existing JSON report file
+python generate_report.py reports/us04_curricula_trainer/report.json
 ```
 
 ---
 
-## 📝 Quy chuẩn Phát triển Test Case Mới
+## 📊 Viewing HTML Reports & Verifying Run IDs
 
-Khi xây dựng một User Story kiểm thử mới (ví dụ: `us04_payment_gateway`), hãy thực hiện theo đúng 4 bước chuẩn sau:
+> [!IMPORTANT]
+> **Avoid Viewing the Wrong Report or Run ID!**  
+> Test executions generate unique session IDs (e.g., `RUN-YYYYMMDD-XXXXXX`). Running an isolated test case updates `reports/<ticket>/execution_report.html` to reflect only that single test.  
+> - **User Story 2 Active Report**: [`reports/us04_curricula_trainer/execution_report.html`](./reports/us04_curricula_trainer/execution_report.html)
+> - **User Story 2 Certified 68-Test Snapshot**: [`reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html`](./reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html)
+> - **User Story 1 Active Report**: [`reports/us01_bing_search/execution_report.html`](./reports/us01_bing_search/execution_report.html)
+> - **Framework Unit Tests Active Report**: [`reports/unit/execution_report.html`](./reports/unit/execution_report.html)
+>
+> When reviewing, verify the **Run ID badge** (`ID: RUN-20260923-61EC0C`) in the top navbar and ensure the **TESTS KPI card displays 68**. For the complete evaluation roadmap and ID verification checklist, see **[`docs/INSTRUCTIONS_FOR_EVALUATION.md`](./docs/INSTRUCTIONS_FOR_EVALUATION.md)**.
 
-### Bước 1: Tạo thư mục Requirements
-Tạo thư mục `tests/us04_payment_gateway/requirements/` gồm 2 file:
-- `us04_payment_gateway_AC.md`: Liệt kê các tiêu chí chấp nhận gốc.
-- `us04_payment_gateway_traceability_matrix.md`: Lập bảng đối chiếu giữa AC và hành vi thực tế của hệ thống, gán nhãn Exceptor tương ứng.
+---
 
-### Bước 2: Tạo Page Object (kế thừa `BasePage`)
-Tạo `pages/payment_page.py`:
-- Kế thừa từ `BasePage`.
-- Đóng gói các selector và hàm thao tác (`open()`, `fill_payment_info()`, `submit()`).
-- Cung cấp hàm `get_state_snapshot()` trả về dictionary trạng thái trang dạng:
+## 📝 Standards for Developing New Test Cases
+
+When adding a new User Story (e.g. `us05_payment_gateway`), follow these 4 architectural steps:
+
+### Step 1: Define Requirements Artifacts
+Create `tests/us04_payment_gateway/requirements/`:
+- `us04_payment_gateway_AC.md`: List verbatim Acceptance Criteria.
+- `us04_payment_gateway_traceability_matrix.md`: Map each AC to expected DOM behavior and assign corresponding Exceptor method.
+
+### Step 2: Implement Page Object (inherits `BasePage`)
+Create `pages/payment_page.py`:
+- Inherits from `BasePage`.
+- Encapsulates locators and action methods (`open()`, `fill_payment()`, `submit()`).
+- Exposes `get_state_snapshot()` returning:
   ```python
   {
       "success_visible": bool,
       "visible_errors": {"field_name": "error_message_text"}
   }
   ```
-- **Tuyệt đối KHÔNG viết lệnh `assert` bên trong Page Object.**
+- **Never include raw test assertions (`assert`) inside Page Objects.**
 
-### Bước 3: Viết Test Case (kế thừa `BaseTest`)
-Tạo `tests/us04_payment_gateway/test_payment.py`:
-- Bọc mọi hành động thao tác Playwright bằng `Interceptor.run()`:
+### Step 3: Implement Test Suite (inherits `BaseTest`)
+Create `tests/us04_payment_gateway/test_payment.py`:
+- Wrap all Playwright interactions with `Interceptor.run()`:
   ```python
   Interceptor.run(
       lambda: self.payment_page.submit(),
       action_name="submit_payment",
-      context="Thực hiện thanh toán đơn hàng",
+      context="Submitting payment form",
   )
   ```
-- Lấy `snapshot = self.payment_page.get_state_snapshot()`.
-- Gọi hàm của `Exceptor` theo đúng nhãn đã định trong Ma trận đối chiếu:
+- Retrieve state: `snapshot = self.payment_page.get_state_snapshot()`.
+- Evaluate condition via `Exceptor`:
   ```python
-  # Nếu là Happy Path:
-  Exceptor.expect_success(snapshot, context="Thanh toán thành công bằng thẻ hợp lệ")
+  # Happy Path:
+  Exceptor.expect_success(snapshot, context="Valid credit card payment")
 
-  # Nếu là Unhappy Path:
+  # Unhappy Path:
   Exceptor.expect_rejection(snapshot, field="cardNumber", message_contains="Invalid card number")
   ```
 
-### Bước 4: Thực thi và Xem Báo cáo
+### Step 4: Execute & Review Report
 ```bash
 python run_tests.py tests/us04_payment_gateway/
 ```
-Báo cáo HTML tự chứa và video ghi hình sẽ tự động hiển thị tại `reports/us04_payment_gateway/execution_report.html`.
+The self-contained HTML report and WebM video recordings will be available at:
+`reports/us04_payment_gateway/execution_report.html`.

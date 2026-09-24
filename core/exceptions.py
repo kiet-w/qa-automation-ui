@@ -1,32 +1,33 @@
 """
-core/exceptions.py - Định nghĩa các Exception tùy chỉnh cho framework QA Automation UI.
+core/exceptions.py - Custom Exception definitions for Enterprise UI Automation Framework.
 
-Bao gồm:
-- BusinessAssertionError: Dùng cho các lỗi vi phạm kỳ vọng nghiệp vụ / UI (kế thừa AssertionError).
-- InfrastructureError: Dùng cho các lỗi kỹ thuật / hạ tầng Playwright & tiến trình (kế thừa Exception).
+Includes:
+- BusinessAssertionError: Used for business/UI assertion failures (inherits from AssertionError).
+- InfrastructureError: Used for technical/infrastructure issues during Playwright execution (inherits from Exception).
 """
 from typing import Optional
 
 
 class BusinessAssertionError(AssertionError):
     """
-    Ngoại lệ raise khi kỳ vọng nghiệp vụ (Business Expectation) không thỏa mãn.
-    Kế thừa từ AssertionError để Pytest nhận diện là test assertion failure chuẩn.
+    Raised when a business expectation or functional assertion is violated.
+    Inherits from AssertionError so Pytest recognizes it as a standard assertion failure.
     """
     pass
 
 
 class InfrastructureError(Exception):
     """
-    Ngoại lệ raise khi gặp lỗi hạ tầng / kỹ thuật Playwright trong quá trình thực thi.
-    Kế thừa từ Exception (KHÔNG kế thừa AssertionError) để phân biệt rõ ràng với lỗi nghiệp vụ.
+    Raised when an underlying infrastructure/technical error occurs during Playwright execution.
+    Inherits from Exception (NOT AssertionError) to clearly differentiate technical failures
+    from business/functional bugs.
 
     Attributes:
-        category (str): Phân loại lỗi (TIMEOUT, BROWSER_CRASH, STALE_ELEMENT, NETWORK, UNKNOWN).
-        action_name (str): Tên thao tác/hành động đang thực hiện khi gặp lỗi.
-        original_exception (Optional[Exception]): Exception gốc từ Playwright/Python để hỗ trợ debug.
-        context (str): Ngữ cảnh thực thi.
-        hint (str): Gợi ý khắc phục/debug từ Error Catalog.
+        category (str): Error category (TIMEOUT, BROWSER_CRASH, STALE_ELEMENT, NETWORK, UNKNOWN).
+        action_name (str): Action name being executed when the error occurred.
+        original_exception (Optional[Exception]): Root cause exception from Playwright/Python.
+        context (str): Test execution context.
+        hint (str): Troubleshooting hint provided by Error Catalog.
     """
 
     def __init__(
@@ -43,7 +44,7 @@ class InfrastructureError(Exception):
         self.context = context
         self.hint = hint
 
-        # Xây dựng thông điệp lỗi rõ ràng có tiền tố [INFRA ERROR:<category>]
+        # Construct informative error message with [INFRA ERROR:<category>] prefix
         msg_parts = [f"[INFRA ERROR:{category}] Failed during action '{action_name}'"]
         if context:
             msg_parts.append(f"Context: {context}")

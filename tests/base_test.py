@@ -96,14 +96,14 @@ class BaseTest:
             return Path(self.step.reports_dir)
         return Path(__file__).resolve().parent.parent / "reports"
 
-    def get_report_path(self, filename: str, test_scoped: bool = False) -> str:
+    def get_report_path(self, filename: str, test_scoped: bool = True) -> str:
         """
         Returns the full path inside the ticket's isolated reports directory.
         Image files (.png, .jpg, etc.) are automatically routed to the 'screenshots' subfolder.
         Historical run reports (RUN-*.html) are routed to the 'history' subfolder.
-        If test_scoped=True or running in parallel, automatically appends the test slug
-        suffix to avoid filename collisions between concurrent test runs.
-        Example: execution_step5.png -> reports/<ticket>/screenshots/execution_step5_chromium_us01_tc01.png
+        By default (test_scoped=True or running in parallel), automatically appends the test slug
+        suffix to guarantee 1:1 file isolation and prevent filename collisions between test runs.
+        Example: execution_step5.png -> reports/<ticket>/screenshots/execution_step5_test_user_story_1.png
         """
         target_name = filename
         if test_scoped or self.is_parallel():
@@ -114,9 +114,7 @@ class BaseTest:
             clean_stem = re.sub(r"[^\w]+", "_", stem.lower()).strip("_")
             clean_slug = re.sub(r"[^\w]+", "_", slug.lower()).strip("_")
             if clean_slug and clean_slug not in clean_stem:
-                slug_parts = [part for part in clean_slug.split("_") if len(part) >= 4]
-                if not any(part in clean_stem for part in slug_parts):
-                    target_name = f"{stem}_{clean_slug}{ext}"
+                target_name = f"{stem}_{clean_slug}{ext}"
 
         target_path = Path(target_name)
         # Automatically route image files into screenshots/ subdirectory

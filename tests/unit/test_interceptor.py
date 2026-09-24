@@ -1,5 +1,5 @@
 """
-tests/unit/test_interceptor.py - Unit tests kiểm tra toàn bộ logic của Interceptor.
+tests/unit/test_interceptor.py - Comprehensive Unit tests for Interceptor module.
 """
 import pytest
 from core.interceptor import Interceptor
@@ -7,7 +7,7 @@ from core.exceptions import InfrastructureError
 
 
 def test_interceptor_run_success():
-    """Interceptor thực thi hành động bình thường và trả về kết quả."""
+    """Interceptor executes normal actions successfully and returns result."""
     result = Interceptor.run(
         lambda: "success_result",
         action_name="navigate_home",
@@ -17,7 +17,7 @@ def test_interceptor_run_success():
 
 
 def test_interceptor_catches_timeout_and_raises_infrastructure_error():
-    """Interceptor bắt lỗi Timeout và raise InfrastructureError thuộc category TIMEOUT."""
+    """Interceptor catches timeout and raises InfrastructureError with TIMEOUT category."""
     def raise_timeout():
         raise Exception("Timeout 10000ms exceeded while waiting for selector '#btn'")
 
@@ -30,7 +30,7 @@ def test_interceptor_catches_timeout_and_raises_infrastructure_error():
 
     infra_err = exc_info.value
     assert isinstance(infra_err, Exception)
-    assert not isinstance(infra_err, AssertionError)  # Tách biệt hẳn với lỗi nghiệp vụ
+    assert not isinstance(infra_err, AssertionError)  # Decoupled from business assertion failures
     assert infra_err.category == "TIMEOUT"
     assert infra_err.action_name == "click_submit"
     assert infra_err.context == "Submitting form in US01"
@@ -39,7 +39,7 @@ def test_interceptor_catches_timeout_and_raises_infrastructure_error():
 
 
 def test_interceptor_catches_browser_crash():
-    """Interceptor bắt lỗi Target closed và raise BROWSER_CRASH."""
+    """Interceptor catches target closed error and raises BROWSER_CRASH."""
     def raise_crash():
         raise Exception("Target page, context or browser has been closed")
 
@@ -54,7 +54,7 @@ def test_interceptor_catches_browser_crash():
 
 
 def test_interceptor_catches_stale_element():
-    """Interceptor bắt lỗi Stale DOM element."""
+    """Interceptor catches detached/stale DOM element error."""
     def raise_stale():
         raise Exception("Element is not attached to the DOM")
 
@@ -68,7 +68,7 @@ def test_interceptor_catches_stale_element():
 
 
 def test_interceptor_catches_network_error():
-    """Interceptor bắt lỗi Mạng."""
+    """Interceptor catches network connection errors."""
     def raise_net_err():
         raise Exception("net::ERR_CONNECTION_REFUSED")
 
@@ -82,7 +82,7 @@ def test_interceptor_catches_network_error():
 
 
 def test_interceptor_catches_unknown_error():
-    """Interceptor phân loại lỗi lạ thành UNKNOWN."""
+    """Interceptor classifies unhandled errors as UNKNOWN."""
     def raise_unknown():
         raise RuntimeError("Unexpected internal engine error")
 
@@ -97,7 +97,7 @@ def test_interceptor_catches_unknown_error():
 
 
 def test_interceptor_re_raises_existing_infrastructure_error():
-    """Interceptor không bọc lồng lặp lại nếu ngoại lệ đã là InfrastructureError."""
+    """Interceptor does not double-wrap an existing InfrastructureError."""
     original_infra = InfrastructureError(
         category="TIMEOUT",
         action_name="inner_action",

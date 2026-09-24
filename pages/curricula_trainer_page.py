@@ -76,7 +76,7 @@ class CurriculaTrainerPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.file_url = f"file://{WORKSPACE_DIR}/curricula_trainer_account.html"
+        self.file_url = (WORKSPACE_DIR / "curricula_trainer_account.html").as_uri()
 
     def open(self):
         """Navigate to the local Curricula Create Trainer Account HTML file."""

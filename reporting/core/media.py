@@ -89,14 +89,7 @@ def find_video_for_test(
         if match_count >= max(2, len(parts) // 2):
             return video
 
-    # Heuristic 3: If only one test and videos exist, pair the first video
-    if total_tests == 1 and all_videos:
-        return all_videos[0]
-
-    # Heuristic 4: Index-based mapping if counts match
-    if test_index < len(all_videos):
-        return all_videos[test_index]
-
+    # Strictly return None if no isolated match found (no fuzzy guessing by index)
     return None
 
 
@@ -108,8 +101,9 @@ def resolve_screenshot_path(
     test_name: str = "",
 ) -> Optional[Path]:
     """
-    Locates screenshot on disk using multiple fallback resolution strategies.
-    Supports relative paths, absolute paths, reports/ subdirectories, test-specific slugs, and Step 5 convention.
+    Locates screenshot on disk using strict test-isolated resolution strategies.
+    Supports relative paths, absolute paths, reports/ subdirectories, and test-specific slugs.
+    Never falls back to generic shared screenshots from other tests.
     """
     candidates: List[Path] = []
 
@@ -124,23 +118,16 @@ def resolve_screenshot_path(
             workspace_dir / "reports" / "screenshots" / p.name,
         ])
 
-    # Fallback with test_name slug if provided
+    # Isolated fallback ONLY with test_name slug if provided (guarantees test isolation)
     if test_name:
         slug = slugify(test_name)
         candidates.extend([
+            reports_dir / "screenshots" / f"{slug}_evidence.png",
+            reports_dir / f"{slug}_evidence.png",
             reports_dir / "screenshots" / f"execution_step5_{slug}.png",
             reports_dir / f"execution_step5_{slug}.png",
+            workspace_dir / "reports" / "screenshots" / f"{slug}_evidence.png",
             workspace_dir / "reports" / "screenshots" / f"execution_step5_{slug}.png",
-            workspace_dir / "reports" / f"execution_step5_{slug}.png",
-        ])
-
-    # Fallback convention for Step 5 / target action screenshot evidence
-    if "step 5" in step_title.lower() or "defined page actions" in step_title.lower():
-        candidates.extend([
-            reports_dir / "screenshots" / "execution_step5.png",
-            reports_dir / f"execution_step5.png",
-            workspace_dir / "reports" / "screenshots" / "execution_step5.png",
-            workspace_dir / "reports" / "execution_step5.png",
         ])
 
     for cand in candidates:

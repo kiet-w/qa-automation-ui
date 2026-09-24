@@ -1,5 +1,5 @@
 """
-core package - Exceptor, Interceptor, và Error Catalog cho framework QA Automation UI.
+core package - Exceptor, Interceptor, and Error Catalog for Enterprise UI Automation Framework.
 """
 from core.exceptions import BusinessAssertionError, InfrastructureError
 from core.catalog import classify, ERROR_RULES, ErrorRule
