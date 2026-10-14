@@ -305,11 +305,136 @@ python3 generate_report.py --json reports/us04_curricula_trainer/report.json --e
 
 ---
 
-## 🤖 AI Coding Assistants Quickstart
+## 🤖 Hướng Dẫn Kêu AI Coding Tạo Automation Test (AI Test Generation Playbook)
 
-When tasking an AI coding assistant (Cursor, Claude, Copilot, Antigravity) to generate automated tests for new user stories:
+Phần này hướng dẫn chi tiết cách bạn nạp dữ liệu từ bảng test case Google Sheets (19 cột) vào các công cụ AI (như **Cursor**, **Claude 3.7 Sonnet**, **ChatGPT / GPT-4o**, **GitHub Copilot**, **Antigravity**) để AI tự động code các test suite chuẩn 100%, không bị ảo giác locator và tương thích hoàn toàn với framework.
 
-1. **Provide Reference Files:** Attach [`docs/AI_CODING_GUIDELINES.md`](docs/AI_CODING_GUIDELINES.md) and [`AGENTS.md`](AGENTS.md) in the prompt context.
-2. **Input Test Cases:** Paste rows from the standard 19-column QA matrix.
-3. **Inherit from `BaseTest`:** Subclasses automatically gain access to `self.page`, `self.step`, `self.curricula`, `self.get_page(PageCls)`, `self.get_fixture_file()`, and `self.load_json_data()`.
-4. **Zero Violations:** AI is strictly forbidden from writing `time.sleep()`, adding assertions inside Page Objects, inventing locators outside `pages/`, or hardcoding test data.
+### 1. Quy Trình 4 Bước Thực Hiện
+
+```text
+┌─────────────────────────┐       ┌─────────────────────────┐       ┌─────────────────────────┐
+│ Bước 1: Chuẩn Bị        │       │ Bước 2: Nạp Prompt      │       │ Bước 3: AI Sinh Code    │
+│ - Bảng test case 19 cột │ ────▶ │ - Dán Master Prompt     │ ────▶ │ - Cập nhật Page Object  │
+│ - docs/AI_CODING_...    │       │ - Đính kèm dữ liệu TCs  │       │ - Trích xuất data JSON  │
+│ - AGENTS.md             │       │                         │       │ - Viết tests/<ticket>/  │
+└─────────────────────────┘       └─────────────────────────┘       └────────────┬────────────┘
+                                                                                 │
+                                                                                 ▼
+                                                                    ┌─────────────────────────┐
+                                                                    │ Bước 4: Chạy & Nhận Báo │
+                                                                    │ python3 run_tests.py    │
+                                                                    │  --ticket <tên_dự_án>   │
+                                                                    └─────────────────────────┘
+```
+
+---
+
+### 2. Mẫu Prompt Chuẩn Sẵn Sàng Copy-Paste (Master Prompt Template)
+
+Khi giao việc cho AI trong Cursor Composer / Chat, Claude hoặc Copilot, hãy copy nguyên văn đoạn prompt dưới đây:
+
+```markdown
+Bạn là Chuyên gia QA Automation phụ trách phát triển test tự động trên repository này.
+
+HÃY ĐỌC KỸ VÀ TUÂN THỦ TUYỆT ĐỐI CÁC TÀI LIỆU QUY CHUẨN SAU:
+1. `AGENTS.md` — 5 Bất biến kiến trúc bắt buộc (Invariant 1: Zero assert trong POM, Invariant 2: Zero time.sleep, Invariant 5: Hook-based error handling).
+2. `docs/AI_CODING_GUIDELINES.md` — Quy tắc ánh xạ 19 cột từ QA Matrix sang Pytest và 7 cấm kỵ (anti-patterns).
+
+NHIỆM VỤ CỦA BẠN:
+Tự động sinh mã kiểm thử tự động cho User Story / Ticket: `{TÊN_TICKET_HOẶC_DỰ_ÁN}` dựa trên danh sách Test Case dưới đây:
+
+{DÁN CÁC DÒNG TEST CASE TỪ GOOGLE SHEET VÀO ĐÂY}
+
+YÊU CẦU THỰC HIỆN CHI TIẾT:
+1. Tầng Page Object:
+   - Kiểm tra xem các trang trong cột `Page` đã có trong `pages/` chưa. Nếu chưa, hãy tạo `pages/{TÊN_DỰ_ÁN}/{tên_trang}_page.py` kế thừa `BasePage` với đầy đủ locators và action methods.
+   - TUYỆT ĐỐI KHÔNG viết lệnh assert trong Page Object.
+   - Sử dụng `self.handle_next_dialog()` nếu có thao tác mở native confirm/alert dialog (Cancel button).
+2. Tầng Test Data:
+   - Trích xuất dữ liệu từ cột `Test Data` vào file JSON: `data/{TÊN_DỰ_ÁN}/{TÊN_DỰ_ÁN}_data.json`.
+   - Trong test chỉ gọi `copy.deepcopy(data[...])`, tuyệt đối không hardcode giá trị vào thân hàm test.
+3. Tầng Test Suite:
+   - Tạo các file test theo từng `Test Suite`: `tests/{TÊN_DỰ_ÁN}/test_ts{scenario_id}_{suite_name}.py`.
+   - Tất cả các class test đều phải kế thừa từ `BaseTest` (từ `tests.base_test`).
+   - Đặt tên hàm: `def test_tc_{id}_{title_slug}(self, ...):`.
+   - Bọc 1:1 mỗi hành động trong `Test Steps` thành `with self.step("Step X: ..."):` kèm `self.step.set_actual(...)`.
+   - Nếu test case có `Defect ID` (hoặc `Execution Status = Failed`), bắt buộc gắn decorator:
+     `@pytest.mark.xfail(strict=True, reason="{Defect_ID}: {Actual_Result}")`.
+   - Gắn markers phân loại: `@pytest.mark.{p0|p1|p2}`, `@pytest.mark.{functional|regression|ui}`.
+4. Báo cáo sau khi hoàn thành:
+   - Cung cấp lệnh chạy test: `python3 run_tests.py --ticket {TÊN_DỰ_ÁN}`.
+```
+
+---
+
+### 3. Ví Dụ Minh Họa: Từ Bảng Google Sheet Ra Code Tự Động
+
+**Dữ liệu đầu vào từ 1 hàng trong Google Sheet:**
+- **ID:** `TC-001` | **Scenario ID:** `TS-001` | **Title:** `Verify user can log in with valid credentials`
+- **Test Suite:** `Login` | **Page:** `Login Page` | **Severity:** `P0` | **Priority:** `High`
+- **Test Data:** `Email: user01@test.com; Password: Secret@123`
+- **Test Steps:** `1. Open login page \n 2. Enter email and password \n 3. Click [Login]`
+- **Expected Result:** `User is redirected to Dashboard; welcome message is shown`
+- **Traceability:** `US-01`
+
+**Code do AI sinh ra chuẩn 100%:**
+```python
+import copy
+import pytest
+from tests.base_test import BaseTest
+from pages.us01.login_page import LoginPage
+
+
+@pytest.fixture(scope="class")
+def login_data():
+    bt = BaseTest()
+    return bt.load_json_data("data/us01/us01_data.json")
+
+
+class TestTS01Login(BaseTest):
+    """TS-01: Login Test Suite verifying authentication workflows."""
+
+    @pytest.mark.p0
+    @pytest.mark.priority_high
+    @pytest.mark.functional
+    @pytest.mark.ui
+    def test_tc_001_verify_user_can_log_in_with_valid_credentials(self, login_data):
+        """
+        TC-001 — Verify user can log in with valid credentials
+        Scenario ID: TS-001 | Test Suite: Login | Page: Login Page
+        Severity: P0 | Priority: High | Traceability: US-01
+        Test Data: login_data["valid_user"]
+        Expected: User is redirected to Dashboard; welcome message is shown.
+        """
+        data = copy.deepcopy(login_data["valid_user"])
+
+        with self.step("Step 1: Open login page"):
+            login = self.get_page(LoginPage)
+            login.open()
+            self.step.set_actual("Navigated to login page.")
+
+        with self.step("Step 2: Enter email and password"):
+            login.enter_credentials(data["email"], data["password"])
+            self.step.set_actual("Credentials entered into input fields.")
+
+        with self.step("Step 3: Click [Login] and verify redirect to Dashboard"):
+            login.click_login()
+            assert "/dashboard" in self.page.url, "User must be redirected to /dashboard"
+            self.step.set_actual("Redirected to Dashboard with welcome message displayed.")
+```
+
+---
+
+### 4. Kiểm Tra & Chạy Test Ngay Sau Khi AI Code Xong
+
+```bash
+# 1. Chạy suite kiểm thử vừa sinh ra và xem báo cáo HTML kèm video 1080p
+python3 run_tests.py --ticket {TÊN_DỰ_ÁN}
+
+# 2. Chạy nhanh song song đa luồng (multi-core)
+python3 run_tests.py --ticket {TÊN_DỰ_ÁN} -n auto
+
+# 3. Mở báo cáo trên trình duyệt
+xdg-open reports/{TÊN_DỰ_ÁN}/execution_report.html   # Linux
+# hoặc open reports/{TÊN_DỰ_ÁN}/execution_report.html  # macOS
+```
