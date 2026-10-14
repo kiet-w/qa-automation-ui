@@ -3,7 +3,7 @@ tests/unit/test_exceptor.py - Comprehensive Unit tests for Exceptor assertion ga
 """
 import pytest
 from core.exceptor import Exceptor
-from core.exceptions import BusinessAssertionError
+from core.exceptions import BusinessAssertionError, InfrastructureError
 
 
 class MockSnapshotObj:
@@ -157,3 +157,55 @@ def test_expect_success_with_object_snapshot():
     )
     with pytest.raises(BusinessAssertionError):
         Exceptor.expect_success(snapshot_fail_obj)
+
+
+def test_expect_zero_js_errors_pass():
+    """Verify expect_zero_js_errors passes when no js exceptions or console errors."""
+    snapshot = {"js_exceptions": [], "console_errors": []}
+    Exceptor.expect_zero_js_errors(snapshot, context="Testing zero JS errors", check_console=True)
+
+
+def test_expect_zero_js_errors_raises_infrastructure_error():
+    """Verify expect_zero_js_errors raises InfrastructureError with JS_RUNTIME_ERROR category."""
+    snapshot = {"js_exceptions": ["TypeError: Cannot read properties of undefined"], "console_errors": []}
+    with pytest.raises(InfrastructureError) as exc_info:
+        Exceptor.expect_zero_js_errors(snapshot, context="Testing JS exception")
+
+    err = exc_info.value
+    assert err.category == "JS_RUNTIME_ERROR"
+    assert "TypeError" in err.hint
+
+
+def test_expect_zero_js_errors_with_console_error():
+    """Verify expect_zero_js_errors catches console errors when check_console is True."""
+    snapshot = {"js_exceptions": [], "console_errors": ["Failed to load resource: net::ERR_CONNECTION_REFUSED"]}
+    # When check_console=False, console errors are ignored
+    Exceptor.expect_zero_js_errors(snapshot, check_console=False)
+
+    # When check_console=True, it raises InfrastructureError
+    with pytest.raises(InfrastructureError) as exc_info:
+        Exceptor.expect_zero_js_errors(snapshot, check_console=True)
+    assert exc_info.value.category == "JS_RUNTIME_ERROR"
+
+
+def test_expect_accessible_pass():
+    """Verify expect_accessible passes when violations list is empty."""
+    a11y_snapshot = {"violation_count": 0, "violations": []}
+    Exceptor.expect_accessible(a11y_snapshot, context="Testing a11y clean")
+
+
+def test_expect_accessible_raises_business_assertion_error():
+    """Verify expect_accessible raises BusinessAssertionError when violations exist."""
+    a11y_snapshot = {
+        "violation_count": 1,
+        "violations": [
+            {"id": "color-contrast", "impact": "serious", "description": "Element has insufficient color contrast"}
+        ],
+    }
+    with pytest.raises(BusinessAssertionError) as exc_info:
+        Exceptor.expect_accessible(a11y_snapshot, context="Testing color contrast violation")
+
+    msg = str(exc_info.value)
+    assert "[A11Y VIOLATION]" in msg
+    assert "color-contrast" in msg
+    assert "SERIOUS" in msg

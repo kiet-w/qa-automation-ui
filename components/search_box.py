@@ -1,6 +1,5 @@
 """SearchBox component - Reusable across Bing home and result pages."""
 import random
-import time
 from playwright.sync_api import Page
 
 
@@ -19,17 +18,13 @@ class SearchBoxComponent:
         return self.search_input.is_visible()
 
     def search_for(self, query: str):
-        """Fill search query with human-like keystroke delays and natural pauses."""
+        """Fill search query with human-like keystroke delays without arbitrary time.sleep pauses."""
         self.search_input.wait_for(state="visible", timeout=10000)
         self.search_input.click()
-        time.sleep(random.uniform(0.3, 0.6))
         self.search_input.fill("")
 
         # Type character-by-character with random delay (simulating real human typing)
         self.search_input.press_sequentially(query, delay=random.randint(60, 110))
-
-        # Natural human pause before pressing Enter
-        time.sleep(random.uniform(0.5, 1.0))
         self.search_input.press("Enter")
 
         # Ensure page navigates to search results

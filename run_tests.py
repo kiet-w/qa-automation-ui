@@ -119,13 +119,16 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
     else:
         cmd = [sys.executable, "-m", "pytest"]
 
+    # Filter flags meant for report generator rather than pytest
+    filtered_pytest_args = [arg for arg in user_args if arg not in ("--embed-media", "--embed-video")]
+
     # Add json-report flags if not already provided in user_args
-    if not any(arg.startswith("--json-report") for arg in user_args):
+    if not any(arg.startswith("--json-report") for arg in filtered_pytest_args):
         cmd.append("--json-report")
-    if not any(arg.startswith("--json-report-file=") for arg in user_args):
+    if not any(arg.startswith("--json-report-file=") for arg in filtered_pytest_args):
         cmd.append(f"--json-report-file={report_json_path}")
 
-    cmd.extend(user_args)
+    cmd.extend(filtered_pytest_args)
 
     cmd_display = " ".join(cmd)
     print(f"{GRAY}Execution command: {cmd_display}{RESET}\n")
@@ -152,7 +155,7 @@ def run_pytest_phase(base_dir: Path, env: dict, user_args: list[str], report_jso
 
 
 
-def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
+def run_report_phase(base_dir: Path, env: dict, report_json_path: str, embed_media: bool = False) -> bool:
     """
     Phase 2: Trigger generate_report.py to build self-contained HTML report.
     Reports success message with absolute and relative paths.
@@ -174,6 +177,8 @@ def run_report_phase(base_dir: Path, env: dict, report_json_path: str) -> bool:
     venv_python = base_dir / ".venv" / "bin" / "python"
     python_bin = str(venv_python) if venv_python.exists() else (sys.executable or "python")
     cmd = [python_bin, "generate_report.py", report_json_path]
+    if embed_media:
+        cmd.append("--embed-media")
     cmd_display = " ".join(cmd)
     print(f"{GRAY}Execution command: {cmd_display}{RESET}\n")
 
@@ -298,7 +303,8 @@ def main():
     actual_json_path = resolve_actual_report_json(base_dir, report_json_path)
 
     # Phase 2: Generate HTML Report
-    run_report_phase(base_dir, env, actual_json_path)
+    embed_media = "--embed-media" in user_args or "--embed-video" in user_args
+    run_report_phase(base_dir, env, actual_json_path, embed_media=embed_media)
 
     # Phase 3: Display terminal summary
     print_summary(base_dir, pytest_returncode, actual_json_path)

@@ -121,7 +121,7 @@ def generate_system_architecture_diagram_svg(
             "num": "02",
             "title": "Fixtures & Stealth",
             "subtitle": "conftest.py",
-            "details": ["Playwright Stealth", "Brave /usr/bin/brave", "Viewport 1920x1080"],
+            "details": ["Playwright Stealth", "Multi-Browser Engine", "Viewport 1920x1080"],
             "badge": "BROWSER ENV",
             "focal": False,
         },

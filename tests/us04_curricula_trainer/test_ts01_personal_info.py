@@ -81,6 +81,7 @@ class TestTS01PersonalInfo(BaseTest):
             Interceptor.run(lambda: curricula.save(), action_name="submit_form")
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_PI_002")
 
+    @pytest.mark.xfail(strict=True, reason="BUG-007: Preferred Name allows 101 characters without validation")
     def test_tc_pi_003_preferred_name_exceeds_100_chars_bva_max_plus_1(self):
         """
         TC_PI_003 — Preferred Name - Exceeds 100 chars (BVA Max+1)
@@ -95,19 +96,18 @@ class TestTS01PersonalInfo(BaseTest):
         with self.step(
             "Step 1: Open page and enter 101 characters into Preferred Name",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
 
         with self.step(
-            "Step 2: Submit form and detect defect BUG-007 (accepts 101 chars)",
-            expected="System does not accept Preferred Name exceeding 100 characters. Trainer Account is not created until data complies with maximum limit. [Mock App Deviation: allows 101 characters -> BUG-007.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Submit form and verify Preferred Name length constraint",
+            expected="System does not accept Preferred Name exceeding 100 characters.",
         ):
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-007 Preferred Name allows 101 chars")
+            assert not snapshot["success_visible"], "System accepted Preferred Name exceeding 100 characters"
+            assert "preferredName" in snapshot["visible_errors"], "Expected validation error on preferredName"
 
     def test_tc_pi_004_preferred_name_auto_trim_whitespace(self):
         """
@@ -155,6 +155,7 @@ class TestTS01PersonalInfo(BaseTest):
             assert self.page.locator(curricula.GENDER_FEMALE).is_checked()
             assert not self.page.locator(curricula.GENDER_MALE).is_checked()
 
+    @pytest.mark.xfail(strict=True, reason="BUG-009: ID Type dropdown includes unexpected option 'S-Pass'")
     def test_tc_pi_006_id_type_4_document_types_per_fsd_4_1(self):
         """
         TC_PI_006 — ID Type - 4 Document types per FSD 4.1
@@ -166,17 +167,13 @@ class TestTS01PersonalInfo(BaseTest):
 
         with self.step(
             "Step 1: Open page and inspect ID Type options",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Exactly 4 document types: NRIC, FIN, Employment Pass, Passport.",
         ):
             curricula.open()
             options = curricula.page.locator("#idType option").all_inner_texts()
             clean_opts = [o.strip() for o in options if o.strip() and o.strip() != "Select"]
-            # Document deviation BUG-009 (shows S-Pass or 5 options)
-            if "S-Pass" in clean_opts or len(clean_opts) > 4:
-                self.step.set_actual(f"[BUG-009 DETECTED] ID Type dropdown contains options: {clean_opts}")
-            else:
-                self.step.set_actual(f"ID Type dropdown contains: {clean_opts}")
+            assert "S-Pass" not in clean_opts, f"Unexpected option S-Pass found: {clean_opts}"
+            assert len(clean_opts) == 4, f"Expected exactly 4 options, found: {clean_opts}"
 
     def test_tc_pi_007_id_number_valid_nric_format(self):
         """
@@ -200,11 +197,11 @@ class TestTS01PersonalInfo(BaseTest):
         with self.step(
             "Step 2: Save and verify value accepted without error",
             expected="Value accepted and stored accurately.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
         ):
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_PI_007")
 
+    @pytest.mark.xfail(strict=True, reason="BUG-010: System lacks NRIC checksum validation algorithm")
     def test_tc_pi_008_id_number_id_checksum_validation(self):
         """
         TC_PI_008 — ID Number - ID Checksum validation
@@ -220,20 +217,20 @@ class TestTS01PersonalInfo(BaseTest):
         with self.step(
             "Step 1: Enter NRIC with invalid checksum and click Save",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-010 (Mock App lacks checksum algorithm and accepts)",
-            expected="System validates ID Checksum per FSD Section 5d and blocks save. (FSD checksum requirement; test data provisional pending BA/PO confirmation; Mock App does not implement any checksum logic -> BUG-010).",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify ID checksum failure blocks submission",
+            expected="System validates ID Checksum per FSD Section 5d and blocks save.",
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-010 Missing Checksum Algorithm")
+            assert not snapshot["success_visible"], "System accepted invalid NRIC checksum"
+            assert "idNumber" in snapshot["visible_errors"], "Expected ID checksum validation error"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-007: ID Number allows 21 characters without validation")
     def test_tc_pi_009_id_number_exceeds_20_chars_bva_max_plus_1(self):
         """
         TC_PI_009 — ID Number - Exceeds 20 chars (BVA Max+1)
@@ -248,19 +245,18 @@ class TestTS01PersonalInfo(BaseTest):
         with self.step(
             "Step 1: Enter 21 characters into ID Number",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
 
         with self.step(
-            "Step 2: Submit form and detect BUG-007 (allows exceeding 20 chars)",
-            expected="System does not accept ID Number exceeding 20 characters. Trainer Account is not created until data complies with maximum limit. [Mock App Deviation: allows exceeding 20 characters -> BUG-007.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Submit form and verify ID Number max length",
+            expected="System does not accept ID Number exceeding 20 characters.",
         ):
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-007 ID Number allows 21 chars")
+            assert not snapshot["success_visible"], "System accepted ID Number exceeding 20 characters"
+            assert "idNumber" in snapshot["visible_errors"], "Expected ID Number validation error"
 
     def test_tc_pi_010_date_of_birth_valid_past_date(self):
         """

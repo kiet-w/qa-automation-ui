@@ -40,17 +40,15 @@ class TestTS07CancelAction(BaseTest):
         with self.step(
             "Step 1: Open clean form and click Cancel",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             dialog_triggered = []
             self.page.on("dialog", lambda d: dialog_triggered.append(d.message))
-            Interceptor.run(lambda: curricula.cancel(), action_name="cancel_clean_form")
+            curricula.cancel()
 
         with self.step(
             "Step 2: Verify no confirmation dialog appeared",
             expected="User is navigated back to Trainer Listing page without a confirmation popup.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
         ):
             assert len(dialog_triggered) == 0, f"Unexpected dialog on clean form: {dialog_triggered}"
 
@@ -65,7 +63,6 @@ class TestTS07CancelAction(BaseTest):
         with self.step(
             "Step 1: Enter Preferred Name and click Cancel with dialog dismissed (Stay)",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.set_preferred_name("Draft Name")
@@ -76,12 +73,11 @@ class TestTS07CancelAction(BaseTest):
                 dialog.dismiss()
 
             self.page.once("dialog", handle_dialog)
-            Interceptor.run(lambda: curricula.cancel(), action_name="cancel_and_stay")
+            curricula.cancel()
 
         with self.step(
             "Step 2: Verify entered text is retained",
             expected="Dialog closes, all entered form data retained.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
         ):
             current_name = curricula.get_field_value(curricula.PREFERRED_NAME)
             assert current_name == "Draft Name", f"Expected 'Draft Name' retained, got: {current_name}"
@@ -97,7 +93,6 @@ class TestTS07CancelAction(BaseTest):
         with self.step(
             "Step 1: Enter Preferred Name and click Cancel with dialog accepted (Leave)",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.set_preferred_name("Draft Name")
@@ -106,17 +101,17 @@ class TestTS07CancelAction(BaseTest):
                 dialog.accept()
 
             self.page.once("dialog", handle_dialog)
-            Interceptor.run(lambda: curricula.cancel(), action_name="cancel_and_leave")
+            curricula.cancel()
 
         with self.step(
             "Step 2: Verify form reloaded/reset to empty",
             expected="Form changes discarded and user navigated back to Trainer Listing page.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
         ):
             self.page.wait_for_timeout(300)
             current_name = curricula.get_field_value(curricula.PREFERRED_NAME)
             assert current_name == "", f"Expected empty name after discard, got: {current_name}"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-006: System fails to detect dirty state on radio/dropdown elements when clicking Cancel")
     def test_tc_can_004_cancel_detect_dirty_state_on_radio_select(self):
         """
         TC_CAN_004 — Cancel - Detect Dirty State on Radio/Select
@@ -128,21 +123,16 @@ class TestTS07CancelAction(BaseTest):
 
         with self.step(
             "Step 1: Modify only radio button Gender to Female on clean form",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Curricula Trainer page loaded and radio button modified.",
         ):
             curricula.open()
             curricula.select_gender("Female")
             dialog_messages = []
             self.page.on("dialog", lambda d: (dialog_messages.append(d.message), d.dismiss()))
-            Interceptor.run(lambda: curricula.cancel(), action_name="cancel_modified_radio")
+            curricula.cancel()
 
         with self.step(
-            "Step 2: Detect BUG-006 (Mock App misses dirty state on radio/select)",
-            expected="System recognizes Dirty State and displays Unsaved Changes prompt. [Mock App Deviation: misses radio/select elements -> BUG-006.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify confirmation dialog triggered by dirty state on radio/dropdown",
+            expected="System recognizes Dirty State and displays Unsaved Changes prompt per FSD.",
         ):
-            if len(dialog_messages) == 0:
-                self.step.set_actual("[BUG-006 DETECTED] Mock App failed to detect dirty state on radio/dropdown, no confirmation dialog shown!")
-            else:
-                self.step.set_actual("Confirmation dialog shown for radio/dropdown change")
+            assert len(dialog_messages) > 0, "No unsaved changes confirmation dialog was displayed for radio button modification"

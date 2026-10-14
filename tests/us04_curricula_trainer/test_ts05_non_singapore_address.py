@@ -54,6 +54,7 @@ class TestTS05NonSingaporeAddress(BaseTest):
             assert self.page.locator(curricula.ADDRESS_1).is_visible()
             assert self.page.locator(curricula.CITY).is_visible()
 
+    @pytest.mark.xfail(strict=True, reason="BUG-003: Non-SG Country dropdown improperly contains 'Singapore' per FSD 4.4.2")
     def test_tc_nsg_002_non_sg_address_country_dropdown_excludes_sg(self):
         """
         TC_NSG_002 — Non-SG Address - Country dropdown excludes SG
@@ -65,18 +66,13 @@ class TestTS05NonSingaporeAddress(BaseTest):
 
         with self.step(
             "Step 1: Switch to Non-Singapore and inspect Country options",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Country list must NOT include 'Singapore' (FSD 4.4.2).",
         ):
             curricula.open()
             curricula.set_residential_type("Non-Singapore")
             options = self.page.locator(curricula.COUNTRY_REGION).locator("option").all_inner_texts()
             clean_opts = [o.strip() for o in options if o.strip() and o.strip() != "Select"]
-            # Document BUG-003 deviation (Singapore included in non-SG country list)
-            if "Singapore" in clean_opts:
-                self.step.set_actual(f"[BUG-003 DETECTED] Non-SG Country dropdown improperly contains 'Singapore'!")
-            else:
-                self.step.set_actual("Non-SG Country dropdown correctly excludes Singapore")
+            assert "Singapore" not in clean_opts, f"Non-SG Country dropdown improperly contains 'Singapore': {clean_opts}"
 
     def test_tc_nsg_003_non_sg_address_complete_valid_address(self):
         """

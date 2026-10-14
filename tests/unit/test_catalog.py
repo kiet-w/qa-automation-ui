@@ -63,6 +63,18 @@ def test_classify_unknown_error():
     assert "unclassified" in hint.lower()
 
 
+def test_classify_js_runtime_error():
+    """Classify JS_RUNTIME_ERROR when TypeError, ReferenceError, or unhandled promise occurs."""
+    exc1 = Exception("TypeError: Cannot read properties of undefined (reading 'submit')")
+    cat1, hint1 = classify(exc1)
+    assert cat1 == "JS_RUNTIME_ERROR"
+    assert "javascript" in hint1.lower() or "runtime" in hint1.lower()
+
+    exc2 = Exception("Uncaught ReferenceError: nonExistentFunction is not defined")
+    cat2, _ = classify(exc2)
+    assert cat2 == "JS_RUNTIME_ERROR"
+
+
 def test_catalog_extensibility():
     """Verify extensibility of Error Catalog by registering a dynamic rule."""
     new_rule = ErrorRule(

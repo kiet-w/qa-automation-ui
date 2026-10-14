@@ -11,7 +11,7 @@ Provides intent-driven assertion methods:
 - expect_bug_if_accepted: Expects action to fail; if accepted, raises [BUG DETECTED] (Validation Bypass).
 """
 from typing import Any, Dict, Union, Tuple, Optional
-from core.exceptions import BusinessAssertionError
+from core.exceptions import BusinessAssertionError, InfrastructureError
 
 
 class Exceptor:
@@ -38,17 +38,15 @@ class Exceptor:
         return success_visible, visible_errors
 
     @classmethod
-    def expect_success(cls, snapshot: Union[Dict[str, Any], object], context: str = "") -> None:
+    def expect_success(
+        cls,
+        snapshot: Union[Dict[str, Any], object],
+        context: str = "",
+        step: Any = None,
+    ) -> None:
         """
         Expectation: Action must SUCCEED (Happy path).
         Verifies: success_visible is True, and visible_errors is empty.
-
-        Args:
-            snapshot: UI data snapshot ({ "success_visible": bool, "visible_errors": dict }).
-            context: Test case or step context description.
-
-        Raises:
-            BusinessAssertionError: When action failed or UI validation errors exist.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
 
@@ -62,6 +60,9 @@ class Exceptor:
             msg = " | ".join(d for d in details if d)
             raise BusinessAssertionError(msg)
 
+        if step is not None and hasattr(step, "set_actual"):
+            step.set_actual("Success banner visible and 0 validation errors.")
+
     @classmethod
     def expect_rejection(
         cls,
@@ -69,19 +70,11 @@ class Exceptor:
         field: str,
         message_contains: str,
         context: str = "",
+        step: Any = None,
     ) -> None:
         """
         Expectation: Action must be REJECTED (Unhappy path - invalid input properly blocked).
         Verifies: success_visible is False, error is displayed on `field`, and error text contains `message_contains`.
-
-        Args:
-            snapshot: UI data snapshot ({ "success_visible": bool, "visible_errors": dict }).
-            field: Expected error field identifier (e.g. 'primaryPhone').
-            message_contains: Expected substring in the field's validation error message.
-            context: Test execution context.
-
-        Raises:
-            BusinessAssertionError: When action unexpectedly succeeded or error message/field mismatches.
         """
         success_visible, visible_errors = cls._parse_snapshot(snapshot)
         actual_field_msg = visible_errors.get(field)
@@ -106,6 +99,9 @@ class Exceptor:
             ]
             msg = " | ".join(d for d in details if d)
             raise BusinessAssertionError(msg)
+
+        if step is not None and hasattr(step, "set_actual"):
+            step.set_actual(f"Action rejected with expected error on '{field}': '{actual_field_msg}'.")
 
     @classmethod
     def expect_bug_if_rejected(
@@ -167,3 +163,46 @@ class Exceptor:
             ]
             msg = " | ".join(d for d in details if d)
             raise BusinessAssertionError(msg)
+
+    @staticmethod
+    def expect_zero_js_errors(
+        snapshot: Union[Dict[str, Any], object],
+        context: str = "",
+        check_console: bool = False,
+    ) -> None:
+        """
+        Gate 5: Verifies that no uncaught JavaScript exceptions (and optionally console.error messages) occurred.
+        Raises InfrastructureError(category="JS_RUNTIME_ERROR") if errors are detected.
+        """
+        if isinstance(snapshot, dict):
+            js_errs = list(snapshot.get("js_exceptions", []))
+            console_errs = list(snapshot.get("console_errors", [])) if check_console else []
+        else:
+            js_errs = list(getattr(snapshot, "js_exceptions", []))
+            console_errs = list(getattr(snapshot, "console_errors", [])) if check_console else []
+
+        all_errs = js_errs + console_errs
+        if all_errs:
+            joined = " | ".join(all_errs)
+            raise InfrastructureError(
+                category="JS_RUNTIME_ERROR",
+                action_name="verify_zero_js_errors",
+                context=context,
+                hint=f"Found {len(all_errs)} runtime JS/console error(s): {joined}",
+            )
+
+    @staticmethod
+    def expect_accessible(a11y_snapshot: dict, context: str = "") -> None:
+        """
+        Gate 6: Verifies that the UI meets Accessibility standards (WCAG / ARIA).
+        Raises BusinessAssertionError if violations are detected.
+        """
+        violations = a11y_snapshot.get("violations", []) if isinstance(a11y_snapshot, dict) else []
+        if violations:
+            summary = "; ".join(
+                f"[{v.get('impact', 'unknown').upper()}] {v.get('id')}: {v.get('description')}"
+                for v in violations
+            )
+            raise BusinessAssertionError(
+                f"[A11Y VIOLATION] ({context}): Detected {len(violations)} accessibility issues -> {summary}"
+            )

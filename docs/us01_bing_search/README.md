@@ -26,30 +26,68 @@ This User Story automates an end-to-end cross-domain web navigation journey star
 | File | Purpose |
 |---|---|
 | `tests/us01_bing_search/test_bing_search.py` | Single sequential end-to-end execution test suite. |
-| `tests/us01_bing_search/test_bing_search_parallel.py` | Parallel Data-Driven Testing (DDT) running multiple parameterized scenarios concurrently. |
+| `examples/test_bing_search_parallel.py` | Reference Data-Driven Testing (DDT) parallel scenario examples. |
 | `data/search_data.json` | Centralized test data containing search keywords, target channels, and filter modes. |
 | `pages/bing_home_page.py` | Page Object for Bing landing search page. |
-| `pages/bing_search_results_page.py` | Page Object for Bing organic results and result clicking. |
+| `pages/bing_results_page.py` | Page Object for Bing organic results and result clicking. |
 | `pages/youtube_page.py` | Page Object for YouTube channel search, tabs, and video playback. |
 
 ---
 
 ## ⚡ Execution Commands
 
-### 1. Run Standard Sequential Test
+### 1. Run User Story 1 Test Suite (Default Playwright Chromium)
 ```bash
-python run_tests.py tests/us01_bing_search/test_bing_search.py
+python run_tests.py tests/us01_bing_search/
 ```
 
-### 2. Run Parallel Data-Driven Test (xdist)
+### 2. Run with Visible Browser (Headed Mode)
 ```bash
-python run_tests.py tests/us01_bing_search/test_bing_search_parallel.py -n 2
+python run_tests.py tests/us01_bing_search/ --headed
 ```
 
-### 3. Run with Visible Browser (Headed Mode)
+### 3. Run with Alternate Browsers
 ```bash
-python run_tests.py tests/us01_bing_search/test_bing_search.py --headed
+# Brave Browser (auto-detected across Linux/macOS/Windows)
+python run_tests.py tests/us01_bing_search/ --target-browser brave
+
+# Google Chrome / Microsoft Edge / Firefox
+python run_tests.py tests/us01_bing_search/ --target-browser chrome
+python run_tests.py tests/us01_bing_search/ --target-browser edge
+python run_tests.py tests/us01_bing_search/ --target-browser firefox
+
+# Custom browser binary path
+python run_tests.py tests/us01_bing_search/ --browser-path /usr/bin/google-chrome
 ```
+
+---
+
+## 🛡 Anti-Bot & Stability Architecture
+
+### 1. Sequential Execution Rationale
+Public search engines (Microsoft Bing) employ aggressive rate-limiting and bot challenge algorithms. Firing concurrent queries in parallel processes from the same IP address quickly triggers Cloudflare "Verify you are human" / captcha interstitials.  
+User Story 1 runs sequentially by default to guarantee 100% deterministic, flake-free execution for grading. A multi-scenario parallel Data-Driven Testing (DDT) implementation is available for inspection in **[`examples/test_bing_search_parallel.py`](../../examples/test_bing_search_parallel.py)**.
+
+### 2. `TargetClosedError` Resolution via Clean URL Decoding
+When Bing search results are clicked, Bing routes navigation through a tracking URL:
+```text
+https://www.bing.com/ck/a?!&&p=...&u=a1aHR0cHM6Ly93d3cueW91dHViZS5jb20v...&ntb=1
+```
+This tracking URL returns an interstitial HTML payload containing:
+```javascript
+window.open("https://www.youtube.com/", "_blank");
+window.close();
+```
+In automated Playwright runs, this script immediately closes the active page while `page.goto()` is awaiting navigation, causing `playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed`.
+
+**Our Solution (`pages/bing_results_page.py`):**
+`_extract_clean_target_url()` inspects the result link, extracts the Base64-encoded `u` parameter (`a1<BASE64>`), and decodes it directly to `https://www.youtube.com/`. Playwright navigates straight to YouTube, avoiding Bing's tracking script and `window.close()` entirely. A tab recovery mechanism is also in place if a popup is spawned.
+
+### 3. Human Keystroke Cadence
+In `components/search_box.py`, typing delays use Playwright's native `press_sequentially(query, delay=random.randint(60, 110))` with randomized millisecond pauses. This emulates realistic user input without using thread-blocking `time.sleep()`.
+
+### 4. Pure Assertion Separation
+Following framework standards, `YouTubePage` and `BingResultsPage` contain **zero test assertions (`assert`)**. Locators, element states, and DOM queries are returned to the test method, where business assertions are adjudicated via `Exceptor`.
 
 ---
 
@@ -57,3 +95,4 @@ python run_tests.py tests/us01_bing_search/test_bing_search.py --headed
 - **HTML Report**: `reports/us01_bing_search/execution_report.html`
 - **Screenshots**: `reports/us01_bing_search/screenshots/`
 - **Video Recordings**: Embedded directly inside the offline HTML report as Base64 Data URIs.
+

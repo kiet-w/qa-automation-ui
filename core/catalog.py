@@ -56,6 +56,27 @@ ERROR_RULES: List[ErrorRule] = [
         hint="Network connection failure occurred while requesting resource.",
         message_pattern=r"(?i)net::ERR_|NS_ERROR_CONNECTION_REFUSED",
     ),
+    ErrorRule(
+        category="JS_RUNTIME_ERROR",
+        hint="Uncaught JavaScript exception or critical console error in browser runtime.",
+        message_pattern=r"(?i)TypeError:|ReferenceError:|SyntaxError:|Uncaught (?:in promise )?|JS RUNTIME ERROR",
+    ),
+    ErrorRule(
+        category="DIALOG_UNHANDLED",
+        hint="Native browser dialog (alert/confirm/prompt) was opened but not handled; use base_page.handle_next_dialog().",
+        message_pattern=r"(?i)dialog|alert|confirm|prompt was not handled|Cannot navigate when dialog is open",
+    ),
+    ErrorRule(
+        category="FILE_NOT_FOUND",
+        hint="Upload or fixture file not found on disk; verify file path in data/fixtures/.",
+        exception_types=(FileNotFoundError,),
+        message_pattern=r"(?i)No such file or directory|File not found",
+    ),
+    ErrorRule(
+        category="NAVIGATION_ERROR",
+        hint="Navigation to target URL failed or connection was refused by host.",
+        message_pattern=r"(?i)Navigation failed|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION_REFUSED|Cannot navigate",
+    ),
 ]
 
 UNKNOWN_CATEGORY = "UNKNOWN"

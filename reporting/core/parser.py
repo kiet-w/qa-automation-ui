@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 from reporting.core.media import (
     file_to_base64_data_url,
     find_video_for_test,
+    resolve_relative_video_sources,
     resolve_screenshot_path,
 )
 
@@ -78,6 +79,7 @@ def process_report_data(
     all_videos: List[Path],
     reports_dir: Path,
     workspace_dir: Path,
+    embed_media: bool = False,
 ) -> Dict[str, Any]:
     """
     Extracts summary, tests, steps, timing intervals, and encodes media for the report.
@@ -88,6 +90,8 @@ def process_report_data(
     passed = summary.get("passed", 0)
     failed = summary.get("failed", 0)
     skipped = summary.get("skipped", 0)
+    xfailed = summary.get("xfailed", 0)
+    xpassed = summary.get("xpassed", 0)
     total_duration = float(report_data.get("duration", 0.0))
 
     created_ts = report_data.get("created", None)
@@ -118,7 +122,7 @@ def process_report_data(
     git_info = get_git_metadata(workspace_dir)
     target_env = os.environ.get("TEST_ENV", "Staging")
 
-    pass_rate = round((passed / total) * 100, 1) if total > 0 else 0.0
+    pass_rate = round(((passed + xfailed) / total) * 100, 1) if total > 0 else 0.0
     overall_status = "PASSED" if (failed == 0 and total > 0) else ("FAILED" if failed > 0 else "UNKNOWN")
 
     raw_tests = report_data.get("tests", [])
@@ -215,9 +219,15 @@ def process_report_data(
             total_tests=len(raw_tests),
             test_metadata=metadata,
         )
-        video_base64 = metadata.get("video_b64") or (
-            file_to_base64_data_url(video_path, "video/webm") if video_path else None
+        video_sources = resolve_relative_video_sources(
+            video_path=video_path,
+            reports_dir=reports_dir,
+            workspace_dir=workspace_dir,
+            run_id=run_id,
         )
+        video_base64 = metadata.get("video_b64")
+        if not video_base64 and embed_media and video_path:
+            video_base64 = file_to_base64_data_url(video_path, "video/webm")
 
         steps_list = metadata.get("steps", [])
         if not steps_list:
@@ -312,6 +322,7 @@ def process_report_data(
             "error_msg": error_msg,
             "video_path": str(video_path) if video_path else None,
             "video_b64": video_base64,
+            "video_sources": video_sources,
             "steps": processed_steps,
         })
 
@@ -351,7 +362,9 @@ def process_report_data(
         passed = sum(1 for t in processed_tests if t.get("outcome") == "passed")
         failed = sum(1 for t in processed_tests if t.get("outcome") == "failed")
         skipped = sum(1 for t in processed_tests if t.get("outcome") == "skipped")
-        pass_rate = round((passed / total) * 100, 1) if total > 0 else 0.0
+        xfailed = sum(1 for t in processed_tests if t.get("outcome") in ("xfailed", "xfail"))
+        xpassed = sum(1 for t in processed_tests if t.get("outcome") in ("xpassed", "xpass"))
+        pass_rate = round(((passed + xfailed) / total) * 100, 1) if total > 0 else 0.0
         overall_status = "PASSED" if (failed == 0 and total > 0) else ("FAILED" if failed > 0 else "UNKNOWN")
 
     all_steps = [s for t in processed_tests for s in t.get("steps", [])]

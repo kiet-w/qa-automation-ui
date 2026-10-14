@@ -6,9 +6,67 @@ for generating 100% self-contained offline HTML reports.
 """
 
 import base64
+import os
 import re
 from pathlib import Path
 from typing import List, Optional
+
+
+def resolve_relative_video_sources(
+    video_path: Optional[Path],
+    reports_dir: Path,
+    workspace_dir: Path,
+    run_id: str = "",
+) -> List[str]:
+    """
+    Computes a deduplicated list of candidate relative paths for video playback.
+    Enables native HTML5 video playback regardless of whether the report is opened from:
+    1. reports/<ticket>/execution_report.html
+    2. reports/<ticket>/history/<run_id>.html
+    3. reports/execution_report.html (global root report)
+    4. workspace root (local HTTP server)
+    """
+    if not video_path or not video_path.exists():
+        return []
+
+    video_resolved = video_path.resolve()
+    candidates: List[str] = []
+
+    def add_candidate(cand: str):
+        normalized = cand.replace("\\", "/")
+        if normalized and normalized not in candidates:
+            candidates.append(normalized)
+
+    # 1. Relative to history/ (for reports/<ticket>/history/<run_id>.html)
+    try:
+        rel_history = os.path.relpath(video_resolved, reports_dir / "history")
+        add_candidate(rel_history)
+    except Exception:
+        pass
+
+    # 2. Relative to ticket reports_dir (for reports/<ticket>/execution_report.html)
+    try:
+        rel_reports = os.path.relpath(video_resolved, reports_dir)
+        add_candidate(rel_reports)
+    except Exception:
+        pass
+
+    # 3. Relative to root reports/ (for reports/execution_report.html)
+    try:
+        root_reports_dir = workspace_dir / "reports"
+        rel_root = os.path.relpath(video_resolved, root_reports_dir)
+        add_candidate(rel_root)
+    except Exception:
+        pass
+
+    # 4. Relative to workspace root
+    try:
+        rel_workspace = os.path.relpath(video_resolved, workspace_dir)
+        add_candidate(rel_workspace)
+    except Exception:
+        pass
+
+    return candidates
 
 
 def file_to_base64_data_url(filepath: Path, mime_type: str) -> Optional[str]:

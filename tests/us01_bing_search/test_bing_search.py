@@ -124,3 +124,20 @@ class TestBingSearch(BaseTest):
             self.step.set_actual(
                 f"Target video playback confirmed ('{video_title}'); evidence screenshot saved to {step5_evidence}"
             )
+
+        # Step 6: Conclude evaluation session with acknowledgement
+        with self.step(
+            "Step 6: Display evaluation conclusion and acknowledgement",
+            expected="Acknowledgement card displayed and verified",
+        ):
+            from pathlib import Path
+            thanks_file = Path(__file__).resolve().parents[2] / "docs" / "thanks.html"
+            if thanks_file.exists():
+                active_page = self.youtube.page
+                active_page.goto(thanks_file.resolve().as_uri(), wait_until="domcontentloaded")
+                # Hold display for 4 seconds for the viewer to read
+                active_page.wait_for_timeout(4000)
+                step6_evidence = self.get_report_path("execution_step6.png", test_scoped=True)
+                active_page.screenshot(path=str(step6_evidence), full_page=False)
+                self.step.attach_screenshot(step6_evidence)
+                self.step.set_actual(f"Acknowledgement card displayed for 4.0s; evidence saved to {step6_evidence}")

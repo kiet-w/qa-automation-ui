@@ -1,5 +1,11 @@
 # Course Assignment Evaluation & Execution Guide
 
+> **Candidate / Author:** Kent Tran  
+> **Course / Module:** Enterprise QA Automation UI  
+> **Target Scope:** User Story 2 (Curricula Trainer Account Form) & User Story 1 (Bing Search -> YouTube)  
+> **Repository:** `kiet-w/qa-automation-ui`  
+> **Submission Date:** September 2026  
+
 This document outlines the deliverables, grading roadmap, and verification steps for evaluating this Enterprise UI Automation project.
 
 > [!TIP]
@@ -70,7 +76,7 @@ Test reports are strictly separated by Ticket / User Story to eliminate cross-su
 | Deliverable Scope | Active Report (Latest Run) | Certified Baseline Snapshot | Expected Tests |
 | :--- | :--- | :--- | :---: |
 | **User Story 2: Curricula Trainer** *(Primary Assignment Deliverable)* | [`reports/us04_curricula_trainer/execution_report.html`](../reports/us04_curricula_trainer/execution_report.html) | [`reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html`](../reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html) | **68 Tests** |
-| **User Story 1: Bing Search -> YouTube** | [`reports/us01_bing_search/execution_report.html`](../reports/us01_bing_search/execution_report.html) | [`reports/us01_bing_search/history/RUN-20260923-F8329E.html`](../reports/us01_bing_search/history/RUN-20260923-F8329E.html) | **2 Tests** |
+| **User Story 1: Bing Search -> YouTube** | [`reports/us01_bing_search/execution_report.html`](../reports/us01_bing_search/execution_report.html) | [`reports/us01_bing_search/history/RUN-20260923-F8329E.html`](../reports/us01_bing_search/history/RUN-20260923-F8329E.html) | **1 Test** *(Sequential E2E)* |
 | **Framework Unit Tests** *(Exceptor / Interceptor / Catalog)* | [`reports/unit/execution_report.html`](../reports/unit/execution_report.html) | [`reports/unit/history/RUN-20260923-6FE013.html`](../reports/unit/history/RUN-20260923-6FE013.html) | **26 Tests** |
 | **Workspace Root Report** *(Convenience mirror of the most recent execution)* | [`reports/execution_report.html`](../reports/execution_report.html) | *(Preserved under individual ticket history directories)* | *Dynamic* |
 
@@ -145,6 +151,17 @@ playwright install chromium
 ```
 *(On fresh Linux systems without graphical libraries, run: `playwright install-deps`)*
 
+> [!TIP]
+> **Cross-Browser Engine Options (Zero Hardcoding):**  
+> Tests run by default on Playwright's bundled Chromium without requiring any third-party browser installed.  
+> You can also run against other browsers using `--target-browser <browser>`:
+> - `--target-browser chromium` (Default Playwright Chromium)
+> - `--target-browser brave` (Auto-detects Brave on Linux, macOS, Windows)
+> - `--target-browser chrome` (System Google Chrome)
+> - `--target-browser edge` (System Microsoft Edge)
+> - `--target-browser firefox` (Playwright Firefox)
+> - `--browser-path <path>` (Explicit custom browser executable path)
+
 ### Step 3: Execute the Test Suite
 
 #### 1. User Story 2 (Curricula Trainer Account Form — `tests/us04_curricula_trainer/`)
@@ -166,10 +183,31 @@ playwright install chromium
   ```
 
 #### 2. User Story 1 (Bing Search & Navigation — `tests/us01_bing_search/`)
+- **Execute User Story 1 (Default Chromium, Headless):**
+  ```bash
+  python run_tests.py tests/us01_bing_search/
+  ```
 - **Execute User Story 1 in Headed Mode:**
   ```bash
-  python run_tests.py tests/us01_bing_search/test_bing_search.py --headed
+  python run_tests.py tests/us01_bing_search/ --headed
   ```
+- **Execute with Alternate Browsers (e.g., Brave or Chrome):**
+  ```bash
+  python run_tests.py tests/us01_bing_search/ --target-browser brave
+  python run_tests.py tests/us01_bing_search/ --target-browser chrome
+  ```
+
+> [!NOTE]
+> **Why is User Story 1 Sequential by Default?**  
+> Public search engines like Microsoft Bing enforce aggressive anti-scraping and IP-based rate limiting. Concurrent queries sent simultaneously across multiple worker processes trigger Cloudflare "Verify you are human" captcha blocks.  
+> To guarantee 100% deterministic test execution for evaluation, US01 runs as a single, sequential end-to-end journey. For evaluators interested in multi-process parallel execution patterns, a reference Data-Driven Testing (DDT) test is preserved in **[`examples/test_bing_search_parallel.py`](../examples/test_bing_search_parallel.py)**.
+
+> [!IMPORTANT]
+> **Engineered Anti-Bot & Stability Enhancements in US01:**
+> - **Direct Target URL Resolution**: Automatically decodes Bing's Base64 tracking links (`bing.com/ck/a?...&u=a1<BASE64>`) to navigate directly to `https://www.youtube.com/`, bypassing Bing's interstitial script (`window.open(); window.close();`) that previously provoked Playwright `TargetClosedError`.
+> - **Natural Typing Cadence**: Playwright native `press_sequentially(delay=...)` simulates human typing intervals without thread-blocking `time.sleep()`.
+> - **Container & Linux Stability**: Configured `--disable-dev-shm-usage` and `--disable-blink-features=AutomationControlled` to prevent shared memory exhaustion on Linux / CI runners.
+> - **Pure Layer Separation**: Zero assertions inside Page Objects (`pages/youtube_page.py`); all verifications are adjudicated strictly in the Test layer (`tests/us01_bing_search/test_bing_search.py`).
 
 #### 3. Run Internal Framework Architecture Unit Tests
 Verifies the dual-gate error isolation mechanism (`Exceptor`, `Interceptor`, and `Catalog`):

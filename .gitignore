@@ -6,3 +6,6 @@ __pycache__/
 reports/*
 !reports/.gitkeep
 .code-review-graph/
+.env*
+*.pem
+*.key

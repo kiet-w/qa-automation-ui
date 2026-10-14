@@ -41,16 +41,14 @@ class TestTS06SaveAction(BaseTest):
         with self.step(
             "Step 1: Fill all mandatory fields validly and click Save",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
             "Step 2: Verify success banner and Trainer ID format TRNXXXXXX",
-            expected="Trainer Account is created; unique Trainer ID formatted as TRN + 6 sequential digits; Status is Active; hệ thống hiển thị \"Trainer account has been created successfully.\" và điều hướng đến Trainer Details page.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
+            expected="Trainer Account is created; unique Trainer ID formatted as TRN + 6 sequential digits; Status is Active.",
         ):
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_SAV_001")
             text = curricula.get_success_text()
@@ -68,20 +66,19 @@ class TestTS06SaveAction(BaseTest):
         with self.step(
             "Step 1: Open clean form and click Save without entering any data",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
-            Interceptor.run(lambda: curricula.save(), action_name="submit_empty_form")
+            curricula.save()
 
         with self.step(
             "Step 2: Verify inline errors triggered across mandatory fields",
             expected="Inline error messages displayed across all mandatory fields.",
-            actual="Inline validation error displayed as expected, save blocked.",
         ):
             snapshot = curricula.get_state_snapshot()
             assert not snapshot["success_visible"]
             assert len(snapshot["visible_errors"]) >= 5
 
+    @pytest.mark.xfail(strict=True, reason="BUG-001: Mock App lacks duplicate email validation")
     def test_tc_sav_003_duplicate_email_exact_match_prevention(self):
         """
         TC_SAV_003 — Duplicate Email - Exact match prevention
@@ -95,24 +92,24 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Submit form twice with same email bob.wang@curricula.edu.sg",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="First submission succeeds, second submission with same email is attempted.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_first_time")
+            curricula.save()
             # Submit second time with identical email
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_second_time")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-001 (Mock App lacks duplicate email validation)",
-            expected="Creation blocked with error: \"An account with this email address already exists.\" [Mock App Deviation: missing duplicate check -> BUG-001.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify duplicate email error is displayed per FSD",
+            expected='Creation blocked with error: "An account with this email address already exists."',
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-001 Missing Duplicate Email Check")
+            assert not snapshot["success_visible"], "System accepted duplicate email submission"
+            assert "primaryEmail" in snapshot["visible_errors"], "Expected duplicate email validation error"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-001: Mock App lacks case-insensitive duplicate check")
     def test_tc_sav_004_duplicate_email_case_insensitive_match(self):
         """
         TC_SAV_004 — Duplicate Email - Case-insensitive match
@@ -126,21 +123,21 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Submit form with uppercase duplicate email",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Form submitted with uppercase duplicate email.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-001 (Mock App lacks case-insensitive duplicate check)",
-            expected="Case-insensitive check blocks creation and displays duplicate error. [Mock App Deviation: missing duplicate check -> BUG-001.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify duplicate email error is displayed per FSD",
+            expected="Case-insensitive check blocks creation and displays duplicate error.",
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-001 Case-Insensitive Duplicate Email")
+            assert not snapshot["success_visible"], "System accepted uppercase duplicate email"
+            assert "primaryEmail" in snapshot["visible_errors"], "Expected duplicate email validation error"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-002: Mock App lacks duplicate ID validation")
     def test_tc_sav_005_duplicate_id_number_exact_match_check(self):
         """
         TC_SAV_005 — Duplicate ID Number - Exact match check
@@ -154,21 +151,21 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Submit form with duplicate ID Number G7666564N",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Form submitted with duplicate ID Number.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-002 (Mock App lacks duplicate ID validation)",
-            expected="Creation blocked with error: \"An account with this ID number already exists.\" [Mock App Deviation: missing duplicate check -> BUG-002.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify duplicate ID error is displayed per FSD",
+            expected='Creation blocked with error: "An account with this ID number already exists."',
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-002 Missing Duplicate ID Check")
+            assert not snapshot["success_visible"], "System accepted duplicate ID Number submission"
+            assert "idNumber" in snapshot["visible_errors"], "Expected duplicate ID validation error"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-004: Save button not disabled during submission, allowing race condition")
     def test_tc_sav_006_concurrency_multiple_save_clicks_handling(self):
         """
         TC_SAV_006 — Concurrency - Multiple Save clicks handling
@@ -181,20 +178,13 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Fill form and check if Save button disables on click",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Save button is disabled immediately upon click to prevent double submission.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
             save_btn = self.page.locator(curricula.SAVE_BTN)
-            # Rapid click
             save_btn.click()
-            # Document BUG-004: Save button is NOT disabled
-            is_disabled = save_btn.is_disabled()
-            if not is_disabled:
-                self.step.set_actual("[BUG-004 DETECTED] Save button is not disabled upon click, allowing concurrent submissions!")
-            else:
-                self.step.set_actual("Save button correctly disabled upon click")
+            assert save_btn.is_disabled(), "Save button is not disabled upon click, allowing concurrent submissions"
 
     def test_tc_sav_007_trainer_id_sequential_increment_rule(self):
         """
@@ -208,12 +198,11 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Submit form and inspect generated Trainer ID",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Curricula Trainer page loaded and form submitted.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
             text = curricula.get_success_text()
             match = re.search(r"TRN(\d{6})", text)
             assert match, f"Trainer ID format invalid: {text}"
@@ -232,16 +221,14 @@ class TestTS06SaveAction(BaseTest):
 
         with self.step(
             "Step 1: Enter name and email with spaces and submit",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Curricula Trainer page loaded and form submitted with surrounding whitespace.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
             "Step 2: Verify account created without error",
             expected="System automatically trims whitespace before database persistence.",
-            actual="Account saved successfully; success banner visible and zero validation errors.",
         ):
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_SAV_008")

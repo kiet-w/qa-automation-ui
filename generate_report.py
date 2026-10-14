@@ -25,12 +25,19 @@ def main():
     workspace_dir = Path(__file__).resolve().parent
     reports_dir = workspace_dir / "reports"
 
-    json_path = Path(sys.argv[1]) if len(sys.argv) > 1 else (reports_dir / "report.json")
-    output_html_path = Path(sys.argv[2]) if len(sys.argv) > 2 else None
+    embed_media = "--embed-media" in sys.argv or "--embed-video" in sys.argv
+    args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
+
+    json_path = Path(args[0]) if len(args) > 0 else (reports_dir / "report.json")
+    output_html_path = Path(args[1]) if len(args) > 1 else None
 
     generator = ReportGenerator(workspace_dir=workspace_dir)
     try:
-        generator.generate(json_path=json_path, output_html_path=output_html_path)
+        generator.generate(
+            json_path=json_path,
+            output_html_path=output_html_path,
+            embed_media=embed_media,
+        )
     except Exception as exc:
         print(f"[Error] Failed to generate execution report: {exc}")
         sys.exit(1)

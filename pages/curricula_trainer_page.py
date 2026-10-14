@@ -82,15 +82,11 @@ class CurriculaTrainerPage(BasePage):
         """Navigate to the local Curricula Create Trainer Account HTML file."""
         return self.navigate(self.file_url)
 
-    def type_field(self, selector_or_locator: Union[str, Locator], text: str, delay: int = 20):
-        """Scroll element smoothly into view, focus, and type text sequentially like a real human user."""
+    def type_field(self, selector_or_locator: Union[str, Locator], text: str, delay: int = 0):
+        """Scroll element smoothly into view, focus, and fill text directly for local HTML."""
         loc = self.wait_for_visible(selector_or_locator)
         loc.scroll_into_view_if_needed()
-        self.page.wait_for_timeout(40)
-        loc.click()
-        loc.fill("")
-        loc.press_sequentially(str(text), delay=delay)
-        self.page.wait_for_timeout(60)
+        loc.fill(str(text))
 
     # --- Personal Information Actions ---
     def set_preferred_name(self, name: str):
@@ -115,9 +111,7 @@ class CurriculaTrainerPage(BasePage):
         self.type_field(self.ID_NUMBER, id_number)
 
     def upload_document(self, file_path: Union[str, Path]):
-        resolved_path = Path(file_path)
-        if not resolved_path.is_absolute():
-            resolved_path = WORKSPACE_DIR / resolved_path
+        resolved_path = self.resolve_fixture_path(file_path)
         loc = self.wait_for_visible(self.ID_DOCUMENT)
         loc.scroll_into_view_if_needed()
         self.page.wait_for_timeout(50)
@@ -475,7 +469,10 @@ class CurriculaTrainerPage(BasePage):
             text = loc.inner_text().strip()
             visible_errors[key] = text
 
+        tech = self.get_technical_snapshot()
         return {
             "success_visible": self.is_success_visible(),
             "visible_errors": visible_errors,
+            "js_exceptions": tech.get("js_exceptions", []),
+            "console_errors": tech.get("console_errors", []),
         }

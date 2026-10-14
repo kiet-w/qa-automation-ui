@@ -14,7 +14,8 @@ from core.exceptions import InfrastructureError
 
 class Interceptor:
     """
-    Interceptor wrapping Playwright interactions to monitor and standardize infrastructure errors.
+    Interceptor wrapping Playwright interactions (now simplified pass-through).
+    Centralized error classification is handled in pytest hooks (pytest_runtest_makereport).
     """
 
     @classmethod
@@ -22,36 +23,20 @@ class Interceptor:
         cls,
         action_fn: Callable[[], Any],
         *,
-        action_name: str,
+        action_name: str = "action",
         context: str = "",
         retry: int = 0,
     ) -> Any:
         """
-        Execute an action_fn under Interceptor surveillance.
-
-        Args:
-            action_fn: Zero-argument callable containing Playwright action (e.g. lambda: page.click("button")).
-            action_name: Human-readable action name (e.g. "submit_form", "click_save").
-            context: Detailed execution context.
-            retry: Maximum retry attempts for transient infrastructure errors (default: 0).
-
-        Returns:
-            Result of action_fn() upon successful execution.
-
-        Raises:
-            InfrastructureError: When a Playwright/infrastructure technical error occurs.
+        Execute an action_fn. Classifies errors as InfrastructureError if an exception occurs.
+        Maintained for backward compatibility. In modern tests, call actions directly.
         """
-        # Note: retry parameter reserved for future exponential backoff extension.
         try:
             return action_fn()
         except InfrastructureError:
-            # Re-raise existing InfrastructureError from lower layers directly
             raise
         except Exception as exc:
-            # Classify error through the Error Catalog
             category, hint = classify(exc)
-
-            # Re-raise as standardized InfrastructureError, preserving stack trace via 'from exc'
             raise InfrastructureError(
                 category=category,
                 action_name=action_name,

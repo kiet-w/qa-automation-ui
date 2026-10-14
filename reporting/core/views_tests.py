@@ -93,7 +93,8 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
         t_node = test["nodeid"]
         t_status = test["outcome"].upper()
         t_dur = test["duration"]
-        t_video_b64 = test["video_b64"]
+        t_video_b64 = test.get("video_b64")
+        t_video_sources = test.get("video_sources", [])
         t_steps = test["steps"]
         t_err = test["error_msg"]
         jira_id = test.get("jira_id") or f"TC-{t_idx + 1:03d}"
@@ -103,6 +104,12 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
             status_class = "badge-pass"
         elif t_status == "SKIPPED":
             status_class = "badge-skip"
+        elif t_status in ("XFAIL", "XFAILED"):
+            status_class = "badge-skip"
+            t_status = "XFAIL (KNOWN BUG)"
+        elif t_status in ("XPASS", "XPASSED"):
+            status_class = "badge-fail"
+            t_status = "XPASS (FIXED BUG)"
         else:
             status_class = "badge-fail"
 
@@ -181,8 +188,16 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                 </div>
             """
 
-        # (b) Embedded Video Player for this test case
+        # (b) Video Player for this test case (Supports Hybrid Multi-Candidate Sources & Base64)
+        video_sources_html = []
         if t_video_b64:
+            video_sources_html.append(f'<source src="{t_video_b64}" type="video/webm">')
+        if t_video_sources:
+            for v_src in t_video_sources:
+                video_sources_html.append(f'<source src="{v_src}" type="video/webm">')
+
+        if video_sources_html:
+            sources_rendered = "\n                            ".join(video_sources_html)
             card += f"""
                 <div class="video-card-section" id="video-section-{t_idx}">
                     <div class="video-header-bar">
@@ -203,7 +218,7 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                     </div>
                     <div class="video-wrapper" id="video-container-{t_idx}">
                         <video id="video-player-{t_idx}" controls preload="metadata" class="video-player" ontimeupdate="syncVideoWithDiagram({t_idx}, this.currentTime)">
-                            <source src="{t_video_b64}" type="video/webm">
+                            {sources_rendered}
                             Your browser does not support WebM video playback.
                         </video>
                     </div>

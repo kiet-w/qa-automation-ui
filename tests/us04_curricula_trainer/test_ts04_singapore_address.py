@@ -178,6 +178,7 @@ class TestTS04SingaporeAddress(BaseTest):
             Interceptor.run(lambda: curricula.save(), action_name="submit_form")
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_SG_006")
 
+    @pytest.mark.xfail(strict=True, reason="BUG-007: Block Number input maxlength is 9 instead of 10 per FSD 4.4.1")
     def test_tc_sg_007_block_number_max_10_chars_fsd_4_4_1(self):
         """
         TC_SG_007 — Block Number - Max 10 chars (FSD 4.4.1)
@@ -189,17 +190,13 @@ class TestTS04SingaporeAddress(BaseTest):
 
         with self.step(
             "Step 1: Inspect maxlength attribute on Block Number input",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="System accepts Block Number up to 10 characters per FSD Section 4.4.1.",
         ):
             curricula.open()
             max_len = self.page.locator(curricula.BLOCK_NUMBER).get_attribute("maxlength")
-            # Document BUG-007 (maxlength="9" instead of 10)
-            if max_len == "9":
-                self.step.set_actual(f"[BUG-007 DETECTED] Block Number input has maxlength='{max_len}', truncating 10-char blocks")
-            else:
-                self.step.set_actual(f"Block Number maxlength: {max_len}")
+            assert max_len == "10", f"Block Number input has maxlength='{max_len}', expected '10'"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-007: Street Name allows 101 characters without validation")
     def test_tc_sg_008_street_name_exceeds_100_chars_bva_max_plus_1(self):
         """
         TC_SG_008 — Street Name - Exceeds 100 chars (BVA Max+1)
@@ -214,19 +211,18 @@ class TestTS04SingaporeAddress(BaseTest):
         with self.step(
             "Step 1: Enter 101 characters into Street Name and submit",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-007 (Street Name allows 101 characters)",
-            expected="System does not accept Street Name exceeding 100 characters. Trainer Account is not created until data complies with maximum limit. [Mock App Deviation: allows exceeding 100 characters -> BUG-007.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify Street Name length constraint",
+            expected="System does not accept Street Name exceeding 100 characters.",
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-007 Street Name allows 101 chars")
+            assert not snapshot["success_visible"], "System accepted Street Name exceeding 100 characters"
+            assert "streetName" in snapshot["visible_errors"], "Expected validation error on streetName"
 
     def test_tc_sg_009_building_name_optional_field_check(self):
         """

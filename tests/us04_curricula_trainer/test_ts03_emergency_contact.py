@@ -57,6 +57,7 @@ class TestTS03EmergencyContact(BaseTest):
         ):
             Exceptor.expect_success(curricula.get_state_snapshot(), context="TC_EC_001")
 
+    @pytest.mark.xfail(strict=True, reason="BUG-007: Emergency Name allows 101 characters without validation")
     def test_tc_ec_002_emergency_name_exceeds_100_chars_bva_max_plus_1(self):
         """
         TC_EC_002 — Emergency Name - Exceeds 100 chars (BVA Max+1)
@@ -71,20 +72,20 @@ class TestTS03EmergencyContact(BaseTest):
         with self.step(
             "Step 1: Enter 101 characters into Emergency Contact Name and submit",
             expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
         ):
             curricula.open()
             curricula.fill_full_form(data)
-            Interceptor.run(lambda: curricula.save(), action_name="submit_form")
+            curricula.save()
 
         with self.step(
-            "Step 2: Detect BUG-007 (Emergency Name allows 101 characters)",
-            expected="System does not accept Emergency Contact Name exceeding 100 characters. Trainer Account is not created until data complies with maximum limit. [Mock App Deviation: allows exceeding 100 characters -> BUG-007.]",
-            actual="Verifying system enforces constraint and blocks invalid submission.",
+            "Step 2: Verify Emergency Name length constraint",
+            expected="System does not accept Emergency Contact Name exceeding 100 characters.",
         ):
             snapshot = curricula.get_state_snapshot()
-            Exceptor.expect_bug_if_accepted(snapshot, context="BUG-007 Emergency Name allows 101 chars")
+            assert not snapshot["success_visible"], "System accepted Emergency Contact Name exceeding 100 characters"
+            assert "emergencyName" in snapshot["visible_errors"], "Expected validation error on emergencyName"
 
+    @pytest.mark.xfail(strict=True, reason="BUG-005: Relationship dropdown shows Father/Mother instead of FSD enum Parent")
     def test_tc_ec_003_emergency_relationship_enum_per_fsd_4_3(self):
         """
         TC_EC_003 — Emergency Relationship - Enum per FSD 4.3
@@ -96,17 +97,13 @@ class TestTS03EmergencyContact(BaseTest):
 
         with self.step(
             "Step 1: Open page and inspect Relationship dropdown options",
-            expected="Curricula Trainer page loaded and form fields populated with test data.",
-            actual="Page opened and fields populated successfully.",
+            expected="Displays exact FSD Table 4.3 enum: Parent, Spouse, Sibling, Relative, Friend, Others.",
         ):
             curricula.open()
             options = curricula.page.locator("#emergencyRelationship option").all_inner_texts()
             clean_opts = [o.strip() for o in options if o.strip() and o.strip() != "Select"]
-            # Document BUG-005 deviation (shows Father, Mother instead of Parent)
-            if "Father" in clean_opts or "Mother" in clean_opts:
-                self.step.set_actual(f"[BUG-005 DETECTED] Relationship dropdown contains non-standard options: {clean_opts}")
-            else:
-                self.step.set_actual(f"Relationship options: {clean_opts}")
+            assert "Parent" in clean_opts, f"FSD required option 'Parent' missing: {clean_opts}"
+            assert "Father" not in clean_opts and "Mother" not in clean_opts, f"Non-standard options found: {clean_opts}"
 
     def test_tc_ec_004_emergency_name_empty_mandatory_check(self):
         """

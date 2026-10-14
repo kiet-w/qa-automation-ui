@@ -1,71 +1,74 @@
 # Enterprise QA Automation UI Framework
 
-Enterprise-grade UI Automation Framework built on **Python**, **Playwright**, and **Pytest**. Features the **Page Object Model (POM)** combined with **Component-based** reusable UI architecture, **Ticket-Isolated Test Execution**, **Requirements Traceability Matrix**, an independent dual-gate error supervisory ecosystem (**Exceptor & Interceptor**), and a **100% Offline Self-Contained ExtentReports HTML Engine**.
+Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **Playwright (Sync API)**, and **Pytest**. Designed around the **Page Object Model (POM)** with **Component Composition**, **Multi-Project Isolation**, an automated **Dual-Gate Error Supervision Engine**, an **AST Architectural Invariant Guard**, and a **100% Offline Standalone ExtentReports HTML Engine**.
 
-> 📌 **Course Evaluator / Grader?**  
-> - For the complete grading roadmap, deliverable checklist, and rapid evaluation guide, start with **[`docs/INSTRUCTIONS_FOR_EVALUATION.md`](docs/INSTRUCTIONS_FOR_EVALUATION.md)**.
-> - For deep architectural blueprints and technical specifications, refer to **[`docs/AGENTS.md`](docs/AGENTS.md)**.
+> 📌 **Key Architectural References:**
+> - **AI Test Generation Guidelines:** [`docs/AI_CODING_GUIDELINES.md`](docs/AI_CODING_GUIDELINES.md)
+> - **19-Column QA Test Case Ingestion Standard:** [`docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md`](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)
+> - **Multi-Project & Multi-Website Architecture:** [`docs/adr/0006-multi-website-project-automation-architecture.md`](docs/adr/0006-multi-website-project-automation-architecture.md)
+> - **Core Developer Invariants & Directives:** [`AGENTS.md`](AGENTS.md)
 
 ---
 
 ## 📑 Table of Contents
 
-1. [Key Framework Highlights](#-key-framework-highlights)
-2. [Architecture & Core Modules](#-architecture--core-modules)
-   - [Exceptor Module — Business Assertion Gate](#1-exceptor-module--business-assertion-gate)
-   - [Interceptor Module — Infrastructure Supervisor](#2-interceptor-module--infrastructure-supervisor)
-   - [Error Catalog — Classification & Diagnostics](#3-error-catalog--classification--diagnostics)
-   - [Requirements-First & Traceability Matrix](#4-requirements-first--traceability-matrix)
-   - [ExtentReports HTML Engine (100% Offline)](#5-extentreports-html-engine-100-offline)
-3. [Project Directory Structure](#-project-directory-structure)
-4. [Installation & Setup](#-installation--setup)
-5. [Test Execution Guide](#-test-execution-guide)
-   - [Run Specific User Story / Ticket](#1-run-specific-user-story--ticket)
+1. [Key Framework Capabilities](#-key-framework-capabilities)
+2. [Architectural Overview & Core Seams](#-architectural-overview--core-seams)
+   - [Dual-Gate Error Supervision Engine](#1-dual-gate-error-supervision-engine)
+   - [100% Offline ExtentReports HTML Engine](#2-100-offline-extentreports-html-engine)
+   - [Multi-Browser & Anti-Bot Stealth Engine](#3-multi-browser--anti-bot-stealth-engine)
+   - [Multi-Project & Multi-Website Isolation](#4-multi-project--multi-website-isolation)
+   - [AST Architecture Invariant Guard](#5-ast-architecture-invariant-guard)
+3. [Standard 19-Column QA Matrix to Pytest Mapping](#-standard-19-column-qa-matrix-to-pytest-mapping)
+4. [Project Directory Structure](#-project-directory-structure)
+5. [Installation & Setup](#-installation--setup)
+6. [Test Execution Guide](#-test-execution-guide)
+   - [Run Specific Ticket / User Story](#1-run-specific-ticket--user-story)
    - [Run Parallel Tests (pytest-xdist)](#2-run-parallel-tests-pytest-xdist)
-   - [Run Internal Framework Unit Tests](#3-run-internal-framework-unit-tests)
-   - [Run with Visible Browser (Headed Mode)](#4-run-with-visible-browser-headed-mode)
-   - [Regenerate HTML Report Without Re-running Tests](#5-regenerate-html-report-without-re-running-tests)
-6. [Standards for Developing New Test Cases](#-standards-for-developing-new-test-cases)
+   - [Cross-Browser Selection & Custom Executables](#3-cross-browser-selection--custom-executables)
+   - [Run Internal Framework Unit Tests](#4-run-internal-framework-unit-tests)
+   - [Regenerate HTML Report Without Rerunning Tests](#5-regenerate-html-report-without-rerunning-tests)
+7. [AI Coding Assistants Quickstart](#-ai-coding-assistants-quickstart)
 
 ---
 
-## 🌟 Key Framework Highlights
+## 🌟 Key Framework Capabilities
 
-- **Decoupled Business vs. Infrastructure Errors**: Eliminates generic "Failed" outcomes. Distinctly separates **True Application Defects (Bugs)** from **Environmental / Network / Timeout Failures (Infrastructure Errors)**.
-- **Elimination of Reversed Assertions**: Replaces raw `assert x == True/False` assertions with 4 intent-driven assertion methods (`expect_success`, `expect_rejection`, `expect_bug_if_rejected`, `expect_bug_if_accepted`).
-- **Single Source of Truth**: All test cases originate directly from formal specification documents (`AC.md`) and a 1:1 mapped `traceability_matrix.md` before implementation.
-- **100% Self-Contained Offline HTML Report (Zero External CDN)**: Full HD (1080p) WebM videos, screenshot evidence, Pure mathematical SVG charts (Donut, Bar, Pipeline, Diagram, Trend), CSS, and JS are embedded directly as Base64 Data URIs into a single HTML file. No dependencies on internet access, Chart.js, Tailwind CDN, or Google Fonts.
-- **Two-Way Interactive Diagram-to-Video Sync**: Clicking on any step in the interactive execution pipeline diagram automatically scrolls to the embedded video player, seeks to the exact step timestamp, and begins playback.
-- **Built-in Bilingual Support (EN / VI)**: Instant on-the-fly language toggle between English and Vietnamese.
-- **High-Performance Parallel Execution**: Fully optimized for `pytest-xdist` with independent 1:1 video mapping and automatic headless fallback during multi-worker runs (`-n > 1`).
+- **Decoupled Business vs. Infrastructure Errors (Dual-Gate)**: Centrally classifies technical exceptions (Timeout, Browser crash, Stale DOM, Network drop, Unhandled dialog, Missing file) in `core/catalog.py` vs genuine business assertion failures (`core/exceptor.py`).
+- **100% Offline Standalone HTML Report (Zero External CDN)**: Full HD (1080p) WebM videos, screenshot evidence, Pure SVG charts (Donut, Bar Timeline, Pipeline, Diagram, Trend), CSS, and JS are embedded directly as Base64 Data URIs into a single self-contained HTML file. No dependencies on Chart.js, Tailwind CDN, or Google Fonts.
+- **Two-Way Diagram-to-Video Synchronization**: Clicking any step in the interactive SVG execution pipeline diagram automatically scrolls to the embedded video player, seeks to the exact step timestamp, and begins playback.
+- **Native Browser Dialog Protection**: Automatic one-time listener (`handle_next_dialog()`) handles `alert()`, `confirm()`, and `prompt()` without locking the browser or triggering accidental dismissals.
+- **Multi-Browser & Anti-Bot Stealth**: Zero hardcoded browser binaries. Supports Chromium, Google Chrome, Microsoft Edge, Brave Browser, Firefox, and WebKit via `--target-browser` with automatic Brave auto-detection and Playwright Stealth integration.
+- **AST Architecture Invariant Guard**: Automated AST static analysis tests (`tests/unit/test_architecture_invariants.py`) strictly enforce zero `assert` in Page Objects, zero `time.sleep()`, zero external CDN in reports, and zero leftover debug prints.
+- **Multi-Project / Multi-Website Reusability**: Easily scale to automate multiple websites simultaneously by compartmentalizing suites into `tests/<project>/`, `pages/<project>/`, `data/<project>/`, and `reports/<project>/`.
 
 ---
 
-## 🏗 Architecture & Core Modules
+## 🏗 Architectural Overview & Core Seams
 
 ```text
        ┌────────────────────────────────────────────────────────┐
-       │             User Story Requirements (AC.md)            │
+       │             User Story Requirements / FSD              │
        └───────────────────────────┬────────────────────────────┘
-                                   │  1. Map Test Intent
+                                   │  1. Map Test Intent (19-Column Matrix)
                                    ▼
        ┌────────────────────────────────────────────────────────┐
-       │       Traceability Matrix (traceability_matrix.md)     │
-       │   [Assign: expect_success / expect_rejection / ...]    │
+       │          Traceability & AI Coding Guidelines           │
+       │     [Exceptor / Pytest Strict XFAIL / Data Fixture]    │
        └───────────────────────────┬────────────────────────────┘
-                                   │  2. Direct Method Assignment
+                                   │  2. Direct Method Execution
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                           TEST CASE EXECUTION                           │
 │                                                                         │
 │   ┌───────────────────────────┐         ┌───────────────────────────┐   │
 │   │    Playwright Actions     │         │     Page Object State     │   │
-│   │  (click, fill, save, ...) │         │  (Snapshot: errors, box)  │   │
+│   │ (click, fill, dialog, ...)│         │ (Snapshot: errors, success│   │
 │   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
 │                 │                                     │                 │
 │                 ▼                                     ▼                 │
 │   ┌───────────────────────────┐         ┌───────────────────────────┐   │
-│   │        Interceptor        │         │         Exceptor          │   │
+│   │   Hook Error Classifier   │         │         Exceptor          │   │
 │   │ (Catches technical infra) │         │(Adjudicates business rule)│   │
 │   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
 └─────────────────┼─────────────────────────────────────┼─────────────────┘
@@ -77,315 +80,236 @@ Enterprise-grade UI Automation Framework built on **Python**, **Playwright**, an
      └────────────────────────┘            └────────────────────────┘
 ```
 
-### 1. `Exceptor` Module — Business Assertion Gate
-File: `core/exceptor.py`
+### 1. Dual-Gate Error Supervision Engine
+- **`Exceptor` ([`core/exceptor.py`](core/exceptor.py))**: Sole business assertion authority. Operates on static UI snapshots (`{"success_visible": bool, "visible_errors": Dict[str, str]}`). Never calls Playwright directly.
+  - `expect_success(snapshot, context, step)`
+  - `expect_rejection(snapshot, field, message_contains, context, step)`
+  - `expect_bug_if_accepted(snapshot, context)` (Validation bypass defect)
+  - `expect_bug_if_rejected(snapshot, field, context)` (Valid input rejected defect)
+- **`Catalog` ([`core/catalog.py`](core/catalog.py))**: Classifies runtime exceptions into 8 standardized technical categories:
+  - `TIMEOUT`: Selector timeout or element not ready.
+  - `BROWSER_CRASH`: Target closed or process terminated.
+  - `STALE_ELEMENT`: DOM re-rendered; reference detached.
+  - `NETWORK`: Connection refused or DNS lookup failure.
+  - `JS_RUNTIME_ERROR`: Uncaught JavaScript exception or console error.
+  - `DIALOG_UNHANDLED`: Unhandled native alert/confirm dialog.
+  - `FILE_NOT_FOUND`: Fixture file or upload path missing.
+  - `NAVIGATION_ERROR`: Navigation rejected or URL unreachable.
 
-The **sole authority** deciding pass/fail status for business behavior. The Exceptor operates strictly on static UI state `snapshots` collected by Page Objects, without invoking Playwright interactions directly.
+### 2. 100% Offline ExtentReports HTML Engine
+- **Pure SVG Math Charts ([`reporting/charts/`](reporting/charts/))**:
+  - `donut.py`: SVG Donut chart displaying Pass/Fail/Skipped rates.
+  - `bar.py`: SVG Step Duration Timeline bar chart.
+  - `pipeline.py`: Interactive Step Pipeline with 2-way video seek sync.
+  - `diagram.py`: Architecture topology diagrams.
+  - `trend.py`: Historical multi-run pass rate and duration trend lines.
+- **Base64 Media Embedding**: Embedded Full HD (1080p) WebM videos and PNG screenshot evidence.
+- **Bilingual Interface**: Client-side instant toggle between English (`EN`) and Vietnamese (`VI`).
 
-```python
-from core import Exceptor
+### 3. Multi-Browser & Anti-Bot Stealth Engine
+Configured via `core/pytest_plugins/browser_engine.py`:
+- Supported engines: `chromium`, `chrome`, `edge`, `brave`, `firefox`, `webkit`.
+- Linux, macOS, and Windows Brave binary auto-detection.
+- Playwright Stealth evasion patches for Chromium-family browsers.
+- Automatically enforces `headless=True` during parallel multi-worker execution unless `--headed` is explicitly requested.
 
-# 1. Happy Path: Expect action to succeed
-Exceptor.expect_success(snapshot, context="Valid form submission")
+### 4. Multi-Project & Multi-Website Isolation
+- Each website or user story has an isolated directory structure:
+  - Tests: `tests/<project>/`
+  - Page Objects: `pages/<project>/`
+  - Test Data: `data/<project>/`
+  - Reports: `reports/<project>/`
+- Generates a unique session `run_id` (e.g. `RUN-20261014-DBAB91`).
+- Preserves historical runs in `reports/<project>/history/<run_id>.html` without wiping previous artifacts.
 
-# 2. Unhappy Path: Expect rejection on specified field with specific error message
-Exceptor.expect_rejection(
-    snapshot,
-    field="primaryPhone",
-    message_contains="Enter a valid contact number",
-    context="Invalid phone length validation",
-)
-
-# 3. Bug Hunting: Valid business input incorrectly rejected -> Raises [BUG DETECTED]
-Exceptor.expect_bug_if_rejected(
-    snapshot,
-    field="unitNumber",
-    context="Singapore alphanumeric unit number #04-12A",
-)
-
-# 4. Bug Hunting: Invalid business input improperly accepted -> Raises [BUG DETECTED]
-Exceptor.expect_bug_if_accepted(
-    snapshot,
-    context="Singapore phone number starting with digit 1",
-)
-```
-
-When conditions are violated, the Exceptor raises `BusinessAssertionError` (inherits from `AssertionError`), ensuring Pytest detects standard test failures distinct from internal execution crashes.
-
----
-
-### 2. `Interceptor` Module — Infrastructure Supervisor
-File: `core/interceptor.py`
-
-Explicitly wraps Playwright interactions (`click`, `fill`, `save`, `navigate`...) to catch technical failures, classify them via the Error Catalog, and raise `InfrastructureError` (inherits from `Exception`, NOT `AssertionError`).
-
-```python
-from core import Interceptor
-
-# Wrap Playwright action under supervisor
-result = Interceptor.run(
-    lambda: curricula_page.save(),
-    action_name="save_curricula_form",
-    context="Click Save button to finalize account creation",
-)
-```
-
-**Features:**
-- Preserves root-cause traceback via `original_exception` attribute and `raise ... from exc`.
-- Standardized error logging format: `[INFRA ERROR:<CATEGORY>]`.
+### 5. AST Architecture Invariant Guard
+File: [`tests/unit/test_architecture_invariants.py`](tests/unit/test_architecture_invariants.py)
+- **Invariant 1**: Zero assertions in Page Objects and Components.
+- **Invariant 2**: Zero raw `time.sleep()` in all execution paths.
+- **Invariant 7**: Zero external CDN URLs in offline reporting assets.
+- **Hygiene**: Zero leftover debug `print()` statements in page objects & components.
 
 ---
 
-### 3. Error Catalog — Classification & Diagnostics
-File: `core/catalog.py`
+## 📊 Standard 19-Column QA Matrix to Pytest Mapping
 
-Centralized registry classifying Playwright/Python technical exceptions into standardized categories:
+Based on **[ADR-0005](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)**, any test case from Google Sheets or Excel maps 1:1 into Python code:
 
-| Category | Detection Criteria (Pattern / Class) | Diagnostic Hint |
+| # | Column Name | Code Mapping & Usage |
 |---|---|---|
-| `TIMEOUT` | Class `TimeoutError` or message matches `Timeout \d+ms exceeded` | Element did not appear/become ready in time; check selector or increase timeout. |
-| `BROWSER_CRASH` | Message contains `Target closed`, `browser has been closed` | Browser or target page closed unexpectedly during execution. |
-| `STALE_ELEMENT` | Message contains `Element is not attached to the DOM`, `stale element` | DOM changed (re-rendered); locator reference is detached from the DOM. |
-| `NETWORK` | Message contains `net::ERR_`, `NS_ERROR_CONNECTION_REFUSED` | Network connection failure occurred while requesting resource. |
-| `UNKNOWN` | Unmatched exceptions | Unclassified infrastructure error — add to catalog once root cause is diagnosed. |
-
-> **Extensibility:** Add a new `ErrorRule(...)` to `ERROR_RULES` in `core/catalog.py` to register custom error classification rules.
-
----
-
-### 4. Requirements-First & Traceability Matrix
-Folder: `tests/<ticket_folder>/requirements/`
-
-Prior to implementation, each ticket/User Story defines two formal artifacts as the **Source of Truth**:
-1. `<ticket>_AC.md`: Complete verbatim listing of all Acceptance Criteria (**AC-01, AC-02, ...**).
-2. `<ticket>_traceability_matrix.md`: 1:1 cross-reference table mapping each AC to actual form behavior, evaluation status (`✅ Match` or `❌ Mismatch`), and the **exact Exceptor method to invoke**.
-
----
-
-### 5. ExtentReports HTML Engine (100% Offline)
-Folder: `reporting/`
-
-Self-contained HTML reporting engine:
-- **Zero External Dependencies**: Full HD WebM videos and screenshots are embedded as Base64 Data URIs directly into the final HTML document.
-- **Pure SVG Mathematical Renderers**: In-house SVG generation algorithms for Donut Chart (Pass rate), Bar Chart (Step duration), Pipeline (Step flow), Architecture Diagram, and Multi-Run Trend Chart.
-- **Ticket Isolation**: Artifacts are automatically isolated under `reports/<ticket>/` without cross-ticket collisions.
+| 1 | **ID** (`TC-001`) | Prefix in test function: `def test_tc_001_<slug>(self):` & `json_metadata["tc_id"] = "TC-001"`. |
+| 2 | **Scenario ID** (`TS-001`) | Test suite file name: `tests/<traceability>/test_ts01_<suite_slug>.py`. |
+| 3 | **Title** | Suffix of test function and header in docstring. |
+| 4 | **Test Suite** | Logical module/feature grouping. Each suite maps to 1 independent test file. |
+| 5 | **Page** | Target Page Object in `pages/`. Create/update `pages/<page>.py` before writing test. |
+| 6 | **Severity** (`P0`, `P1`, ...) | Pytest Marker: `@pytest.mark.p0`, `@pytest.mark.p1`. |
+| 7 | **Priority** (`High`, `Medium`) | Pytest Marker: `@pytest.mark.priority_high`, docstring & `json_metadata["priority"]`. |
+| 8 | **Execution Status** (`Passed`, `Failed`) | Determines if `@pytest.mark.xfail` is required. |
+| 9 | **Test Type** (`Functional`, `UI`, `Regression`) | Pytest Marker: `@pytest.mark.functional`, `@pytest.mark.regression`, `@pytest.mark.ui`. |
+| 10 | **Environment** | Documented in docstring & `json_metadata["target_env"]`. |
+| 11 | **Preconditions** | Executed in initial step `with self.step("Step 0: Setup"):` or docstring. |
+| 12 | **Test Data** | Extracted into `data/<traceability>_data.json`; load via fixture with `copy.deepcopy()`. |
+| 13 | **Test Steps** | 1:1 mapped to `with self.step("Step X: <action>"):` with `self.step.set_actual(...)`. |
+| 14 | **Expected Result** | Final verification logic using `Exceptor` or standard assertions. |
+| 15 | **Actual Result** | Stored in reason string of `@pytest.mark.xfail` when Defect ID is present. |
+| 16 | **Assumption Ref** | Documented in docstring and `json_metadata["assumptions"]`. |
+| 17 | **Defect ID** (`BUG-012`) | Decorator `@pytest.mark.xfail(strict=True, reason="<Defect_ID>: <Actual_Result>")`. |
+| 18 | **Traceability** (`US-05`, `BR-03`) | Subdirectory path `tests/<traceability>/` and `json_metadata["story"]`. |
+| 19 | **Note** | Documented in docstring comments. |
 
 ---
 
-## 📁 Project Directory Structure
+## 📂 Project Directory Structure
 
 ```text
 automation-ui/
-├── README.md                                # Central framework documentation & entrypoint
-├── requirements.txt                         # Python package dependencies
-├── pytest.ini                               # Pytest configuration, browser modes, reporting flags
-├── conftest.py                              # Shared fixtures, ticket detection, video/screenshot hooks
-├── run_tests.py                             # Two-phase test execution orchestrator
-├── generate_report.py                       # CLI entrypoint for HTML report generation
-├── curricula_trainer_account.html           # Local web application for User Story 2 (Trainer Account)
-│
-├── docs/                                    # 📁 Complete Documentation & Specifications
-│   ├── INSTRUCTIONS_FOR_EVALUATION.md       # Quickstart, Deliverables checklist & grading roadmap
-│   ├── AGENTS.md                            # Deep architectural source of truth & agent guidelines
-│   ├── us01_bing_search/                    # 📁 User Story 01: Bing Search -> YouTube Navigation
-│   │   └── README.md                        # US01 specs, step breakdown, parallel DDT guide
-│   └── us04_curricula_trainer/              # 📁 User Story 04: Curricula Trainer Account Form
-│       ├── README.md                        # US04 overview, 7 test suites, execution commands
-│       ├── test_cases/                      # 68 Test Cases, AC specifications, Traceability Matrix
-│       ├── defects_and_analysis/            # Bug Matrix, Severity Matrix, D4 Answer Key
-│       └── ai_prompts/                      # AI Generation Prompts (Deliverable 0)
-│
-├── examples/                                # 📁 Usage Demonstrations
-│   └── example_usage.py                     # Demo script showing Exceptor & Interceptor usage
-│
-├── core/                                    # Gatekeeper architecture: Exceptor, Interceptor, Catalog
-│   ├── __init__.py                          # Package exports
+├── core/                                    # 🛡️ Dual-Gate Error Supervision Layer
+│   ├── catalog.py                           # Error Catalog (8 technical classification rules)
 │   ├── exceptions.py                        # BusinessAssertionError vs InfrastructureError
-│   ├── catalog.py                           # Infrastructure Error Catalog and classify()
-│   ├── exceptor.py                          # Business Assertion Gate (expect_success, expect_rejection, etc.)
-│   └── interceptor.py                       # Infrastructure supervisor (wraps Playwright calls)
+│   ├── exceptor.py                          # Sole business assertion gate
+│   ├── interceptor.py                       # Playwright interaction supervisor
+│   └── pytest_plugins/                      # Modular Pytest Plugin Subsystem
+│       ├── browser_engine.py                # Multi-browser & stealth setup
+│       ├── ticket_isolation.py              # Run ID & artifact isolation
+│       └── step_and_video_hook.py           # StepTracker & error classification hook
 │
-├── components/                              # Reusable UI widgets across pages
-│   ├── __init__.py
-│   └── search_box.py                        # Search bar component with human typing cadence
-│
-├── pages/                                   # Page Objects (Locators and browser interactions)
-│   ├── __init__.py
-│   ├── base_page.py                         # BasePage: click, fill, wait, screenshot, highlight
-│   ├── bing_home_page.py                    # Bing landing page actions
+├── pages/                                   # 📄 Page Object Model Layer (NO ASSERTIONS)
+│   ├── base_page.py                         # Shared web actions: navigate, dialog, download, fixture path
+│   ├── curricula_trainer_page.py            # Curricula form locators & get_state_snapshot
+│   ├── bing_home_page.py                    # Bing search landing page
 │   ├── bing_results_page.py                 # Bing search results page
-│   ├── youtube_page.py                      # Target YouTube page and channel actions
-│   └── curricula_trainer_page.py            # Curricula Trainer Account form Page Object
+│   └── youtube_page.py                      # Target website interaction object
 │
-├── data/                                    # Input test fixtures (JSON)
-│   ├── search_data.json                     # Search keywords for User Story 1
-│   ├── curricula_trainer_data.json          # Profiles for User Story 2 (Singapore, Non-SG, Boundaries)
-│   └── fixtures/                            # Upload test files (PDF, PNG, invalid files)
+├── components/                              # 🧩 Modular Reusable UI Components
+│   └── search_box.py                        # Search bar with human typing cadence emulation
 │
-├── tests/                                   # Test suites organized by User Story / Ticket
-│   ├── __init__.py
-│   ├── base_test.py                         # BaseTest: setup autouse, report helpers, step tracking
-│   ├── unit/                                # Internal framework unit tests (Exceptor, Interceptor, Catalog)
-│   │   ├── test_exceptor.py
-│   │   ├── test_interceptor.py
-│   │   └── test_catalog.py
-│   ├── us01_bing_search/                    # User Story 1: Bing Search -> YouTube channel actions
-│   │   └── test_bing_search.py
-│   └── us04_curricula_trainer/              # User Story 2: Curricula Trainer Account form (7 Suites)
-│       ├── requirements/                    # Source of Truth specifications
-│       │   ├── us04_curricula_trainer_AC.md
-│       │   └── us04_curricula_trainer_traceability_matrix.md
-│       ├── test_ts01_personal_info.py
-│       ├── test_ts02_contact_info.py
-│       ├── test_ts03_emergency_contact.py
-│       ├── test_ts04_singapore_address.py
-│       ├── test_ts05_non_singapore_address.py
-│       ├── test_ts06_save_action.py
-│       └── test_ts07_cancel_action.py
+├── data/                                    # 🗄️ Test Data Fixtures (Zero Hardcoding)
+│   ├── search_data.json                     # Search keywords and parallel scenarios
+│   ├── curricula_trainer_data.json          # Pre-built trainer profiles (valid SG resident, edge cases)
+│   └── fixtures/                            # Upload files for document testing (valid, oversized, invalid)
 │
-├── reporting/                               # Offline ExtentReports HTML Engine
-│   ├── __init__.py
-│   ├── core/                                # Data parsing, Base64 encoding, document assembly
-│   ├── charts/                              # Pure SVG Renderers: donut, bar, pipeline, diagram, trend
-│   └── assets/                              # Inlined CSS and JS (video sync, bilingual EN/VI)
+├── tests/                                   # 🧪 Test Suites & Verification Logic
+│   ├── base_test.py                         # Base test class: lazy page getters, json loaders, fixture files
+│   ├── unit/                                # Internal Framework Unit Tests (36 tests)
+│   │   ├── test_architecture_invariants.py  # AST verification of Invariants 1, 2, 7 & code hygiene
+│   │   ├── test_catalog.py                  # Validates error regex and exception matching
+│   │   ├── test_exceptor.py                 # Validates Exceptor 4 gatekeeper methods
+│   │   └── test_interceptor.py              # Validates Interceptor exception translation
+│   ├── us01_bing_search/                    # User Story 1: E2E Bing to YouTube Navigation
+│   └── us04_curricula_trainer/              # User Story 4: Curricula Trainer Account (68 Tests, 7 Suites)
 │
-└── reports/                                 # Generated test artifacts (Isolated per ticket)
-    ├── .gitkeep
-    ├── us01_bing_search/                    # US01 reports, videos, screenshots
-    ├── us04_curricula_trainer/              # US04 reports, videos, screenshots
-    └── unit/                                # Unit test execution artifacts
+├── reporting/                               # 📊 100% Offline ExtentReports HTML Engine
+│   ├── core/                                # Generator, parser, document assembler, dashboard & test views
+│   ├── charts/                              # Pure mathematical SVG charts (donut, bar, pipeline, diagram, trend)
+│   └── assets/                              # Inlined report.css and report.js (video sync, bilingual toggle)
+│
+├── docs/                                    # 📚 Technical Documentation & Specs
+│   ├── AI_CODING_GUIDELINES.md              # Canonical templates & anti-patterns for AI assistants
+│   ├── adr/                                 # Architecture Decision Records (ADR-0004 to ADR-0006)
+│   └── INSTRUCTIONS_FOR_EVALUATION.md       # Evaluation guide & grading roadmap
+│
+├── curricula_trainer_account.html           # Local web application under test (US04)
+├── conftest.py                              # Master Pytest entrypoint (delegates to core plugins)
+├── pytest.ini                               # Pytest configuration, markers, and default CLI flags
+├── requirements.txt                         # Python dependencies
+└── run_tests.py                             # 3-Phase orchestrator (Pytest -> HTML Report -> Terminal Summary)
 ```
 
 ---
 
 ## 🚀 Installation & Setup
 
-1. **Create and activate a Python virtual environment (Python 3.10+)**:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate       # On Linux / macOS
-   # or: .venv\Scripts\activate   # On Windows
-   ```
+### 1. Prerequisites
+- Python 3.10 or higher
+- Git
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Install Playwright Browser Binaries**:
-   ```bash
-   playwright install chromium
-   ```
-   *(On clean Linux environments, run `playwright install-deps` if system graphics libraries are needed).*
-
----
-
-## 🎯 Test Execution Guide
-
-The `run_tests.py` orchestrator coordinates the complete two-phase lifecycle:
-- **Phase 1**: Executes Pytest with live terminal streaming and generates ticket-isolated `report.json`.
-- **Phase 2**: Automatically triggers `generate_report.py` to assemble the self-contained HTML report with Base64 embedded media.
-- **Phase 3**: Renders an ANSI summary dashboard with test statistics and exit codes.
-
-### 1. Run Specific User Story / Ticket
+### 2. Virtual Environment & Dependencies
 ```bash
-# Run User Story 2 (Curricula Trainer Account Form - All 7 Suites)
-python run_tests.py tests/us04_curricula_trainer/
+# Clone the repository
+git clone https://github.com/kiet-w/qa-automation-ui.git
+cd qa-automation-ui
 
-# Run specific suite (e.g. Personal Information)
-python run_tests.py tests/us04_curricula_trainer/test_ts01_personal_info.py
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Run User Story 1 (Bing Search -> YouTube)
-python run_tests.py tests/us01_bing_search/test_bing_search.py
-```
+# Install dependencies
+pip install -r requirements.txt
 
-### 2. Run Parallel Tests (pytest-xdist)
-```bash
-# Run tests with 4 parallel worker processes
-python run_tests.py tests/us04_curricula_trainer/ -n 4
-
-# Run with maximum available CPU cores
-python run_tests.py -n auto
-```
-
-### 3. Run Internal Framework Unit Tests
-Verify the integrity of `Exceptor`, `Interceptor`, and `Catalog`:
-```bash
-python run_tests.py tests/unit/
-```
-
-### 4. Run with Visible Browser (Headed Mode)
-```bash
-python run_tests.py tests/us04_curricula_trainer/test_ts01_personal_info.py -k "test_tc_pi_001" --headed
-```
-
-### 5. Regenerate HTML Report Without Re-running Tests
-```bash
-# Generate report from an existing JSON report file
-python generate_report.py reports/us04_curricula_trainer/report.json
+# Install Playwright browser binaries
+playwright install chromium firefox webkit
 ```
 
 ---
 
-## 📊 Viewing HTML Reports & Verifying Run IDs
+## 🏃 Test Execution Guide
 
-> [!IMPORTANT]
-> **Avoid Viewing the Wrong Report or Run ID!**  
-> Test executions generate unique session IDs (e.g., `RUN-YYYYMMDD-XXXXXX`). Running an isolated test case updates `reports/<ticket>/execution_report.html` to reflect only that single test.  
-> - **User Story 2 Active Report**: [`reports/us04_curricula_trainer/execution_report.html`](./reports/us04_curricula_trainer/execution_report.html)
-> - **User Story 2 Certified 68-Test Snapshot**: [`reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html`](./reports/us04_curricula_trainer/history/RUN-20260923-61EC0C.html)
-> - **User Story 1 Active Report**: [`reports/us01_bing_search/execution_report.html`](./reports/us01_bing_search/execution_report.html)
-> - **Framework Unit Tests Active Report**: [`reports/unit/execution_report.html`](./reports/unit/execution_report.html)
->
-> When reviewing, verify the **Run ID badge** (`ID: RUN-20260923-61EC0C`) in the top navbar and ensure the **TESTS KPI card displays 68**. For the complete evaluation roadmap and ID verification checklist, see **[`docs/INSTRUCTIONS_FOR_EVALUATION.md`](./docs/INSTRUCTIONS_FOR_EVALUATION.md)**.
+### 1. Run Specific Ticket / User Story
+The orchestrator automatically runs Pytest, extracts the JSON report, generates the offline ExtentReports HTML file, and prints an ANSI terminal summary:
+
+```bash
+# Run Curricula Trainer Account test suite
+python3 run_tests.py --ticket us04_curricula_trainer
+
+# Run Bing Search E2E test suite
+python3 run_tests.py --ticket us01_bing_search
+
+# Run directly via Pytest
+pytest tests/us04_curricula_trainer/test_ts06_save_action.py -v
+```
+
+### 2. Run Parallel Tests (`pytest-xdist`)
+Parallel multi-core execution automatically switches to headless mode and isolates artifacts:
+
+```bash
+# Run with 4 parallel worker processes
+python3 run_tests.py --ticket us04_curricula_trainer -n 4
+
+# Run with auto CPU detection
+pytest tests/us04_curricula_trainer/ -n auto
+```
+
+### 3. Cross-Browser Selection & Custom Executables
+```bash
+# Run on Chromium (default)
+python3 run_tests.py --ticket us04_curricula_trainer --target-browser=chromium
+
+# Run on Microsoft Edge / Google Chrome
+python3 run_tests.py --ticket us04_curricula_trainer --target-browser=edge
+python3 run_tests.py --ticket us04_curricula_trainer --target-browser=chrome
+
+# Run on Brave Browser (auto-detected across Linux/macOS/Windows)
+python3 run_tests.py --ticket us04_curricula_trainer --target-browser=brave
+
+# Run with a custom binary path
+python3 run_tests.py --target-browser=brave --browser-path=/usr/bin/brave-browser
+```
+
+### 4. Run Internal Framework Unit Tests
+Verify framework reliability, AST invariant guards, and dual-gate error classification:
+
+```bash
+python3 run_tests.py --ticket unit
+# or directly:
+pytest tests/unit/ -v
+```
+
+### 5. Regenerate HTML Report Without Rerunning Tests
+```bash
+# Regenerate latest report from existing JSON
+python3 generate_report.py --json reports/us04_curricula_trainer/report.json
+
+# Regenerate with Base64 embedded media
+python3 generate_report.py --json reports/us04_curricula_trainer/report.json --embed-media
+```
 
 ---
 
-## 📝 Standards for Developing New Test Cases
+## 🤖 AI Coding Assistants Quickstart
 
-When adding a new User Story (e.g. `us05_payment_gateway`), follow these 4 architectural steps:
+When tasking an AI coding assistant (Cursor, Claude, Copilot, Antigravity) to generate automated tests for new user stories:
 
-### Step 1: Define Requirements Artifacts
-Create `tests/us04_payment_gateway/requirements/`:
-- `us04_payment_gateway_AC.md`: List verbatim Acceptance Criteria.
-- `us04_payment_gateway_traceability_matrix.md`: Map each AC to expected DOM behavior and assign corresponding Exceptor method.
-
-### Step 2: Implement Page Object (inherits `BasePage`)
-Create `pages/payment_page.py`:
-- Inherits from `BasePage`.
-- Encapsulates locators and action methods (`open()`, `fill_payment()`, `submit()`).
-- Exposes `get_state_snapshot()` returning:
-  ```python
-  {
-      "success_visible": bool,
-      "visible_errors": {"field_name": "error_message_text"}
-  }
-  ```
-- **Never include raw test assertions (`assert`) inside Page Objects.**
-
-### Step 3: Implement Test Suite (inherits `BaseTest`)
-Create `tests/us04_payment_gateway/test_payment.py`:
-- Wrap all Playwright interactions with `Interceptor.run()`:
-  ```python
-  Interceptor.run(
-      lambda: self.payment_page.submit(),
-      action_name="submit_payment",
-      context="Submitting payment form",
-  )
-  ```
-- Retrieve state: `snapshot = self.payment_page.get_state_snapshot()`.
-- Evaluate condition via `Exceptor`:
-  ```python
-  # Happy Path:
-  Exceptor.expect_success(snapshot, context="Valid credit card payment")
-
-  # Unhappy Path:
-  Exceptor.expect_rejection(snapshot, field="cardNumber", message_contains="Invalid card number")
-  ```
-
-### Step 4: Execute & Review Report
-```bash
-python run_tests.py tests/us04_payment_gateway/
-```
-The self-contained HTML report and WebM video recordings will be available at:
-`reports/us04_payment_gateway/execution_report.html`.
+1. **Provide Reference Files:** Attach [`docs/AI_CODING_GUIDELINES.md`](docs/AI_CODING_GUIDELINES.md) and [`AGENTS.md`](AGENTS.md) in the prompt context.
+2. **Input Test Cases:** Paste rows from the standard 19-column QA matrix.
+3. **Inherit from `BaseTest`:** Subclasses automatically gain access to `self.page`, `self.step`, `self.curricula`, `self.get_page(PageCls)`, `self.get_fixture_file()`, and `self.load_json_data()`.
+4. **Zero Violations:** AI is strictly forbidden from writing `time.sleep()`, adding assertions inside Page Objects, inventing locators outside `pages/`, or hardcoding test data.

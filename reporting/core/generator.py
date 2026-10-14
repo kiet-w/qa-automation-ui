@@ -22,6 +22,7 @@ class ReportGenerator:
         self,
         json_path: Optional[Path] = None,
         output_html_path: Optional[Path] = None,
+        embed_media: bool = False,
     ) -> Path:
         """Executes full report generation and writes self-contained HTML file."""
         if json_path:
@@ -56,6 +57,7 @@ class ReportGenerator:
             all_videos=all_videos,
             reports_dir=self.reports_dir,
             workspace_dir=self.workspace_dir,
+            embed_media=embed_media,
         )
 
         run_id = parsed_data.get("run_id", "RUN-UNKNOWN")
@@ -67,10 +69,12 @@ class ReportGenerator:
         else:
             target_html = history_dir / f"{run_id}.html"
 
+        mode_str = "Embedded Base64 (--embed-media)" if embed_media else "Hybrid Linked Media (Lightweight)"
         print("=" * 65)
         print("🚀 [ExtentReports Generator]")
         print(f"   Input JSON : {json_file}")
         print(f"   Run ID     : {run_id}")
+        print(f"   Media Mode : {mode_str}")
         print(f"   Output HTML: {target_html}")
         print("=" * 65)
 
@@ -100,7 +104,8 @@ class ReportGenerator:
         print(f"   Latest Report       : {latest_html}")
         if root_reports_html.resolve() != latest_html.resolve():
             print(f"   Root Report (Global): {root_reports_html}")
-        print(f"   File Size           : {file_size_mb:.2f} MB (100% self-contained)")
+        print(f"   Media Strategy      : {mode_str}")
+        print(f"   File Size           : {file_size_mb:.2f} MB")
         print("=" * 65)
 
         return target_html
