@@ -9,3 +9,4 @@ reports/*
 .env*
 *.pem
 *.key
+archive/

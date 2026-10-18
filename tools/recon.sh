@@ -5,7 +5,7 @@ set -euo pipefail
 TARGET_URL="${1:?Cách dùng: ./tools/recon.sh <TARGET_URL> <BROWSER_ID>}"
 BROWSER_PROFILE="${2:?Lỗi: Bắt buộc truyền BROWSER_ID (tra cứu qua: bsk browsers). Không được phép để trống để tránh can thiệp nhầm trình duyệt ngoài ý muốn.}"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-OUTPUT_DIR="reports/recon_${TIMESTAMP}"
+OUTPUT_DIR="reports/recon/recon_${TIMESTAMP}"
 mkdir -p "$OUTPUT_DIR"
 
 SESSION=""

@@ -19,22 +19,28 @@ Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **
    - [Multi-Browser & Anti-Bot Stealth Engine](#3-multi-browser--anti-bot-stealth-engine)
    - [Multi-Project & Multi-Website Isolation](#4-multi-project--multi-website-isolation)
    - [AST Architecture Invariant Guard](#5-ast-architecture-invariant-guard)
-3. [Standard 19-Column QA Matrix to Pytest Mapping](#-standard-19-column-qa-matrix-to-pytest-mapping)
-4. [Project Directory Structure](#-project-directory-structure)
-5. [Installation & Setup](#-installation--setup)
-6. [Test Execution Guide](#-test-execution-guide)
-   - [Run Specific Ticket / User Story](#1-run-specific-ticket--user-story)
-   - [Run Parallel Tests (pytest-xdist)](#2-run-parallel-tests-pytest-xdist)
-   - [Cross-Browser Selection & Custom Executables](#3-cross-browser-selection--custom-executables)
-   - [Run Internal Framework Unit Tests](#4-run-internal-framework-unit-tests)
-   - [Regenerate HTML Report Without Rerunning Tests](#5-regenerate-html-report-without-rerunning-tests)
-7. [AI Coding Assistants Quickstart](#-ai-coding-assistants-quickstart)
+3. [Phase 1: Pre-Automation Reconnaissance (`bsk` Recon & Active Probe)](#-phase-1-pre-automation-reconnaissance-bsk-recon--active-probe)
+   - [Passive Reconnaissance (`tools/recon.sh`)](#1-passive-reconnaissance-toolsreconsh)
+   - [Active Probe & Audit Findings (`tools/templates/`)](#2-active-probe--audit-findings-toolstemplates)
+4. [Standard 19-Column QA Matrix to Pytest Mapping](#-standard-19-column-qa-matrix-to-pytest-mapping)
+5. [Project Directory Structure](#-project-directory-structure)
+6. [Installation & Setup](#-installation--setup)
+7. [Test Execution Guide](#-test-execution-guide)
+   - [Ticket Concurrency Locking & History Retention](#1-ticket-concurrency-locking--history-retention)
+   - [Run Specific Ticket / User Story](#2-run-specific-ticket--user-story)
+   - [Run Parallel Tests (pytest-xdist)](#3-run-parallel-tests-pytest-xdist)
+   - [Cross-Browser Selection & Custom Executables](#4-cross-browser-selection--custom-executables)
+   - [Run Internal Framework Unit Tests](#5-run-internal-framework-unit-tests)
+   - [Regenerate HTML Report Without Rerunning Tests](#6-regenerate-html-report-without-rerunning-tests)
+8. [AI Coding Assistants Quickstart](#-ai-coding-assistants-quickstart)
 
 ---
 
 ## 🌟 Key Framework Capabilities
 
+- **Evidence-First Reconnaissance (Phase 1 via `bsk`)**: Extract real DOM, Accessibility trees, console errors, and network 4xx/5xx failures before writing code, preventing guessed locators and brittle selectors.
 - **Decoupled Business vs. Infrastructure Errors (Dual-Gate)**: Centrally classifies technical exceptions (Timeout, Browser crash, Stale DOM, Network drop, Unhandled dialog, Missing file) in `core/catalog.py` vs genuine business assertion failures (`core/exceptor.py`).
+- **Ticket Concurrency Lock & Permanent History**: Enforces ticket-scoped concurrency control (`fcntl.flock`) preventing execution collisions. Automatically archives standalone HTML reports in `reports/<ticket>/history/<RUN_ID>.html` and raw video recordings in `reports/<ticket>/test-results/<RUN_ID>/`.
 - **100% Offline Standalone HTML Report (Zero External CDN)**: Full HD (1080p) WebM videos, screenshot evidence, Pure SVG charts (Donut, Bar Timeline, Pipeline, Diagram, Trend), CSS, and JS are embedded directly as Base64 Data URIs into a single self-contained HTML file. No dependencies on Chart.js, Tailwind CDN, or Google Fonts.
 - **Two-Way Diagram-to-Video Synchronization**: Clicking any step in the interactive SVG execution pipeline diagram automatically scrolls to the embedded video player, seeks to the exact step timestamp, and begins playback.
 - **Native Browser Dialog Protection**: Automatic one-time listener (`handle_next_dialog()`) handles `alert()`, `confirm()`, and `prompt()` without locking the browser or triggering accidental dismissals.
@@ -131,6 +137,51 @@ File: [`tests/unit/test_architecture_invariants.py`](tests/unit/test_architectur
 
 ---
 
+## 🔍 Phase 1: Pre-Automation Reconnaissance (`bsk` Recon & Active Probe)
+
+Before writing a single line of Playwright code or assuming UI locators, the framework employs **browser-skill (`bsk`)** to conduct evidence-first reconnaissance against the real target screen.
+
+```mermaid
+flowchart TD
+    A["1. Target Screen / Requirement"] --> B["2. Reconnaissance (Passive or Active Probe)"]
+    B --> C["3. Capture 5 Artifacts (DOM, a11y, screenshot, console, network)"]
+    C --> D["4. QA Gate: Audit Findings vs Spec"]
+    D -- "Verified & Accepted" --> E["5. Construct Page Object (pages/) & Test Cases (tests/)"]
+    D -- "Rejected / Environment Flaw" --> F["Close Finding / Report to Dev"]
+```
+
+### 1. Passive Reconnaissance (`tools/recon.sh`)
+Automatically launches a dedicated session against the target URL and exports **5 comprehensive diagnostic artifacts**:
+- `accessibility_snapshot.txt`: Indented semantic accessibility tree with interactive element references (`@eN`).
+- `page_dom.html`: Full rendered HTML DOM for resilient locator extraction (`data-test`, `id`, `name`).
+- `initial_screen.png`: Stitched full-page visual capture (with automatic viewport fallback if background compositor limits scrolling).
+- `network_logs.txt`: Buffered network requests capturing hidden HTTP 4xx/5xx responses and third-party script assets.
+- `console_logs.txt`: Console exceptions, CSP violations, CORS policy blocks, and deprecation warnings.
+
+**Usage:**
+```bash
+./tools/recon.sh <TARGET_URL> <BROWSER_ID>
+```
+
+**Safe Local Server Pattern (Isolated `mktemp -d`):**
+```bash
+TMP=$(mktemp -d); cp curricula_trainer_account.html "$TMP"/
+python3 -m http.server 8899 --bind 127.0.0.1 --directory "$TMP" &
+SERVER_PID=$!; trap 'kill $SERVER_PID 2>/dev/null; rm -rf "$TMP"' EXIT
+./tools/recon.sh "http://127.0.0.1:8899/curricula_trainer_account.html" <BROWSER_ID>
+```
+
+### 2. Active Probe & Audit Findings (`tools/templates/`)
+When screens are located behind authentication gates, multi-step forms, or dynamic single-page application (SPA) states:
+- **Active Probe Prompt** ([`tools/templates/active_probe_prompt.txt`](tools/templates/active_probe_prompt.txt)): Guides the AI agent under strict safety rules:
+  - Disposable, low-privilege test accounts only (credentials read via environment variables `QA_USER` / `QA_PASS`).
+  - Zero irreversible or destructive actions (strictly forbids account deletion, payments, or altering master records).
+  - Read-only JavaScript evaluation (`evaluate`).
+  - Clear separation between **Facts ("Quan sát")** and **Hypotheses ("Giả thuyết")**.
+- **Audit Findings Matrix** ([`tools/templates/audit_findings.md`](tools/templates/audit_findings.md)): Standardized finding log tracking evidence paths and review statuses (`Chưa xác minh` -> `QA đã tái hiện` / `Loại`).
+
+---
+
 ## 📊 Standard 19-Column QA Matrix to Pytest Mapping
 
 Based on **[ADR-0005](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)**, any test case from Google Sheets or Excel maps 1:1 into Python code:
@@ -191,28 +242,38 @@ automation-ui/
 ├── tests/                                   # 🧪 Test Suites & Verification Logic
 │   ├── base_test.py                         # Base test class: lazy page getters, json loaders, fixture files
 │   ├── unit/                                # Internal Framework Unit Tests (36 tests)
-│   │   ├── test_architecture_invariants.py  # AST verification of Invariants 1, 2, 7 & code hygiene
-│   │   ├── test_catalog.py                  # Validates error regex and exception matching
-│   │   ├── test_exceptor.py                 # Validates Exceptor 4 gatekeeper methods
-│   │   └── test_interceptor.py              # Validates Interceptor exception translation
 │   ├── us01_bing_search/                    # User Story 1: E2E Bing to YouTube Navigation
 │   └── us04_curricula_trainer/              # User Story 4: Curricula Trainer Account (68 Tests, 7 Suites)
+│
+├── tools/                                   # 🔍 Reconnaissance & Active Probe Tools
+│   ├── recon.sh                             # Passive recon script (DOM, a11y, network, console, screenshot)
+│   └── templates/                           # Active probe prompt & audit findings templates
+│       ├── active_probe_prompt.txt          # Bounded prompt for AI active probing
+│       └── audit_findings.md                # Standardized audit findings matrix
 │
 ├── reporting/                               # 📊 100% Offline ExtentReports HTML Engine
 │   ├── core/                                # Generator, parser, document assembler, dashboard & test views
 │   ├── charts/                              # Pure mathematical SVG charts (donut, bar, pipeline, diagram, trend)
 │   └── assets/                              # Inlined report.css and report.js (video sync, bilingual toggle)
 │
+├── reports/                                 # 📈 Test Execution Results & Audit Findings
+│   ├── history/                             # Archived monolithic HTML reports by RUN_ID
+│   ├── test-results/                        # Raw video recordings & trace assets by RUN_ID
+│   ├── recon/                               # Passive reconnaissance artifacts
+│   └── execution_report.html                # Latest active run report
+│
 ├── docs/                                    # 📚 Technical Documentation & Specs
-│   ├── AI_CODING_GUIDELINES.md              # Canonical templates & anti-patterns for AI assistants
+│   ├── context/                             # Architecture handbooks, codebase context, & glossary
 │   ├── adr/                                 # Architecture Decision Records (ADR-0004 to ADR-0006)
+│   ├── AI_CODING_GUIDELINES.md              # Canonical templates & anti-patterns for AI assistants
 │   └── INSTRUCTIONS_FOR_EVALUATION.md       # Evaluation guide & grading roadmap
 │
 ├── curricula_trainer_account.html           # Local web application under test (US04)
 ├── conftest.py                              # Master Pytest entrypoint (delegates to core plugins)
 ├── pytest.ini                               # Pytest configuration, markers, and default CLI flags
 ├── requirements.txt                         # Python dependencies
-└── run_tests.py                             # 3-Phase orchestrator (Pytest -> HTML Report -> Terminal Summary)
+├── generate_report.py                       # Standalone CLI entrypoint for report generator
+└── run_tests.py                             # 3-Phase orchestrator (Concurrency Lock -> Pytest -> HTML Report)
 ```
 
 ---
@@ -244,7 +305,15 @@ playwright install chromium firefox webkit
 
 ## 🏃 Test Execution Guide
 
-### 1. Run Specific Ticket / User Story
+### 1. Ticket Concurrency Locking & History Retention
+`run_tests.py` enforces ticket-level concurrency control via file locks (`fcntl.flock`). If two processes attempt to execute the same ticket suite simultaneously, the second run is rejected with a clear `[LOCKED ERROR]` to prevent test data collision and report corruption.
+
+Every test run archives:
+- **Monolithic Standalone HTML Report**: `reports/<ticket>/history/<RUN_ID>.html` (fully offline, base64 WebM/PNG).
+- **Raw HD Video Recordings**: `reports/<ticket>/test-results/<RUN_ID>/` (permanent video artifacts per test step).
+- **Active Pointer**: `reports/<ticket>/execution_report.html` always points to the latest execution.
+
+### 2. Run Specific Ticket / User Story
 The orchestrator automatically runs Pytest, extracts the JSON report, generates the offline ExtentReports HTML file, and prints an ANSI terminal summary:
 
 ```bash
@@ -258,7 +327,7 @@ python3 run_tests.py --ticket us01_bing_search
 pytest tests/us04_curricula_trainer/test_ts06_save_action.py -v
 ```
 
-### 2. Run Parallel Tests (`pytest-xdist`)
+### 3. Run Parallel Tests (`pytest-xdist`)
 Parallel multi-core execution automatically switches to headless mode and isolates artifacts:
 
 ```bash
@@ -269,7 +338,7 @@ python3 run_tests.py --ticket us04_curricula_trainer -n 4
 pytest tests/us04_curricula_trainer/ -n auto
 ```
 
-### 3. Cross-Browser Selection & Custom Executables
+### 4. Cross-Browser Selection & Custom Executables
 ```bash
 # Run on Chromium (default)
 python3 run_tests.py --ticket us04_curricula_trainer --target-browser=chromium
@@ -285,22 +354,24 @@ python3 run_tests.py --ticket us04_curricula_trainer --target-browser=brave
 python3 run_tests.py --target-browser=brave --browser-path=/usr/bin/brave-browser
 ```
 
-### 4. Run Internal Framework Unit Tests
+### 5. Run Internal Framework Unit Tests
 Verify framework reliability, AST invariant guards, and dual-gate error classification:
 
 ```bash
+# Run unit tests via run_tests.py
 python3 run_tests.py --ticket unit
-# or directly:
+
+# Or run directly via pytest
 pytest tests/unit/ -v
 ```
 
-### 5. Regenerate HTML Report Without Rerunning Tests
+### 6. Regenerate HTML Report Without Rerunning Tests
 ```bash
-# Regenerate latest report from existing JSON
-python3 generate_report.py --json reports/us04_curricula_trainer/report.json
+# Regenerate report with specified output
+python3 generate_report.py reports/us04_curricula_trainer/report.json reports/custom_report.html
 
 # Regenerate with Base64 embedded media
-python3 generate_report.py --json reports/us04_curricula_trainer/report.json --embed-media
+python3 generate_report.py reports/us04_curricula_trainer/report.json reports/custom_report.html --embed-media
 ```
 
 ---
