@@ -73,12 +73,17 @@ When generating automated tests from Acceptance Criteria (AC), User Stories, or 
 
 ---
 
-## 5. Execution Commands
+## 5. Execution Commands & Concurrency Control
 ```bash
 # Run specific test suite
-pytest tests/us04_curricula_trainer/test_ts06_save_action.py -v
+python3 run_tests.py tests/us04_curricula_trainer/test_ts06_save_action.py -v
 
 # Run entire ticket suite and auto-generate HTML report
-python3 run_tests.py --ticket us04_curricula_trainer
+python3 run_tests.py tests/us04_curricula_trainer
 ```
+
+### Execution Isolation & Artifact Retention:
+1. **Concurrency Lock**: `run_tests.py` enforces a ticket-scoped file lock (`fcntl.flock`). Concurrent runs targeting the same ticket will be safely rejected with a `[LOCKED ERROR]` to prevent test data collision and report corruption.
+2. **Permanent Run History**: Every execution permanently archives its standalone HTML report in `reports/<ticket>/history/<RUN_ID>.html` and raw video recordings in `reports/<ticket>/test-results/<RUN_ID>/`. The top-level `reports/<ticket>/execution_report.html` always points to the latest run.
+
 

@@ -294,6 +294,29 @@ def main():
     user_args = sys.argv[1:]
     report_json_path = determine_report_json_path(user_args)
 
+    # Concurrency Lock: Prevent multiple runs on the same ticket from overlapping and corrupting reports
+    import fcntl
+    ticket_folder = None
+    for arg in user_args:
+        if not arg.startswith("-"):
+            parts = Path(arg).parts
+            if "tests" in parts:
+                idx = parts.index("tests")
+                if idx + 1 < len(parts):
+                    ticket_folder = parts[idx + 1] if not parts[idx + 1].endswith(".py") else Path(arg).parent.name
+                    break
+
+    lock_name = f".{ticket_folder}.lock" if ticket_folder else ".run_tests.lock"
+    lock_file = reports_dir / lock_name
+    lock_fd = open(lock_file, "w")
+    try:
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except (BlockingIOError, OSError):
+        target_name = ticket_folder or "toàn bộ test suite"
+        print(f"\n{RED}{BOLD}[LOCKED ERROR] Một phiên kiểm thử khác đang chạy trên '{target_name}'.{RESET}")
+        print(f"{YELLOW}Hệ thống tự động hủy lượt chạy này để ngăn chặn chạy chồng và ghi đè báo cáo.{RESET}\n")
+        sys.exit(1)
+
     env = setup_environment(base_dir)
 
     # Phase 1: Run Pytest
