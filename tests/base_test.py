@@ -54,6 +54,14 @@ class BaseTest:
         self.request = request
         self._page_cache = {}
 
+        # Provide unique client IP per test to prevent Gateway rate-limiting (429) across sequential test executions
+        import random
+        unique_client_ip = f"10.{random.randint(10, 250)}.{random.randint(10, 250)}.{random.randint(1, 254)}"
+        try:
+            self.page.set_extra_http_headers({"X-Forwarded-For": unique_client_ip})
+        except Exception:
+            pass
+
         # Initialize common Page Objects for backward compatibility
         self.bing_home = BingHomePage(page)
         self.bing_results = BingResultsPage(page)
@@ -72,6 +80,11 @@ class BaseTest:
         """Lazy accessor for CurriculaTrainerPage, preventing AttributeError when AI generates tests."""
         from pages.curricula_trainer_page import CurriculaTrainerPage
         return self.get_page(CurriculaTrainerPage)
+
+    @property
+    def naughty_strings(self) -> Dict[str, Any]:
+        """Lazy accessor for naughty_strings.json dataset for adversarial/fuzz testing."""
+        return self.load_json_data("data/naughty_strings.json")
 
     def get_fixture_file(self, rel_path: Union[str, Path]) -> Path:
         """Return absolute Path for a test fixture file in data/fixtures/."""
@@ -172,4 +185,36 @@ class BaseTest:
 
         target.parent.mkdir(parents=True, exist_ok=True)
         return str(target)
+
+    def init_ui_health_monitor(self, api_prefix: str = "/api/"):
+        """Initialize and attach a 9-Tier UI Health Monitor to the current page."""
+        from core.ui_health_helpers import UIHealthMonitor
+        self.ui_health = UIHealthMonitor(self.page, api_prefix=api_prefix)
+        return self.ui_health
+
+    def assert_ui_health(self, allow_api_errors: bool = False):
+        """Assert Tier 1 (Runtime/Console) and Tier 2 (Network) technical health."""
+        if hasattr(self, "ui_health") and self.ui_health is not None:
+            self.ui_health.assert_healthy(allow_api_errors=allow_api_errors)
+
+    def assert_no_broken_images(self):
+        """Tier 3: Assert no broken images on current page."""
+        from core.ui_health_helpers import assert_no_broken_images
+        assert_no_broken_images(self.page)
+
+    def assert_no_horizontal_overflow(self):
+        """Tier 3: Assert no layout clipping or horizontal scrollbar overflow."""
+        from core.ui_health_helpers import assert_no_horizontal_overflow
+        assert_no_horizontal_overflow(self.page)
+
+    def assert_no_hanging_spinners(self, spinner_selector: str = ".loading-spinner, [data-testid='loading']", timeout_ms: int = 5000):
+        """Tier 4: Assert loading spinner dismisses within timeout."""
+        from core.ui_health_helpers import assert_no_hanging_spinners
+        assert_no_hanging_spinners(self.page, spinner_selector=spinner_selector, timeout_ms=timeout_ms)
+
+    def assert_no_nric_in_url(self):
+        """Tier 8: Assert URL does not leak full plain-text NRIC (TC-R8-115)."""
+        from core.ui_health_helpers import assert_no_pii_in_url
+        assert_no_pii_in_url(self.page)
+
 

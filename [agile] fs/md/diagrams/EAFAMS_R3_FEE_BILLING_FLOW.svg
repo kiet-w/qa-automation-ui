@@ -1,0 +1,173 @@
+<svg viewBox="0 0 1180 520" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d3-title d3-desc">
+  <title id="d3-title">EAFAMS R3 School, Student &amp; Fee Management Pipeline</title>
+  <desc id="d3-desc">Master data structure, student class assignment, SC EA auto-linkage, fee rate rules, and cohort publication charge generation</desc>
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#0E1524"/>
+    </linearGradient>
+    <linearGradient id="zone-hq" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-school" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-engine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ext" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ledger" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="m-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="m-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="m-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="m-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#c084fc"/>
+    </marker>
+    <marker id="m-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+</defs>
+  <rect width="100%" height="100%" rx="14" fill="url(#bg-grad)"/>
+  
+  <!-- STAGE HEADER -->
+  <rect x="0" y="0" width="1180" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1180" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1180" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="12" font-weight="600">R3 PIPELINE // SCHOOL STRUCTURE, STUDENT ENROLMENT &amp; FEE RESOLUTION</text>
+  <rect x="1000" y="10" width="165" height="22" rx="4" fill="#4338ca" fill-opacity="0.3" stroke="#818cf8" stroke-width="1"/>
+  <text x="1083" y="25" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">FEE &amp; CHARGE ENGINE</text>
+
+
+  <!-- 4 Process Stages (LR Pipeline) -->
+  <rect x="30" y="60" width="260" height="435" rx="10" fill="url(#zone-hq)" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="45" y="52" width="160" height="18" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+  <text x="125" y="65" fill="#38bdf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">1. STRUCTURE &amp; MASTER</text>
+
+  <rect x="310" y="60" width="260" height="435" rx="10" fill="url(#zone-school)" stroke="#10b981" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="325" y="52" width="170" height="18" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+  <text x="410" y="65" fill="#34d399" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">2. STUDENT &amp; EA LINK</text>
+
+  <rect x="590" y="60" width="270" height="435" rx="10" fill="url(#zone-engine)" stroke="#818cf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="605" y="52" width="180" height="18" rx="4" fill="#0f172a" stroke="#818cf8" stroke-width="1"/>
+  <text x="695" y="65" fill="#818cf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">3. FEE RULES &amp; TAX</text>
+
+  <rect x="880" y="60" width="270" height="435" rx="10" fill="url(#zone-ledger)" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="895" y="52" width="200" height="18" rx="4" fill="#0f172a" stroke="#c084fc" stroke-width="1"/>
+  <text x="995" y="65" fill="#c084fc" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">4. PUBLICATION &amp; BILLS</text>
+
+  <!-- CONNECTORS -->
+  <path d="M 270 200 L 330 200" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 440 235 L 440 275" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 550 310 L 610 310" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 840 200 L 900 200" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+  <path d="M 1015 235 L 1015 275" stroke="#c084fc" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+  <path d="M 1015 365 L 1015 405" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+
+  <!-- ==================== STAGE 1 NODES ==================== -->
+  <g>
+    <rect x="50" y="85" width="220" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="65" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F01 School Master (HQ)</text>
+    <text x="65" y="126" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• MOE HQ creates Schools</text>
+    <text x="65" y="142" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Issues School User Accounts</text>
+  </g>
+
+  <g>
+    <rect x="50" y="170" width="220" height="95" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="65" y="193" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F02–F04 Academic Setup</text>
+    <text x="65" y="211" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Academic Year &amp; Global Levels</text>
+    <text x="65" y="227" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• School Level Offering (P1-P6)</text>
+    <text x="65" y="243" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Class Setup (e.g., P6A)</text>
+  </g>
+
+  <!-- ==================== STAGE 2 NODES ==================== -->
+  <g>
+    <rect x="330" y="85" width="220" height="65" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+    <text x="345" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F05 Student Record</text>
+    <text x="345" y="126" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• School User manual intake</text>
+    <text x="345" y="142" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• NRIC, Name, DOB, Residency</text>
+  </g>
+
+  <g>
+    <rect x="330" y="165" width="220" height="70" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.4"/>
+    <text x="345" y="188" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F06 Class Assignment</text>
+    <text x="345" y="206" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Assign student to Class</text>
+    <text x="345" y="222" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Creates Enrolment Profile</text>
+  </g>
+
+  <g>
+    <rect x="330" y="275" width="220" height="95" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="475" y="283" width="65" height="16" rx="3" fill="#047857"/>
+    <text x="507" y="294" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SC ONLY</text>
+    <text x="345" y="298" fill="#34d399" font-family="'Geist', sans-serif" font-size="11.5" font-weight="800">F08 EA Auto-Linkage</text>
+    <text x="345" y="316" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• SC Match: Auto-link to R1 EA</text>
+    <text x="345" y="332" fill="#f59e0b" font-family="'Geist Mono', monospace" font-size="9">• PR / IS: No EA Account</text>
+    <text x="345" y="348" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">• F07 Transfer: Preserves history</text>
+  </g>
+
+  <!-- ==================== STAGE 3 NODES ==================== -->
+  <g>
+    <rect x="610" y="85" width="230" height="75" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.2"/>
+    <text x="625" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F09–F10 Fee Components</text>
+    <text x="625" y="126" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• HQ: School Fee, Misc Fee</text>
+    <text x="625" y="142" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• School: Transport, Enrichment</text>
+  </g>
+
+  <g>
+    <rect x="610" y="175" width="230" height="95" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.4"/>
+    <text x="625" y="198" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F11 Fee Rate Rules</text>
+    <text x="625" y="216" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Stage (P1-P6) × Resident (SC/PR/IS)</text>
+    <text x="625" y="232" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="9">• Tax flag (is_apply_tax) at Component</text>
+    <text x="625" y="248" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="8.5">• Effective Date Range versioning</text>
+  </g>
+
+  <!-- ==================== STAGE 4 NODES ==================== -->
+  <g>
+    <rect x="900" y="85" width="230" height="150" rx="6" fill="#1e293b" stroke="#c084fc" stroke-width="1.5"/>
+    <rect x="1050" y="93" width="70" height="16" rx="3" fill="#7e22ce"/>
+    <text x="1085" y="104" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">PUBLISH</text>
+    <text x="915" y="112" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">F12–F14 Fee Publication</text>
+    <text x="915" y="130" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Scope: All School / Custom Target</text>
+    <text x="915" y="146" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Target by Level, Class, SC/PR/IS</text>
+    <text x="915" y="162" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="9">• Resolves at eligibility_date</text>
+    <text x="915" y="178" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="9">• Pricing at pricing_date + GST</text>
+    <text x="915" y="196" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Sets charge_date &amp; due_date</text>
+  </g>
+
+  <g>
+    <rect x="900" y="275" width="230" height="90" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="1055" y="283" width="65" height="16" rx="3" fill="#047857"/>
+    <text x="1087" y="294" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">POSTED</text>
+    <text x="915" y="300" fill="#34d399" font-family="'Geist', sans-serif" font-size="12" font-weight="800">F15 Student Charges</text>
+    <text x="915" y="318" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">Charge Status: POSTED</text>
+    <text x="915" y="334" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">Pushed to e-Service (R9) for Parent</text>
+    <text x="915" y="348" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Generates student bill receivable</text>
+  </g>
+
+  <g>
+    <rect x="900" y="405" width="230" height="70" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.2"/>
+    <text x="915" y="428" fill="#fbbf24" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F16 Charge Adjustment</text>
+    <text x="915" y="446" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Credit / Debit memo adjustment</text>
+    <text x="915" y="460" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Preserves immutable Original Amount</text>
+  </g>
+
+</svg>

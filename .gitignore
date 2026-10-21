@@ -10,3 +10,7 @@ reports/*
 *.pem
 *.key
 archive/
+test-results/
+copy/
+/\[agile\]fs
+/fs08

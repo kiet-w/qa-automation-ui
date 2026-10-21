@@ -1,0 +1,203 @@
+{
+  "base_url": "http://localhost:5174",
+  "mockpass_url": "http://localhost:5156/singpass/login",
+  "personas": {
+    "PAR-NORMAL-01": {
+      "id": "PAR-NORMAL-01",
+      "name": "TAN WEI MING",
+      "nric": "S7654321B",
+      "role": "Parent",
+      "email": "wei.ming.s2345678b@example.com",
+      "phone": "+6592345678",
+      "children": ["Chloe Chan"],
+      "has_active_child": true,
+      "description": "Happy path standard parent with active children (AC #1, #6, #14)"
+    },
+    "PAR-NORMAL-02": {
+      "id": "PAR-NORMAL-02",
+      "name": "NGUYEN VAN MINH",
+      "nric": "S7890123F",
+      "role": "Parent",
+      "children": ["Tan Wei Ming"],
+      "has_active_child": true,
+      "description": "Second happy path parent for multi-account validation (AC #4)"
+    },
+    "PAR-NO-CHILD": {
+      "id": "PAR-NO-CHILD",
+      "name": "LIM SHU XIN",
+      "nric": "S3456789C",
+      "role": "Parent",
+      "has_active_child": false,
+      "expected_error": "No Edu Account linked with for this parent",
+      "expected_msg_code": "MSG-0801",
+      "description": "Parent with valid NRIC but no linked children (AC #3, MSG-0801)"
+    },
+    "PAR-BOUNDARY-16": {
+      "id": "PAR-BOUNDARY-16",
+      "name": "Lee Bee Wah",
+      "nric": "S7890123F",
+      "role": "Parent",
+      "description": "Parent with child reaching 16yo Due for closure (AC #7, #26)"
+    },
+    "PAR-ALL-16": {
+      "id": "PAR-ALL-16",
+      "name": "Ng Chee Meng",
+      "nric": "S8901234G",
+      "role": "Parent",
+      "description": "Parent where all children are >= 16yo, form read-only (AC #9)"
+    },
+    "PAR-NON-CITIZEN": {
+      "id": "PAR-NON-CITIZEN",
+      "name": "K. Shanmugam",
+      "nric": "S9012345H",
+      "role": "Parent",
+      "description": "Non-Singapore Citizen student, EA not eligible notice (AC #10)"
+    },
+    "PAR-PENDING-PAYMENT": {
+      "id": "PAR-PENDING-PAYMENT",
+      "name": "Vivian Balakrishnan",
+      "nric": "S2345678I",
+      "role": "Parent",
+      "description": "Child with pending payment transaction in yellow alert box (AC #25)"
+    },
+    "PAR-UNDER-7": {
+      "id": "PAR-UNDER-7",
+      "name": "LEE JUN HAO",
+      "nric": "S4567890D",
+      "role": "Parent",
+      "description": "Parent with child under 7 years old (expected opening on 7th birthday)"
+    },
+    "PAR-NO-EA": {
+      "id": "PAR-NO-EA",
+      "name": "CHEN MEI LIN",
+      "nric": "S5678901E",
+      "role": "Parent",
+      "description": "Parent with student without initialized Education Account (MSG-0804)"
+    },
+    "PAR-UNAUTHORIZED-TARGET": {
+      "id": "PAR-UNAUTHORIZED-TARGET",
+      "student_id": "STU-UNAUTHORIZED-9999",
+      "description": "Target ID for URL tampering and unauthorized access testing (MSG-0003)"
+    }
+  },
+  "profile_update_valid": {
+    "phoneNumber": "+6591234567",
+    "email": "tan.wei.ming.updated@example.com",
+    "mailingBlock": "210",
+    "mailingStreet": "JURONG EAST STREET 21",
+    "mailingUnit": "05-12",
+    "mailingPostalCode": "600210",
+    "mailingCountry": "SINGAPORE"
+  },
+  "profile_update_restore": {
+    "phoneNumber": "+6592345678",
+    "email": "wei.ming.s2345678b@example.com",
+    "mailingBlock": "210",
+    "mailingStreet": "JURONG EAST STREET 21",
+    "mailingUnit": "05-12",
+    "mailingPostalCode": "600210",
+    "mailingCountry": "SINGAPORE"
+  },
+  "bva_invalid_phones": [
+    "51234567",
+    "71234567",
+    "9123456",
+    "912345678",
+    "abcdefgh"
+  ],
+  "bva_valid_phones": [
+    "91234567",
+    "81234567",
+    "61234567"
+  ],
+  "bva_invalid_emails": [
+    "invalidemail",
+    "plainaddress",
+    "@missingusername.com",
+    "username@.com"
+  ],
+  "bva_invalid_postal_codes": [
+    "12345",
+    "1234567",
+    "ABCDEF"
+  ],
+  "profile_bva_dataset": {
+    "phones": {
+      "valid_prefixes": ["91234567", "81234567", "61234567"],
+      "invalid_prefixes": ["71234567", "51234567", "12345678", "23456789", "34567890", "45678901"],
+      "invalid_lengths": ["9123456", "912345678"],
+      "invalid_alphanumeric": ["9123abcd", "abcdefgh"],
+      "special_chars": ["9123-4567", "(65)91234567"],
+      "with_space": "9123 4567"
+    },
+    "emails": {
+      "valid_formats": [
+        "tan.wei.ming@example.com",
+        "parent@mail.junior.school.edu.sg",
+        "parent+moe.alerts@gmail.com",
+        "wei-ming.tan_parent@domain-test.com"
+      ],
+      "invalid_formats": [
+        "invalidemail",
+        "plainaddress",
+        "tan.wei.ming.example.com",
+        "tan.wei.ming@",
+        "@example.com",
+        "tan.wei.ming@example",
+        "tan@wei@example.com",
+        "tan wei@example.com"
+      ],
+      "length_149": "valid_user_name_test_for_boundary_check_149chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllll@longdomainname.example.com",
+      "length_150": "valid_user_name_test_for_boundary_check_150chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkkllllll@longdomainname.example.com",
+      "length_151": "valid_user_name_test_for_boundary_check_151chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllllll@longdomainname.example.com"
+    },
+    "mailing": {
+      "street_min_1": "A",
+      "street_max_100": "Blk 210 Jurong East St 21 #05-12 Tower B Singapore 600210 Extra Long Address Description Padding String",
+      "street_overflow_101": "Blk 210 Jurong East St 21 #05-12 Tower B Singapore 600210 Extra Long Address Description Padding String X",
+      "postal_valid_6_digits": ["600210", "018956", "560123"],
+      "postal_invalid_lengths": ["60021", "6002100"],
+      "postal_invalid_chars": ["60021A", "ABCDEF"],
+      "block_max_20": "Block 12345678901234",
+      "unit_max_20": "#05-123456789012345",
+      "country_default": "SINGAPORE",
+      "country_max_100": "Republic of Singapore National Education Service Mainland Area Jurisdiction District Zone Singapore"
+    }
+  },
+  "xss_payload": "<script>alert('xss')</script>",
+  "xss_payloads": [
+    "<script>alert('xss')</script>",
+    "<img src=x onerror=alert(1)>",
+    "<svg onload=alert(1)>",
+    "javascript:alert(1)"
+  ],
+  "messages": {
+    "MSG-0801": "We could not find any student linked to your account. Please contact your child's school.",
+    "MSG-0802": "Login was not completed. Try again.",
+    "MSG-0803": "No transactions found.",
+    "MSG-0804": "This student does not have an Education Account.",
+    "MSG-0805": "Enter a mobile number in the correct format, like 9123 4567",
+    "MSG-0806": "Enter an email address in the correct format, like name@example.com",
+    "MSG-0807": "Your details have been updated.",
+    "MSG-0808": "We could not update your details. Please try again.",
+    "MSG-0809": "We could not retrieve your information. Please try again later.",
+    "MSG-0001": "Enter your",
+    "MSG-0002": "Your session has expired. Please log in again.",
+    "MSG-0003": "You do not have permission to perform this action."
+  },
+  "ui_labels": {
+    "portal_heading": "EduSave E-Service Portal",
+    "login_heading": "Parent portal login",
+    "transactions_heading": "Transactions manage",
+    "profile_heading": "My Profile",
+    "update_details_btn": "Update details",
+    "save_changes_btn": "Save changes",
+    "cancel_btn": "Cancel",
+    "show_nric_btn": "Show NRIC",
+    "hide_nric_btn": "Hide NRIC",
+    "confirm_dialog_title": "Save your changes?",
+    "dirty_state_hint": "Make a change to enable saving.",
+    "invalid_email_inline_alert": "Enter a valid email address.",
+    "success_update_toast": "Your details have been updated."
+  }
+}

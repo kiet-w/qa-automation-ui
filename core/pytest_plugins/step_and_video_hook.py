@@ -48,6 +48,206 @@ def pytest_runtest_makereport(item, call):
                     jm["error_category"] = category
                     jm["error_hint"] = hint
 
+    if hasattr(report, "wasxfail") and report.wasxfail:
+        item.user_properties.append(("wasxfail", str(report.wasxfail)))
+        if hasattr(item, "funcargs") and "json_metadata" in item.funcargs:
+            jm = item.funcargs["json_metadata"]
+            if isinstance(jm, dict):
+                jm["wasxfail"] = str(report.wasxfail)
+
+
+def _highlight_failure_in_browser(page: Optional[Page], step_title: str, error_msg: str):
+    """
+    Highlights the defective / failing UI element in the browser DOM before capturing screenshot and video.
+    - Accurately targets the tested input field (e.g. mobile number '71234567', invalid email, boundary street).
+    - Dismisses any unwanted modal dialog / backdrop covering the form so the defective field is visible.
+    - Scrolls the defective field into the center of the viewport.
+    - Injects high-contrast red outline, floating defect badge, and top diagnostic evidence banner.
+    - Holds the frame for 1.2s so the recorded WebM video shows the highlighted defect clearly.
+    """
+    if not page:
+        return
+    try:
+        if page.is_closed():
+            return
+        clean_err = error_msg.splitlines()[0] if error_msg else "Assertion / Execution Failure"
+        clean_err = clean_err.replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'")
+        clean_title = step_title.replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'")
+
+        page.evaluate(f"""(() => {{
+            // 1. Inject Top Diagnostic Banner
+            let banner = document.getElementById('__qa_evidence_banner__');
+            if (!banner) {{
+                banner = document.createElement('div');
+                banner.id = '__qa_evidence_banner__';
+                banner.style.position = 'fixed';
+                banner.style.top = '0';
+                banner.style.left = '0';
+                banner.style.right = '0';
+                banner.style.zIndex = '2147483647';
+                banner.style.background = 'linear-gradient(90deg, #cf222e 0%, #b31d28 100%)';
+                banner.style.color = '#ffffff';
+                banner.style.padding = '8px 16px';
+                banner.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                banner.style.fontSize = '13px';
+                banner.style.fontWeight = 'bold';
+                banner.style.display = 'flex';
+                banner.style.alignItems = 'center';
+                banner.style.justifyContent = 'space-between';
+                banner.style.boxShadow = '0 4px 14px rgba(207, 34, 46, 0.4)';
+                banner.style.borderBottom = '2px solid rgba(255, 255, 255, 0.6)';
+                document.body.appendChild(banner);
+            }}
+            banner.innerHTML = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="background:#ffffff;color:#cf222e;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:900;">DEFECT EVIDENCE</span>
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65vw;">{clean_err[:120]}</span>
+                </div>
+                <span style="font-size:11px;opacity:0.9;font-weight:normal;">Step: {clean_title[:45]}</span>
+            `;
+
+            // 2. Identify candidate failure elements with smart context detection
+            const contextText = (`{clean_title} {clean_err}`).toLowerCase();
+
+            // Extract quoted tokens like '71234567' or '7' from error/title
+            const tokens = [];
+            const quoteRegex = /['"]([^'"]+)['"]/g;
+            let match;
+            while ((match = quoteRegex.exec(`{clean_title} {clean_err}`)) !== null) {{
+                if (match[1].trim()) tokens.push(match[1].trim());
+            }}
+
+            let targetEl = null;
+            let defectDescription = "POINT OF DEFECT / ASSERTION";
+
+            // (A) Priority 1: Match input whose value contains one of the tested tokens (e.g. 71234567)
+            const allInputs = Array.from(document.querySelectorAll('input, textarea, select'));
+            for (const input of allInputs) {{
+                const val = (input.value || "").trim();
+                if (!val) continue;
+                for (const tok of tokens) {{
+                    if (val === tok || val.includes(tok) || tok.includes(val)) {{
+                        targetEl = input;
+                        defectDescription = `DEFECT: Value "${{val}}" accepted without validation`;
+                        break;
+                    }}
+                }}
+                if (targetEl) break;
+            }}
+
+            // (B) Priority 2: Semantic field mapping from error & step keywords
+            if (!targetEl) {{
+                let semanticSelector = null;
+                if (/phone|mobile|prefix|7/.test(contextText)) {{
+                    semanticSelector = "input[name='phoneNumber'], input[type='tel'], input[name*='phone' i], input[name*='mobile' i]";
+                    defectDescription = "DEFECT: Invalid Mobile Phone Number";
+                }} else if (/email|mail/.test(contextText)) {{
+                    semanticSelector = "input[name='email'], input[type='email'], input[name*='email' i]";
+                    defectDescription = "DEFECT: Invalid Email Address";
+                }} else if (/postal|zip/.test(contextText)) {{
+                    semanticSelector = "input[name*='postal' i], input[name*='zip' i]";
+                    defectDescription = "DEFECT: Postal Code";
+                }} else if (/street|address/.test(contextText)) {{
+                    semanticSelector = "input[name*='street' i], input[name*='address' i]";
+                    defectDescription = "DEFECT: Street Address";
+                }} else if (/block/.test(contextText)) {{
+                    semanticSelector = "input[name*='block' i]";
+                    defectDescription = "DEFECT: Block Number";
+                }} else if (/nric/.test(contextText)) {{
+                    semanticSelector = "[data-testid='nric'], input[name*='nric' i]";
+                    defectDescription = "DEFECT: NRIC Identity Field";
+                }}
+
+                if (semanticSelector) {{
+                    const found = document.querySelector(semanticSelector);
+                    if (found) {{
+                        targetEl = found;
+                        const val = (targetEl.value || "").trim();
+                        if (val) {{
+                            defectDescription = `DEFECT: Value "${{val}}" accepted without validation`;
+                        }}
+                    }}
+                }}
+            }}
+
+            // (C) Priority 3: Native / ARIA invalid attributes
+            if (!targetEl) {{
+                const candidateSelectors = [
+                    ':invalid',
+                    '[aria-invalid="true"]',
+                    '.is-invalid',
+                    '.error-message',
+                    '.field-error',
+                    '.invalid-feedback',
+                    '[role="alert"]',
+                    '.text-danger',
+                    '.toast-error'
+                ];
+                for (const sel of candidateSelectors) {{
+                    const el = document.querySelector(sel);
+                    if (el && el.offsetParent !== null) {{
+                        targetEl = el;
+                        defectDescription = "DEFECT: Validation Failure";
+                        break;
+                    }}
+                }}
+            }}
+
+            // (D) Handle obstructive modal/dialog:
+            // If an unwanted modal dialog is covering the target element on the form,
+            // dismiss / hide the modal so the form field is clearly visible!
+            const modalDialog = document.querySelector('div[role="alertdialog"], [aria-modal="true"], .modal');
+            if (modalDialog && targetEl && !modalDialog.contains(targetEl)) {{
+                // The dialog popped up when it shouldn't have!
+                // Dismiss modal to reveal the defective input field behind it:
+                modalDialog.style.display = 'none';
+                document.querySelectorAll('.fixed.inset-0, [class*="backdrop" i]').forEach(b => {{
+                    b.style.display = 'none';
+                }});
+            }}
+
+            // (E) Priority 4: Fallback to activeElement ONLY IF no modal button
+            if (!targetEl && document.activeElement && document.activeElement !== document.body) {{
+                const tag = document.activeElement.tagName.toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || tag === 'select') {{
+                    targetEl = document.activeElement;
+                }}
+            }}
+
+            // (F) Highlight the target element!
+            if (targetEl) {{
+                targetEl.scrollIntoView({{ behavior: 'instant', block: 'center' }});
+                targetEl.style.outline = '4px solid #cf222e';
+                targetEl.style.outlineOffset = '4px';
+                targetEl.style.boxShadow = '0 0 24px rgba(207, 34, 46, 0.9)';
+                targetEl.style.backgroundColor = 'rgba(207, 34, 46, 0.12)';
+
+                // Add floating pointer badge directly above the element
+                let badge = document.getElementById('__qa_target_badge__');
+                if (!badge) {{
+                    badge = document.createElement('div');
+                    badge.id = '__qa_target_badge__';
+                    badge.style.position = 'absolute';
+                    badge.style.background = '#cf222e';
+                    badge.style.color = '#ffffff';
+                    badge.style.fontSize = '12px';
+                    badge.style.fontWeight = 'bold';
+                    badge.style.padding = '4px 10px';
+                    badge.style.borderRadius = '4px';
+                    badge.style.zIndex = '2147483647';
+                    badge.style.boxShadow = '0 3px 10px rgba(0,0,0,0.4)';
+                    document.body.appendChild(badge);
+                }}
+                badge.textContent = defectDescription;
+                const rect = targetEl.getBoundingClientRect();
+                badge.style.top = Math.max(45, window.scrollY + rect.top - 30) + 'px';
+                badge.style.left = Math.max(10, window.scrollX + rect.left) + 'px';
+            }}
+        }})();""")
+        page.wait_for_timeout(1200)
+    except Exception:
+        pass
+
 
 class StepTracker:
     """Tracks and records execution steps, statuses, durations, and screenshots."""
@@ -189,6 +389,7 @@ class _StepContext:
                 rel_fail_path = str(fail_path)
             try:
                 if active_page and not active_page.is_closed():
+                    _highlight_failure_in_browser(active_page, step_title=self.title, error_msg=str(exc_val))
                     active_page.screenshot(path=str(fail_path), full_page=False)
                     self.step_data["screenshot"] = rel_fail_path
             except Exception:

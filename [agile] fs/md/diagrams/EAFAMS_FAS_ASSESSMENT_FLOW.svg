@@ -1,0 +1,113 @@
+<svg viewBox="0 0 1140 480" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="fas-arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="fas-ok" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="fas-warn" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="fas-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas Solid Opaque Background -->
+  <rect width="100%" height="100%" rx="14" fill="#0B101B"/>
+
+  <!-- GRID / STAGE HEADER -->
+  <rect x="0" y="0" width="1140" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1140" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1140" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="monospace" font-size="12" font-weight="600">FAS ASSESSMENT PIPELINE // DUAL-INTAKE (ONLINE/OCR) &gt; RULE ENGINE &gt; ML NEED SCORE &gt; DISBURSEMENT</text>
+  <rect x="990" y="10" width="130" height="22" rx="4" fill="#6d28d9" fill-opacity="0.3" stroke="#a855f7" stroke-width="1"/>
+  <text x="1055" y="25" fill="#c084fc" font-family="monospace" font-size="10" font-weight="700" text-anchor="middle">AI + RULES DUAL</text>
+
+  <!-- ==================== CONNECTORS ==================== -->
+  <!-- Intake to Assessment Engine -->
+  <path d="M 190 120 L 260 120 Q 268 120 268 128 L 268 185 Q 268 193 276 193 L 300 193" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#fas-arr)"/>
+  <path d="M 190 270 L 260 270 Q 268 270 268 262 L 268 205 Q 268 197 276 197 L 300 197" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#fas-arr)"/>
+
+  <!-- Assessment to Branches -->
+  <!-- Branch 1: MOEFAS Auto Grant (Top) -->
+  <path d="M 500 170 L 550 170 Q 558 170 558 152 L 558 120 Q 558 112 566 112 L 600 112" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#fas-ok)"/>
+  <!-- Branch 2: SBFAS School Review (Bottom) -->
+  <path d="M 500 220 L 550 220 Q 558 220 558 248 L 558 285 Q 558 293 566 293 L 600 293" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#fas-warn)"/>
+
+  <!-- SBFAS to ML Engine & School Approver -->
+  <path d="M 800 293 L 850 293" stroke="#a855f7" stroke-width="1.8" fill="none" marker-end="url(#fas-arr)"/>
+
+  <!-- Outputs to Ledger / Charges -->
+  <path d="M 800 112 L 910 112 Q 918 112 918 130 L 918 175 Q 918 183 926 183 L 950 183" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#fas-ok)"/>
+  <path d="M 1030 270 L 1030 225" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#fas-ok)"/>
+
+  <!-- Connector Masks & Badges -->
+  <rect x="520" y="103" width="60" height="16" rx="3" fill="#0f172a" stroke="#059669" stroke-width="0.8"/>
+  <text x="550" y="115" fill="#10b981" font-family="monospace" font-size="9" font-weight="700" text-anchor="middle">PASS</text>
+
+  <rect x="515" y="284" width="70" height="16" rx="3" fill="#0f172a" stroke="#d97706" stroke-width="0.8"/>
+  <text x="550" y="296" fill="#fbbf24" font-family="monospace" font-size="9" font-weight="700" text-anchor="middle">EXCEED/SBFAS</text>
+
+  <!-- ==================== NODES ==================== -->
+  <!-- Node 1: Online Intake (R10) -->
+  <g>
+    <rect x="30" y="85" width="160" height="70" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="45" y="110" fill="#f8fafc" font-family="sans-serif" font-size="12" font-weight="700">R10 Online FAS</text>
+    <text x="45" y="128" fill="#94a3b8" font-family="monospace" font-size="9.5">Family Unit Intake</text>
+    <text x="45" y="144" fill="#34d399" font-family="monospace" font-size="9">AI Prefill &amp; Live Calc</text>
+  </g>
+
+  <!-- Node 2: Hardcopy Intake (R5) -->
+  <g>
+    <rect x="30" y="235" width="160" height="70" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="45" y="260" fill="#f8fafc" font-family="sans-serif" font-size="12" font-weight="700">R5 Offline Hardcopy</text>
+    <text x="45" y="278" fill="#94a3b8" font-family="monospace" font-size="9.5">Simulated OCR Intake</text>
+    <text x="45" y="294" fill="#f59e0b" font-family="monospace" font-size="9">Confidence &amp; Dup Check</text>
+  </g>
+
+  <!-- Node 3: Assessment Rule Engine (Center) -->
+  <g>
+    <rect x="300" y="160" width="200" height="75" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="315" y="185" fill="#38bdf8" font-family="sans-serif" font-size="12" font-weight="800">Rule Assessment Engine</text>
+    <text x="315" y="203" fill="#f8fafc" font-family="monospace" font-size="9.5">GHI &lt;= $4,000 OR PCI &lt;= $1,000</text>
+    <text x="315" y="220" fill="#94a3b8" font-family="monospace" font-size="9">Citizen Verification (Gov API)</text>
+  </g>
+
+  <!-- Node 4: MOEFAS Auto-Grant Outcome (Top Branch) -->
+  <g>
+    <rect x="600" y="75" width="200" height="75" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+    <text x="615" y="100" fill="#10b981" font-family="sans-serif" font-size="12" font-weight="800">MOEFAS AUTO-GRANT</text>
+    <text x="615" y="118" fill="#f8fafc" font-family="monospace" font-size="9.5">100% School &amp; Misc Subsidy</text>
+    <text x="615" y="135" fill="#94a3b8" font-family="monospace" font-size="9">Immediate System Approval</text>
+  </g>
+
+  <!-- Node 5: SBFAS ML Review Drawer (Bottom Branch) -->
+  <g>
+    <rect x="600" y="255" width="200" height="75" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="615" y="280" fill="#fbbf24" font-family="sans-serif" font-size="12" font-weight="700">SBFAS School Review</text>
+    <text x="615" y="298" fill="#f8fafc" font-family="monospace" font-size="9.5">Manual Committee Review</text>
+    <text x="615" y="315" fill="#94a3b8" font-family="monospace" font-size="9">Discretionary Subsidy Tiers</text>
+  </g>
+
+  <!-- Node 6: ML Need Score Engine (AI Widget) -->
+  <g>
+    <rect x="850" y="255" width="180" height="75" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+    <text x="865" y="280" fill="#c084fc" font-family="sans-serif" font-size="12" font-weight="800">ML Need Score (0-100)</text>
+    <text x="865" y="298" fill="#f8fafc" font-family="monospace" font-size="9.5">Low / Med / High Risk</text>
+    <text x="865" y="315" fill="#a855f7" font-family="monospace" font-size="9">Recommends Tier 1 or Tier 2</text>
+  </g>
+
+  <!-- Node 7: Charge Register & Budget Disbursement -->
+  <g>
+    <rect x="950" y="150" width="160" height="75" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.8"/>
+    <text x="965" y="175" fill="#f8fafc" font-family="sans-serif" font-size="11.5" font-weight="700">Fee Ledger Offset</text>
+    <text x="965" y="193" fill="#10b981" font-family="monospace" font-size="9">Net Payable Reduced ($0)</text>
+    <text x="965" y="210" fill="#94a3b8" font-family="monospace" font-size="9">R6 Budget Utilized</text>
+  </g>
+
+</svg>

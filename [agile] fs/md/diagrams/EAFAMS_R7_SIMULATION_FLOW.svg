@@ -1,0 +1,136 @@
+<svg viewBox="0 0 1140 500" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d5-title d5-desc">
+  <title id="d5-title">EAFAMS R7 User Simulation and Security Safeguard Flow</title>
+  <desc id="d5-desc">Sequence flow of MOE HQ activating simulation mode for School Users or Parents, with persistent UI banner and mutating request interception</desc>
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#0E1524"/>
+    </linearGradient>
+    <linearGradient id="zone-hq" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-school" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-engine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ext" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ledger" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="m-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="m-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="m-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="m-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#c084fc"/>
+    </marker>
+    <marker id="m-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+</defs>
+  <rect width="100%" height="100%" rx="14" fill="url(#bg-grad)"/>
+  
+  <!-- STAGE HEADER -->
+  <rect x="0" y="0" width="1140" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1140" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1140" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="12" font-weight="600">R7 SIMULATION FLOW // PERSONA SWITCH, READ-ONLY SHADOWING &amp; MUTATION INTERCEPTOR</text>
+  <rect x="960" y="10" width="165" height="22" rx="4" fill="#be123c" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1"/>
+  <text x="1043" y="25" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">SAFETY AIRGAP</text>
+
+
+  <!-- 4 Lifelines -->
+  <g font-size="11.5" font-weight="700" text-anchor="middle">
+    <!-- Actor 0 -->
+    <rect x="50" y="65" width="180" height="38" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="140" y="89" fill="#f8fafc">🏛️ MOE HQ Specialist</text>
+    <line x1="140" y1="103" x2="140" y2="475" stroke="#334155" stroke-dasharray="4 4"/>
+
+    <!-- Actor 1 -->
+    <rect x="330" y="65" width="180" height="38" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.5"/>
+    <text x="420" y="89" fill="#f8fafc">🌐 Gateway / Auth</text>
+    <line x1="420" y1="103" x2="420" y2="475" stroke="#334155" stroke-dasharray="4 4"/>
+
+    <!-- Actor 2 -->
+    <rect x="610" y="65" width="180" height="38" rx="6" fill="#0f172a" stroke="#f43f5e" stroke-width="2"/>
+    <text x="700" y="89" fill="#f43f5e">🛡️ Safety Interceptor</text>
+    <line x1="700" y1="103" x2="700" y2="475" stroke="#334155" stroke-dasharray="4 4"/>
+
+    <!-- Actor 3 -->
+    <rect x="890" y="65" width="180" height="38" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="980" y="89" fill="#f8fafc">💾 Ledger &amp; DB</text>
+    <line x1="980" y1="103" x2="980" y2="475" stroke="#334155" stroke-dasharray="4 4"/>
+  </g>
+
+  <!-- SEQUENCE STEPS -->
+  <!-- Step 1: Request Sim Token -->
+  <line x1="140" y1="130" x2="420" y2="130" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#m-sky)"/>
+  <rect x="180" y="118" width="200" height="18" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8"/>
+  <text x="280" y="131" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">1. Start Sim (Target: Parent / School)</text>
+
+  <!-- Step 2: Mint Sim Token -->
+  <line x1="420" y1="165" x2="140" y2="165" stroke="#818cf8" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#m-purple)"/>
+  <rect x="180" y="153" width="200" height="18" rx="4" fill="#0f172a" stroke="#818cf8" stroke-width="0.8"/>
+  <text x="280" y="166" fill="#c084fc" font-size="10" font-weight="600" text-anchor="middle">2. JWT Issued: role=SIM, read_only=1</text>
+
+  <!-- Step 3: UI Renders Amber Banner -->
+  <rect x="70" y="195" width="400" height="28" rx="6" fill="#b45309" fill-opacity="0.3" stroke="#f59e0b" stroke-width="1.2"/>
+  <text x="270" y="213" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="10" font-weight="700" text-anchor="middle">⚠️ SIMULATION ACTIVE: VIEWING AS PARENT S1234567A</text>
+
+  <!-- Step 4: Legitimate Read Request -->
+  <line x1="140" y1="250" x2="700" y2="250" stroke="#10b981" stroke-width="1.8" marker-end="url(#m-emerald)"/>
+  <rect x="250" y="238" width="220" height="18" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="0.8"/>
+  <text x="360" y="251" fill="#34d399" font-size="10" font-weight="600" text-anchor="middle">3. GET /api/ea/balance &amp; /charges</text>
+
+  <!-- Step 5: Read Passes to DB -->
+  <line x1="700" y1="250" x2="980" y2="250" stroke="#10b981" stroke-width="1.8" marker-end="url(#m-emerald)"/>
+
+  <!-- Step 6: DB Returns 100% Exact Data -->
+  <line x1="980" y1="285" x2="140" y2="285" stroke="#10b981" stroke-width="1.8" stroke-dasharray="4 3" marker-end="url(#m-emerald)"/>
+  <rect x="420" y="273" width="280" height="18" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="0.8"/>
+  <text x="560" y="286" fill="#10b981" font-size="10" font-weight="600" text-anchor="middle">4. Return exact balance $142.50 &amp; posted charges</text>
+
+  <!-- BOUNDARY / VIOLATION BOX: ACCIDENTAL MUTATION -->
+  <rect x="70" y="325" width="970" height="135" rx="8" fill="#1e293b" fill-opacity="0.4" stroke="#f43f5e" stroke-width="1.2" stroke-dasharray="4 4"/>
+  <rect x="85" y="318" width="260" height="16" rx="3" fill="#be123c"/>
+  <text x="215" y="330" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">SAFETY INTERCEPTOR TEST: ACCIDENTAL MUTATION</text>
+
+  <!-- Step 7: HQ attempts mutation -->
+  <line x1="140" y1="365" x2="700" y2="365" stroke="#f43f5e" stroke-width="2" marker-end="url(#m-rose)"/>
+  <rect x="230" y="353" width="260" height="18" rx="4" fill="#0f172a" stroke="#f43f5e" stroke-width="0.8"/>
+  <text x="360" y="366" fill="#f43f5e" font-size="9.5" font-weight="600" text-anchor="middle">5. POST /api/payment/pay-now (ACCIDENTAL)</text>
+
+  <!-- Step 8: Interceptor BLOCKS Mutation -->
+  <circle cx="700" cy="365" r="9" fill="#be123c" stroke="#f43f5e" stroke-width="1.5"/>
+  <text x="700" y="369" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">✕</text>
+
+  <!-- Step 9: Rejects with 403 Forbidden -->
+  <line x1="700" y1="405" x2="140" y2="405" stroke="#f43f5e" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#m-rose)"/>
+  <rect x="210" y="393" width="300" height="20" rx="4" fill="#be123c" stroke="#f43f5e" stroke-width="1"/>
+  <text x="360" y="407" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">6. 403 FORBIDDEN: SIMULATION IS READ-ONLY</text>
+
+  <!-- Step 10: Interceptor Logs to Audit Trail -->
+  <line x1="700" y1="435" x2="980" y2="435" stroke="#f59e0b" stroke-width="1.8" marker-end="url(#m-amber)"/>
+  <rect x="740" y="423" width="200" height="18" rx="4" fill="#0f172a" stroke="#f59e0b" stroke-width="0.8"/>
+  <text x="840" y="436" fill="#fbbf24" font-size="9.5" font-weight="600" text-anchor="middle">7. Write Audit: Blocked Mutation Attempt</text>
+
+</svg>

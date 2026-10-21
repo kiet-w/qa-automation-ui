@@ -3,13 +3,13 @@ reporting/charts/donut.py - Pure SVG Donut Chart showing Pass/Fail/Skip outcomes
 """
 
 
-def generate_donut_chart_svg(passed: int, failed: int, skipped: int) -> str:
+def generate_donut_chart_svg(passed: int, failed: int, skipped: int = 0, xfailed: int = 0) -> str:
     """
     Generates a pure SVG Donut Chart showing the distribution of test outcomes.
     Uses stroke-dasharray and stroke-dashoffset on SVG <circle>.
     100% offline, zero external dependencies.
     """
-    total = passed + failed + skipped
+    total = passed + failed + skipped + xfailed
     r = 65
     cx, cy = 100, 100
     circumference = 2 * 3.141592653589793 * r
@@ -18,22 +18,28 @@ def generate_donut_chart_svg(passed: int, failed: int, skipped: int) -> str:
         pass_pct = 0
         pass_dash = 0.0
         fail_dash = 0.0
+        xfail_dash = 0.0
         skip_dash = 0.0
     else:
-        pass_pct = round((passed / total) * 100)
+        pass_pct = round(((passed + xfailed) / total) * 100)
         pass_dash = (passed / total) * circumference
         fail_dash = (failed / total) * circumference
+        xfail_dash = (xfailed / total) * circumference
         skip_dash = (skipped / total) * circumference
 
     offset_pass = 0.0
     offset_fail = -pass_dash
-    offset_skip = -(pass_dash + fail_dash)
+    offset_xfail = -(pass_dash + fail_dash)
+    offset_skip = -(pass_dash + fail_dash + xfail_dash)
 
     svg_parts = [
         '<svg viewBox="0 0 200 200" class="donut-svg" width="100%" height="180" xmlns="http://www.w3.org/2000/svg">',
         '  <defs>',
         '    <filter id="glow-pass" x="-20%" y="-20%" width="140%" height="140%">',
         '      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#3fb950" flood-opacity="0.25"/>',
+        '    </filter>',
+        '    <filter id="glow-xfail" x="-20%" y="-20%" width="140%" height="140%">',
+        '      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#d29922" flood-opacity="0.25"/>',
         '    </filter>',
         '  </defs>',
         '  <!-- Background track -->',
@@ -58,9 +64,15 @@ def generate_donut_chart_svg(passed: int, failed: int, skipped: int) -> str:
                 f'stroke-dasharray="{fail_dash:.2f} {circumference - fail_dash:.2f}" stroke-dashoffset="{offset_fail:.2f}" '
                 f'stroke-linecap="round"/>'
             )
+        if xfailed > 0:
+            svg_parts.append(
+                f'    <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="var(--status-xfail, #d29922)" stroke-width="20" '
+                f'stroke-dasharray="{xfail_dash:.2f} {circumference - xfail_dash:.2f}" stroke-dashoffset="{offset_xfail:.2f}" '
+                f'stroke-linecap="round" filter="url(#glow-xfail)"/>'
+            )
         if skipped > 0:
             svg_parts.append(
-                f'    <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="var(--status-skip, #d29922)" stroke-width="20" '
+                f'    <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="var(--status-skip, #8b949e)" stroke-width="20" '
                 f'stroke-dasharray="{skip_dash:.2f} {circumference - skip_dash:.2f}" stroke-dashoffset="{offset_skip:.2f}"/>'
             )
         svg_parts.append('  </g>')

@@ -1,0 +1,193 @@
+<svg viewBox="0 0 1200 560" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d4-title d4-desc">
+  <title id="d4-title">EAFAMS R4, R5 and R6 FAS Assessment, ML and Budget Pipeline</title>
+  <desc id="d4-desc">Dual intake via online and OCR hardcopy, MOEFAS automated rule engine, SBFAS school committee review powered by ML Need Score, and budget decrementing</desc>
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#0E1524"/>
+    </linearGradient>
+    <linearGradient id="zone-hq" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-school" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-engine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ext" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ledger" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="m-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="m-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="m-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="m-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#c084fc"/>
+    </marker>
+    <marker id="m-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+</defs>
+  <rect width="100%" height="100%" rx="14" fill="url(#bg-grad)"/>
+  
+  <!-- STAGE HEADER -->
+  <rect x="0" y="0" width="1200" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1200" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1200" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="12" font-weight="600">R4, R5 &amp; R6 PIPELINE // FAS DUAL INTAKE, RULE ENGINE, ML NEED SCORE &amp; BUDGET</text>
+  <rect x="1020" y="10" width="165" height="22" rx="4" fill="#047857" fill-opacity="0.3" stroke="#10b981" stroke-width="1"/>
+  <text x="1103" y="25" fill="#10b981" font-family="'Geist Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">AI &amp; DECISION FLOW</text>
+
+
+  <!-- ZONES -->
+  <rect x="25" y="60" width="260" height="475" rx="10" fill="url(#zone-school)" stroke="#10b981" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="40" y="52" width="180" height="18" rx="4" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+  <text x="130" y="65" fill="#34d399" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">R5 HARDCOPY &amp; INTAKE</text>
+
+  <rect x="310" y="60" width="310" height="475" rx="10" fill="url(#zone-engine)" stroke="#818cf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="325" y="52" width="220" height="18" rx="4" fill="#0f172a" stroke="#818cf8" stroke-width="1"/>
+  <text x="435" y="65" fill="#818cf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">R4 RULE EVALUATION ENGINE</text>
+
+  <rect x="645" y="60" width="530" height="475" rx="10" fill="url(#zone-ext)" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="665" y="52" width="260" height="18" rx="4" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+  <text x="795" y="65" fill="#fbbf24" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">R4 SBFAS ML REVIEW &amp; R6 BUDGET</text>
+
+  <!-- CONNECTORS -->
+  <path d="M 155 160 L 155 200" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 155 310 L 155 350" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+  <path d="M 265 400 L 330 400 Q 338 400 338 392 L 338 238 Q 338 230 346 230 L 355 230" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+  <path d="M 265 110 L 330 110 Q 338 110 338 152 L 338 190 Q 338 198 346 198 L 355 198" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Rule Engine Branch 1: MOEFAS Pass (Top) -->
+  <path d="M 575 180 L 670 180" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Rule Engine Branch 2: SBFAS Fallback (Bottom) -->
+  <path d="M 575 240 L 620 240 Q 628 240 628 248 L 628 362 Q 628 370 636 370 L 670 370" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#m-amber)"/>
+
+  <!-- SBFAS to ML Engine -->
+  <path d="M 900 370 L 945 370" stroke="#c084fc" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+
+  <!-- Outcomes to R6 Budget Deduction -->
+  <path d="M 890 180 L 960 180 Q 968 180 968 195 L 968 220 Q 968 228 976 228 L 985 228" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 900 400 L 960 400 Q 968 400 968 310 Q 968 302 976 302 L 985 302" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Connector Masks -->
+  <rect x="590" y="171" width="60" height="18" rx="3" fill="#0f172a" stroke="#059669" stroke-width="0.8"/>
+  <text x="620" y="184" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">PASS SC</text>
+
+  <rect x="585" y="320" width="70" height="18" rx="3" fill="#0f172a" stroke="#d97706" stroke-width="0.8"/>
+  <text x="620" y="333" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">FAIL/NON-SC</text>
+
+  <!-- ==================== R5 NODES ==================== -->
+  <g>
+    <rect x="45" y="85" width="220" height="75" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="60" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F01 Upload Scans (R5)</text>
+    <text x="60" y="126" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• School Admin uploads PDF/JPG</text>
+    <text x="60" y="142" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• Simulated OCR auto-extraction</text>
+  </g>
+
+  <g>
+    <rect x="45" y="200" width="220" height="110" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.4"/>
+    <text x="60" y="222" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F02 2-Pane Verification</text>
+    <text x="60" y="240" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Left: Image | Right: Form P1-P5</text>
+    <text x="60" y="256" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="9">• P1: Parent NRIC -> Locked autofill</text>
+    <text x="60" y="272" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• P2: Child NRIC -> School/Class</text>
+    <text x="60" y="288" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• P3: Gov Tax/CPF Income (auto)</text>
+    <text x="60" y="302" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">• P4: Context | P5: Declaration</text>
+  </g>
+
+  <g>
+    <rect x="45" y="350" width="220" height="85" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.4"/>
+    <rect x="180" y="358" width="75" height="16" rx="3" fill="#047857"/>
+    <text x="217" y="369" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SPLIT APPS</text>
+    <text x="60" y="374" fill="#34d399" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F03 Split Child Apps</text>
+    <text x="60" y="392" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Shared FAM-YYYY-NNNNN Ref</text>
+    <text x="60" y="408" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Dispatches child to school flow</text>
+    <text x="60" y="424" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Enters automated rule pipeline</text>
+  </g>
+
+  <!-- ==================== R4 RULE ENGINE ==================== -->
+  <g>
+    <rect x="330" y="160" width="265" height="120" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+    <rect x="495" y="168" width="90" height="16" rx="3" fill="#0284c7"/>
+    <text x="540" y="179" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">RULE ENGINE</text>
+    <text x="345" y="185" fill="#38bdf8" font-family="'Geist', sans-serif" font-size="12.5" font-weight="800">MOEFAS Rule Engine</text>
+    <text x="345" y="205" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9.5">Hard Criteria Check:</text>
+    <text x="345" y="222" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9.5">1. Citizenship: Singaporean (SC)</text>
+    <text x="345" y="238" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9.5">2. Income Thresholds:</text>
+    <text x="355" y="254" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• GHI &lt;= SGD 4,000 / month  OR</text>
+    <text x="355" y="270" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• PCI &lt;= SGD 1,000 / month</text>
+  </g>
+
+  <!-- ==================== OUTCOMES & SBFAS ==================== -->
+  <g>
+    <!-- Outcome 1: MOEFAS Auto-Grant -->
+    <rect x="670" y="140" width="220" height="95" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="805" y="148" width="75" height="16" rx="3" fill="#047857"/>
+    <text x="842" y="159" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">AUTO-GRANT</text>
+    <text x="685" y="165" fill="#34d399" font-family="'Geist', sans-serif" font-size="12" font-weight="800">MOEFAS Auto-Grant</text>
+    <text x="685" y="183" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• 100% Subsidy on School &amp; Misc</text>
+    <text x="685" y="199" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Zero Tier Division (Flat 100%)</text>
+    <text x="685" y="215" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Auto-approved by system</text>
+  </g>
+
+  <g>
+    <!-- Outcome 2: SBFAS School Review -->
+    <rect x="670" y="320" width="230" height="135" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.8"/>
+    <rect x="825" y="328" width="65" height="16" rx="3" fill="#b45309"/>
+    <text x="857" y="339" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SBFAS</text>
+    <text x="685" y="345" fill="#fbbf24" font-family="'Geist', sans-serif" font-size="12" font-weight="700">SBFAS School Review</text>
+    <text x="685" y="363" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Assigned to School Admin</text>
+    <text x="685" y="379" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• HQ User has READ-ONLY access</text>
+    <text x="685" y="395" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Approve: Select Tier + Comment</text>
+    <text x="685" y="411" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="9">• Reject: Mandatory Reason + Note</text>
+    <text x="685" y="432" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Discretionary Assistance Matrix</text>
+  </g>
+
+  <g>
+    <!-- ML AI Engine -->
+    <rect x="945" y="320" width="215" height="135" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+    <rect x="1080" y="328" width="70" height="16" rx="3" fill="#7e22ce"/>
+    <text x="1115" y="339" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">ML ENGINE</text>
+    <text x="960" y="345" fill="#c084fc" font-family="'Geist', sans-serif" font-size="12" font-weight="800">ML Need Score</text>
+    <text x="960" y="365" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Need Score: 0 - 100</text>
+    <text x="960" y="381" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Risk: Low / Med / High</text>
+    <text x="960" y="397" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="9">• Pre-selects Tier 1/2/3 in UI</text>
+    <text x="960" y="415" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="8.5">Trained on Income, Dependents</text>
+    <text x="960" y="431" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">&amp; Job stability features</text>
+  </g>
+
+  <g>
+    <!-- R6 Budget & Ledger Offset -->
+    <rect x="975" y="160" width="185" height="150" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.8"/>
+    <rect x="1075" y="168" width="75" height="16" rx="3" fill="#047857"/>
+    <text x="1112" y="179" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R6 BUDGET</text>
+    <text x="990" y="188" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Budget &amp; Offset</text>
+    <text x="990" y="206" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Auto-decrements</text>
+    <text x="990" y="222" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">  Remaining Budget</text>
+    <text x="990" y="238" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="8.5">• If Depleted: Routes to</text>
+    <text x="990" y="252" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="8.5">  "Eligible - Insufficient"</text>
+    <text x="990" y="272" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• Net Payable recalculated:</text>
+    <text x="990" y="288" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="8.5">  Net = Original - Subsidy</text>
+  </g>
+
+</svg>

@@ -247,6 +247,11 @@ automation-ui/
 │
 ├── tools/                                   # 🔍 Reconnaissance & Active Probe Tools
 │   ├── recon.sh                             # Passive recon script (DOM, a11y, network, console, screenshot)
+│   ├── break_it/                            # 🛡️ AI Coding Adversarial & Resilience Toolkit ("Phá Có Kỷ Luật")
+│   │   ├── README.md                        # Directives, 6-Dimension Derivation Matrix & Oracle Questions
+│   │   ├── test_templates.py                # Ready-to-copy code snippets & 8 adversarial test recipes
+│   │   ├── scaffold_break_it.py             # CLI Scaffolder to auto-generate @pytest.mark.break_it suites
+│   │   └── audit_coverage.py                # Auditor checking test suites for missing break_it coverage
 │   └── templates/                           # Active probe prompt & audit findings templates
 │       ├── active_probe_prompt.txt          # Bounded prompt for AI active probing
 │       └── audit_findings.md                # Standardized audit findings matrix

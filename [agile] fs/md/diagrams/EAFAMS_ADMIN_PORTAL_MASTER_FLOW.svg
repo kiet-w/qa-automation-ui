@@ -1,0 +1,303 @@
+<svg viewBox="0 0 1240 720" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d1-title d1-desc">
+  <title id="d1-title">EAFAMS Admin Portal Master Architecture (R1-R7)</title>
+  <desc id="d1-desc">Comprehensive system architecture and dataflow across MOE HQ, School Users, Core Processing Engines, and Government Services</desc>
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#0E1524"/>
+    </linearGradient>
+    <linearGradient id="zone-hq" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-school" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-engine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ext" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ledger" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="m-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="m-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="m-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="m-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#c084fc"/>
+    </marker>
+    <marker id="m-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+</defs>
+  <rect width="100%" height="100%" rx="14" fill="url(#bg-grad)"/>
+  
+  <!-- STAGE HEADER -->
+  <rect x="0" y="0" width="1240" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1240" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1240" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="12" font-weight="600">EAFAMS ADMIN PORTAL // COMPLETE 7-MODULE ARCHITECTURE &amp; RBAC TOPOLOGY</text>
+  <rect x="1060" y="10" width="165" height="22" rx="4" fill="#0369a1" fill-opacity="0.3" stroke="#38bdf8" stroke-width="1"/>
+  <text x="1143" y="25" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">R1 - R7 FULL MATRIX</text>
+
+
+  <!-- ZONES -->
+  <!-- Zone 1: Actors & Ingress (Left) -->
+  <rect x="25" y="60" width="220" height="635" rx="12" fill="url(#zone-hq)" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="40" y="52" width="150" height="18" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+  <text x="115" y="65" fill="#38bdf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">👥 ADMIN ACTORS</text>
+
+  <!-- Zone 2: Core Admin Business Engines (Middle-Left) -->
+  <rect x="275" y="60" width="370" height="635" rx="12" fill="url(#zone-engine)" stroke="#818cf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="295" y="52" width="240" height="18" rx="4" fill="#0f172a" stroke="#818cf8" stroke-width="1"/>
+  <text x="415" y="65" fill="#818cf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">⚙️ ADMIN CORE MODULES (R1–R6)</text>
+
+  <!-- Zone 3: Security & Simulation Safeguards (Middle-Right) -->
+  <rect x="675" y="60" width="260" height="635" rx="12" fill="url(#zone-ledger)" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="695" y="52" width="220" height="18" rx="4" fill="#0f172a" stroke="#c084fc" stroke-width="1"/>
+  <text x="805" y="65" fill="#c084fc" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">🔒 R7 SIMULATION &amp; LEDGER</text>
+
+  <!-- Zone 4: External Integrations & AI (Right) -->
+  <rect x="965" y="60" width="250" height="635" rx="12" fill="url(#zone-ext)" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="985" y="52" width="210" height="18" rx="4" fill="#0f172a" stroke="#f59e0b" stroke-width="1"/>
+  <text x="1090" y="65" fill="#fbbf24" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">🌐 EXTERNAL ECOSYSTEM &amp; AI</text>
+
+  <!-- CONNECTORS (Drawn BEFORE Node Cards) -->
+  <!-- MOE HQ to R1/R2/R3/R6/R7 -->
+  <path d="M 225 125 L 295 125" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 225 155 L 255 155 Q 263 155 263 163 L 263 212 Q 263 220 271 220 L 295 220" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 225 175 L 245 175 Q 253 175 253 183 L 253 622 Q 253 630 261 630 L 695 630" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+
+  <!-- School User to R3/R4/R5/R6 -->
+  <path d="M 225 365 L 250 365 Q 258 365 258 357 L 258 328 Q 258 320 266 320 L 295 320" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 225 395 L 250 395 Q 258 395 258 403 L 258 412 Q 258 420 266 420 L 295 420" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 225 415 L 245 415 Q 253 415 253 423 L 253 512 Q 253 520 261 520 L 295 520" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Module to Ledger Pipes -->
+  <path d="M 625 125 L 695 125" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 625 220 L 660 220 Q 668 220 668 212 L 668 150 Q 668 142 676 142 L 695 142" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 625 320 L 695 320" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+  <path d="M 625 420 L 660 420 Q 668 420 668 340 Q 668 332 676 332 L 695 332" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Module to External Ecosystem -->
+  <path d="M 625 105 L 665 105 Q 673 105 673 97 L 673 85 Q 673 77 681 77 L 950 77 Q 958 77 958 85 L 958 112 Q 958 120 966 120 L 985 120" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+  <path d="M 625 440 L 945 440 Q 953 440 953 328 Q 953 320 961 320 L 985 320" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+  <path d="M 625 520 L 985 520" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+
+  <!-- Connector Masks & Labels -->
+  <rect x="238" y="117" width="50" height="16" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8"/>
+  <text x="263" y="129" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R1/R2</text>
+
+  <rect x="635" y="117" width="52" height="16" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8"/>
+  <text x="661" y="129" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">CREDIT</text>
+
+  <rect x="635" y="312" width="52" height="16" rx="3" fill="#0f172a" stroke="#818cf8" stroke-width="0.8"/>
+  <text x="661" y="324" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">BILLING</text>
+
+  <rect x="635" y="412" width="52" height="16" rx="3" fill="#0f172a" stroke="#10b981" stroke-width="0.8"/>
+  <text x="661" y="424" fill="#10b981" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SUBSIDY</text>
+
+  <!-- ==================== NODES ==================== -->
+  <!-- ACTOR 1: MOE HQ User -->
+  <g id="node-moehq">
+    <rect x="40" y="85" width="185" height="110" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.8"/>
+    <rect x="145" y="93" width="70" height="16" rx="3" fill="#0369a1"/>
+    <text x="180" y="104" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">HQ SPECIALIST</text>
+    <text x="52" y="112" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">🏛️ MOE HQ Users</text>
+    <text x="52" y="130" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R1: Nationwide EA View</text>
+    <text x="52" y="146" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R2: Top-Up &amp; Campaigns</text>
+    <text x="52" y="162" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R3: Master Data &amp; Fee Rates</text>
+    <text x="52" y="178" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9" font-weight="600">• R7: User Simulation Host</text>
+  </g>
+
+  <!-- ACTOR 2: School User -->
+  <g id="node-schooluser">
+    <rect x="40" y="325" width="185" height="120" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.8"/>
+    <rect x="145" y="333" width="70" height="16" rx="3" fill="#047857"/>
+    <text x="180" y="344" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">SCHOOL ADMIN</text>
+    <text x="52" y="352" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">🏫 School Users</text>
+    <text x="52" y="370" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R3: Classes &amp; Enrolment</text>
+    <text x="52" y="386" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R3: Publish School Fees</text>
+    <text x="52" y="402" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9" font-weight="600">• R4: SBFAS Review &amp; Tiering</text>
+    <text x="52" y="418" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• R5: Upload OCR Hardcopy</text>
+    <text x="52" y="434" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">RBAC Scoped to School ID</text>
+  </g>
+
+  <!-- MODULE R1: EA Lifecycle -->
+  <g id="node-r1">
+    <rect x="295" y="85" width="330" height="80" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.4"/>
+    <rect x="545" y="93" width="70" height="16" rx="3" fill="#0369a1"/>
+    <text x="580" y="104" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R1 LIFECYCLE</text>
+    <text x="310" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">R1: Education Account Lifecycle</text>
+    <text x="310" y="126" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Daily 00:00 SGT Sync: Auto-open EA for Singaporean age 7</text>
+    <text x="310" y="142" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• Backend-Triggered Check: Auto-close at 16y or lost SC</text>
+    <text x="310" y="156" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Initial Bal: $0.00 | Closure: CPF Transfer / Deferred</text>
+  </g>
+
+  <!-- MODULE R2: Top-Up Management -->
+  <g id="node-r2">
+    <!-- Focal Accent 1 -->
+    <rect x="295" y="180" width="330" height="85" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+    <rect x="545" y="188" width="70" height="16" rx="3" fill="#0284c7"/>
+    <text x="580" y="199" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R2 TOP-UP</text>
+    <text x="310" y="204" fill="#38bdf8" font-family="'Geist', sans-serif" font-size="12" font-weight="800">R2: Top-Up Engine &amp; Correction</text>
+    <text x="310" y="222" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Individual: Closure Check + IdempotencyKey + FundingRef</text>
+    <text x="310" y="238" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Bulk Campaign: Filter (Age + Balance + Schooling) &amp; Budget</text>
+    <text x="310" y="254" fill="#f59e0b" font-family="'Geist Mono', monospace" font-size="8.5">• Correction: Debit Adjustment (Max &lt;= Available Balance)</text>
+  </g>
+
+  <!-- MODULE R3: School, Student & Fee Management -->
+  <g id="node-r3">
+    <rect x="295" y="280" width="330" height="85" rx="8" fill="#1e293b" stroke="#818cf8" stroke-width="1.4"/>
+    <rect x="535" y="288" width="80" height="16" rx="3" fill="#4338ca"/>
+    <text x="575" y="299" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R3 SCHOOL/FEE</text>
+    <text x="310" y="304" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">R3: Master Data, Enrolment &amp; Fees</text>
+    <text x="310" y="322" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Class Assignment -> Enrolment Profile -> Auto-link SC EA</text>
+    <text x="310" y="338" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Fee Rate Rules: Stages (P1-JC2) × Resident (SC/PR/IS) + GST</text>
+    <text x="310" y="354" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="8.5">• Fee Publication -> Resolve Cohort -> Student Charges (POSTED)</text>
+  </g>
+
+  <!-- MODULE R4: FAS Core & ML -->
+  <g id="node-r4">
+    <!-- Focal Accent 2 -->
+    <rect x="295" y="380" width="330" height="95" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="545" y="388" width="70" height="16" rx="3" fill="#059669"/>
+    <text x="580" y="399" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R4 FAS CORE</text>
+    <text x="310" y="404" fill="#34d399" font-family="'Geist', sans-serif" font-size="12" font-weight="800">R4: Financial Assistance (MOE/SB)</text>
+    <text x="310" y="422" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9" font-weight="700">• MOEFAS: Auto-Grant if SC &amp; (GHI &lt;=$4,000 OR PCI &lt;=$1,000)</text>
+    <text x="310" y="438" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• SBFAS: School Admin Review Drawer with ML Need Score</text>
+    <text x="310" y="454" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="9">• ML AI Recommendation: Need Score (0-100) + Risk Tiering</text>
+    <text x="310" y="468" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Net Payable = Original Amount - Subsidy Amount</text>
+  </g>
+
+  <!-- MODULE R5: Hardcopy FAS Applications -->
+  <g id="node-r5">
+    <rect x="295" y="490" width="330" height="85" rx="8" fill="#1e293b" stroke="#818cf8" stroke-width="1.4"/>
+    <rect x="525" y="498" width="90" height="16" rx="3" fill="#4338ca"/>
+    <text x="570" y="509" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R5 HARDCOPY OCR</text>
+    <text x="310" y="514" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">R5: Hardcopy FAS Ingestion</text>
+    <text x="310" y="532" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Upload Scans (PDF/JPG, max 5) -> Simulated OCR 2-pane</text>
+    <text x="310" y="548" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Auto-match: NRIC -> Parent/Child Lock, Gov Income Autofill</text>
+    <text x="310" y="564" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="8.5">• Submit -> Split Family Unit into Child Apps (FAM-YYYY-NNNNN)</text>
+  </g>
+
+  <!-- MODULE R6: Budget & Statistics -->
+  <g id="node-r6">
+    <rect x="295" y="590" width="330" height="85" rx="8" fill="#1e293b" stroke="#818cf8" stroke-width="1.4"/>
+    <rect x="545" y="598" width="70" height="16" rx="3" fill="#4338ca"/>
+    <text x="580" y="609" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R6 BUDGET</text>
+    <text x="310" y="614" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">R6: Budget &amp; Statistics</text>
+    <text x="310" y="632" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Budget Pools: MOE HQ (MOEFAS) &amp; School (SBFAS)</text>
+    <text x="310" y="648" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Auto-decrement on Grant; Depletion -> Insufficient Budget</text>
+    <text x="310" y="664" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Analytics: Scheme, Stage, Class &amp; Tier Breakdown</text>
+  </g>
+
+  <!-- LEDGER & R7 ZONE -->
+  <g id="node-ledger">
+    <rect x="695" y="85" width="220" height="280" rx="8" fill="#1e293b" stroke="#c084fc" stroke-width="1.5"/>
+    <rect x="835" y="93" width="70" height="16" rx="3" fill="#7e22ce"/>
+    <text x="870" y="104" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">POSTGRESQL</text>
+    <text x="710" y="112" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Double-Entry Ledger</text>
+    <text x="710" y="130" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="9">Immutable Financial State</text>
+    <line x1="710" y1="142" x2="895" y2="142" stroke="#334155" stroke-width="1"/>
+    <text x="710" y="162" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• EA Wallet Balances (F1)</text>
+    <text x="710" y="182" fill="#f59e0b" font-family="'Geist Mono', monospace" font-size="9">• Top-Up Journal &amp; FundingRef</text>
+    <text x="710" y="202" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="9">• Student Charges (POSTED)</text>
+    <text x="710" y="222" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Subsidy Offsets &amp; Waivers</text>
+    <text x="710" y="242" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="9">• Remaining Budget Counters</text>
+    <line x1="710" y1="256" x2="895" y2="256" stroke="#334155" stroke-width="1"/>
+    <text x="710" y="274" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="8.5">ACID Guaranteed</text>
+    <text x="710" y="290" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="8.5">Zero Negative Balance Rule</text>
+    <text x="710" y="306" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="8.5">Append-Only Audit Log</text>
+  </g>
+
+  <!-- MODULE R7: Simulation Mode -->
+  <g id="node-r7">
+    <rect x="695" y="380" width="220" height="295" rx="8" fill="#1e293b" stroke="#f43f5e" stroke-width="1.8"/>
+    <rect x="835" y="388" width="70" height="16" rx="3" fill="#be123c"/>
+    <text x="870" y="399" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">R7 SIMULATION</text>
+    <text x="710" y="407" fill="#f43f5e" font-family="'Geist', sans-serif" font-size="12" font-weight="700">R7: User Simulation Mode</text>
+    <text x="710" y="425" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">MOE HQ Support Tool</text>
+    <line x1="710" y1="437" x2="895" y2="437" stroke="#334155" stroke-width="1"/>
+    <text x="710" y="457" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Personas: School User / Parent</text>
+    <text x="710" y="475" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• 100% Exact Read-Only View</text>
+    <text x="710" y="493" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• View Balances, Bills, FAS Status</text>
+    <line x1="710" y1="507" x2="895" y2="507" stroke="#334155" stroke-width="1"/>
+    <text x="710" y="527" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="9" font-weight="700">SAFETY GUARDS:</text>
+    <text x="710" y="545" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Amber Banner Persistent</text>
+    <text x="710" y="563" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Mutating Calls Blocked (403)</text>
+    <text x="710" y="581" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Zero Test Money Disbursed</text>
+    <text x="710" y="599" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Detailed Simulation Audit Trail</text>
+    <rect x="710" y="618" width="190" height="24" rx="4" fill="#0f172a" stroke="#f43f5e" stroke-width="1"/>
+    <text x="805" y="634" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="9" font-weight="700" text-anchor="middle">MUTATION INTERCEPTOR ACTIVE</text>
+  </g>
+
+  <!-- EXTERNAL NODES -->
+  <g id="node-ext-gov">
+    <rect x="985" y="85" width="210" height="90" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.4"/>
+    <rect x="1115" y="93" width="70" height="16" rx="3" fill="#b45309"/>
+    <text x="1150" y="104" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">GOV API</text>
+    <text x="998" y="112" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Mock Gov Citizen API</text>
+    <text x="998" y="130" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Daily Sync: 7yo Birthdays</text>
+    <text x="998" y="146" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Live Real-time Age Check</text>
+    <text x="998" y="162" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="9">• Citizenship &amp; NRIC Master</text>
+  </g>
+
+  <g id="node-ext-tax">
+    <rect x="985" y="195" width="210" height="85" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.4"/>
+    <rect x="1115" y="203" width="70" height="16" rx="3" fill="#b45309"/>
+    <text x="1150" y="214" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">FINANCE</text>
+    <text x="998" y="222" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Gov Income &amp; CPF API</text>
+    <text x="998" y="240" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Automated GHI/PCI Lookup</text>
+    <text x="998" y="256" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• No Payslip Upload Needed</text>
+    <text x="998" y="270" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">IRAS / CPF Direct Feeds</text>
+  </g>
+
+  <g id="node-ext-ml">
+    <rect x="985" y="300" width="210" height="90" rx="8" fill="#0f172a" stroke="#a855f7" stroke-width="2"/>
+    <rect x="1115" y="308" width="70" height="16" rx="3" fill="#7e22ce"/>
+    <text x="1150" y="319" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">AI ENGINE</text>
+    <text x="998" y="327" fill="#c084fc" font-family="'Geist', sans-serif" font-size="12" font-weight="800">ML Need Score Engine</text>
+    <text x="998" y="345" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">• Need Score: 0 - 100</text>
+    <text x="998" y="361" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Risk Level: Low / Med / High</text>
+    <text x="998" y="377" fill="#c084fc" font-family="'Geist Mono', monospace" font-size="9">• SBFAS Tier 1/2/3 Suggester</text>
+  </g>
+
+  <g id="node-ext-ocr">
+    <rect x="985" y="410" width="210" height="85" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.4"/>
+    <rect x="1115" y="418" width="70" height="16" rx="3" fill="#b45309"/>
+    <text x="1150" y="429" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">VISION</text>
+    <text x="998" y="437" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Simulated OCR Vision</text>
+    <text x="998" y="455" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Extracts Scan PDF / Images</text>
+    <text x="998" y="471" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Highlights Low-Confidence</text>
+    <text x="998" y="485" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Side-by-side Dual Verification</text>
+  </g>
+
+  <g id="node-ext-cpf">
+    <rect x="985" y="515" width="210" height="85" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.4"/>
+    <rect x="1115" y="523" width="70" height="16" rx="3" fill="#b45309"/>
+    <text x="1150" y="534" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">PENSION</text>
+    <text x="998" y="542" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">CPF Board Transfer</text>
+    <text x="998" y="560" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• EA Residual Balance Payout</text>
+    <text x="998" y="576" fill="#f59e0b" font-family="'Geist Mono', monospace" font-size="9">• MVP: Closure Deferred</text>
+    <text x="998" y="590" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Triggered on 16th Birthday</text>
+  </g>
+
+</svg>

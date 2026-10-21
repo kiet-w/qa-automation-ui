@@ -91,6 +91,163 @@ class BasePage:
         """Simulate network disconnection / abortion (failed, timedout, connectionrefused)."""
         self.page.route(url_pattern, lambda route: route.abort(error_code))
 
+    def set_network_conditions(
+        self,
+        offline: bool = False,
+        latency: int = 0,
+        download_throughput: int = -1,
+        upload_throughput: int = -1,
+    ) -> None:
+        """
+        Emulate network throttling or offline conditions via Chrome DevTools Protocol (CDP).
+        - offline: True to disconnect network
+        - latency: RTT in milliseconds (e.g., 2000 for 2s latency)
+        - download_throughput: Bytes/sec (e.g., 50_000 for ~400kbps)
+        - upload_throughput: Bytes/sec
+        """
+        try:
+            cdp = self.page.context.new_cdp_session(self.page)
+            cdp.send(
+                "Network.emulateNetworkConditions",
+                {
+                    "offline": offline,
+                    "latency": latency,
+                    "downloadThroughput": download_throughput,
+                    "uploadThroughput": upload_throughput,
+                },
+            )
+        except Exception:
+            if offline:
+                self.page.context.set_offline(True)
+
+    def track_requests(self, url_pattern: str, method: str = "POST"):
+        """
+        Track network requests matching url_pattern and method to verify debounce and idempotency.
+        Usage:
+            tracker = page_obj.track_requests("**/api/publish", method="POST")
+            # ... perform double click or rapid clicks ...
+            assert tracker.count == 1, f"Expected 1 request but got {tracker.count}"
+            tracker.stop()
+        """
+        class RequestTracker:
+            def __init__(self, page: Page, pattern: str, http_method: str):
+                self.page = page
+                self.pattern = pattern
+                self.http_method = http_method.upper()
+                self.requests = []
+                self._listener = self._on_req
+                self.page.on("request", self._listener)
+
+            def _on_req(self, req):
+                if req.method.upper() == self.http_method and (self.pattern == "*" or self.pattern in req.url):
+                    self.requests.append(req)
+
+            def stop(self):
+                try:
+                    self.page.remove_listener("request", self._listener)
+                except Exception:
+                    pass
+
+            @property
+            def count(self) -> int:
+                return len(self.requests)
+
+        return RequestTracker(self.page, url_pattern, method)
+
+    # --- Client-Side Bypass & Adversarial Testing Helpers ---
+    def force_set_value(self, selector_or_locator: Union[str, Locator], value: str):
+        """
+        Bypasses client-side UI limitations by setting input value directly via prototype descriptor
+        and dispatching synthetic 'input' and 'change' events compatible with React, Vue, and vanilla DOM.
+        Uses .first to gracefully handle responsive designs with duplicate desktop/mobile inputs.
+        """
+        loc = self.get_locator(selector_or_locator)
+        target = loc.first if hasattr(loc, "first") else loc
+        target.evaluate(
+            """(el, v) => {
+                const proto = Object.getPrototypeOf(el);
+                const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
+                if (descriptor && descriptor.set) {
+                    descriptor.set.call(el, v);
+                } else {
+                    el.value = v;
+                }
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }""",
+            str(value),
+        )
+
+    def strip_client_constraints(self, form_selector_or_locator: Union[str, Locator] = "form"):
+        """
+        Strips HTML5 client-side validations ('novalidate', 'required', 'maxlength', 'pattern', 'min', 'max', 'disabled', 'readonly')
+        from the form or active container and all its child elements to test backend validation resilience.
+        """
+        if isinstance(form_selector_or_locator, str) and form_selector_or_locator == "form":
+            # Gracefully fallback to body/container if the page does not wrap fields in a <form> tag
+            if not self.is_visible("form", timeout=500):
+                form_selector_or_locator = "body"
+
+        loc = self.get_locator(form_selector_or_locator)
+        target = loc.first if hasattr(loc, "first") else loc
+        target.evaluate(
+            """f => {
+                f.setAttribute('novalidate', '');
+                const attrs = ['required', 'maxlength', 'pattern', 'min', 'max', 'disabled', 'readonly'];
+                f.querySelectorAll('*').forEach(e => attrs.forEach(a => e.removeAttribute(a)));
+            }"""
+        )
+
+    def inject_select_option(
+        self, selector_or_locator: Union[str, Locator], value: str, label: Optional[str] = None
+    ):
+        """
+        Injects a synthetic <option> into a <select> element and selects it to verify backend schema/enum enforcement.
+        """
+        loc = self.get_locator(selector_or_locator)
+        display_label = label or value
+        target = loc.first if hasattr(loc, "first") else loc
+        target.evaluate(
+            """(el, [val, txt]) => {
+                const opt = new Option(txt, val);
+                el.add(opt);
+                el.value = val;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }""",
+            [str(value), str(display_label)],
+        )
+
+    def enable_element(self, selector_or_locator: Union[str, Locator]):
+        """
+        Forces an element to be enabled, removing 'disabled'/'readonly' attributes and CSS 'pointer-events: none'.
+        """
+        loc = self.get_locator(selector_or_locator)
+        target = loc.first if hasattr(loc, "first") else loc
+        target.evaluate(
+            """el => {
+                el.removeAttribute('disabled');
+                el.removeAttribute('readonly');
+                el.disabled = false;
+                el.style.pointerEvents = 'auto';
+                el.style.opacity = '1';
+            }"""
+        )
+
+    def set_hidden_field_value(self, selector_or_locator: Union[str, Locator], value: str):
+        """
+        Modifies hidden form field values (e.g. CSRF tokens, user IDs, prices) to test tampering resilience.
+        """
+        loc = self.get_locator(selector_or_locator)
+        target = loc.first if hasattr(loc, "first") else loc
+        target.evaluate(
+            """(el, v) => {
+                el.value = v;
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+            }""",
+            str(value),
+        )
+
     def navigate(self, url: str, wait_until: str = "domcontentloaded"):
         """Navigate to a specified URL, automatically prepending BASE_URL if relative."""
         target_url = url
@@ -112,6 +269,14 @@ class BasePage:
         locator = self.get_locator(selector_or_locator)
         locator.wait_for(state="visible", timeout=timeout)
         return locator
+
+    def is_visible(self, selector_or_locator: Union[str, Locator], timeout: int = 2000) -> bool:
+        """Check if an element is currently visible on the page."""
+        try:
+            locator = self.get_locator(selector_or_locator)
+            return locator.first.is_visible(timeout=timeout)
+        except Exception:
+            return False
 
     def click_element(self, selector_or_locator: Union[str, Locator], timeout: int = 10000):
         """Wait for an element to be visible and clickable, then click it."""

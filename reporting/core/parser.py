@@ -229,9 +229,25 @@ def process_report_data(
         if not video_base64 and embed_media and video_path:
             video_base64 = file_to_base64_data_url(video_path, "video/webm")
 
+        xfail_reason = metadata.get("wasxfail")
+        if not xfail_reason and outcome in ("xfailed", "xfail"):
+            longrepr = t.get("call", {}).get("longrepr") or t.get("setup", {}).get("longrepr") or ""
+            m_reason = re.search(r'@pytest\.mark\.xfail\([^)]*reason=["\']([^"\']+)["\']', str(longrepr))
+            if m_reason:
+                xfail_reason = m_reason.group(1)
+            else:
+                m_bug = re.search(r'(BUG-[A-Za-z0-9_-]+:[^\n"\']+)', str(longrepr))
+                if m_bug:
+                    xfail_reason = m_bug.group(1)
+
         steps_list = metadata.get("steps", [])
         if not steps_list:
-            step_status = "passed" if outcome == "passed" else "failed"
+            if outcome == "passed":
+                step_status = "passed"
+            elif outcome in ("xfailed", "xfail"):
+                step_status = "xfailed"
+            else:
+                step_status = "failed"
             steps_list = [{
                 "title": f"Execute {test_name}",
                 "status": step_status,
@@ -239,7 +255,7 @@ def process_report_data(
                 "start_offset": 0.0,
                 "end_offset": duration,
                 "expected": "Test scenario executes and passes all assertions",
-                "actual": f"Completed in {duration:.2f}s with status {step_status.upper()}" if step_status == "passed" else f"FAILED: {error_msg or 'Assertion failed'}",
+                "actual": f"Completed in {duration:.2f}s with status {step_status.upper()}" if step_status == "passed" else (f"XFAILED (Known Bug): {xfail_reason or error_msg or 'Known defect captured'}" if step_status == "xfailed" else f"FAILED: {error_msg or 'Assertion failed'}"),
                 "screenshot": None,
                 "error": error_msg if step_status == "failed" else None,
             }]
@@ -318,6 +334,7 @@ def process_report_data(
             "jira_id": jira_id,
             "user_story": user_story,
             "outcome": outcome,
+            "xfail_reason": xfail_reason,
             "duration": duration,
             "error_msg": error_msg,
             "video_path": str(video_path) if video_path else None,
@@ -370,7 +387,13 @@ def process_report_data(
     all_steps = [s for t in processed_tests for s in t.get("steps", [])]
     total_steps = len(all_steps)
     passed_steps = sum(1 for s in all_steps if s.get("status") == "passed")
-    failed_steps = sum(1 for s in all_steps if s.get("status") == "failed")
+    # Only count steps as failed if the test itself actually failed (not xfailed)
+    failed_steps = sum(
+        1 for t in processed_tests if t.get("outcome") == "failed" for s in t.get("steps", []) if s.get("status") == "failed"
+    )
+    xfailed_steps = sum(
+        1 for t in processed_tests if t.get("outcome") in ("xfailed", "xfail") for s in t.get("steps", []) if s.get("status") in ("failed", "xfailed")
+    )
 
     return {
         "summary": summary,
@@ -378,6 +401,8 @@ def process_report_data(
         "passed": passed,
         "failed": failed,
         "skipped": skipped,
+        "xfailed": xfailed,
+        "xpassed": xpassed,
         "pass_rate": pass_rate,
         "overall_status": overall_status,
         "total_duration": total_duration,
@@ -392,4 +417,5 @@ def process_report_data(
         "total_steps": total_steps,
         "passed_steps": passed_steps,
         "failed_steps": failed_steps,
+        "xfailed_steps": xfailed_steps,
     }

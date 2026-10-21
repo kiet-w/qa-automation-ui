@@ -67,7 +67,7 @@ window.collapseAllTests = function () {
     });
 };
 
-// Status Filter (All / Passed / Failed)
+// Status Filter (All / Passed / XFailed / Failed)
 window.filterTests = function (status) {
     document.querySelectorAll(".filter-btn").forEach(btn => {
         if (btn.getAttribute("data-filter") === status) {
@@ -78,8 +78,21 @@ window.filterTests = function (status) {
     });
 
     document.querySelectorAll(".test-item-card").forEach(card => {
-        const cardStatus = card.getAttribute("data-status") || "";
-        if (status === "all" || cardStatus === status) {
+        const cardStatus = (card.getAttribute("data-status") || "").toLowerCase();
+        let matches = false;
+        if (status === "all") {
+            matches = true;
+        } else if (status === "xfailed") {
+            matches = (cardStatus === "xfailed" || cardStatus === "xfail");
+        } else if (status === "passed") {
+            matches = (cardStatus === "passed");
+        } else if (status === "failed") {
+            matches = (cardStatus === "failed");
+        } else {
+            matches = (cardStatus === status);
+        }
+
+        if (matches) {
             card.classList.remove("is-hidden");
         } else {
             card.classList.add("is-hidden");

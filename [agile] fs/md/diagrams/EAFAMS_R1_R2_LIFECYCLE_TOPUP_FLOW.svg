@@ -1,0 +1,189 @@
+<svg viewBox="0 0 1180 560" class="w-full h-auto select-none font-sans" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="d2-title d2-desc">
+  <title id="d2-title">EAFAMS R1 EA Lifecycle and R2 Top-Up Pipeline</title>
+  <desc id="d2-desc">Detailed state lifecycle of Singaporean student Education Accounts from creation to closure, plus individual, bulk campaign and correction top-up flows</desc>
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#0E1524"/>
+    </linearGradient>
+    <linearGradient id="zone-hq" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-school" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-engine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#818cf8" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ext" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="zone-ledger" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#c084fc" stop-opacity="0.02"/>
+    </linearGradient>
+
+    <!-- Markers -->
+    <marker id="m-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="m-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="m-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="m-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#c084fc"/>
+    </marker>
+    <marker id="m-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+</defs>
+  <rect width="100%" height="100%" rx="14" fill="url(#bg-grad)"/>
+  
+  <!-- STAGE HEADER -->
+  <rect x="0" y="0" width="1180" height="42" fill="#151C2C" rx="14" />
+  <rect x="0" y="32" width="1180" height="10" fill="#151C2C" />
+  <line x1="0" y1="42" x2="1180" y2="42" stroke="#1e293b" stroke-width="1.2"/>
+  <circle cx="24" cy="21" r="5" fill="#f43f5e"/>
+  <circle cx="40" cy="21" r="5" fill="#f59e0b"/>
+  <circle cx="56" cy="21" r="5" fill="#10b981"/>
+  <text x="76" y="25" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="12" font-weight="600">R1 &amp; R2 PIPELINE // EDUCATION ACCOUNT LIFECYCLE, TOP-UP CAMPAIGNS &amp; CORRECTION</text>
+  <rect x="1000" y="10" width="165" height="22" rx="4" fill="#0369a1" fill-opacity="0.3" stroke="#38bdf8" stroke-width="1"/>
+  <text x="1083" y="25" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="10.5" font-weight="700" text-anchor="middle">FINANCIAL CORE</text>
+
+
+  <!-- ZONES -->
+  <rect x="30" y="60" width="540" height="475" rx="12" fill="url(#zone-hq)" stroke="#38bdf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="50" y="52" width="220" height="18" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+  <text x="160" y="65" fill="#38bdf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">🏛️ R1: EA LIFECYCLE STATE ENGINE</text>
+
+  <rect x="600" y="60" width="550" height="475" rx="12" fill="url(#zone-engine)" stroke="#818cf8" stroke-width="1" stroke-dasharray="4 4"/>
+  <rect x="620" y="52" width="210" height="18" rx="4" fill="#0f172a" stroke="#818cf8" stroke-width="1"/>
+  <text x="725" y="65" fill="#818cf8" font-family="'Geist', sans-serif" font-size="10.5" font-weight="700" text-anchor="middle">💳 R2: TOP-UP &amp; LEDGER WRITES</text>
+
+  <!-- CONNECTORS (R1 Lifecycle) -->
+  <path d="M 160 145 L 160 185" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 160 255 L 160 295" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Active to Backend Check -->
+  <path d="M 270 330 L 320 330" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+
+  <!-- Decision Check: No (Stay Active) vs Yes (Close) -->
+  <path d="M 425 295 L 425 240 Q 425 232 417 232 L 270 232" stroke="#10b981" stroke-width="1.8" stroke-dasharray="4 3" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 425 365 L 425 415" stroke="#f43f5e" stroke-width="1.8" fill="none" marker-end="url(#m-rose)"/>
+
+  <!-- Closed to CPF -->
+  <path d="M 425 485 L 425 500 Q 425 508 417 508 L 270 508" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+
+  <!-- R2 Connectors -->
+  <path d="M 750 145 L 750 185" stroke="#38bdf8" stroke-width="1.8" fill="none" marker-end="url(#m-sky)"/>
+  <path d="M 990 145 L 990 185" stroke="#818cf8" stroke-width="1.8" fill="none" marker-end="url(#m-purple)"/>
+
+  <!-- Execution to Ledger F1 -->
+  <path d="M 750 255 L 750 300 Q 750 308 758 308 L 860 308" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+  <path d="M 990 255 L 990 300 Q 990 308 982 308 L 860 308" stroke="#10b981" stroke-width="1.8" fill="none" marker-end="url(#m-emerald)"/>
+
+  <!-- Ledger F1 to Correction -->
+  <path d="M 870 375 L 870 415" stroke="#f59e0b" stroke-width="1.8" fill="none" marker-end="url(#m-amber)"/>
+
+  <!-- Connector Masks & Badges -->
+  <rect x="390" y="248" width="70" height="16" rx="3" fill="#0f172a" stroke="#059669" stroke-width="0.8"/>
+  <text x="425" y="260" fill="#10b981" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">&lt; 16 &amp; SC</text>
+
+  <rect x="382" y="380" width="86" height="16" rx="3" fill="#0f172a" stroke="#be123c" stroke-width="0.8"/>
+  <text x="425" y="392" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">&gt;=16 OR NON-SC</text>
+
+  <!-- ==================== R1 NODES ==================== -->
+  <g id="r1-gov-api">
+    <rect x="50" y="85" width="220" height="60" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="65" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">Mock Citizen API</text>
+    <text x="65" y="124" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Initial Sync: 7-15 SC Citizens</text>
+    <text x="65" y="138" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• Daily 00:00 SGT Incremental (Age 7)</text>
+  </g>
+
+  <g id="r1-student-profile">
+    <rect x="50" y="185" width="220" height="70" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.2"/>
+    <text x="65" y="208" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">Student Profile Creation</text>
+    <text x="65" y="226" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Validates Unique NRIC</text>
+    <text x="65" y="242" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Duplicate Prevention Index</text>
+  </g>
+
+  <g id="r1-active-ea">
+    <rect x="50" y="295" width="220" height="70" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="195" y="303" width="65" height="16" rx="3" fill="#047857"/>
+    <text x="227" y="314" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">ACTIVE</text>
+    <text x="65" y="318" fill="#34d399" font-family="'Geist', sans-serif" font-size="12" font-weight="800">EA Account Opened</text>
+    <text x="65" y="336" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">Initial Balance: SGD 0.00</text>
+    <text x="65" y="352" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">Read-write transactions allowed</text>
+  </g>
+
+  <g id="r1-backend-check">
+    <rect x="320" y="295" width="210" height="70" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="335" y="318" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">Backend Closure Check</text>
+    <text x="335" y="336" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Pre-flight hook on every API</text>
+    <text x="335" y="352" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• Real-time DOB &amp; SC Verification</text>
+  </g>
+
+  <g id="r1-closed-ea">
+    <rect x="320" y="415" width="210" height="70" rx="6" fill="#1e293b" stroke="#f43f5e" stroke-width="1.8"/>
+    <rect x="455" y="423" width="65" height="16" rx="3" fill="#be123c"/>
+    <text x="487" y="434" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">CLOSED</text>
+    <text x="335" y="438" fill="#f43f5e" font-family="'Geist', sans-serif" font-size="12" font-weight="800">EA Status: CLOSED</text>
+    <text x="335" y="456" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">Actual Closure Date stamped</text>
+    <text x="335" y="472" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">Blocks Top-Up &amp; Payment</text>
+  </g>
+
+  <g id="r1-cpf-transfer">
+    <rect x="50" y="475" width="220" height="50" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.2"/>
+    <text x="65" y="496" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11" font-weight="700">CPF Payout / Closure Deferred</text>
+    <text x="65" y="512" fill="#fbbf24" font-family="'Geist Mono', monospace" font-size="8.5">Remaining Balance -> CPF Account</text>
+  </g>
+
+  <!-- ==================== R2 NODES ==================== -->
+  <g id="r2-individual">
+    <rect x="630" y="85" width="240" height="60" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="645" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F2.1 Individual Top-Up</text>
+    <text x="645" y="124" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Exact NRIC / Account Lookup</text>
+    <text x="645" y="138" fill="#38bdf8" font-family="'Geist Mono', monospace" font-size="9">• IdempotencyKey + FundingRef</text>
+  </g>
+
+  <g id="r2-bulk">
+    <rect x="880" y="85" width="250" height="60" rx="6" fill="#1e293b" stroke="#818cf8" stroke-width="1.2"/>
+    <text x="895" y="108" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="11.5" font-weight="700">F2.4 Bulk Top-Up Campaign</text>
+    <text x="895" y="124" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• AND Filters: Age + Bal + Enrolment</text>
+    <text x="895" y="138" fill="#818cf8" font-family="'Geist Mono', monospace" font-size="9">• Budget Limit Check &amp; Preview</text>
+  </g>
+
+  <g id="r2-execution">
+    <rect x="630" y="185" width="500" height="70" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="1.4"/>
+    <text x="645" y="208" fill="#f8fafc" font-family="'Geist', sans-serif" font-size="12" font-weight="700">Campaign Execution Engine (F2.7)</text>
+    <text x="645" y="226" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Modes: Run Now | Scheduled Once | Recurring (Monthly / Quarterly / Annual)</text>
+    <text x="645" y="242" fill="#10b981" font-family="'Geist Mono', monospace" font-size="9">• Atomic sequential execution | Results: Successful, Skipped (Exceed Budget), Failed</text>
+  </g>
+
+  <g id="r2-ledger-f1">
+    <rect x="680" y="305" width="400" height="70" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+    <rect x="1005" y="313" width="65" height="16" rx="3" fill="#047857"/>
+    <text x="1037" y="324" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">POSTED</text>
+    <text x="700" y="328" fill="#34d399" font-family="'Geist', sans-serif" font-size="12" font-weight="800">Double-Entry Ledger Credit (Function 1)</text>
+    <text x="700" y="346" fill="#f8fafc" font-family="'Geist Mono', monospace" font-size="9">Immutable Credit: DR Treasury / CR Student EA</text>
+    <text x="700" y="362" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">Effective Amount = Original - Total Corrected</text>
+  </g>
+
+  <g id="r2-correction">
+    <rect x="680" y="415" width="400" height="95" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="995" y="423" width="75" height="16" rx="3" fill="#b45309"/>
+    <text x="1032" y="434" fill="#ffffff" font-family="'Geist Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">CORRECTION</text>
+    <text x="700" y="438" fill="#fbbf24" font-family="'Geist', sans-serif" font-size="12" font-weight="700">F2.3 Top-Up Correction Safeguard</text>
+    <text x="700" y="456" fill="#94a3b8" font-family="'Geist Mono', monospace" font-size="9">• Targets original Successful top-up | Keeps transaction immutable</text>
+    <text x="700" y="472" fill="#f43f5e" font-family="'Geist Mono', monospace" font-size="9" font-weight="700">• BALANCE CONSTRAINT: Correction Amount &lt;= Available Balance</text>
+    <text x="700" y="490" fill="#64748b" font-family="'Geist Mono', monospace" font-size="8.5">Prevents negative account balance if parent spent funds on fees</text>
+  </g>
+
+</svg>

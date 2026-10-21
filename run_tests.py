@@ -219,6 +219,7 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
     total = 0
     passed = 0
     failed = 0
+    xfailed = 0
     skipped = 0
     error = 0
     duration = None
@@ -232,6 +233,7 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
             total = summary.get("total", summary.get("collected", 0))
             passed = summary.get("passed", 0)
             failed = summary.get("failed", 0)
+            xfailed = summary.get("xfailed", 0)
             skipped = summary.get("skipped", 0)
             error = summary.get("error", 0)
             duration = data.get("duration", None)
@@ -250,6 +252,7 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
         total = len(tests_summary)
         passed = sum(1 for _, out, _ in tests_summary if out == "PASSED")
         failed = sum(1 for _, out, _ in tests_summary if out == "FAILED")
+        xfailed = sum(1 for _, out, _ in tests_summary if out == "XFAILED")
         skipped = sum(1 for _, out, _ in tests_summary if out == "SKIPPED")
 
     status_color = GREEN if pytest_returncode == 0 else RED
@@ -261,9 +264,11 @@ def print_summary(base_dir: Path, pytest_returncode: int, report_json_path: str)
     print(f"  Overall Status : {status_color}{BOLD}[{status_text}]{RESET}")
     print(f"  Exit Code      : {status_color}{pytest_returncode}{RESET}")
 
-    if total > 0 or passed > 0 or failed > 0:
+    if total > 0 or passed > 0 or failed > 0 or xfailed > 0:
         print(f"  Total Tests    : {BOLD}{total}{RESET}")
         print(f"  Passed         : {GREEN}{BOLD}{passed}{RESET}")
+        if xfailed > 0:
+            print(f"  XFailed (Bugs) : {YELLOW}{BOLD}{xfailed}{RESET} (Known Product Defects captured)")
         if failed > 0:
             print(f"  Failed         : {RED}{BOLD}{failed}{RESET}")
         else:

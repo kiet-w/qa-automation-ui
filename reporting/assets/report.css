@@ -26,6 +26,8 @@
     --status-fail-bg: rgba(207, 34, 46, 0.12);
     --status-skip: #9a6700;
     --status-skip-bg: rgba(154, 103, 0, 0.12);
+    --status-xfail: #bf8700;
+    --status-xfail-bg: rgba(191, 135, 0, 0.15);
     --status-warning: #9a6700;
     --status-warning-bg: rgba(154, 103, 0, 0.12);
     --status-info: #0969da;
@@ -67,6 +69,8 @@
     --status-fail-bg: rgba(248, 81, 73, 0.15);
     --status-skip: #d29922;
     --status-skip-bg: rgba(210, 153, 34, 0.15);
+    --status-xfail: #d29922;
+    --status-xfail-bg: rgba(210, 153, 34, 0.2);
     --status-warning: #d29922;
     --status-warning-bg: rgba(210, 153, 34, 0.15);
     --status-info: #1f6feb;
@@ -404,6 +408,7 @@ body {
 
 .kpi-card.kpi-pass { border-left-color: var(--status-pass); }
 .kpi-card.kpi-fail { border-left-color: var(--status-fail); }
+.kpi-card.kpi-xfail { border-left-color: var(--status-xfail); }
 .kpi-card.kpi-time { border-left-color: var(--border-color); }
 .kpi-card.kpi-dur  { border-left-color: var(--accent-primary); }
 
@@ -439,6 +444,11 @@ body {
 
 .sub-pill-fail {
     color: var(--status-fail);
+    font-weight: 600;
+}
+
+.sub-pill-xfail {
+    color: var(--status-xfail);
     font-weight: 600;
 }
 
@@ -505,6 +515,7 @@ body {
 
 .dot-indicator.dot-pass { background-color: var(--status-pass); }
 .dot-indicator.dot-fail { background-color: var(--status-fail); }
+.dot-indicator.dot-xfail { background-color: var(--status-xfail); }
 .dot-indicator.dot-skip { background-color: var(--status-skip); }
 
 /* Pipeline Section */
@@ -690,8 +701,13 @@ body {
     color: var(--status-fail);
 }
 
+.filter-count.count-xfail {
+    color: var(--status-xfail);
+}
+
 .filter-btn.active .filter-count.count-pass,
-.filter-btn.active .filter-count.count-fail {
+.filter-btn.active .filter-count.count-fail,
+.filter-btn.active .filter-count.count-xfail {
     color: #ffffff;
 }
 
@@ -807,6 +823,16 @@ body {
 
 .badge-status-lg.badge-fail {
     background-color: var(--status-fail);
+    color: #ffffff;
+}
+
+.badge-status-lg.badge-xfail {
+    background-color: var(--status-xfail);
+    color: #ffffff;
+}
+
+.badge-status-lg.badge-skip {
+    background-color: var(--status-skip);
     color: #ffffff;
 }
 
@@ -960,6 +986,29 @@ body {
     justify-content: space-between;
 }
 
+.speed-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.speed-pill:hover {
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
+.speed-pill.active {
+    background: var(--accent-primary);
+    color: #ffffff;
+    border-color: var(--accent-primary);
+}
+
 .video-title {
     display: flex;
     align-items: center;
@@ -1060,6 +1109,12 @@ body {
     background-color: var(--status-skip-bg);
     color: var(--status-skip);
     border: 1px solid var(--status-skip);
+}
+
+.badge-status-pill.badge-xfail {
+    background-color: var(--status-xfail-bg);
+    color: var(--status-xfail);
+    border: 1px solid var(--status-xfail);
 }
 
 /* Timestamp in Table (Click to seek) */

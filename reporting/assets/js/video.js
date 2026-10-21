@@ -99,3 +99,32 @@ window.syncVideoWithDiagram = function (testIdx, currentTime) {
         }
     });
 };
+
+// Video Speed Control (0.5x, 0.75x, 1.0x)
+window.setVideoSpeed = function (testIdx, speed) {
+    const video = document.getElementById(`video-player-${testIdx}`);
+    if (video) {
+        video.playbackRate = speed;
+        video.dataset.userSpeedSet = "true";
+    }
+    const container = document.getElementById(`video-section-${testIdx}`);
+    if (container) {
+        container.querySelectorAll(".speed-pill").forEach(btn => {
+            const val = parseFloat(btn.textContent);
+            if (Math.abs(val - speed) < 0.01) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+        });
+    }
+};
+
+// Default slow playback (0.75x) so users easily follow automated UI steps
+document.addEventListener("play", function (e) {
+    if (e.target && e.target.tagName === "VIDEO") {
+        if (!e.target.dataset.userSpeedSet) {
+            e.target.playbackRate = 0.75;
+        }
+    }
+}, true);

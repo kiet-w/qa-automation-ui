@@ -26,11 +26,13 @@ def build_extent_kpi_and_charts_html(parsed: Dict[str, Any]) -> str:
     passed_tests = parsed.get("passed", 0)
     failed_tests = parsed.get("failed", 0)
     skipped_tests = parsed.get("skipped", 0)
+    xfailed_tests = parsed.get("xfailed", 0)
 
     steps = parsed.get("primary_steps", [])
     total_steps = parsed.get("total_steps") or len(steps)
     passed_steps = parsed.get("passed_steps", sum(1 for s in steps if s.get("status") == "passed"))
     failed_steps = parsed.get("failed_steps", sum(1 for s in steps if s.get("status") == "failed"))
+    xfailed_steps = parsed.get("xfailed_steps", sum(1 for s in steps if s.get("status") in ("failed", "xfailed")))
 
     total_duration = parsed.get("total_duration", 0.0)
     created_str = parsed.get("created_str", "-")
@@ -42,27 +44,40 @@ def build_extent_kpi_and_charts_html(parsed: Dict[str, Any]) -> str:
         passed=passed_tests if total_tests > 1 else passed_steps,
         failed=failed_tests if total_tests > 1 else failed_steps,
         skipped=skipped_tests,
+        xfailed=xfailed_tests if total_tests > 1 else xfailed_steps,
     )
     bar_svg = generate_duration_bar_chart_svg(parsed.get("bar_items", []))
     pipeline_svg = generate_pipeline_svg(steps, test_idx=0)
 
     # Dynamic KPI Card status classes and sub-stats
-    tests_card_class = "kpi-fail" if failed_tests > 0 else "kpi-pass"
-    steps_card_class = "kpi-fail" if failed_steps > 0 else "kpi-pass"
+    tests_card_class = "kpi-fail" if failed_tests > 0 else ("kpi-xfail" if xfailed_tests > 0 else "kpi-pass")
+    steps_card_class = "kpi-fail" if failed_steps > 0 else ("kpi-xfail" if xfailed_steps > 0 else "kpi-pass")
 
+    tests_sub_parts = []
     if failed_tests > 0:
-        tests_sub_stats = f'<span class="sub-pill-fail">{failed_tests} failed</span>'
-        if passed_tests > 0:
-            tests_sub_stats += f' <span class="sub-pill-pass">{passed_tests} <span data-i18n="lbl_passed">passed</span></span>'
-    else:
-        tests_sub_stats = f'<span class="sub-pill-pass">{passed_tests} <span data-i18n="lbl_passed">passed</span></span>'
+        tests_sub_parts.append(f'<span class="sub-pill-fail">{failed_tests} failed</span>')
+    if xfailed_tests > 0:
+        tests_sub_parts.append(
+            f'<span class="sub-pill-xfail">{xfailed_tests} <span data-i18n="lbl_xfailed">xfailed (bugs)</span></span>'
+        )
+    if passed_tests > 0:
+        tests_sub_parts.append(
+            f'<span class="sub-pill-pass">{passed_tests} <span data-i18n="lbl_passed">passed</span></span>'
+        )
+    tests_sub_stats = " ".join(tests_sub_parts) if tests_sub_parts else f'<span class="sub-pill-pass">{passed_tests} <span data-i18n="lbl_passed">passed</span></span>'
 
+    steps_sub_parts = []
     if failed_steps > 0:
-        steps_sub_stats = f'<span class="sub-pill-fail">{failed_steps} failed</span>'
-        if passed_steps > 0:
-            steps_sub_stats += f' <span class="sub-pill-pass">{passed_steps} <span data-i18n="lbl_passed">passed</span></span>'
-    else:
-        steps_sub_stats = f'<span class="sub-pill-pass">{passed_steps} <span data-i18n="lbl_passed">passed</span></span>'
+        steps_sub_parts.append(f'<span class="sub-pill-fail">{failed_steps} failed</span>')
+    if xfailed_steps > 0:
+        steps_sub_parts.append(
+            f'<span class="sub-pill-xfail">{xfailed_steps} <span data-i18n="lbl_xfailed_steps">xfailed</span></span>'
+        )
+    if passed_steps > 0:
+        steps_sub_parts.append(
+            f'<span class="sub-pill-pass">{passed_steps} <span data-i18n="lbl_passed">passed</span></span>'
+        )
+    steps_sub_stats = " ".join(steps_sub_parts) if steps_sub_parts else f'<span class="sub-pill-pass">{passed_steps} <span data-i18n="lbl_passed">passed</span></span>'
 
     return f"""
     <!-- 4 KPI Summary Cards -->
@@ -130,6 +145,10 @@ def build_extent_kpi_and_charts_html(parsed: Dict[str, Any]) -> str:
                     <div class="legend-dot-item">
                         <div class="dot-indicator dot-fail"></div>
                         <span data-i18n="lbl_legend_fail">Failed</span>
+                    </div>
+                    <div class="legend-dot-item">
+                        <div class="dot-indicator dot-xfail"></div>
+                        <span data-i18n="lbl_legend_xfail">XFailed (Bugs)</span>
                     </div>
                     <div class="legend-dot-item">
                         <div class="dot-indicator dot-skip"></div>

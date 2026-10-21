@@ -1,0 +1,232 @@
+<svg viewBox="0 0 1200 920" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="gradAdmin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="gradeService" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1d2e" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#1e3a5f" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="gradAI" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#2e1065" stop-opacity="0.9"/>
+    </linearGradient>
+    
+    <!-- Markers -->
+    <marker id="arrow-sky" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10b981"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#a855f7"/>
+    </marker>
+    <marker id="arrow-rose" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#f43f5e"/>
+    </marker>
+    <marker id="arrow-slate" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Solid Canvas Background -->
+  <rect width="100%" height="100%" rx="16" fill="#0B101B"/>
+
+  <!-- Top Window Controls / Header -->
+  <circle cx="24" cy="24" r="6" fill="#ef4444"/>
+  <circle cx="42" cy="24" r="6" fill="#f59e0b"/>
+  <circle cx="60" cy="24" r="6" fill="#10b981"/>
+  <text x="80" y="29" fill="#94a3b8" font-size="13" font-weight="600" letter-spacing="0.5">EAFAMS ARCHITECTURE &amp; END-TO-END DATAFLOW (R1 – R10)</text>
+  <rect x="1040" y="14" width="136" height="22" rx="11" fill="#1e293b" stroke="#334155"/>
+  <text x="1108" y="29" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">MOE SINGAPORE</text>
+
+  <!-- ================= TIER 1: EXTERNAL SYSTEMS & GOV INTEGRATION ================= -->
+  <rect x="30" y="50" width="1140" height="80" rx="10" fill="#0f172a" stroke="#334155" stroke-dasharray="4 4" stroke-width="1.5"/>
+  <text x="45" y="72" fill="#64748b" font-size="11" font-weight="700">GOVERNMENT &amp; THIRD-PARTY PLATFORMS</text>
+
+  <!-- Ext 1: Citizen DB -->
+  <rect x="50" y="82" width="190" height="36" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="145" y="104" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle">🏛️ Mock Gov Citizen API (ICA)</text>
+
+  <!-- Ext 2: MOE AD SSO -->
+  <rect x="260" y="82" width="180" height="36" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="350" y="104" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle">🔐 MOE Active Directory (SSO)</text>
+
+  <!-- Ext 3: SingPass -->
+  <rect x="460" y="82" width="190" height="36" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="555" y="104" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle">🆔 SingPass OIDC Identity</text>
+
+  <!-- Ext 4: Sandbox Payment Gateway -->
+  <rect x="670" y="82" width="230" height="36" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="785" y="104" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle">💳 Sandbox Online Gateway (PayNow/Card)</text>
+
+  <!-- Ext 5: CPF Board -->
+  <rect x="920" y="82" width="230" height="36" rx="6" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="1035" y="104" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle">🏦 CPF Board (Transfer at Age 16)</text>
+
+  <!-- ================= TIER 2: ADMIN PORTAL (F1 - F7) ================= -->
+  <rect x="30" y="150" width="1140" height="350" rx="12" fill="url(#gradAdmin)" stroke="#1e3a8a" stroke-width="1.5"/>
+  <rect x="45" y="162" width="180" height="24" rx="6" fill="#1e3a8a"/>
+  <text x="135" y="178" fill="#60a5fa" font-size="11" font-weight="700" text-anchor="middle">ADMIN PORTAL (MOE HQ &amp; SCHOOL)</text>
+
+  <!-- Box R1: EA Lifecycle -->
+  <rect x="50" y="200" width="250" height="110" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="60" y="210" width="40" height="18" rx="4" fill="#0284c7"/>
+  <text x="80" y="223" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R1</text>
+  <text x="110" y="223" fill="#f8fafc" font-size="12" font-weight="700">EA Lifecycle Management</text>
+  <text x="60" y="246" fill="#94a3b8" font-size="10">• Daily 00:00 SGT Sync (7yo Activation)</text>
+  <text x="60" y="262" fill="#94a3b8" font-size="10">• Backend-Triggered Check (Financial protection)</text>
+  <text x="60" y="278" fill="#94a3b8" font-size="10">• 16yo Auto-Closure &amp; CPF Transfer</text>
+  <text x="60" y="294" fill="#38bdf8" font-size="9" font-weight="600">Status: ACTIVE / CLOSED / PENDING_CPF</text>
+
+  <!-- Box R2: Top-Up Management -->
+  <rect x="320" y="200" width="250" height="110" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="330" y="210" width="40" height="18" rx="4" fill="#0284c7"/>
+  <text x="350" y="223" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R2</text>
+  <text x="380" y="223" fill="#f8fafc" font-size="12" font-weight="700">Top-Up Management</text>
+  <text x="330" y="246" fill="#94a3b8" font-size="10">• Bulk Campaign (Rules: Age, Bal, Enrolled)</text>
+  <text x="330" y="262" fill="#94a3b8" font-size="10">• Preview &amp; Budget Limit Cap Enforcement</text>
+  <text x="330" y="278" fill="#94a3b8" font-size="10">• Individual Top-Up &amp; Top-up Correction</text>
+  <text x="330" y="294" fill="#10b981" font-size="9" font-weight="600">Ledger: Credit / Debit Adjustment (No-neg)</text>
+
+  <!-- Box R3: School, Student & Fee -->
+  <rect x="590" y="200" width="280" height="110" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="600" y="210" width="40" height="18" rx="4" fill="#0284c7"/>
+  <text x="620" y="223" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R3</text>
+  <text x="650" y="223" fill="#f8fafc" font-size="12" font-weight="700">School, Student &amp; Fee Setup</text>
+  <text x="600" y="246" fill="#94a3b8" font-size="10">• School, Offering, Class, Enrolment (SC Link)</text>
+  <text x="600" y="262" fill="#94a3b8" font-size="10">• Fee Rules (Level P1-S4 &amp; Citizenship SC/PR/IS)</text>
+  <text x="600" y="278" fill="#94a3b8" font-size="10">• Fee Publication $ightarrow$ Student Charges (POSTED)</text>
+  <text x="600" y="294" fill="#eab308" font-size="9" font-weight="600">Generates Outstanding Fees (Gross / GST)</text>
+
+  <!-- Box R7: User Simulation -->
+  <rect x="890" y="200" width="260" height="110" rx="8" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+  <rect x="900" y="210" width="40" height="18" rx="4" fill="#475569"/>
+  <text x="920" y="223" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R7</text>
+  <text x="950" y="223" fill="#f8fafc" font-size="12" font-weight="700">User View Simulation</text>
+  <text x="900" y="246" fill="#94a3b8" font-size="10">• Impersonate School User or Parent</text>
+  <text x="900" y="262" fill="#94a3b8" font-size="10">• Read-only Safe Mode (Zero state change)</text>
+  <text x="900" y="278" fill="#94a3b8" font-size="10">• Visual inspection for MOE Tech Support</text>
+  <text x="900" y="294" fill="#cbd5e1" font-size="9" font-weight="600">Safety Banner: SIMULATION_ACTIVE</text>
+
+  <!-- Row 2 in Admin: FAS Processing (R4, R5, R6) -->
+  <!-- Box R4: FAS Applications & ML Engine -->
+  <rect x="50" y="330" width="400" height="150" rx="8" fill="url(#gradAI)" stroke="#a855f7" stroke-width="1.5"/>
+  <rect x="60" y="340" width="40" height="18" rx="4" fill="#9333ea"/>
+  <text x="80" y="353" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R4</text>
+  <text x="110" y="353" fill="#f8fafc" font-size="12" font-weight="700">FAS Applications &amp; AI Decision Engine</text>
+  <text x="60" y="376" fill="#cbd5e1" font-size="10">• Auto-Grant MOEFAS: GHI $\le$ ,000 OR PCI $\le$ ,000</text>
+  <text x="60" y="392" fill="#cbd5e1" font-size="10">• SBFAS School Review Drawer (School Admin)</text>
+  <rect x="60" y="402" width="380" height="66" rx="6" fill="#1e1b4b" stroke="#7e22ce"/>
+  <text x="70" y="418" fill="#e9d5ff" font-size="10" font-weight="700">🤖 ML Need Score Engine (Deterministic Score 0-100)</text>
+  <text x="70" y="434" fill="#d8b4fe" font-size="9.5">Risk Tiers: Low / Medium / High Risk</text>
+  <text x="70" y="450" fill="#d8b4fe" font-size="9.5">Suggested Tier &amp; Confidence Rating $ightarrow$ Reviewer decision support</text>
+  <text x="70" y="462" fill="#a855f7" font-size="8.5" font-weight="700">Trigger: Student Charge Adjustment (F16 Subsidy deduction)</text>
+
+  <!-- Box R5: Hardcopy FAS Capture -->
+  <rect x="470" y="330" width="330" height="150" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+  <rect x="480" y="340" width="40" height="18" rx="4" fill="#d97706"/>
+  <text x="500" y="353" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R5</text>
+  <text x="530" y="353" fill="#f8fafc" font-size="12" font-weight="700">Hardcopy FAS Capture (Offline)</text>
+  <text x="480" y="376" fill="#94a3b8" font-size="10">• Paper application reception by School Admin</text>
+  <text x="480" y="392" fill="#94a3b8" font-size="10">• Simulated OCR: Auto-extracts scanned fields</text>
+  <text x="480" y="408" fill="#94a3b8" font-size="10">• Pre-fills Form &amp; De-dups against Online filings</text>
+  <text x="480" y="428" fill="#f59e0b" font-size="9.5" font-weight="600">Same review pipeline as Online (R4 assessment)</text>
+
+  <!-- Box R6: Budget & Statistics -->
+  <rect x="820" y="330" width="330" height="150" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+  <rect x="830" y="340" width="40" height="18" rx="4" fill="#d97706"/>
+  <text x="850" y="353" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R6</text>
+  <text x="880" y="353" fill="#f8fafc" font-size="12" font-weight="700">Budget &amp; Statistics Tracking</text>
+  <text x="830" y="376" fill="#94a3b8" font-size="10">• MOEFAS Nationwide Budget (MOE HQ Managed)</text>
+  <text x="830" y="392" fill="#94a3b8" font-size="10">• SBFAS School Budget (School Admin Managed)</text>
+  <text x="830" y="408" fill="#94a3b8" font-size="10">• Real-time remaining budget subtraction on Grant</text>
+  <text x="830" y="428" fill="#ef4444" font-size="9.5" font-weight="700">Alert Thresholds: 80% (Warning), 95%, 100% (Block)</text>
+  <text x="830" y="444" fill="#94a3b8" font-size="9">MOEFAS exhausted $ightarrow$ 'Eligible - Insufficient Budget' $ightarrow$ SBFAS</text>
+
+  <!-- ================= TIER 3: e-SERVICE PORTAL (F8 - F10) ================= -->
+  <rect x="30" y="530" width="1140" height="350" rx="12" fill="url(#gradeService)" stroke="#0284c7" stroke-width="1.5"/>
+  <rect x="45" y="542" width="210" height="24" rx="6" fill="#0369a1"/>
+  <text x="150" y="558" fill="#7dd3fc" font-size="11" font-weight="700" text-anchor="middle">e-SERVICE PORTAL (PARENTS &amp; GUARDIANS)</text>
+
+  <!-- Box R8: Parent Portal & Profile -->
+  <rect x="50" y="580" width="360" height="160" rx="8" fill="#0b1523" stroke="#38bdf8" stroke-width="1.5"/>
+  <rect x="60" y="590" width="40" height="18" rx="4" fill="#0284c7"/>
+  <text x="80" y="603" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R8</text>
+  <text x="110" y="603" fill="#f8fafc" font-size="12" font-weight="700">Parent Portal (SingPass &amp; Profile)</text>
+  <text x="60" y="626" fill="#94a3b8" font-size="10">• SingPass Login $ightarrow$ On-demand Mock API Sync</text>
+  <text x="60" y="642" fill="#94a3b8" font-size="10">• Home Bento Cards: Available Balance, Pending, Fees</text>
+  <text x="60" y="658" fill="#94a3b8" font-size="10">• Age 16 Constraint: Read-only transition</text>
+  <text x="60" y="674" fill="#94a3b8" font-size="10">• My Details: Editable Mailing vs Locked Residential</text>
+  <rect x="60" y="686" width="340" height="44" rx="4" fill="#1e1b4b" stroke="#9333ea"/>
+  <text x="70" y="702" fill="#e9d5ff" font-size="9.5" font-weight="700">🤖 AI Interactive Chatbot (Feature AI 1)</text>
+  <text x="70" y="718" fill="#d8b4fe" font-size="9">Context-aware FAQ &amp; Dynamic Follow-up Clarifications</text>
+
+  <!-- Box R10: Family Unit FAS Application -->
+  <rect x="430" y="580" width="330" height="160" rx="8" fill="#0b1523" stroke="#a855f7" stroke-width="1.5"/>
+  <rect x="440" y="590" width="45" height="18" rx="4" fill="#9333ea"/>
+  <text x="462" y="603" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R10</text>
+  <text x="495" y="603" fill="#f8fafc" font-size="12" font-weight="700">Family Unit FAS Application</text>
+  <text x="440" y="626" fill="#94a3b8" font-size="10">• Single submission covering all schooling children</text>
+  <text x="440" y="642" fill="#94a3b8" font-size="10">• Household income declared once (GHI / PCI)</text>
+  <rect x="440" y="654" width="310" height="44" rx="4" fill="#1e1b4b" stroke="#9333ea"/>
+  <text x="450" y="670" fill="#e9d5ff" font-size="9.5" font-weight="700">🤖 AI Form Auto-Fill (Feature AI 2)</text>
+  <text x="450" y="686" fill="#d8b4fe" font-size="9">Pulls from Profile &amp; Chat History (R8) $ightarrow$ Pre-filled Form</text>
+  <text x="440" y="716" fill="#a855f7" font-size="9.5" font-weight="600">Feeds into R4 Assessment Pipeline</text>
+
+  <!-- Box R9: Outstanding Fees & Payment Processing -->
+  <rect x="780" y="580" width="370" height="280" rx="8" fill="#0b1523" stroke="#10b981" stroke-width="1.5"/>
+  <rect x="790" y="590" width="40" height="18" rx="4" fill="#059669"/>
+  <text x="810" y="603" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">R9</text>
+  <text x="840" y="603" fill="#f8fafc" font-size="12" font-weight="700">Outstanding Fees &amp; Payment Engine</text>
+  <text x="790" y="626" fill="#94a3b8" font-size="10">• Invoice Creation (Locks Student Charges from R3)</text>
+  <text x="790" y="642" fill="#cbd5e1" font-size="10" font-weight="600">• 3 Payment Modes:</text>
+  <text x="805" y="658" fill="#10b981" font-size="9.5">1. 100% EA Balance (Instant ledger debit)</text>
+  <text x="805" y="674" fill="#38bdf8" font-size="9.5">2. 100% Online Sandbox Gateway (PayNow QR / Card)</text>
+  <text x="805" y="690" fill="#f59e0b" font-size="9.5" font-weight="700">3. Sequential Split Payment (EA First + Online Rest)</text>
+  
+  <!-- Sub-box Reversal -->
+  <rect x="790" y="704" width="350" height="80" rx="6" fill="#1c1917" stroke="#f43f5e" stroke-width="1.2"/>
+  <text x="800" y="722" fill="#fda4af" font-size="10" font-weight="700">🛡️ Sequential Split &amp; Auto-Reversal Protection</text>
+  <text x="800" y="738" fill="#fecdd3" font-size="9">Step 1: Debit EA balance (FundingLeg: EA, SUCCESS)</text>
+  <text x="800" y="752" fill="#fecdd3" font-size="9">Step 2: If Online Leg fails / cancelled / 10-min Timeout:</text>
+  <text x="800" y="768" fill="#f43f5e" font-size="9.5" font-weight="700">$ightarrow$ SYSTEM AUTOMATICALLY REVERSES EA DEBIT (REVERSAL)</text>
+  <text x="800" y="780" fill="#cbd5e1" font-size="8.5">Zero money loss. Charges unlocked back to POSTED.</text>
+
+  <text x="790" y="804" fill="#94a3b8" font-size="9.5">Webhook verification: HMAC-SHA256, Idempotency Key</text>
+  <text x="790" y="820" fill="#10b981" font-size="9.5" font-weight="600">Outcome: Invoice PAID, Itemized Tax Invoice / Receipt</text>
+
+  <!-- Bottom Dataflow Connectors & Labels -->
+  <!-- Line 1: Ext 1 -> R1 -->
+  <path d="M 145 118 L 145 200" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-sky)"/>
+  <!-- Line 2: Ext 2 -> Admin Portal -->
+  <path d="M 350 118 L 350 150" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-sky)"/>
+  <!-- Line 3: Ext 3 -> R8 -->
+  <path d="M 555 118 L 555 138 L 400 138 L 400 580" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-sky)"/>
+  <!-- Line 4: R1 -> Ext 5 (CPF) -->
+  <path d="M 175 200 L 175 138 L 1035 138 L 1035 118" stroke="#f43f5e" stroke-width="1.5" fill="none" marker-end="url(#arrow-rose)"/>
+  <!-- Line 5: R2 -> R1 (Credit EA) -->
+  <path d="M 320 255 L 300 255" stroke="#10b981" stroke-width="1.5" fill="none" marker-end="url(#arrow-emerald)"/>
+  <!-- Line 6: R3 -> R9 (Student Charges) -->
+  <path d="M 730 310 L 730 515 L 850 515 L 850 580" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-sky)"/>
+  <!-- Line 7: R4 -> R3/R9 (FAS Subsidy Adjustment) -->
+  <path d="M 250 480 L 250 510 L 920 510 L 920 580" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+  <!-- Line 8: R6 -> R4 (Budget Constraints) -->
+  <path d="M 820 405 L 450 405" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+  <!-- Line 9: R10 -> R4 (Online FAS Submission) -->
+  <path d="M 595 580 L 595 515 L 350 515 L 350 480" stroke="#a855f7" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+  <!-- Line 10: R5 -> R4 (Hardcopy FAS Submission) -->
+  <path d="M 470 405 L 450 405" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#arrow-amber)"/>
+  <!-- Line 11: R8 -> R10 (Profile & Chat Context) -->
+  <path d="M 410 660 L 430 660" stroke="#a855f7" stroke-width="1.5" fill="none" marker-end="url(#arrow-purple)"/>
+  <!-- Line 12: R8 -> R9 (EA Balance Traversal & Pay Action) -->
+  <path d="M 410 620 L 760 620 L 760 600 L 780 600" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-sky)"/>
+  <!-- Line 13: R9 -> Ext 4 (Sandbox Gateway) -->
+  <path d="M 1000 580 L 1000 515 L 785 515 L 785 118" stroke="#10b981" stroke-width="1.5" fill="none" marker-end="url(#arrow-emerald)"/>
+</svg>

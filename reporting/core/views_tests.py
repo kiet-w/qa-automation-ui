@@ -32,11 +32,21 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
     total_tests = len(processed_tests)
     passed_tests = sum(1 for t in processed_tests if t.get("outcome", "").lower() == "passed")
     failed_tests = sum(1 for t in processed_tests if t.get("outcome", "").lower() == "failed")
+    xfailed_tests = sum(1 for t in processed_tests if t.get("outcome", "").lower() in ("xfailed", "xfail"))
     has_failed = failed_tests > 0
 
     html_parts = []
 
     # 1. Top Toolbar with Summary, Filters, and Expand/Collapse Controls
+    xfail_btn_html = ""
+    if xfailed_tests > 0:
+        xfail_btn_html = f"""
+                <button class="filter-btn" data-filter="xfailed" onclick="filterTests('xfailed')" title="Show known bugs / XFailed tests only">
+                    <span data-i18n="filter_xfail">XFailed (Bugs)</span>
+                    <span class="filter-count count-xfail">{xfailed_tests}</span>
+                </button>
+        """
+
     toolbar_html = f"""
     <div class="test-suite-toolbar" id="section-video">
         <div class="toolbar-left">
@@ -60,6 +70,7 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                     <span data-i18n="filter_passed">Passed</span>
                     <span class="filter-count count-pass">{passed_tests}</span>
                 </button>
+{xfail_btn_html}
                 <button class="filter-btn" data-filter="failed" onclick="filterTests('failed')" title="Show failed tests only">
                     <span data-i18n="filter_failed">Failed</span>
                     <span class="filter-count count-fail">{failed_tests}</span>
@@ -105,7 +116,7 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
         elif t_status == "SKIPPED":
             status_class = "badge-skip"
         elif t_status in ("XFAIL", "XFAILED"):
-            status_class = "badge-skip"
+            status_class = "badge-xfail"
             t_status = "XFAIL (KNOWN BUG)"
         elif t_status in ("XPASS", "XPASSED"):
             status_class = "badge-fail"
@@ -118,6 +129,21 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
         is_initially_expanded = (test["outcome"].lower() == "failed") if has_failed else (t_idx == 0)
         collapsed_class = "" if is_initially_expanded else "collapsed"
         aria_expanded = "true" if is_initially_expanded else "false"
+
+        xfail_banner_html = ""
+        if test.get("xfail_reason"):
+            xfail_banner_html = f"""
+                <div class="xfail-banner" style="display:flex;align-items:center;gap:12px;padding:12px 16px;margin-bottom:16px;background:rgba(210,153,34,0.12);border:1px solid rgba(210,153,34,0.4);border-radius:6px;color:#d29922;">
+                    <svg style="width:20px;height:20px;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <div style="font-size:13.5px;line-height:1.4;">
+                        <strong style="color:#e6edf3;">Known Product Defect (Strict XFAIL):</strong> {html.escape(test['xfail_reason'])}
+                    </div>
+                </div>
+            """
 
         card = f"""
         <div class="card test-item-card {collapsed_class}" id="test-card-{t_idx}" data-status="{test['outcome'].lower()}" data-test-idx="{t_idx}">
@@ -165,6 +191,7 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
 
             <!-- Collapsible Body Section -->
             <div class="test-card-body" id="test-body-{t_idx}">
+                {xfail_banner_html}
         """
 
         # (a) Per-test Execution Pipeline SVG
@@ -214,7 +241,13 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                             </svg>
                             <span data-i18n="video_title">Execution Video Recording</span>
                         </div>
-                        <span class="badge-test-ref" style="color: var(--text-secondary); background: var(--bg-card-subtle); border: 1px solid var(--border-color);">Test #{t_idx + 1}</span>
+                        <div class="video-header-controls" style="display:flex;align-items:center;gap:6px;">
+                            <span style="font-size:11.5px;color:var(--text-secondary);font-weight:600;">Speed:</span>
+                            <button type="button" class="speed-pill" onclick="setVideoSpeed({t_idx}, 0.5)" title="Slow-Motion 0.5x">0.5x</button>
+                            <button type="button" class="speed-pill active" onclick="setVideoSpeed({t_idx}, 0.75)" title="Moderate 0.75x (Slow Playback)">0.75x</button>
+                            <button type="button" class="speed-pill" onclick="setVideoSpeed({t_idx}, 1.0)" title="Normal 1.0x">1.0x</button>
+                            <span class="badge-test-ref" style="margin-left:6px;color: var(--text-secondary); background: var(--bg-card-subtle); border: 1px solid var(--border-color);">Test #{t_idx + 1}</span>
+                        </div>
                     </div>
                     <div class="video-wrapper" id="video-container-{t_idx}">
                         <video id="video-player-{t_idx}" controls preload="metadata" class="video-player" ontimeupdate="syncVideoWithDiagram({t_idx}, this.currentTime)">
@@ -280,6 +313,9 @@ def build_extent_tests_html(processed_tests: List[Dict[str, Any]]) -> str:
                     badge_class = "badge-pass"
                 elif s_status == "SKIPPED":
                     badge_class = "badge-skip"
+                elif s_status in ("XFAIL", "XFAILED") or (t_status.startswith("XFAIL") and s_status == "FAILED"):
+                    badge_class = "badge-xfail"
+                    s_status = "XFAIL (BUG)"
                 else:
                     badge_class = "badge-fail"
 

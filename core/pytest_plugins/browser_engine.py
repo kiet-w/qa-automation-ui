@@ -208,19 +208,28 @@ def setup_page(page: Page, json_metadata, request, browser_name):
 
     # 2. Auto-dismiss cookie consent overlays (Bing/Google/YouTube)
     page.add_init_script("""
-        const observer = new MutationObserver(() => {
-            const btn = document.querySelector(
-                '#bnp_btn_accept a, #bnp_btn_reject a, #bnp_cookie_banner a, ' +
-                'button[aria-label*="Reject"], button[aria-label*="Accept"], ' +
-                'button[aria-label*="Từ chối"], button[aria-label*="Chấp nhận"], ' +
-                'ytd-button-renderer button[aria-label*="Accept"], ' +
-                'form[action*="consent"] button'
-            );
-            if (btn && btn.offsetParent !== null) {
-                try { btn.click(); } catch(e) {}
-            }
-        });
-        observer.observe(document.documentElement, { childList: true, subtree: true });
+        const initObserver = () => {
+            const target = document.documentElement || document.body;
+            if (!target) return;
+            const observer = new MutationObserver(() => {
+                const btn = document.querySelector(
+                    '#bnp_btn_accept a, #bnp_btn_reject a, #bnp_cookie_banner a, ' +
+                    'button[aria-label*="Reject"], button[aria-label*="Accept"], ' +
+                    'button[aria-label*="Từ chối"], button[aria-label*="Chấp nhận"], ' +
+                    'ytd-button-renderer button[aria-label*="Accept"], ' +
+                    'form[action*="consent"] button'
+                );
+                if (btn && btn.offsetParent !== null) {
+                    try { btn.click(); } catch(e) {}
+                }
+            });
+            observer.observe(target, { childList: true, subtree: true });
+        };
+        if (document.documentElement || document.body) {
+            initObserver();
+        } else {
+            document.addEventListener('DOMContentLoaded', initObserver);
+        }
     """)
     test_failed = False
     try:
