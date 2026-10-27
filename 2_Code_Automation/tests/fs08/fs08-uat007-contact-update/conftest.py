@@ -65,12 +65,6 @@ def uat007_case_runner(
         "mailingCountry": ParentProfilePage.INPUT_COUNTRY,
     }
 
-    def resolve_value(case: Dict[str, Any]) -> str:
-        value = case["input"]
-        if isinstance(value, dict):
-            return value["repeat"] * value["count"] + value.get("suffix", "")
-        return value
-
     def run(test: Any, fs08_data: Dict[str, Any], case_id: str) -> None:
         case = copy.deepcopy(raw_uat007_cases[case_id])
         profile = test.get_page(ParentProfilePage)
@@ -82,52 +76,8 @@ def uat007_case_runner(
         profile.open(base_url=fs08_data["base_url"])
         profile.click_update_details()
         selector = selectors[case["field"]]
-        field = test.page.locator(selector).first
-        entered = resolve_value(case)
-        dialogs = []
-        test.page.on("dialog", lambda dialog: dialogs.append(dialog.message))
 
-        with test.step(f"{case_id}: {case['title']}", expected=case["source"]):
-            assert field.count() == 1, f"{case['field']} must exist exactly once"
-            baseline = field.input_value()
-            field.fill(entered)
-            field.blur()
-            actual = field.input_value()
-            kind = case["kind"]
-
-            if kind in {"invalid", "invalid_or_clipped"} and actual == entered:
-                if not profile.is_save_disabled():
-                    profile.click_save_changes()
-                assert not profile.is_confirm_dialog_open(timeout=500)
-                expect(field).to_have_attribute("aria-invalid", "true")
-                if case.get("message"):
-                    expect(test.page.get_by_text(case["message"], exact=True).first).to_be_visible()
-                error = profile.get_field_error_text(case["field"])
-                assert not profile.is_raw_i18n_key(error), "Raw i18n key leaked"
-            elif kind in {"overflow", "invalid_or_clipped"}:
-                if len(actual) > case["limit"]:
-                    expect(field).to_have_attribute("aria-invalid", "true")
-                    if case.get("message"):
-                        expect(test.page.get_by_text(case["message"], exact=True).first).to_be_visible()
-                assert not dialogs, "Input processing executed an unexpected browser dialog"
-            elif kind == "trim":
-                assert actual == case["normalized"], "Field was not normalized exactly as specified"
-                expect(field).not_to_have_attribute("aria-invalid", "true")
-            else:
-                assert actual == entered, f"Expected {entered!r}, got {actual!r}"
-                expect(field).not_to_have_attribute("aria-invalid", "true")
-                if case.get("length") is not None:
-                    assert len(actual) == case["length"]
-                if kind == "safe_text":
-                    assert not dialogs, "Literal input executed a browser dialog"
-                if kind != "optional" and actual != baseline:
-                    assert not profile.is_save_disabled(), "Valid change did not enable Save"
-
-            test.highlight_actual_result(locator=selector, text=f"{case_id}: {kind}")
-            test.step.set_actual(
-                f"{case['field']}: {actual!r}; aria-invalid={field.get_attribute('aria-invalid')}"
-            )
-
+        test.verify_field_case(case, selector=selector, page_object=profile)
         profile.click_cancel()
 
     return run

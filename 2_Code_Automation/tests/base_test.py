@@ -232,5 +232,18 @@ class BaseTest:
                 setattr(self.request.node, "_qa_actual_text", text)
         return EvidenceAnnotator.highlight_actual_result(self.page, locator, status="passed", actual_text=text)
 
+    def verify_field_case(
+        self,
+        case: Dict[str, Any],
+        selector: Optional[Union[str, Any]] = None,
+        page_object: Optional[Any] = None,
+        custom_action: Optional[Any] = None,
+    ) -> None:
+        """Execute a data-driven field matrix case with automatic assertions and evidence."""
+        from core.field_matrix_engine import FieldMatrixEngine
+        engine = FieldMatrixEngine(self)
+        engine.run_case(case, selector=selector, page_object=page_object, custom_action=custom_action)
+
+
 
 
