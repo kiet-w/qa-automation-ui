@@ -22,6 +22,7 @@ from reporting.core.media import (
     resolve_relative_video_sources,
     resolve_screenshot_path,
 )
+from reporting.core.sanitizer import clean_error_message
 
 
 def load_report_json(json_path: Path) -> Dict[str, Any]:
@@ -164,9 +165,10 @@ def process_report_data(
         crash = call_info.get("crash", {})
         error_msg = None
         if outcome in ("failed", "error"):
-            error_msg = crash.get("message") or call_info.get("longrepr") or t.get("error")
-            if isinstance(error_msg, dict):
-                error_msg = json.dumps(error_msg, indent=2)
+            raw_err = crash.get("message") or call_info.get("longrepr") or t.get("error")
+            if isinstance(raw_err, dict):
+                raw_err = json.dumps(raw_err, indent=2)
+            error_msg = clean_error_message(raw_err)
 
         metadata = t.get("metadata", {})
         if not isinstance(metadata, dict):
@@ -177,36 +179,57 @@ def process_report_data(
             elif "video" in t:
                 metadata["video_path"] = t["video"]
 
-        tc_match = re.search(r"(?:test_)?((?:tc|hp|us)[_-]?[a-z0-9]+)", test_name, re.IGNORECASE)
-        dynamic_tc_id = None
-        if tc_match:
-            raw_id = tc_match.group(1).upper().replace("_", "-")
-            m_code = re.match(r"^([A-Z]+)(\d+.*)$", raw_id)
-            if m_code:
-                dynamic_tc_id = f"{m_code.group(1)}-{m_code.group(2)}"
-            else:
-                dynamic_tc_id = raw_id
+        # 3-Tier Hierarchy Extraction: Suite -> Scenario -> Test Case
+        parts = nodeid.split("::")
+        file_path = Path(parts[0])
 
-        node_parts = Path(nodeid.split("::")[0]).parts
-        story_part = next((p for p in node_parts if re.match(r"^us\d+_", p.lower())), None)
-        if not story_part:
-            for part in [reports_dir.name] + list(reports_dir.parts):
-                if re.match(r"^us\d+_", part.lower()):
-                    story_part = part
-                    break
+        suite_slug = reports_dir.name
+        for i, p in enumerate(file_path.parts):
+            if p == "tests" and i + 1 < len(file_path.parts):
+                cand = file_path.parts[i + 1]
+                if not cand.endswith(".py"):
+                    suite_slug = cand
+                break
 
-        if story_part:
-            m_us = re.match(r"^us(\d+)_(.+)", story_part, re.IGNORECASE)
-            if m_us:
-                us_num, us_name = m_us.groups()
-                dynamic_us = f"US-{int(us_num):02d}: {us_name.replace('_', ' ').title()}"
-            else:
-                dynamic_us = story_part.replace("_", " ").title()
+        scenario_slug = re.sub(r"^test_", "", file_path.stem)
+        m_sc = re.match(r"^ts(\d+)_(.*)$", scenario_slug, re.IGNORECASE)
+        if m_sc:
+            scenario_id = f"TS-{int(m_sc.group(1)):02d}"
+            scenario_name = m_sc.group(2).replace("_", " ").title()
+            scenario_title = f"{scenario_id}: {scenario_name}"
         else:
-            dynamic_us = f"US-{t_idx + 1:02d}: Automated UI Scenario {t_idx + 1}"
+            scenario_id = "SC"
+            scenario_name = scenario_slug.replace("_", " ").title()
+            scenario_title = scenario_name
+
+        raw_func = parts[-1] if len(parts) > 1 else test_name
+        clean_func = re.sub(r"\[.*?\]$", "", raw_func)
+        tc_slug = re.sub(r"^test_", "", clean_func)
+
+        # Extract Test Case ID and Title preserving full semantic codes (e.g. TC-R9-AUTO-01, TS-BRK-04, TC-R9-DT-01)
+        id_patterns = [
+            r"^test_((?:tc|ts|brk)_[a-z0-9]+_(?:auto|dt|bva|nav)_\d+[a-z]?)_(.*)$",
+            r"^test_((?:tc|ts|brk)_[a-z0-9]+_api_ep)_(.*)$",
+            r"^test_((?:tc|ts|brk)_[a-z0-9]+_\d+[a-z]?)_(.*)$",
+            r"^test_((?:tc|ts|brk)_[a-z0-9_]+?)_(.*)$",
+        ]
+        dynamic_tc_id = None
+        extracted_title = None
+        for pat in id_patterns:
+            m_id = re.match(pat, clean_func, re.IGNORECASE)
+            if m_id:
+                dynamic_tc_id = m_id.group(1).upper().replace("_", "-")
+                extracted_title = m_id.group(2).replace("_", " ").title()
+                break
+
+        if not dynamic_tc_id:
+            tc_match = re.search(r"(?:test_)?((?:tc|hp|us|brk)[_-]?[a-z0-9]+(?:_[a-z0-9]+)?)", test_name, re.IGNORECASE)
+            if tc_match:
+                dynamic_tc_id = tc_match.group(1).upper().replace("_", "-")
 
         jira_id = metadata.get("jira_id") or dynamic_tc_id or f"TC-{t_idx + 1:03d}"
-        user_story = metadata.get("user_story") or dynamic_us
+        user_story = metadata.get("user_story") or scenario_title
+        tc_friendly_title = extracted_title or clean_func.replace("_", " ").title()
 
         run_results_dir = reports_dir / "test-results" / run_id
         target_results_dir = run_results_dir if run_results_dir.exists() else (reports_dir / "test-results")
@@ -280,7 +303,7 @@ def process_report_data(
 
             cumulative_offset = s_end
             s_screen_raw = s.get("screenshot")
-            s_err = s.get("error")
+            s_err = clean_error_message(s.get("error"))
 
             screen_file = resolve_screenshot_path(
                 s_screen_raw,
@@ -302,11 +325,11 @@ def process_report_data(
             raw_actual = s.get("actual")
             if s_status != "passed":
                 if raw_actual and str(raw_actual).startswith("FAILED:"):
-                    step_actual = str(raw_actual)
+                    step_actual = clean_error_message(str(raw_actual))
                 else:
-                    step_actual = f"FAILED: {s_err or raw_actual or 'Step validation failed'}"
+                    step_actual = f"FAILED: {s_err or clean_error_message(raw_actual) or 'Step validation failed'}"
             elif raw_actual:
-                step_actual = str(raw_actual)
+                step_actual = clean_error_message(str(raw_actual))
             else:
                 step_actual = f"Step completed successfully in {s_dur:.2f}s with status PASSED"
 
@@ -331,6 +354,13 @@ def process_report_data(
             "index": t_idx,
             "nodeid": nodeid,
             "name": test_name,
+            "friendly_title": tc_friendly_title,
+            "suite_slug": suite_slug,
+            "scenario_slug": scenario_slug,
+            "scenario_id": scenario_id,
+            "scenario_name": scenario_name,
+            "scenario_title": scenario_title,
+            "tc_slug": tc_slug,
             "jira_id": jira_id,
             "user_story": user_story,
             "outcome": outcome,
@@ -395,6 +425,38 @@ def process_report_data(
         1 for t in processed_tests if t.get("outcome") in ("xfailed", "xfail") for s in t.get("steps", []) if s.get("status") in ("failed", "xfailed")
     )
 
+    # Build 3-Tier Scenarios Grouping for Tree View
+    scenarios_map: Dict[str, Any] = {}
+    for test in processed_tests:
+        sc_key = test.get("scenario_slug") or "default_scenario"
+        if sc_key not in scenarios_map:
+            scenarios_map[sc_key] = {
+                "id": test.get("scenario_id", "TS-01"),
+                "slug": sc_key,
+                "name": test.get("scenario_name", "Scenario"),
+                "title": test.get("scenario_title", "Scenario"),
+                "suite_slug": test.get("suite_slug", "suite"),
+                "tests": [],
+                "total": 0,
+                "passed": 0,
+                "failed": 0,
+                "xfailed": 0,
+                "duration": 0.0,
+            }
+        sc = scenarios_map[sc_key]
+        sc["tests"].append(test)
+        sc["total"] += 1
+        sc["duration"] = round(sc["duration"] + test.get("duration", 0.0), 2)
+        out = test.get("outcome", "").lower()
+        if out == "passed":
+            sc["passed"] += 1
+        elif out in ("failed", "error"):
+            sc["failed"] += 1
+        elif out in ("xfailed", "xfail"):
+            sc["xfailed"] += 1
+
+    processed_scenarios = list(scenarios_map.values())
+
     return {
         "summary": summary,
         "total": total,
@@ -412,6 +474,7 @@ def process_report_data(
         "git_info": git_info,
         "target_env": target_env,
         "tests": processed_tests,
+        "scenarios": processed_scenarios,
         "bar_items": bar_items,
         "primary_steps": processed_tests[0]["steps"] if processed_tests else [],
         "total_steps": total_steps,

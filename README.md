@@ -3,10 +3,25 @@
 Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **Playwright (Sync API)**, and **Pytest**. Designed around the **Page Object Model (POM)** with **Component Composition**, **Multi-Project Isolation**, an automated **Dual-Gate Error Supervision Engine**, an **AST Architectural Invariant Guard**, and a **100% Offline Standalone ExtentReports HTML Engine**.
 
 > 📌 **Key Architectural References:**
-> - **AI Test Generation Guidelines:** [`docs/AI_CODING_GUIDELINES.md`](docs/AI_CODING_GUIDELINES.md)
-> - **19-Column QA Test Case Ingestion Standard:** [`docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md`](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)
-> - **Multi-Project & Multi-Website Architecture:** [`docs/adr/0006-multi-website-project-automation-architecture.md`](docs/adr/0006-multi-website-project-automation-architecture.md)
+> - **AI Test Generation Guidelines:** [`docs/framework/AI_CODING_GUIDELINES.md`](docs/framework/AI_CODING_GUIDELINES.md)
+> - **SketchVLM Visual Overlays & Video Annotation Engine:** [`docs/framework/adr/0007-sketchvlm-visual-overlays-and-video-annotation-engine.md`](docs/framework/adr/0007-sketchvlm-visual-overlays-and-video-annotation-engine.md)
+> - **20-Column QA Test Case Ingestion Standard:** [`docs/framework/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md`](docs/framework/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)
+> - **Multi-Project & Multi-Website Architecture:** [`docs/framework/adr/0006-multi-website-project-automation-architecture.md`](docs/framework/adr/0006-multi-website-project-automation-architecture.md)
 > - **Core Developer Invariants & Directives:** [`AGENTS.md`](AGENTS.md)
+
+---
+
+## 🗂️ Điều hướng theo 3 nhóm chính
+
+Repository giữ các đường dẫn kỹ thuật ở root để không làm gãy Python imports, pytest discovery và các script hiện có. Để duyệt dự án dễ hơn trong file manager, toàn bộ tài sản được gom thành ba thư mục điều hướng; nội dung bên trong là shortcut tới source thật, không phải bản sao:
+
+| Nhóm | Phạm vi | Thành phần chính |
+| :--- | :--- | :--- |
+| [`1_Nghiep_Vu_va_Specs/`](1_Nghiep_Vu_va_Specs/) | Nghiệp vụ và thiết kế kiểm thử | `copy`, `specs`, `testcases`, `test_specs`, `uat` |
+| [`2_Code_Automation/`](2_Code_Automation/) | Framework và automation code | `core`, `pages`, `components`, `data`, `tests`, `tools`, các runner |
+| [`3_Bao_Cao_va_Ket_Qua/`](3_Bao_Cao_va_Ket_Qua/) | Báo cáo, tài liệu và lịch sử | `reporting`, `reports`, `docs`, `archive`, report CLIs |
+
+Không chỉnh sửa `copy/`. Việc mở hoặc sửa file qua shortcut sẽ tác động trực tiếp lên file thật ở vị trí chuẩn.
 
 ---
 
@@ -22,7 +37,7 @@ Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **
 3. [Phase 1: Pre-Automation Reconnaissance (`bsk` Recon & Active Probe)](#-phase-1-pre-automation-reconnaissance-bsk-recon--active-probe)
    - [Passive Reconnaissance (`tools/recon.sh`)](#1-passive-reconnaissance-toolsreconsh)
    - [Active Probe & Audit Findings (`tools/templates/`)](#2-active-probe--audit-findings-toolstemplates)
-4. [Standard 19-Column QA Matrix to Pytest Mapping](#-standard-19-column-qa-matrix-to-pytest-mapping)
+4. [Standard 20-Column QA Matrix to Pytest Mapping](#-standard-20-column-qa-matrix-to-pytest-mapping)
 5. [Project Directory Structure](#-project-directory-structure)
 6. [Installation & Setup](#-installation--setup)
 7. [Test Execution Guide](#-test-execution-guide)
@@ -38,6 +53,14 @@ Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **
 
 ## 🌟 Key Framework Capabilities
 
+- **Lean Markdown-First Test Engine (`md_runner.py`) & 4-Tier Architecture**: Execute UI tests written purely in Markdown tables without boilerplate Python code. Supports 4 distinct tiers:
+  1. ⚡ **UI Unit Tests (`test_specs/atomic/`)**: Đơn Component (kiểm tra độc lập 1 ô input, 1 button, 1 dropdown, validate rỗng/biên/regex - `@smoke`, `@p0`, `@atomic`).
+  2. 🔗 **UI Integration Tests (`test_specs/integration/`)**: Tương tác Component (1 Component ➔ 1 Component khác, 1 Component ➔ Nhiều Component, hoặc Form 🔁 API mock 200/400/500 - `@integration`, `@api`).
+  3. 🚀 **UAT Journeys (`test_specs/uat/`)**: Hành trình người dùng E2E đa màn hình, giữ session liên tục (`@uat`, `@journey`).
+  4. 💥 **Break_It (`test_specs/break_it/`)**: Thử thách độ bền, phá có kỷ luật (gỡ client constraints, double-click concurrency, hostile XSS, HTTP 500 chaos mocking - `@break_it`).
+  Includes `tools/recon_bsk.py` to extract 100% verified DOM locators in 1 second via live browser scan.
+- **Single-Page Minimalist Clean Report (`bao_cao_tinh_gon.html`)**: Instant 1-page executive dashboard featuring 5 large KPI metrics, a 4-tier hierarchy (`SUITE ➔ SCENARIO ➔ CASE ➔ STEP`), distinct cyan `[⚡ ATOMIC]`, amber `[🔗 INTEGRATION]`, purple `[🚀 UAT JOURNEY]`, and red `[💥 BREAK_IT]` badges, and 1-click jump to failing steps with expected vs. actual side-by-side comparison.
+- **SketchVLM-Inspired Real-Time Video Overlays & Defect Annotation Engine**: Playwright WebM videos record live Step HUD status banners (`[STEP X]`), action spotlights (`👆 CLICK`, `✏️ TYPE`), and hand-drawn SVG sketch ellipses + directional arrows pinpointing defects on test failures with zero token cost. Includes `tools/sketch_vlm_oracle.py` for Gemini VLM screenshot triage.
 - **Evidence-First Reconnaissance (Phase 1 via `bsk`)**: Extract real DOM, Accessibility trees, console errors, and network 4xx/5xx failures before writing code, preventing guessed locators and brittle selectors.
 - **Decoupled Business vs. Infrastructure Errors (Dual-Gate)**: Centrally classifies technical exceptions (Timeout, Browser crash, Stale DOM, Network drop, Unhandled dialog, Missing file) in `core/catalog.py` vs genuine business assertion failures (`core/exceptor.py`).
 - **Ticket Concurrency Lock & Permanent History**: Enforces ticket-scoped concurrency control (`fcntl.flock`) preventing execution collisions. Automatically archives standalone HTML reports in `reports/<ticket>/history/<RUN_ID>.html` and raw video recordings in `reports/<ticket>/test-results/<RUN_ID>/`.
@@ -182,7 +205,7 @@ When screens are located behind authentication gates, multi-step forms, or dynam
 
 ---
 
-## 📊 Standard 19-Column QA Matrix to Pytest Mapping
+## 📊 Standard 20-Column QA Matrix to Pytest Mapping
 
 Based on **[ADR-0005](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)**, any test case from Google Sheets or Excel maps 1:1 into Python code:
 
@@ -200,17 +223,20 @@ Based on **[ADR-0005](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-
 | 10 | **Environment** | Documented in docstring & `json_metadata["target_env"]`. |
 | 11 | **Preconditions** | Executed in initial step `with self.step("Step 0: Setup"):` or docstring. |
 | 12 | **Test Data** | Extracted into `data/<traceability>_data.json`; load via fixture with `copy.deepcopy()`. |
-| 13 | **Test Steps** | 1:1 mapped to `with self.step("Step X: <action>"):` with `self.step.set_actual(...)`. |
-| 14 | **Expected Result** | Final verification logic using `Exceptor` or standard assertions. |
-| 15 | **Actual Result** | Stored in reason string of `@pytest.mark.xfail` when Defect ID is present. |
-| 16 | **Assumption Ref** | Documented in docstring and `json_metadata["assumptions"]`. |
-| 17 | **Defect ID** (`BUG-012`) | Decorator `@pytest.mark.xfail(strict=True, reason="<Defect_ID>: <Actual_Result>")`. |
-| 18 | **Traceability** (`US-05`, `BR-03`) | Subdirectory path `tests/<traceability>/` and `json_metadata["story"]`. |
-| 19 | **Note** | Documented in docstring comments. |
+| 13 | **Steps Test** | Specific test step index or step description phase (`Step 1`, `Step 2`...). |
+| 14 | **Test Steps** | Detailed actions 1:1 mapped to `with self.step("Step X: <action>"):` with `self.step.set_actual(...)`. |
+| 15 | **Expected Result** | Final verification logic using `Exceptor` or standard assertions. |
+| 16 | **Actual Result** | Stored in reason string of `@pytest.mark.xfail` when Defect ID is present. |
+| 17 | **Assumption Ref** | Documented in docstring and `json_metadata["assumptions"]`. |
+| 18 | **Defect ID** (`BUG-012`) | Decorator `@pytest.mark.xfail(strict=True, reason="<Defect_ID>: <Actual_Result>")`. |
+| 19 | **Traceability** (`US-05`, `BR-03`) | Subdirectory path `tests/<traceability>/` and `json_metadata["story"]`. |
+| 20 | **Note** | Documented in docstring comments. |
 
 ---
 
 ## 📂 Project Directory Structure
+
+> Bản đồ đầy đủ và quy tắc đặt file: [`docs/framework/REPOSITORY_STRUCTURE.md`](docs/framework/REPOSITORY_STRUCTURE.md).
 
 ```text
 automation-ui/
@@ -241,20 +267,39 @@ automation-ui/
 │
 ├── tests/                                   # 🧪 Test Suites & Verification Logic
 │   ├── base_test.py                         # Base test class: lazy page getters, json loaders, fixture files
-│   ├── unit/                                # Internal Framework Unit Tests (36 tests)
+│   ├── unit/                                # Internal Framework Unit Tests (42 tests)
+│   ├── fs08/                                # Phân hệ FS-08 (Parent Portal: Singpass, Education Account, Profile)
+│   │   └── fs08-parent-profile/             # Cấu trúc Cha/Con: Component Parent Profile (24 Tests)
+│   │       ├── test_atomic_parent_profile_components.py # Đơn Component (Atomic UI Unit Tests)
+│   │       └── test_parent_profile_form.py  # Giữa Nhiều Component (Form & Modal Interaction Tests)
 │   ├── us01_bing_search/                    # User Story 1: E2E Bing to YouTube Navigation
 │   └── us04_curricula_trainer/              # User Story 4: Curricula Trainer Account (68 Tests, 7 Suites)
 │
-├── tools/                                   # 🔍 Reconnaissance & Active Probe Tools
-│   ├── recon.sh                             # Passive recon script (DOM, a11y, network, console, screenshot)
-│   ├── break_it/                            # 🛡️ AI Coding Adversarial & Resilience Toolkit ("Phá Có Kỷ Luật")
-│   │   ├── README.md                        # Directives, 6-Dimension Derivation Matrix & Oracle Questions
-│   │   ├── test_templates.py                # Ready-to-copy code snippets & 8 adversarial test recipes
-│   │   ├── scaffold_break_it.py             # CLI Scaffolder to auto-generate @pytest.mark.break_it suites
-│   │   └── audit_coverage.py                # Auditor checking test suites for missing break_it coverage
-│   └── templates/                           # Active probe prompt & audit findings templates
-│       ├── active_probe_prompt.txt          # Bounded prompt for AI active probing
-│       └── audit_findings.md                # Standardized audit findings matrix
+├── tools/                                   # 🔍 Reconnaissance, Environment & Resilience Tools
+│   ├── env/                                 # 🌐 Environment & microservices management (backend, proxy, seed)
+│   ├── examples/                            # 🧪 Framework usage examples
+│   ├── specs_sync/                          # 🔄 Specifications sync & markdown converters (Google Drive)
+│   └── recon_and_resilience/                # 🛡️ Reconnaissance & Adversarial Toolkit ("Phá Có Kỷ Luật")
+│       ├── recon.sh                         # Passive recon script (DOM, a11y, network, console, screenshot)
+│       ├── locators/                        # BSK live-DOM inventories by portal/module
+│       ├── break_it/                        # Adversarial test generator & coverage auditor
+│       └── templates/                       # Active probe prompt & audit findings templates
+│
+├── specs/                                   # 📋 External Business Specifications & Requirements (from BA/Drive)
+│   ├── raw/                                 # Raw client assets (.docx, .xlsx, .xlsm)
+│   ├── md/                                  # High-fidelity parsed markdown specs (FSD, AC, Defect Log)
+│   ├── component_specs/                     # Atomic validation, integration flow & error catalog
+│   └── validation_rules/                    # Validation rules by business module
+│
+├── testcases/                               # 🎯 Test-case source of truth by module/ticket
+├── test_specs/                              # 📝 Lean Markdown specs by test tier
+├── uat/                                     # ✅ UAT assets segregated by r<xx>
+│   ├── master/                              # Master UAT plan and workbook
+│   └── r<xx>/                               # Module-specific UAT assets
+│
+├── copy/                                    # 🏢 Target Company Application Under Test (STRICTLY READ-ONLY)
+│   ├── edufams-backend/                     # Backend microservices (.NET)
+│   └── edugovernment-frontend/              # Frontend web application (React / Vite)
 │
 ├── reporting/                               # 📊 100% Offline ExtentReports HTML Engine
 │   ├── core/                                # Generator, parser, document assembler, dashboard & test views
@@ -264,20 +309,31 @@ automation-ui/
 ├── reports/                                 # 📈 Test Execution Results & Audit Findings
 │   ├── history/                             # Archived monolithic HTML reports by RUN_ID
 │   ├── test-results/                        # Raw video recordings & trace assets by RUN_ID
+│   ├── defects/evidence/                    # Defect screenshots and optimized copies
 │   ├── recon/                               # Passive reconnaissance artifacts
 │   └── execution_report.html                # Latest active run report
 │
-├── docs/                                    # 📚 Technical Documentation & Specs
-│   ├── context/                             # Architecture handbooks, codebase context, & glossary
-│   ├── adr/                                 # Architecture Decision Records (ADR-0004 to ADR-0006)
-│   ├── AI_CODING_GUIDELINES.md              # Canonical templates & anti-patterns for AI assistants
-│   └── INSTRUCTIONS_FOR_EVALUATION.md       # Evaluation guide & grading roadmap
+├── docs/                                    # 📚 Documentation & Specifications
+│   ├── framework/                           # Framework technical documentation
+│   │   ├── context/                         # Architecture handbooks, codebase context, & glossary
+│   │   ├── adr/                             # Architecture Decision Records (ADR-0004 to ADR-0006)
+│   │   ├── AI_CODING_GUIDELINES.md          # Canonical templates & anti-patterns for AI assistants
+│   │   └── INSTRUCTIONS_FOR_EVALUATION.md   # Evaluation guide & grading roadmap
+│   ├── test-specs/                          # Module-specific test case documentation
+│   ├── defects/                             # Defect logs and handoff documents
+│   ├── manual/                              # Manual execution guides and assets
+│   └── diagrams/                            # Architecture and workflow diagrams
 │
-├── curricula_trainer_account.html           # Local web application under test (US04)
+├── archive/                                 # 📦 Historical Deliverables & Archives (Edu_Project_S2_Oct22.zip)
 ├── conftest.py                              # Master Pytest entrypoint (delegates to core plugins)
 ├── pytest.ini                               # Pytest configuration, markers, and default CLI flags
 ├── requirements.txt                         # Python dependencies
 ├── generate_report.py                       # Standalone CLI entrypoint for report generator
+├── generate_enterprise_report.py            # Enterprise report CLI entrypoint
+├── md_runner.py                             # Markdown-first runner CLI entrypoint
+├── [agile] fs -> specs                      # Backward-compatible specification alias
+├── locator-bsk -> specs/ui_bsk              # Backward-compatible UI/BSK inventory alias
+├── evidence -> reports/defects/evidence
 └── run_tests.py                             # 3-Phase orchestrator (Concurrency Lock -> Pytest -> HTML Report)
 ```
 
@@ -412,9 +468,18 @@ Khi giao việc cho AI trong Cursor Composer / Chat, Claude hoặc Copilot, hãy
 ```markdown
 Bạn là Chuyên gia QA Automation phụ trách phát triển test tự động trên repository này.
 
+ĐÂY LÀ DỰ ÁN UI AUTOMATION TESTING CHUYÊN NGHIỆP:
+⚠️ NGUYÊN TẮC BẤT DI BẤT DỊCH: TUYỆT ĐỐI KHÔNG ĐƯỢC PHÉP ASSUMPTION (ZERO ASSUMPTIONS).
+Bạn KHÔNG ĐƯỢC PHÉP tự ý suy đoán bất kỳ giá trị nào: selector, câu thông báo lỗi, mã lỗi (MSG-xxxx), trạng thái nút bấm, vòng đời dữ liệu, hay công thức tính toán. Bạn CHỈ ĐƯỢC PHÉP NHẬN THÔNG TIN từ các file đặc tả chính thức tại `specs/md/` hoặc từ User.
+
 HÃY ĐỌC KỸ VÀ TUÂN THỦ TUYỆT ĐỐI CÁC TÀI LIỆU QUY CHUẨN SAU:
-1. `AGENTS.md` — 5 Bất biến kiến trúc bắt buộc (Invariant 1: Zero assert trong POM, Invariant 2: Zero time.sleep, Invariant 5: Hook-based error handling).
-2. `docs/AI_CODING_GUIDELINES.md` — Quy tắc ánh xạ 19 cột từ QA Matrix sang Pytest và 7 cấm kỵ (anti-patterns).
+1. `AGENTS.md` — Toàn bộ các Bất biến kiến trúc bắt buộc (Invariant 0: Cấm sửa `copy/`, Invariant 1: Cấm assert trong POM, Invariant 2: Cấm time.sleep, Invariant 6: ZERO ASSUMPTIONS, Invariant 7: 9-Tier Failure Criteria).
+2. `docs/framework/AI_CODING_GUIDELINES.md` — Quy tắc ánh xạ 19 cột từ QA Matrix sang Pytest và 7 cấm kỵ (anti-patterns).
+3. `specs/md/` (Single Source of Truth) — Nguồn sự thật duy nhất cho mọi quy tắc nghiệp vụ:
+   - Business Rules cốt lõi: `specs/md/FS_SPECIFICATIONS_SUMMARY.md` và `specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md`
+   - Acceptance Criteria đầy đủ: `specs/md/EAFAMS_SPLIT_PAYMENT_AND_AI_FAS_TEST_CASES_AND_AC.md` và `specs/md/Test Cases/`
+   - 31 Quyết định nghiệp vụ Client: `specs/md/MEETINGS_AND_DECISIONS_SUMMARY.md`
+   - Functional Specs: `specs/md/FS document/` (FS-01 đến FS-10)
 
 NHIỆM VỤ CỦA BẠN:
 Tự động sinh mã kiểm thử tự động cho User Story / Ticket: `{TÊN_TICKET_HOẶC_DỰ_ÁN}` dựa trên danh sách Test Case dưới đây:

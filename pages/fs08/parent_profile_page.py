@@ -21,13 +21,13 @@ class ParentProfilePage(BasePage):
     HIDE_NRIC_BTN = "button:has-text('Hide NRIC')"
 
     # Singpass Identity (Read-only) Locators
-    FULL_NAME_VAL = "dt:has-text('Full Name') + dd, [data-testid='full-name']"
-    NRIC_VAL = "dt:has-text('NRIC') + dd, [data-testid='nric']"
-    RESIDENTIAL_ADDRESS_VAL = "dt:has-text('Residential') + dd, [data-testid='residential-address']"
+    FULL_NAME_VAL = "dt:has-text('Full Name') + dd"
+    NRIC_VAL = "dt:has-text('NRIC') + dd"
+    RESIDENTIAL_ADDRESS_VAL = "dt:has-text('Residential') + dd"
 
     # Contact & Mailing Summary Locators (View Mode)
-    MOBILE_VAL = "dt:has-text('Mobile') + dd, [data-testid='mobile-phone']"
-    EMAIL_VAL = "dt:has-text('Email') + dd, [data-testid='email-address']"
+    MOBILE_VAL = "dt:has-text('Mobile') + dd"
+    EMAIL_VAL = "dt:has-text('Email') + dd"
 
     # Edit Mode Form Inputs
     INPUT_PHONE = "input[name='phoneNumber']"
@@ -198,12 +198,24 @@ class ParentProfilePage(BasePage):
         return ""
 
     def click_cancel(self):
-        """Click 'Cancel' button to exit edit mode."""
-        self.page.click(self.CANCEL_BTN)
+        """Click 'Cancel' button to exit edit mode if currently visible."""
+        try:
+            if self.is_visible(self.CANCEL_BTN):
+                self.page.click(self.CANCEL_BTN, timeout=3000)
+                self.page.wait_for_selector(self.UPDATE_DETAILS_BTN, timeout=5000)
+        except Exception:
+            pass
 
     def is_inline_error_visible(self) -> bool:
         """Check if any validation error alert is visible."""
         return self.is_visible(self.INLINE_ALERT)
+
+    def get_text(self, selector: str) -> str:
+        """Get trimmed inner text of an element if visible."""
+        loc = self.page.locator(selector).first
+        if loc.count() > 0 and loc.is_visible():
+            return loc.inner_text().strip()
+        return ""
 
     def get_inline_error_text(self) -> str:
         """Get text content of inline validation error."""
@@ -237,3 +249,64 @@ class ParentProfilePage(BasePage):
             "in_edit_mode": self.is_in_edit_mode(),
             "save_disabled": self.is_save_disabled(),
         }
+
+    def get_input_value(self, input_selector: str) -> str:
+        """Get current value of a form input."""
+        if self.is_visible(input_selector):
+            return self.page.locator(input_selector).first.input_value()
+        return ""
+
+    def get_field_error_text(self, field_name: str) -> str:
+        """Get error message for a specific field name."""
+        input_loc = self.page.locator(f"input[name='{field_name}']").first
+        if input_loc.count() > 0:
+            # Check via aria-describedby if available
+            described_by = input_loc.get_attribute("aria-describedby")
+            if described_by:
+                err_el = self.page.locator(f"#{described_by}")
+                if err_el.count() > 0 and err_el.first.is_visible():
+                    return err_el.first.inner_text().strip()
+
+            parent = input_loc.locator("xpath=..")
+            err_loc = parent.locator("p[role='alert'], p[class*='error'], p[class*='text-red'], span[class*='error']")
+            if err_loc.count() > 0 and err_loc.first.is_visible():
+                return err_loc.first.inner_text().strip()
+        return self.get_inline_error_text()
+
+    def is_field_invalid(self, field_name_or_selector: str) -> bool:
+        """Check if an input field is marked as invalid (aria-invalid='true' or error class)."""
+        if field_name_or_selector.startswith("input"):
+            input_loc = self.page.locator(field_name_or_selector).first
+        else:
+            input_loc = self.page.locator(f"input[name='{field_name_or_selector}']").first
+        if input_loc.count() > 0:
+            aria_inv = input_loc.get_attribute("aria-invalid")
+            cls = input_loc.get_attribute("class") or ""
+            return aria_inv == "true" or "invalid" in cls.lower() or "error" in cls.lower()
+        return False
+
+    def blur_field(self, field_name_or_selector: str):
+        """Trigger blur event on an input field to invoke inline field-level validation."""
+        if field_name_or_selector.startswith("input"):
+            input_loc = self.page.locator(field_name_or_selector).first
+        else:
+            input_loc = self.page.locator(f"input[name='{field_name_or_selector}']").first
+        if input_loc.count() > 0:
+            input_loc.blur()
+
+    @staticmethod
+    def is_raw_i18n_key(text: str) -> bool:
+        """Adjudicate whether a displayed error string is an un-translated i18n key instead of real text."""
+        if not text:
+            return False
+        import re
+        # Check patterns like features.xxx.yyy, validation.xxx, dot-separated identifiers without spaces
+        patterns = [
+            r"^(features|validation|common|errors|profile)\.[a-zA-Z0-9_.]+$",
+            r"^[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_.-]+$",
+            r"\{\{\s*[\w.]+\s*\}\}",
+        ]
+        for pat in patterns:
+            if re.match(pat, text.strip()):
+                return True
+        return False

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cổng Báo Cáo Executive Theo Từng Test Suite | FS08 Parent Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style> body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; } </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
+        <span>🏢 MOE Singapore Edusave Portal</span>
+        <span>•</span>
+        <span>FS08: Parent Profile</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="../executive.html" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold transition">
+          📊 Báo Cáo Tổng Hợp Toàn Bộ (104 TCs)
+        </a>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Tải File Excel 19 Cột
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Hero -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+      <span class="text-[11px] font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-1 rounded border border-sky-200">
+        Thư Mục Báo Cáo Phân Rã Theo Test Suite (Modular Executive Reports)
+      </span>
+      <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-2">
+        Thư Viện 10 Báo Cáo Kiểm Thử Giao Diện FS08: Parent Profile
+      </h1>
+      <p class="text-xs text-slate-600 mt-1 max-w-3xl leading-relaxed">
+        Thay vì dồn toàn bộ 104 test case vào một màn hình duy nhất, hệ thống đã phân tách độc lập thành <strong>10 Báo Cáo HTML Riêng Biệt</strong> tương ứng 1-1 với <strong>10 File Test Code Python</strong> trong <code>tests/fs08/fs08-parent-profile/</code>. Mỗi báo cáo hiển thị trực diện: <strong>Vị trí kiểm thử 📍</strong>, <strong>DOM Selector <code></strong>, và <strong>Test Data 💾</strong>.
+      </p>
+    </header>
+
+    <!-- Grid of 10 Suite Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🪪</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                8 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-01: SingPass Identity & NRIC Masking</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử các trường định danh Singpass MyInfo (Họ và tên, NRIC, Địa chỉ thường trú D-20) và nút bấm Toggle Che / Hiện NRIC.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">7 Passed</span>
+              
+            </div>
+            <a href="ts01_singpass_identity.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">👶</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                4 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-02: Child Age Access Control & Isolation</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Quy tắc nghiệp vụ cốt lõi: Khóa form hồ sơ khi mọi con >= 16 tuổi, cho phép sửa khi có con < 16, và chặn tấn công BOLA/IDOR sửa chéo hồ sơ giữa cha và mẹ.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">3 Passed</span>
+              
+            </div>
+            <a href="ts02_child_age_access.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">📱</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                10 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-03: Mobile Number Validation & BVA</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử 12 lớp trường Số điện thoại di động Singapore: Đầu số 6, 8, 9, độ dài 8 số BVA, cấm chữ/ký tự lạ, khoảng trắng tự trim, và chống lộ key i18n thô.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">9 Passed</span>
+              <span class="px-1.5 py-0.5 bg-red-100 text-red-800 rounded font-bold">1 Failed</span>
+            </div>
+            <a href="ts03_mobile_input.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">✉️</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                8 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-04: Email Address Validation & RFC 5322</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử trường Email theo chuẩn RFC 5322, giá trị biên BVA 150/151 ký tự, paste 1000 ký tự stress test, và trạng thái viền đỏ aria-invalid khi nhập sai.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">8 Passed</span>
+              
+            </div>
+            <a href="ts04_email_input.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🏢</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                8 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-05: Mailing Block & Unit Components</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử 2 trường địa chỉ tùy chọn (optional): Số Block và Số căn hộ (Unit), định dạng #08-1234 chuẩn Singapore, biên 20 ký tự, và chuẩn hóa xuống dòng.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">8 Passed</span>
+              
+            </div>
+            <a href="ts05_mailing_block_unit.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🛣️</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                7 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-06: Mailing Street Component</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử trường Tên đường bắt buộc: Biên 100 ký tự BVA, giữ nguyên dấu nháy đơn địa danh Singapore (St. George's), và làm sạch mã độc HTML/XSS script.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">7 Passed</span>
+              
+            </div>
+            <a href="ts06_mailing_street.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">📮</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                14 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-07: Mailing Postal Code & Country</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Kiểm thử Mã bưu chính 6 chữ số giữ số 0 đứng đầu (BVA 5, 6, 7 chữ số) và trường Quốc gia mặc định 'Singapore', giới hạn 100 ký tự, chống rò rỉ dịch thuật.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">13 Passed</span>
+              <span class="px-1.5 py-0.5 bg-red-100 text-red-800 rounded font-bold">1 Failed</span>
+            </div>
+            <a href="ts07_mailing_postal_country.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🔄</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                11 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-08: Form Lifecycle & Mode Transitions</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Cổng chặn trạng thái Form: Khóa nút Save khi Pristine, mở nút Save khi Dirty, nút Cancel hoàn nguyên dữ liệu, phím Enter an toàn và bảo vệ beforeunload.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">11 Passed</span>
+              
+            </div>
+            <a href="ts08_form_lifecycle_modes.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">✅</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                9 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-09: Submission & Confirmation Dialog</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Hộp thoại Alertdialog trước khi gửi dữ liệu, bẫy tiêu điểm bàn phím Focus Trap ESC, cơ chế chống nhấp đúp Debounce, toast xanh MSG-0807 và Zero Email (D-28).</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">9 Passed</span>
+              
+            </div>
+            <a href="ts09_submit_confirm_dialog.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-sky-400 hover:shadow-md transition flex flex-col justify-between group">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-2xl">🛡️</span>
+              <span class="text-[11px] font-mono font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                25 TCs
+              </span>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-sky-700 transition">TS-10: Client Security & UI Health (NFR)</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">Ma trận phi chức năng: Cấm lưu NRIC trong LocalStorage, ẩn NRIC trần trong DOM, tiêu đề bảo mật CSP/X-Frame-Options, Trợ năng WCAG AA, và Reflow Zoom 200%.</p>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-3 mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-1.5 text-[11px] font-mono">
+              <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">25 Passed</span>
+              
+            </div>
+            <a href="ts10_security_ui_health.html" class="text-xs font-bold px-3 py-1 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-lg border border-sky-200 transition">
+              Mở Báo Cáo ➔
+            </a>
+          </div>
+        </div>
+        
+    </div>
+
+  </div>
+
+</body>
+</html>

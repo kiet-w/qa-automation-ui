@@ -54,6 +54,7 @@ class SingpassLoginPage(BasePage):
             pass
         if self.page.locator("header button:has-text('Log out')").count() > 0:
             self.logout()
+        self.page.evaluate("() => { try { localStorage.clear(); sessionStorage.clear(); } catch(e){} }")
         self.page.wait_for_selector(self.LOGIN_WITH_SINGPASS_BTN, timeout=10000)
 
     def is_login_page_loaded(self) -> bool:
@@ -139,13 +140,14 @@ class SingpassLoginPage(BasePage):
     def logout(self):
         """Click logout button in header shell."""
         try:
-            if self.is_visible("button[aria-label='Open navigation']"):
-                self.page.click("button[aria-label='Open navigation']")
+            mobile_nav = self.page.locator("button[aria-label='Open navigation']")
+            if mobile_nav.count() > 0 and mobile_nav.first.is_visible():
+                mobile_nav.first.click(timeout=1500)
         except Exception:
             pass
         logout_btn = self.page.locator("button:has-text('Log out')").first
         if logout_btn.count() > 0:
-            logout_btn.click()
+            logout_btn.click(timeout=5000)
             try:
                 self.page.wait_for_selector(self.LOGIN_WITH_SINGPASS_BTN, timeout=10000)
             except Exception:

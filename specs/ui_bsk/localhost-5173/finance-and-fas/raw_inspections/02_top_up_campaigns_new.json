@@ -1,0 +1,186 @@
+{
+  "url": "http://localhost:5173/top-up/campaigns/new",
+  "pathname": "/top-up/campaigns/new",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Create Campaign",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "Basic Information",
+      "id": "_r_4_"
+    },
+    {
+      "tag": "h2",
+      "text": "Target Criteria",
+      "id": "_r_8_"
+    },
+    {
+      "tag": "h3",
+      "text": "Age Eligibility Range",
+      "id": ""
+    },
+    {
+      "tag": "h3",
+      "text": "Account Balance Threshold Range",
+      "id": ""
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "name",
+      "id": "campaign-name",
+      "placeholder": "e.g. Term 1 Learning Support",
+      "label": "Campaign Name *",
+      "disabled": false,
+      "required": true,
+      "selector": "#campaign-name"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "amount",
+      "id": "campaign-amount",
+      "placeholder": "0.00",
+      "label": "Amount Per Account (SGD)",
+      "disabled": false,
+      "required": true,
+      "selector": "#campaign-amount"
+    },
+    {
+      "tag": "textarea",
+      "type": "text",
+      "name": "description",
+      "id": "campaign-desc",
+      "placeholder": "Optional notes or context for this campaign...",
+      "label": "Description (optional)",
+      "disabled": false,
+      "required": false,
+      "selector": "#campaign-desc"
+    },
+    {
+      "tag": "input",
+      "type": "number",
+      "name": "minAge",
+      "id": "min-age",
+      "placeholder": "e.g. 7",
+      "label": "Minimum Age",
+      "disabled": false,
+      "required": false,
+      "selector": "#min-age"
+    },
+    {
+      "tag": "input",
+      "type": "number",
+      "name": "maxAge",
+      "id": "max-age",
+      "placeholder": "e.g. 16",
+      "label": "Maximum Age",
+      "disabled": false,
+      "required": false,
+      "selector": "#max-age"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "minBalance",
+      "id": "min-balance",
+      "placeholder": "0.00",
+      "label": "Minimum Balance Threshold",
+      "disabled": false,
+      "required": false,
+      "selector": "#min-balance"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "maxBalance",
+      "id": "max-balance",
+      "placeholder": "e.g. 250.00",
+      "label": "Maximum Balance Threshold",
+      "disabled": false,
+      "required": false,
+      "selector": "#max-balance"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Back",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Back\")"
+    },
+    {
+      "text": "Cancel",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Cancel\")"
+    },
+    {
+      "text": "Save & Preview",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Save & Preview\")"
+    }
+  ],
+  "tables": [],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

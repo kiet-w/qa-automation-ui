@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-06: Mailing Street Component | Báo Cáo Kiểm Thử Chuyên Biệt (7 TCs)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .freeze-col-1 { position: sticky; left: 0; z-index: 10; }
+    .freeze-col-2 { position: sticky; left: 48px; z-index: 10; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Nav Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs hover:bg-sky-50 transition">
+        <span>⬅️ Danh Sách 10 Test Suites</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 font-mono text-slate-600 font-bold">
+          File: tests/fs08/fs08-parent-profile/test_ts06_mailing_street.py
+        </span>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Xuất Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🛣️</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded border border-sky-200">
+            TS06_MAILING_STREET
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-slate-100 text-slate-700">
+            7 Ca Kiểm Thử
+          </span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">TS-06: Mailing Street Component</h1>
+        <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">Kiểm thử trường Tên đường bắt buộc: Biên 100 ký tự BVA, giữ nguyên dấu nháy đơn địa danh Singapore (St. George's), và làm sạch mã độc HTML/XSS script.</p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-emerald-700 uppercase">Passed</div>
+          <div class="text-xl font-black text-emerald-900">7</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-red-700 uppercase">Failed</div>
+          <div class="text-xl font-black text-red-900">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-slate-600 uppercase">Not Run</div>
+          <div class="text-xl font-black text-slate-800">0</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Table Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      
+      <!-- Search Bar -->
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-xs text-slate-600">
+          Chạy file test này bằng lệnh: <code class="font-mono font-bold bg-slate-100 text-sky-900 px-2 py-1 rounded border border-slate-200 select-all">.venv/bin/pytest tests/fs08/fs08-parent-profile/test_ts06_mailing_street.py -v</code>
+        </div>
+        <div class="relative w-72">
+          <input type="text" id="suite-search" placeholder="Tìm theo mã TC, tiêu đề, selector..." oninput="handleSearch(this.value)" class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg outline-none w-full placeholder:text-slate-400">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px] relative">
+        <table class="w-full text-left border-collapse" style="min-width: 1350px;">
+          <thead class="sticky top-0 bg-[#1B365D] text-white text-[11px] font-mono uppercase tracking-wider z-20">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 freeze-col-1 bg-[#1B365D]">STT</th>
+              <th class="py-3 px-3 text-center w-28 freeze-col-2 bg-[#1B365D]">Mã TC</th>
+              <th class="py-3 px-3 text-center w-32">Trụ Cột</th>
+              <th class="py-3 px-4 min-w-[280px]">Tiêu Đề Ca Kiểm Thử</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">📍 Vị Trí &amp; DOM Selector</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">💾 Dữ Liệu Kiểm Thử (Test Data)</th>
+              <th class="py-3 px-2 text-center w-20">Ưu Tiên</th>
+              <th class="py-3 px-2 text-center w-24">Trạng Thái</th>
+              <th class="py-3 px-3 text-center w-24">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="suite-tbody" class="text-xs divide-y divide-slate-200 bg-white">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="tc-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white border border-slate-300 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tc-id" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-sky-100 text-sky-800 border border-sky-200">TC-001</span>
+          <span id="modal-tc-pillar" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Pillar</span>
+          <h3 id="modal-tc-title" class="text-sm font-bold text-slate-900 truncate max-w-lg">Tiêu đề</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        <!-- Target DOM Banner -->
+        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-800">📍 Vị Trí Kiểm Thử &amp; Element DOM Selector</div>
+            <div id="modal-target-name" class="text-xs font-bold text-slate-900 mt-0.5">Target Name</div>
+            <code id="modal-target-dom" class="text-[11px] font-mono text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-300 mt-1 inline-block">locator</code>
+          </div>
+          <span id="modal-priority" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-slate-800 border border-slate-200 self-start sm:self-center">High</span>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">1. Điều Kiện Tiên Quyết (Preconditions)</h4>
+          <div id="modal-preconditions" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">2. Dữ Liệu Kiểm Thử (Test Data)</h4>
+          <div id="modal-test-data" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap select-all"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">3. Các Bước Thực Hiện (Test Steps)</h4>
+          <div id="modal-steps" class="p-3 bg-slate-50 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-emerald-700 mb-1">4. Kết Quả Kỳ Vọng (Expected Result)</h4>
+            <div id="modal-expected" class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-emerald-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-sky-700 mb-1">5. Kết Quả Thực Tế (Actual Result)</h4>
+            <div id="modal-actual" class="p-3 bg-sky-50/70 border border-sky-200 rounded-lg text-sky-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">6. Nguồn Đối Soát (Traceability)</h4>
+          <div id="modal-traceability" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg text-xs transition">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testCases = [{"idx": 27, "id": "TC-R8-STR-01", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-STR", "title": "Verify clearing mandatory Mailing Street input triggers required validation error MSG-0001", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "MailingStreet = '' (empty string)", "steps": "1. Clear Mailing Street input field\n2. Blur field or click [Save changes]", "expected": "Displays required error MSG-0001: 'Enter your street' (or 'This field is required')\nInput marked with aria-invalid='true'\nSave button disabled", "actual": "MSG-0001 displayed under Mailing Street; submission blocked.", "assumption": "CR: Mailing Street is mandatory per FSD section 6 table", "defect": "BUG-R8-005", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "note": "Mandatory address street validation."}, {"idx": 48, "id": "TC-R8-104", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify whitespace-only Mailing Street input is treated as blank and displays MSG-0001 (ASM-15)", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "MailingStreet = '          ' (10 blank spaces)", "steps": "1. Enter spaces only in Mailing Street\n2. Click [Save changes] or blur field", "expected": "System detects empty content and displays required field error MSG-0001 under Mailing Street\nInput highlights red with aria-invalid='true'\nSave action blocked", "actual": "Whitespace detected as empty; MSG-0001 error displayed.", "assumption": "ASM-15: Whitespace-only input in a required field is treated as blank.", "defect": "", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "note": "Ensures user cannot submit street with just spaces."}, {"idx": 49, "id": "TC-R8-107", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify Mailing Street maximum length boundary of 100 characters (BVA Length)", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "BVA", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "BVA: 100 chars ('S'*100) vs 101 chars ('S'*101)", "steps": "1. Enter 100-character string into Mailing Street, save and verify\n2. Enter 101-character string into Mailing Street and attempt save", "expected": "100 chars: Successfully saved with MSG-0807\n101 chars: Truncated by maxlength='100' or blocked with field length error", "actual": "100 chars saved; 101 chars blocked by maxlength constraint.", "assumption": "ASM-09: No message code defined for max-length; field-level validation blocks Save.", "defect": "", "traceability": "FS R8 field table (Street max 100) - BVA; Appendix A Parent_Profile.MailingStreet NVARCHAR(100)", "note": "Prevents database column overflow in Parent_Profile table."}, {"idx": 50, "id": "TC-R8-STR-02", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify valid Singapore street names with punctuation (hyphens, dots, apostrophes) are saved accurately", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Streets: 'St. George\\'s Lane', 'Jalan Jurong Kechil', 'Ang Mo Kio Ave 3'", "steps": "1. Enter 'St. George\\'s Lane' into Mailing Street\n2. Save and reload profile", "expected": "Street persists accurately and renders 'St. George\\'s Lane' on view screen\nSaved with MSG-0807", "actual": "Street name with apostrophe and period saved and reloaded accurately.", "assumption": "TD: Standard address string allowing legitimate punctuation", "defect": "", "traceability": "FS R8 sec. 6 field table; Appendix A", "note": "Ensures special characters in Singapore street names are preserved."}, {"idx": 51, "id": "TC-R8-STR-03", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify forbidden symbols (< > { } ;) in Mailing Street are blocked or sanitized", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingBlock']", "target_name": "Ô Nhập Số Block (Mailing Block)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Forbidden: 'Ang Mo Kio Ave 3 <script>', '{Street 52};'", "steps": "1. Enter 'Ang Mo Kio Ave 3 <script>' into Mailing Street\n2. Attempt to save form", "expected": "HTML script injection characters blocked or sanitized\nNo raw tags committed to database", "actual": "Dangerous symbols blocked and sanitized.", "assumption": "TD: Input sanitization whitelist", "defect": "", "traceability": "NFR Security; Invariant 8", "note": "Prevents address injection attacks."}, {"idx": 52, "id": "TC-R8-STR-04", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify pasting 1000-character string or multiline text into Mailing Street is handled safely without UI breakage", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Stress", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Paste stress: 'S'*1000; Multiline: 'Line 1\\nLine 2'", "steps": "1. Paste 1000 characters into Mailing Street\n2. Inspect input value and viewport overflow\n3. Paste multiline address", "expected": "Input truncated to maxlength='100'\nDocument scrollWidth === clientWidth (zero overflow)\nNewlines stripped/collapsed to single space", "actual": "Paste stress handled cleanly; 0 overflow; newlines normalized.", "assumption": "TD: Viewport layout stress & boundary truncation", "defect": "", "traceability": "Invariant 7; NFR Usability", "note": "Ensures robust handling of large clipboard data."}, {"idx": 53, "id": "TC-R8-114", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STR", "title": "Verify malicious script input in Mailing Street is sanitized and rendered as plain text without XSS execution", "suite": "Mailing Street Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingStreet']", "target_name": "Ô Nhập Tên Đường (Mailing Street)", "test_area": "Mailing Address", "severity": "S2", "priority": "Medium", "status": "Passed", "test_type": "Security", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "XSS vector: <script>alert(1)</script>", "steps": "1. Enter '<script>alert(1)</script>' in Mailing Street\n2. Click [Save changes] and confirm in dialog\n3. Reload profile page and inspect rendered text and console", "expected": "No alert popup is triggered\nZero JavaScript errors on console\nScript tags are rendered safely as escaped plain text or sanitized in DB", "actual": "Script tag escaped safely as plain text, no execution detected.", "assumption": "TD: Invariant 8 - HTML entity encoding and DOMPurify on output", "defect": "", "traceability": "NFR Security; Invariant 8", "note": "Prevents Stored Cross-Site Scripting (XSS) attacks."}];
+    let searchQuery = '';
+
+    function handleSearch(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('suite-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = testCases.filter(tc => {
+        if (!searchQuery) return true;
+        const matchStr = (tc.id + ' ' + tc.title + ' ' + tc.target_name + ' ' + tc.target_dom + ' ' + tc.test_data + ' ' + tc.traceability).toLowerCase();
+        return matchStr.includes(searchQuery);
+      });
+
+      filtered.forEach((tc, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        let pillarBadgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        if (tc.pillar === 'BR') pillarBadgeClass = 'bg-purple-50 text-purple-800 border-purple-200';
+        if (tc.pillar === 'AC') pillarBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-emerald-100 text-emerald-800">Passed</span>`;
+        if (tc.status.toUpperCase() === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-red-100 text-red-800">Failed</span>`;
+        } else if (tc.status.toUpperCase() === 'NOT RUN') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">Not Run</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono freeze-col-1 bg-white">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 freeze-col-2 bg-white">${tc.id}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pillarBadgeClass}">
+              ${tc.pillar_badge}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 font-medium text-slate-800 leading-snug">
+            <div>${tc.title}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm" title="${tc.traceability}">🔎 ${tc.traceability}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span>📍</span> <span>${tc.target_name}</span>
+            </div>
+            <div class="font-mono text-[11px] text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 mt-1 inline-block truncate max-w-[220px]" title="${tc.target_dom}">
+              ${tc.target_dom}
+            </div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-mono text-[11px] text-emerald-950 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200 max-h-16 overflow-y-auto leading-relaxed select-all" title="${tc.test_data}">
+              ${tc.test_data}
+            </div>
+          </td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700">${tc.priority}</td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="openModal('${tc.id}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition shadow-2xs">
+              Chi Tiết
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(tcId) {
+      const tc = testCases.find(t => t.id === tcId);
+      if (!tc) return;
+
+      document.getElementById('modal-tc-id').innerText = tc.id;
+      document.getElementById('modal-tc-pillar').innerText = tc.pillar_badge;
+      document.getElementById('modal-tc-title').innerText = tc.title;
+      document.getElementById('modal-target-name').innerText = tc.target_name;
+      document.getElementById('modal-target-dom').innerText = tc.target_dom;
+      document.getElementById('modal-priority').innerText = tc.priority;
+
+      document.getElementById('modal-preconditions').innerText = tc.preconditions;
+      document.getElementById('modal-test-data').innerText = tc.test_data;
+      document.getElementById('modal-steps').innerText = tc.steps;
+      document.getElementById('modal-expected').innerText = tc.expected;
+      document.getElementById('modal-actual').innerText = tc.actual;
+      document.getElementById('modal-traceability').innerText = tc.traceability + ' | ' + (tc.assumption || 'None');
+
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

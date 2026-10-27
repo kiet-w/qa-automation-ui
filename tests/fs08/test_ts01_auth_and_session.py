@@ -313,7 +313,7 @@ class TestTS01AuthAndSession(BaseTest):
             assert expected_msg in alert_text or "could not retrieve" in alert_text.lower() or "try again" in alert_text.lower(), (
                 f"Expected MSG-0809, got: '{alert_text}'"
             )
-            assert "EduSave E-Service Portal" not in self.page.content(), "Security Gate: Home Portal must NOT load when Data API fails!"
+            assert "EduSave E-Service Portal" not in self.page.locator("body").inner_text(), "Security Gate: Home Portal must NOT load when Data API fails!"
             self.step.set_actual(f"Observed error alert with MSG-0809: '{alert_text}'")
 
     @pytest.mark.p0

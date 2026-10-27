@@ -1,0 +1,394 @@
+{
+  "base_url": "http://localhost:5174",
+  "api_base_url": "http://localhost:5008",
+  "gateway_url": "http://localhost:5286",
+  "mockpass_url": "http://localhost:5156/singpass/login",
+  "webhook_secret": "whsec_f9_demo_shared_secret",
+  "database": {
+    "server": "localhost",
+    "port": 1433,
+    "user": "sa",
+    "password": "YourStrong@Password123",
+    "billing_db": "BillingPaymentService",
+    "ea_db": "EducationAccountDatabase",
+    "student_school_db": "StudentSchoolDatabase",
+    "iam_db": "TemplateIAMDatabase"
+  },
+  "personas": {
+    "PAR-NORMAL-01": {
+      "id": "PAR-NORMAL-01",
+      "name": "TAN WEI MING",
+      "nric": "S7654321B",
+      "role": "Parent",
+      "email": "wei.ming.s2345678b@example.com",
+      "phone": "+6592345678",
+      "children": ["Chloe Chan"],
+      "child_name": "Chloe Chan",
+      "student_id": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "student_nric": "T0000784X",
+      "wallet_id": "01a15a22-dddf-73f6-a81f-dd8aab137fe4",
+      "wallet_code": "WA-00002",
+      "wallet_balance": 50.00,
+      "wallet_status": "Active",
+      "citizenship": "Singapore Citizen",
+      "has_active_child": true,
+      "charges": [
+        {
+          "charge_id": "bbbb0009-0000-0000-0000-000000000001",
+          "description": "Term 4 Stationery Fee",
+          "amount": 10.00,
+          "eligible_for_full_ea": true
+        },
+        {
+          "charge_id": "bbbb0009-0000-0000-0000-000000000002",
+          "description": "Field Trip - Science Centre",
+          "amount": 15.00,
+          "eligible_for_full_ea": true
+        },
+        {
+          "charge_id": "bbbb0009-0000-0000-0000-000000000003",
+          "description": "Sports Fee",
+          "amount": 25.00,
+          "eligible_for_full_ea": true
+        },
+        {
+          "charge_id": "bbbb0009-0000-0000-0000-000000000004",
+          "description": "Overseas Learning Trip Fee",
+          "amount": 1500.00,
+          "eligible_for_full_ea": false,
+          "eligible_for_split": true
+        }
+      ],
+      "description": "Primary parent persona with linked Singapore Citizen child Chloe Chan for Full EA Payment (10.00, 15.00, 25.00, or exact 50.00) and Split Payment (1500.00) (F9.1, F9.2, AC-01, AC-03, AC-15)"
+    },
+    "PAR-NORMAL-02": {
+      "id": "PAR-NORMAL-02",
+      "name": "NGUYEN VAN MINH",
+      "nric": "S7890123F",
+      "role": "Parent",
+      "email": "minh.s1234567a@example.com",
+      "phone": "+6591234567",
+      "children": ["Tan Wei Ming"],
+      "child_name": "Tan Wei Ming",
+      "student_id": "01a15a22-f573-7ba6-93d2-71ac9a4ce40b",
+      "student_nric": "S1234567A",
+      "wallet_id": "01a15a22-f573-7392-817e-95097d38417a",
+      "wallet_code": "WA-00172",
+      "wallet_balance": 40.00,
+      "wallet_status": "Active",
+      "citizenship": "Singapore Citizen",
+      "has_active_child": true,
+      "charges": [
+        {
+          "charge_id": "cccc0009-0000-0000-0000-000000000001",
+          "description": "Library Fee",
+          "amount": 20.00,
+          "eligible_for_full_ea": true
+        },
+        {
+          "charge_id": "cccc0009-0000-0000-0000-000000000002",
+          "description": "School Fee - Term 1",
+          "amount": 80.00,
+          "eligible_for_full_ea": false,
+          "eligible_for_split": true
+        }
+      ],
+      "description": "Second parent persona with linked child Tan Wei Ming for dual-parent and split payment validation (EA 40.00 + Online 40.00) (AC-04, AC-15)"
+    },
+    "PAR-NON-CITIZEN": {
+      "id": "PAR-NON-CITIZEN",
+      "name": "K. Shanmugam",
+      "nric": "S9012345H",
+      "role": "Parent",
+      "has_active_child": true,
+      "citizenship": "Permanent Resident",
+      "description": "Non-Singapore Citizen student parent (PR / IS), EA option disabled or hidden; Online payment only (AC-14, BR-F9-07)"
+    },
+    "PAR-NO-CHILD": {
+      "id": "PAR-NO-CHILD",
+      "name": "LIM SHU XIN",
+      "nric": "S3456789C",
+      "role": "Parent",
+      "has_active_child": false,
+      "expected_msg_code": "MSG-0801",
+      "expected_error": "No Edu Account linked with for this parent",
+      "description": "Parent with valid NRIC but no linked children in Government DB (MSG-0801, AC-01)"
+    },
+    "PAR-AGE-16": {
+      "id": "PAR-AGE-16",
+      "name": "Lee Bee Wah",
+      "nric": "S7890123F",
+      "role": "Parent",
+      "description": "Parent with child reaching 16yo Due for closure (AC #7, DA-06, EA_NOT_ACTIVE)"
+    },
+    "PAR-ZERO-BALANCE": {
+      "id": "PAR-ZERO-BALANCE",
+      "student_id": "01a15a22-dbff-7f04-abe6-c844961f56ae",
+      "student_name": "Grace Lee",
+      "student_nric": "T0000536X",
+      "wallet_id": "01a15a22-dc00-7896-a20a-5222e2cb56f8",
+      "wallet_balance": 0.00,
+      "wallet_status": "Active",
+      "charge_id": "dddd0009-0000-0000-0000-000000000001",
+      "charge_description": "Standard Miscellaneous Fee",
+      "charge_amount": 50.00,
+      "description": "Student with Active EA but 0.00 SGD balance; defaults to Online payment (AC-04, AC-14)"
+    },
+    "PAR-INACTIVE-EA": {
+      "id": "PAR-INACTIVE-EA",
+      "student_id": "01a15a22-ddf9-7204-a83a-74b4a2dada62",
+      "student_name": "Ryan Lim",
+      "student_nric": "T0000653X",
+      "wallet_id": "01a15a22-ddf9-7075-8689-7ae6f3d08b65",
+      "wallet_balance": 50.00,
+      "wallet_status": "Inactive",
+      "charge_id": "eeee0009-0000-0000-0000-000000000001",
+      "charge_description": "Enrichment Program",
+      "charge_amount": 75.00,
+      "description": "Student with Inactive EA; triggers EA_NOT_ACTIVE error"
+    },
+    "PAR-NO-EA": {
+      "id": "PAR-NO-EA",
+      "student_id": "01A13DE8-1692-7E4B-B9A4-FC7BAC717F53",
+      "wallet_id": null,
+      "wallet_status": null,
+      "charges_count": 10,
+      "description": "Student without initialized Education Account in database; triggers EA_NOT_AVAILABLE error (AC-14)"
+    },
+    "PAR-UNAUTHORIZED-TARGET": {
+      "id": "PAR-UNAUTHORIZED-TARGET",
+      "student_id": "99999999-9999-9999-9999-999999999999",
+      "description": "Foreign student ID used for URL tampering / IDOR checks (FORBIDDEN_CHILD, MSG-0003)"
+    }
+  },
+  "error_catalog": {
+    "EA_NOT_AVAILABLE": {
+      "code": "EA_NOT_AVAILABLE",
+      "message": "This student does not have an Education Account. Please pay online.",
+      "ui_behavior": "Vô hiệu tùy chọn EA, gợi ý Online",
+      "traceability": "FS-09 §5.1; BR-F9-07; AC-14"
+    },
+    "EA_NOT_ACTIVE": {
+      "code": "EA_NOT_ACTIVE",
+      "message": "The Education Account is not active. Please pay online.",
+      "ui_behavior": "Như trên",
+      "traceability": "FS-09 §5.1; BR-F9-02; DA-06"
+    },
+    "EA_INSUFFICIENT_BALANCE": {
+      "code": "EA_INSUFFICIENT_BALANCE",
+      "message": "Your Education Account balance is not enough for this amount. You can pay the rest online.",
+      "ui_behavior": "Quay lại chọn phương thức, gợi ý chia đôi",
+      "traceability": "FS-09 §5.1; BR-F9-02; AC-04"
+    },
+    "SPLIT_AMOUNT_INVALID": {
+      "code": "SPLIT_AMOUNT_INVALID",
+      "message": "The two amounts must be more than zero and add up to the total.",
+      "ui_behavior": "Giữ ở SCR-04, đánh dấu ô nhập",
+      "traceability": "FS-09 §5.1; BR-F9-11; AC-19"
+    },
+    "INVOICE_ALREADY_PAID": {
+      "code": "INVOICE_ALREADY_PAID",
+      "message": "This invoice has already been paid.",
+      "ui_behavior": "Làm mới danh sách",
+      "traceability": "FS-09 §5.1; EX-04; DA-13"
+    },
+    "INVOICE_NOT_PAYABLE": {
+      "code": "INVOICE_NOT_PAYABLE",
+      "message": "This invoice can no longer be paid.",
+      "ui_behavior": "Làm mới danh sách",
+      "traceability": "FS-09 §5.1; AC-21; EX-04; EX-14"
+    },
+    "PAYMENT_PENDING": {
+      "code": "PAYMENT_PENDING",
+      "message": "A payment for this invoice is still being processed.",
+      "ui_behavior": "Chuyển đến SCR-06",
+      "traceability": "FS-09 §5.1; AC-11; BR-F9-09; DA-13"
+    },
+    "PAYMENT_FAILED": {
+      "code": "PAYMENT_FAILED",
+      "message": "Your payment could not be completed. No amount was deducted.",
+      "ui_behavior": "SCR-08, nút Try again, Exit",
+      "traceability": "FS-09 §5.1; AC-07; AC-09; BR-F9-05"
+    },
+    "PAYMENT_FAILED_EA_RETURNED": {
+      "code": "PAYMENT_FAILED_EA_RETURNED",
+      "message": "Your online payment could not be completed. The amount taken from the Education Account has been returned.",
+      "ui_behavior": "SCR-08, nút Try again, Exit",
+      "traceability": "FS-09 §5.1; AC-17; BR-F9-05; BR-F9-11"
+    },
+    "PAYMENT_CANCELLED": {
+      "code": "PAYMENT_CANCELLED",
+      "message": "The payment was cancelled. No amount was deducted.",
+      "ui_behavior": "SCR-08; với chia đôi mà EA đã trừ thì dùng PAYMENT_FAILED_EA_RETURNED",
+      "traceability": "FS-09 §5.1; AC-09; Appendix A"
+    },
+    "FORBIDDEN_CHILD": {
+      "code": "FORBIDDEN_CHILD",
+      "message": "You do not have access to this student's records.",
+      "ui_behavior": "Quay về SCR-01",
+      "traceability": "FS-09 §5.1; AC-12; BR-F9-01; EX-01"
+    },
+    "AUTH_REQUIRED": {
+      "code": "AUTH_REQUIRED",
+      "message": "Your session has expired. Please sign in again.",
+      "ui_behavior": "Chuyển đến đăng nhập Singpass",
+      "traceability": "FS-09 §5.1; Decision D-22; EX-02"
+    },
+    "SYSTEM_ERROR": {
+      "code": "SYSTEM_ERROR",
+      "message": "Something went wrong. Please try again later.",
+      "ui_behavior": "Cho thử lại; không đổi dữ liệu",
+      "traceability": "FS-09 §5.1; EX-10"
+    },
+    "MSG-0001": {
+      "code": "MSG-0001",
+      "message": "Enter your <field>",
+      "ui_behavior": "Bỏ trống trường bắt buộc, báo theo từng trường",
+      "traceability": "FS_SPECIFICATIONS_SUMMARY §3.7"
+    },
+    "MSG-0002": {
+      "code": "MSG-0002",
+      "message": "Your session has expired. Please log in again.",
+      "ui_behavior": "Hết hạn phiên làm việc sau 15 phút không thao tác",
+      "traceability": "FS_SPECIFICATIONS_SUMMARY §3.7; Decision D-22"
+    },
+    "MSG-0003": {
+      "code": "MSG-0003",
+      "message": "You do not have permission to perform this action.",
+      "ui_behavior": "Cố tình truy cập dữ liệu của học sinh không thuộc quyền quản lý của mình",
+      "traceability": "FS_SPECIFICATIONS_SUMMARY §3.7"
+    }
+  },
+  "test_charges_seed": [
+    {
+      "id": "bbbb0009-0000-0000-0000-000000000001",
+      "student_id": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Term 4 Stationery Fee",
+      "base_amount": 10.00,
+      "tax_amount": 0.00,
+      "total_amount": 10.00,
+      "due_date": "2026-11-15",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "bbbb0009-0000-0000-0000-000000000002",
+      "student_id": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Field Trip - Science Centre",
+      "base_amount": 15.00,
+      "tax_amount": 0.00,
+      "total_amount": 15.00,
+      "due_date": "2026-11-20",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "bbbb0009-0000-0000-0000-000000000003",
+      "student_id": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Sports Fee",
+      "base_amount": 25.00,
+      "tax_amount": 0.00,
+      "total_amount": 25.00,
+      "due_date": "2026-12-05",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "bbbb0009-0000-0000-0000-000000000004",
+      "student_id": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Overseas Learning Trip Fee",
+      "base_amount": 1500.00,
+      "tax_amount": 0.00,
+      "total_amount": 1500.00,
+      "due_date": "2027-01-15",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "cccc0009-0000-0000-0000-000000000001",
+      "student_id": "01a15a22-f573-7ba6-93d2-71ac9a4ce40b",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Library Fee",
+      "base_amount": 20.00,
+      "tax_amount": 0.00,
+      "total_amount": 20.00,
+      "due_date": "2026-11-25",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "cccc0009-0000-0000-0000-000000000002",
+      "student_id": "01a15a22-f573-7ba6-93d2-71ac9a4ce40b",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "School Fee - Term 1",
+      "base_amount": 80.00,
+      "tax_amount": 0.00,
+      "total_amount": 80.00,
+      "due_date": "2026-12-01",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "dddd0009-0000-0000-0000-000000000001",
+      "student_id": "01a15a22-dbff-7f04-abe6-c844961f56ae",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Standard Miscellaneous Fee",
+      "base_amount": 50.00,
+      "tax_amount": 0.00,
+      "total_amount": 50.00,
+      "due_date": "2026-11-30",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    },
+    {
+      "id": "eeee0009-0000-0000-0000-000000000001",
+      "student_id": "01a15a22-ddf9-7204-a83a-74b4a2dada62",
+      "school_id": "22222222-2222-2222-2222-222222222222",
+      "fee_component_name_snapshot": "Enrichment Program",
+      "base_amount": 75.00,
+      "tax_amount": 0.00,
+      "total_amount": 75.00,
+      "due_date": "2026-11-30",
+      "status": "POSTED",
+      "currency_code": "SGD"
+    }
+  ],
+  "webhook_templates": {
+    "succeeded_template": {
+      "eventId": "evt_test_{unique_id}",
+      "eventType": "payment.succeeded",
+      "providerCode": "SIMULATION",
+      "transactionId": "txn_test_{unique_id}",
+      "referenceId": "{funding_reference}",
+      "amountCents": 10000,
+      "currency": "SGD",
+      "status": "Succeeded",
+      "occurredAtUtc": "2026-10-22T08:00:00Z",
+      "metadata": {
+        "environment": "automated_test",
+        "scenario": "full_online_success"
+      }
+    },
+    "failed_template": {
+      "eventId": "evt_test_{unique_id}",
+      "eventType": "payment.failed",
+      "providerCode": "SIMULATION",
+      "transactionId": "txn_test_{unique_id}",
+      "referenceId": "{funding_reference}",
+      "amountCents": 10000,
+      "currency": "SGD",
+      "status": "Failed",
+      "occurredAtUtc": "2026-10-22T08:00:00Z",
+      "metadata": {
+        "environment": "automated_test",
+        "scenario": "online_gateway_failure"
+      }
+    },
+    "signature_format": "t={timestamp},v1={hmac_sha256_hex}",
+    "endpoint": "/api/v1/payment-webhooks/gateway"
+  }
+}

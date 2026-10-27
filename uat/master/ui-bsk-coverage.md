@@ -1,0 +1,130 @@
+---
+status: UAT design supplement — Not Run
+date: 2026-10-27
+---
+
+# UAT UI/BSK Coverage Matrix
+
+## Purpose and status
+
+This supplement closes the screen-level coverage gap between the enterprise UAT plan and the UI inventory captured in [`specs/ui_bsk/`](../../specs/ui_bsk/README.md). It is a design baseline for QA/BA and AI Coding; it is not a test execution report, product sign-off, or proof that the captured UI is still current.
+
+The inventory contains 26 screen specifications: 15 Admin Portal screens/groups on `localhost:5173`, 11 Parent/e-Service screens/groups on `localhost:5174`. Each `UIUAT-###` is a local planning reference only. It is not an official User Story, AC, defect ID, or execution result.
+
+| Evidence / question | Canonical source | How AI Coding must use it |
+|---|---|---|
+| Business rule (BR) | `specs/md/FS document/`, `specs/md/MEETINGS_AND_DECISIONS_SUMMARY.md`, approved decision record | Cite the exact source section and BR/decision ID. If no authoritative rule exists, record `SPEC GAP`; do not turn observed behavior into policy. |
+| Acceptance criteria (AC) | `specs/md/Product Backlog V2.md`, `specs/md/Test Cases/` | Trace each test function and expected result to an AC/story or BR. Do not invent official IDs. |
+| Field validation | `specs/validation_rules/md/`, `specs/component_specs/<module>/atomic/` | Build field-level testcases using the 12-layer matrix; mark each cell `Applicable`, `N/A` with reason, or `SPEC GAP`. |
+| Flow and error oracle | `specs/component_specs/<module>/integration/` and `<module>/README.md` | Verify state transitions, modal/toast/error codes and data preservation against the approved contract. |
+| UI structure and observed controls | The exact `specs/ui_bsk/...` document linked in the matrix | Use as captured route/control/locator inventory. Re-recon if stale. It is not a source of BR/AC. |
+| Testcase and automation output | `testcases/<module>/<ticket>/`, then `pages/`, `data/`, `tests/` | Keep one testcase design source; test data in fixtures; Page Objects interact/read state; assertions in tests. |
+
+All new design rows start `Not Run`; `Actual Result`, run timestamp, build and evidence remain blank until an authorized run. A UI control existing in BSK is not by itself a pass condition. The user-visible outcome and its oracle must be backed by a BR/AC/spec, or shown as `SPEC GAP`/`Blocked`.
+
+## Coverage model AI Coding must apply to every screen
+
+For each route and state listed below, inventory the actual UI controls from its linked BSK document and design testcase coverage for:
+
+1. **Entry, role and route:** signed-in and signed-out access; allowed and denied roles; direct URL access; route after refresh/back/logout. Use a separate case for UI menu visibility and server/API authorization where those are in scope.
+2. **Screen states:** initial/loading, populated, empty/no-match, validation error, server/network error, success, and disabled/submitting states when present in the BSK inventory. Expected state/message requires a source oracle.
+3. **Every visible control:** buttons, links, inputs, selects, radio/checkbox, table headers/actions, pagination, dialogs, tabs and dynamic cards. Test keyboard operation and cancellation where the control supports it.
+4. **Forms:** required/optional, valid/invalid formats, whitespace, BVA at documented bounds, duplicate/cross-field/dependent rules, error association/`aria-invalid`, submit prevention, preservation on failed save, and repeated submit. Do not apply irrelevant field classes; record `N/A` with reason.
+5. **Data integrity and journey:** setup → review → confirm → result → downstream view/reconciliation when business sources require it. Mocked UI tests prove only UI/API-contract behavior; claims about persisted records require an authorized integration/UAT oracle.
+6. **Security and UI health:** role isolation, cross-person/record access, PII masking, no raw translation keys, keyboard/focus and responsive checks when relevant. Use approved security scope and test identities only.
+
+This is a coverage checklist, not permission to assert every possible state on every page. Attach a source or a documented gap to each expected result.
+
+## Portal-wide journeys and reusable coverage
+
+These journeys cross multiple screen rows; link their testcases to the local screen references and official source IDs.
+
+| Journey | Screens | Required scenario families | Oracle / readiness |
+|---|---|---|---|
+| Parent authentication and protected navigation | `UIUAT-001` → `002` → `003`/`004`/`005` | Successful MockPass login; invalid/cancelled callback; session missing/expired; protected route; logout and browser back; parent A/B data isolation | FS08 auth/access BR and AC; confirm callback failure outcomes and session semantics if sources do not define them. |
+| Parent account-to-payment trace | `UIUAT-002` → `004` → `005` → `006` | Select only an authorized child; open history/billing; review selected charge/method/amount; simulate success/failure/cancel; reconcile receipt and transaction history | FS08/FS09 and payment AC. Exact money movement, retry and reversal rules must use the approved FS/decision, not BSK summary text. |
+| Parent FAS submission lifecycle | `UIUAT-007` → `008` → `009` → `010` → `011` | Eligibility; create/save/resume/discard draft; dynamic beneficiary and household cards; document/declaration; review/back; confirm/keep editing; submission result and reference | FS10 AC, validation and integration specs. D-04/D-06 and any unresolved income, routing, consent or rounding rules stay `SPEC GAP`/Blocked. |
+| Admin identity, role and shell | `UIUAT-012` → `013` → allowed module screens | MOEHQ vs SCHOOL menus, direct route denial, active nav, responsive menu, language, profile/logout; verify both UI and authorization behavior | Admin RBAC source; captured role map contains a suspicious PARENT account in the Entra simulator and needs confirmation before using it as expected behavior. |
+| School setup to student operations | `UIUAT-014` → `015` → `016` → `017` → `018` → `019` | School/user setup; year and level setup; class creation; student creation/enrolment/assignment; school configuration and copy-year flow | FS03/AC and UAT-D10 where fee/year behavior intersects. Role scope, duplicate handling, CSV row errors and activation lifecycle require explicit oracle. |
+| Fees and assistance to parent outcomes | `UIUAT-020` → `021` → `022` → `023` → `024`/`025` → `026` → parent `005` | Configure account/top-up/fee/rates/batch; publish/charge; configure MOE/SBFAS; review application; verify role-scoped decision/subsidy; parent sees eligible charge/payment outcome | F01–F06/FS09/FS10 source docs, UAT-D01–D06 and D10. Keep each business decision, financial reconciliation and role assertion separately traceable. |
+
+## Screen-level scenario inventory
+
+Each row is a minimum screen-level UAT pack. Expand it into one or more testcase records per distinct behavior, field, role and state. The bullet groups are scenario families, not a fixed testcase count.
+
+### Parent / e-Service Portal — `localhost:5174`
+
+| Ref | Screen / captured route | UI/BSK source | Required scenario families for testcase design | Business/AC oracle and known gate |
+|---|---|---|---|---|
+| UIUAT-001 | Parent login, MockPass and callback (`/parent/login`, `:5156/singpass/login`, callback) | [`01_parent_login_and_mockpass.md`](../../specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md) | Login control and persona selection; successful callback; invalid/missing state or code; cancel/back; duplicate callback; session storage/auth state; protected-route redirect; logout/back cache; language and accessible error state. | FS08 authentication BR/AC and component flow. Callback tampering, expiry, lockout and exact error messages need source-backed oracles. |
+| UIUAT-002 | Parent dashboard and child cards (`/`) | [`02_eservice_dashboard_home.md`](../../specs/ui_bsk/localhost-5174/02_eservice_dashboard_home.md) | Authorized children only; zero/one/multiple child states; card details and masked NRIC; balance loading/unavailable/error; deep links; age/citizenship/eligibility presentation; refresh and child switch. | FS08/FS01 BR and AC. Balance value/source, sort order, eligibility wording and unavailable retry need explicit oracle. |
+| UIUAT-003 | Parent profile/contact (`/profile`, `/parent/profile`) | [`03_parent_profile_and_contact.md`](../../specs/ui_bsk/localhost-5174/03_parent_profile_and_contact.md) | View/read-only identity; edit and pristine/dirty; every contact/address field validation; cancel/reset; confirm dialog keep editing/confirm; success/error toast; API 500/missing network preservation; double submit; keyboard/focus and masked PII. | FS08 BR/AC; `component_specs/fs08/atomic/`, integration flow and error catalog. Preserve existing UAT-007/profile cases and add missing coverage rather than duplicate IDs. |
+| UIUAT-004 | Transaction history (`/transactions`, student query) | [`04_transaction_history.md`](../../specs/ui_bsk/localhost-5174/04_transaction_history.md) | Student filter and URL synchronization; credit/debit display and ordering; empty/no-match/loading/error; pagination and page-size; switching child; refresh/deep link; unauthorized child ID/PII. | FS08/FS01 ledger BR and AC. Sort, pagination boundary, export and backend error oracle must be cited. |
+| UIUAT-005 | Billing and payment steps (`/billing`, `/billing/:studentId`) | [`05_billing_and_payments.md`](../../specs/ui_bsk/localhost-5174/05_billing_and_payments.md) | Child selection; invoice list/selection; amount and total; payment-method choices; split amount boundaries; review/back; confirmation; pending/loading; duplicate submit; insufficient balance; failed/cancel/retry; unauthorized student. | FS09 and payment/split AC, decision log. Payment order, fees, retries, reversal and idempotency are blocked until authoritative rules are selected. |
+| UIUAT-006 | Payment result and checkout simulator (`/payment-result`, `:5176/checkout/:sessionId`) | [`06_payment_checkout_simulator.md`](../../specs/ui_bsk/localhost-5174/06_payment_checkout_simulator.md) | Valid session success/failure/cancel; direct access or missing/expired session; callback refresh/replay; simulator choices; result/reference/status; return navigation; matching billing receipt and ledger; no duplicate charge. | FS09 payment lifecycle and API contract. Session storage, simulator persona and exact reversal/settlement outcome require approved source. |
+| UIUAT-007 | FAS landing, eligibility and draft controls (`/fas-application`) | [`01_fas_landing_and_prerequisites.md`](../../specs/ui_bsk/localhost-5174/fas-application/01_fas_landing_and_prerequisites.md) | Auth guard; eligible/ineligible/mixed children; pending application; no eligible child; one draft lifecycle; save/resume/discard confirmation; server/network state; all navigation into wizard. | FS10 BR/AC and lifecycle integration. Age cutoff, pending-state policy and one-draft behavior must match authoritative source. |
+| UIUAT-008 | FAS Step 1 applicant and beneficiaries | [`02_step1_student_selection.md`](../../specs/ui_bsk/localhost-5174/fas-application/02_step1_student_selection.md) | Every applicant field; each dynamic beneficiary card; add/remove/re-index; required/format/BVA; age boundary/future DOB; duplicate NRIC across parent/children; radio/select keyboard; step navigation and error focus. | FS10 validation/BR. Exact age eligibility and allowed category/relationship values require AC/BR trace. |
+| UIUAT-009 | FAS Step 2 household and income | [`03_step2_household_and_income.md`](../../specs/ui_bsk/localhost-5174/fas-application/03_step2_household_and_income.md) | Add/remove/re-index family member; identity/date/gender; has-income yes/no conditional amount; employment/status branches; duplicate NRIC across all people; GHI/household-size/PCI display updates; zero/boundary/rounding; return to prior step. | FS10/FAS BR and validation. GHI/PCI formula, included income, rounding and missing amount behavior require approved oracle (`UAT-D06`). |
+| UIUAT-010 | FAS Step 3 documents and declarations | [`04_step3_documents_and_declaration.md`](../../specs/ui_bsk/localhost:5174/fas-application/04_step3_documents_and_declaration.md) | No file/file list; allowed extension and content; size at limit and over; corrupt/empty/multiple/remove/re-add; upload error/retry; required commitment; optional school-forwarding consent; context text length/counter; keyboard and error association. | FS10 rules and component validation. BSK says upload optional, 5 MB and consent behavior: verify against approved validation/AC before treating as oracle. |
+| UIUAT-011 | FAS Step 4 review, confirmation and result | [`05_step4_review_and_submission.md`](../../specs/ui_bsk/localhost-5174/fas-application/05_step4_review_and_submission.md) | Review matches entered data; back/edit retains or updates data; confirm modal and keep editing; one submit under repeated click; pending/error/500 retains draft; success reference/status/timestamp; start-new reset; persisted submission lookup where authorized. | FS10 AC/integration/error catalog. Backend persistence, reference format and final status require approved source; distinguish mocked UI contract from real UAT evidence. |
+
+### Admin Portal — `localhost:5173`
+
+| Ref | Screen / captured route | UI/BSK source | Required scenario families for testcase design | Business/AC oracle and known gate |
+|---|---|---|---|---|
+| UIUAT-012 | Admin login, Entra simulator and callback (`/login`, `:5288`, callback) | [`01_admin_login_and_sso.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md) | Microsoft SSO happy path per approved role; standard mock form; show/hide password; missing/invalid credentials; cancel/back/state/callback failure; session creation/expiry/logout; language and alert; direct protected URL unauthenticated. | IAM/admin auth AC. BSK lists a simulator tile marked `PARENT` in admin SSO; treat the identity/role mapping as `SPEC GAP` pending confirmation. |
+| UIUAT-013 | Admin shell, role navigation and account menu (`/`) | [`02_admin_dashboard_shell.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md) | MOEHQ/SCHOOL visible menus; active route and direct-route denial; account menu/sign-out; language change; mobile nav open/close; skip link/focus; banners/loading/error; history/back. | Approved RBAC and shell AC. UI-hidden menu alone does not prove backend access is denied. |
+| UIUAT-014 | School list/create/detail/edit/activation (`/school-management`) | [`03_school_management.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/03_school_management.md) | Search/type filter/reset/sort/no-result; table detail; create required/format/duplicate; inline edit save/discard; deactivate/activate dialog cancel/confirm; details; API error and stale update. | FS03 and component atomic/integration/error sources. Active-class/student count behavior and reactivation rules need source oracle. |
+| UIUAT-015 | School users and school assignment (`/school-user-management`) | [`04_school_user_management.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/04_school_user_management.md) | Search/table/detail/edit/delete confirmation; single create fields/NRIC/email/role; bulk CSV valid/invalid headers/rows/duplicates/partial errors; assign/unassign school; role/access check; failed API and retry. | FS03/IAM rules and CSV contract. Row atomicity, duplicate behavior, deletion impact and role rights require explicit source. |
+| UIUAT-016 | Academic years and levels (`/academic-years`, `/academic-levels`) | [`05_academic_years_and_levels.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/05_academic_years_and_levels.md) | Search/status/reset/sort; create year/level; year uniqueness; date boundaries and end-after-start; cancel; draft activation; completed lock; level stage/code/name; error and reload persistence. | FS03 and academic-year BR/AC. Status transition/date inclusivity must cite approved rule. |
+| UIUAT-017 | Class list/create/detail (`/class-management`) | [`06_class_management.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/06_class_management.md) | Role/school scope; search/filter/sort/empty; create required/code/duplicate; selected academic year/level; detail and linked students; edit/cancel/save if present; invalid or unavailable parent records. | FS03 class/enrolment rules. Class capacity, transfer and uniqueness are `SPEC GAP` unless the source defines them. |
+| UIUAT-018 | Student management, enrollment and assignment (`/student-management`) | [`07_student_management_and_enrollment.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/07_student_management_and_enrollment.md) | Category/search/filter/table; create student fields and duplicates; enrollment lookup/confirmation; assign class; school/year/class relationship; empty/error states; cross-school access; cancellation and repeat action. | FS03 and student/lifecycle BR/AC. Status/category transitions and duplicate enrollment outcomes need explicit oracle. |
+| UIUAT-019 | School configuration (`/school-config`) | [`08_school_config.md`](../../specs/ui_bsk/localhost-5173/academic-and-users/08_school_config.md) | Select school/year/level; view associated classes; add level/class dialogs; copy previous-year configuration and cancel/confirm; completed-year read-only; empty/error/loading; duplicate add and repeated copy. | FS03 academic configuration source. Copy semantics (overwrite/merge), effective year and rollback need authoritative decision. |
+| UIUAT-020 | Education account list, sync and detail (`/education-accounts`) | [`01_education_accounts.md`](../../specs/ui_bsk/localhost-5173/finance-and-fas/01_education_accounts.md) | Search/student/NRIC and nationality filter; reset/sort/pagination; active/age/citizenship display; trigger sync confirm/cancel; sync pending/success/fail/repeat; detail drawer balance/ledger; unauthorized records. | FS01 and `component_specs/f01/`; citizen-sync triggers/status, age lifecycle and ledger values need approved oracle. |
+| UIUAT-021 | Top-up campaigns, preview and runs (`/top-up`) | [`02_top_up_management.md`](../../specs/ui_bsk/localhost-5173/finance-and-fas/02_top_up_management.md) | Annual/ad-hoc tabs; campaign criteria and amount/date fields; create/edit/cancel; preview eligible count/total; confirm/dispatch; run history/details; partial failure/retry/correction; duplicate execution and balance/history reconciliation. | FS02/BR and UAT-D01/D02/D03. Criteria AND/OR, budget, scheduling, retry and correction remain gated where unsettled. |
+| UIUAT-022 | Fee types, components and rate rules (`/fee-management`) | [`03_fee_management_and_rate_rules.md`](../../specs/ui_bsk/localhost:5173/finance-and-fas/03_fee_management_and_rate_rules.md) | Fee type list; component list/create; required fields/category/taxable; rate matrix by stage/category; amount and effective date boundaries; duplicate/overlap; save/cancel; rate display and downstream preview; failure recovery. | FS03 and UAT-D10. Rate overlap, effective-date inclusivity, transfer and replay rules need selected authoritative source. |
+| UIUAT-023 | Fee batches and publication (`/fee-batches`) | [`04_fee_batches.md`](../../specs/ui_bsk/localhost:5173/finance-and-fas/04_fee_batches.md) | List/search/status; create batch; charge/due date boundary; choose schools/dialog; preview; DRAFT→PROCESSING→COMPLETED→PUBLISHED controls; cancel/replay; partial errors; resulting parent invoice and financial reconciliation. | FS03/FS09 and UAT-D10. Publication/replay/partial processing and invoice generation expected outcomes must cite source. |
+| UIUAT-024 | MOE FAS scheme wizard (`/moe-hq/moe-fas`) | [`05_moe_fas_schemes.md`](../../specs/ui_bsk/localhost-5173/finance-and-fas/05_moe_fas_schemes.md) | Scheme list/create; wizard navigation/back; eligibility GHI/PCI/citizenship; fee eligibility and subsidy rates; date/window; review/save/activate; invalid boundary/overlap; error recovery; effect on application decision/charge. | FS04/FAS rules and UAT-D04–D06. Threshold, schedule, auto-grant vs post-close review, overlap and budget behavior need decision-backed oracle. |
+| UIUAT-025 | School-based FAS schemes (`/sbfas-schemes`) | [`06_sbfas_schemes.md`](../../specs/ui_bsk/localhost-5173/finance-and-fas/06_sbfas_schemes.md) | SCHOOL vs MOEHQ route/permissions; list/create; name/budget/criteria; fee configuration; save/cancel/activate; unauthorized direct URL/API; duplicate/effective date; errors and downstream eligibility. | FS04/FS06 and school-role rules. Who may create/approve and budget enforcement require approved source (UAT-D04/D05). |
+| UIUAT-026 | FAS application list and review detail (`/fas-application-management`) | [`07_fas_application_management.md`](../../specs/ui_bsk/localhost-5173/finance-and-fas/07_fas_application_management.md) | List/filter/status; open correct detail; four information cards cross-check; approve/reject/clarify and required reason/dialog; role-based view/actions; returned-to-applicant path; repeated decision; audit/decision status; budget/subsidy/parent downstream trace. | FS04/FS05/FS10, UAT-D04–D06. Decision timing, reviewer visibility, cross-school routing, audit fields and budget threshold remain gates until resolved. |
+
+## Shared UI-state and component coverage register
+
+These checks apply only where the linked screen inventory exposes the relevant control/state. Every screen row must explicitly map applicable checks to testcase IDs or record `N/A` with reason / `SPEC GAP`.
+
+| Coverage slice | Minimum check families | Design rule |
+|---|---|---|
+| Navigation and authorization | Each role's allowed menu; direct-route access; unauthorized record/ID; parent-to-parent and school-to-school isolation | Keep UI menu visibility and protected API/resource access as separate assertions. |
+| List/table | Search by each documented key; combined filters; reset; sort; empty/no match; pagination first/last/invalid page; row action; loading and service error | Check control behavior and data scope. Do not invent sort order if not specified. |
+| Form fields | Each visible field; required/optional; valid baseline; documented min/max boundaries; invalid format; whitespace; unicode/special chars; cross-field duplicates/dependencies; error focus and label | Use the 12-layer field matrix; `N/A` requires a field-specific reason. |
+| Dialogs and destructive actions | Open/close; cancel; confirm; Escape/focus as applicable; background interaction; no mutation before confirm; repeated action | Exact dialog text and mutation outcome need error catalog/BR/AC source. |
+| Dynamic cards and wizards | Add/remove/re-index; values isolated per card; next/back preserves intended data; reset/new application; draft save/resume/discard | Use unique synthetic entities and assert final payload/summary where supported. |
+| Network and resilience | Validation prevents request; delayed request/loading; 4xx/5xx/timeout/offline; data preservation; retry; duplicate submission | Mock only documented endpoints/contracts. No database claim from UI mock. |
+| Accessibility, responsive and localization | Keyboard traversal, visible focus, dialog focus, labels/errors, mobile shell, documented breakpoints, EN/VI, no raw i18n keys | Apply project UI-health criteria only when the corresponding page/build supports the check; capture reproducible evidence. |
+| Privacy | Masked identity; no PII in URL/history; unauthorized data absent; logout/back behavior | Expected masking and storage must cite security/privacy source. Do not place real identity data in fixtures. |
+
+## Entry gates and AI Coding handoff
+
+Before marking a screen pack `Ready for testcase generation`, confirm all items below:
+
+- [ ] Route and screen match the current build; each used selector is still present in live DOM or is marked stale and re-recon requested.
+- [ ] Role and synthetic fixture are named; setup/reset ownership is clear.
+- [ ] Every user-visible feature and interaction listed by BSK has a scenario reference, or an explicit `N/A` and reason.
+- [ ] Each expected result cites BR/AC/validation/flow/error source. Missing or conflicting behavior is `SPEC GAP`, not guessed.
+- [ ] Every field has applicability states for all 12 layers, with BVA and cross-field coverage where rules apply.
+- [ ] List/table, dialogs, dynamic-card/wizard, error, authorization and UI-health slices are mapped where applicable.
+- [ ] Testcase IDs are unique; each testcase has precondition, fixture, steps, observable expected result, evidence plan and traceability.
+- [ ] New design rows are `Not Run`; actual result/evidence/build remain empty.
+- [ ] AI Coding can map every testcase to test function name, data fixture, Page Object action and assertion; one assertion/evidence exists for each expected-result clause.
+- [ ] Any unapproved rule gap makes the affected coverage `Blocked/Partial`; do not label the portal or UAT complete.
+
+AI Coding should consume this matrix together with the exact BSK page file and approved business/validation/flow/error sources. BSK contributes the UI inventory and locator evidence. It cannot establish business acceptance by itself.
+
+## Coverage status snapshot
+
+| Area | Current status | Why |
+|---|---|---|
+| Screen inventory | `Mapped — 26/26` | Every currently captured BSK Markdown screen/group has a `UIUAT` row. |
+| Business oracle coverage | `Partial / must reconcile` | Several finance/FAS behavior rules are already recorded as open decisions UAT-D01–D10; BSK observations cannot resolve them. |
+| Field-level 12-layer matrix | `Not yet demonstrated by this supplement` | The screen UAT map points to existing atomic validation specs; testcase authors must fill each field matrix per component. |
+| Execution and acceptance | `Not Run` | This document adds no execution status, actual result or business sign-off. |

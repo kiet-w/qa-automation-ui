@@ -1,0 +1,345 @@
+{
+  "url": "http://localhost:5173/education-accounts",
+  "pathname": "/education-accounts",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Education Accounts",
+      "id": "education-accounts-heading"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "search",
+      "name": "",
+      "id": "_r_4_",
+      "placeholder": "Search by NRIC, name, or code\u2026",
+      "label": "Search",
+      "disabled": false,
+      "required": false,
+      "selector": "input[placeholder*=\"Search by NRIC, name, or code\u2026\"]"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    },
+    {
+      "tag": "select",
+      "name": "",
+      "id": "_r_5_",
+      "label": "Status",
+      "options": [
+        {
+          "value": "all",
+          "text": "All statuses"
+        },
+        {
+          "value": "1",
+          "text": "Active"
+        },
+        {
+          "value": "2",
+          "text": "Deactive"
+        }
+      ],
+      "selector": "select"
+    },
+    {
+      "tag": "select",
+      "name": "",
+      "id": "_r_6_",
+      "label": "Citizenship",
+      "options": [
+        {
+          "value": "all",
+          "text": "All citizenships"
+        },
+        {
+          "value": "1",
+          "text": "Singapore Citizen"
+        },
+        {
+          "value": "5",
+          "text": "Exported"
+        }
+      ],
+      "selector": "select"
+    },
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "5",
+          "text": "5"
+        },
+        {
+          "value": "10",
+          "text": "10"
+        },
+        {
+          "value": "25",
+          "text": "25"
+        },
+        {
+          "value": "50",
+          "text": "50"
+        }
+      ],
+      "selector": "select"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "\u00d7",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Clear search\"]"
+    },
+    {
+      "text": "Search",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Search\")"
+    },
+    {
+      "text": "Manual sync",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Manual sync\")"
+    },
+    {
+      "text": "SYSTEM001",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"SYSTEM001\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000787X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000787X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000911X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000911X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000539X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000539X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000848X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000848X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000864X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000864X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000974X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000974X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000752X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000752X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000867X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000867X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "T0000977X",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"T0000977X\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "Previous",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Previous\"]"
+    },
+    {
+      "text": "1",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Go to page 1\"]"
+    },
+    {
+      "text": "2",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Go to page 2\"]"
+    },
+    {
+      "text": "3",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Go to page 3\"]"
+    },
+    {
+      "text": "4",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Go to page 4\"]"
+    },
+    {
+      "text": "54",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Go to page 54\"]"
+    },
+    {
+      "text": "Next",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Next\"]"
+    }
+  ],
+  "tables": [
+    {
+      "headers": [
+        "Code",
+        "NRIC / FIN",
+        "Full name",
+        "Age",
+        "Gender",
+        "Citizenship",
+        "Status",
+        "Address",
+        "Actions"
+      ],
+      "rowCount": 10,
+      "caption": "Student profiles table"
+    }
+  ],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

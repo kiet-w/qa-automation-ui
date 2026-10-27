@@ -1369,3 +1369,328 @@ body {
     width: 16px;
     height: 16px;
 }
+
+/* ==========================================================================
+   3-Tier Architecture & Scenario Grouping Styles
+   ========================================================================== */
+
+.scenario-accordion-group {
+    margin-bottom: 24px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.scenario-accordion-group.has-failures {
+    border-color: rgba(207, 34, 46, 0.45);
+}
+
+.scenario-accordion-group.is-hidden {
+    display: none !important;
+}
+
+.scenario-accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    background-color: var(--bg-card-subtle);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+
+.scenario-accordion-header:hover {
+    background-color: var(--table-hover);
+}
+
+.scenario-accordion-group.collapsed .scenario-accordion-header {
+    border-bottom: none;
+}
+
+.scenario-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.badge-scenario-id {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-subtle);
+    color: var(--accent-primary);
+    border: 1px solid var(--border-color);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.scenario-title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.scenario-title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scenario-meta-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.scenario-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.scenario-pill.pill-pass {
+    color: var(--status-pass);
+    border-color: rgba(46, 160, 67, 0.3);
+    background: rgba(46, 160, 67, 0.08);
+}
+
+.scenario-pill.pill-fail {
+    color: var(--status-fail);
+    border-color: rgba(207, 34, 46, 0.4);
+    background: rgba(207, 34, 46, 0.12);
+    font-weight: 700;
+}
+
+.scenario-pill.pill-xfail {
+    color: var(--status-skip);
+    border-color: rgba(210, 153, 34, 0.4);
+    background: rgba(210, 153, 34, 0.1);
+}
+
+.scenario-pill.pill-dur {
+    font-family: var(--font-mono);
+}
+
+.scenario-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.badge-scenario-status {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.badge-scenario-status.badge-pass {
+    background: rgba(46, 160, 67, 0.15);
+    color: var(--status-pass);
+    border: 1px solid rgba(46, 160, 67, 0.35);
+}
+
+.badge-scenario-status.badge-fail {
+    background: rgba(207, 34, 46, 0.2);
+    color: #ff7b72;
+    border: 1px solid rgba(207, 34, 46, 0.5);
+    box-shadow: 0 0 8px rgba(207, 34, 46, 0.2);
+}
+
+.scenario-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+}
+
+.scenario-accordion-group:not(.collapsed) .scenario-chevron {
+    transform: rotate(180deg);
+}
+
+.scenario-test-cards-wrapper {
+    padding: 18px 20px 4px 20px;
+}
+
+.scenario-accordion-group.collapsed .scenario-test-cards-wrapper {
+    display: none;
+}
+
+/* ==========================================================================
+   Prominent Defect Evidence & Border Styles (When Test Fails / Bug Detected)
+   ========================================================================== */
+
+/* 1. Test Case Card Failure Border */
+.test-item-card.test-card-failed {
+    border: 2px solid var(--status-fail) !important;
+    box-shadow: 0 0 16px rgba(207, 34, 46, 0.25) !important;
+}
+
+.test-item-card.test-card-failed .test-accordion-header {
+    background: linear-gradient(90deg, rgba(207, 34, 46, 0.15) 0%, var(--bg-card) 100%) !important;
+    border-bottom-color: rgba(207, 34, 46, 0.4);
+}
+
+/* 2. Prominent Defect Evidence Alert Box */
+.defect-evidence-alert-box {
+    margin-bottom: 20px;
+    border: 2px solid var(--status-fail);
+    background: rgba(207, 34, 46, 0.1);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(207, 34, 46, 0.18);
+}
+
+.defect-alert-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, #cf222e 0%, #b31d28 100%);
+    color: #ffffff;
+}
+
+.defect-badge-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.defect-badge-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+.defect-alert-type {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #ffffff;
+}
+
+.defect-alert-body {
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.defect-alert-step {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.defect-label {
+    font-weight: 700;
+    color: #ff7b72;
+    margin-right: 6px;
+}
+
+.defect-step-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.defect-alert-message {
+    background: var(--bg-card-subtle);
+    border: 1px solid rgba(207, 34, 46, 0.4);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #ff7b72;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.defect-locator-tag {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+}
+
+.defect-locator-tag code {
+    background: rgba(110, 118, 129, 0.25);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ff7b72;
+    font-family: var(--font-mono);
+}
+
+/* 3. Video Recording Defect Highlight */
+.video-card-section.video-section-defect {
+    border: 2px solid var(--status-fail) !important;
+    box-shadow: 0 0 16px rgba(207, 34, 46, 0.28) !important;
+}
+
+.video-section-defect .video-header-bar {
+    background: linear-gradient(90deg, rgba(207, 34, 46, 0.18) 0%, var(--bg-card-subtle) 100%);
+    border-bottom-color: rgba(207, 34, 46, 0.4);
+}
+
+/* 4. Steps Table Defect Highlight */
+.step-log-row.step-row-failed {
+    background: rgba(207, 34, 46, 0.08) !important;
+    border-left: 4px solid var(--status-fail) !important;
+}
+
+.step-spec-box.step-box-defect {
+    border: 2px solid var(--status-fail) !important;
+    background-color: rgba(207, 34, 46, 0.12) !important;
+}
+
+.spec-tag.tag-act-fail {
+    background-color: var(--status-fail) !important;
+    color: #ffffff !important;
+    font-weight: 800;
+}
+
+.spec-text-fail {
+    color: #ff7b72 !important;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    line-height: 1.45;
+}
+
+.step-large-evidence.evidence-frame-defect {
+    border: 2px solid var(--status-fail) !important;
+    box-shadow: 0 0 14px rgba(207, 34, 46, 0.25) !important;
+}
+
+.evidence-badge.badge-evidence-defect {
+    background: var(--status-fail) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+}

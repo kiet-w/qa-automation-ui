@@ -1,0 +1,91 @@
+{
+  "url": "http://localhost:5173/moe-hq/moe-fas",
+  "pathname": "/moe-hq/moe-fas",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "MOEFAS",
+      "id": "moefas-schemes-title"
+    }
+  ],
+  "inputs": [],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Actions for MOE Financial Assistance Scheme (MOE FAS) 2026",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Actions for MOE Financial Assistance Scheme (MOE FAS) 2026\"]"
+    }
+  ],
+  "tables": [
+    {
+      "headers": [
+        "Scheme",
+        "Eligibility",
+        "Form from",
+        "Form to",
+        "Effective from",
+        "Effective to",
+        "Status",
+        "Actions"
+      ],
+      "rowCount": 1,
+      "caption": "MOEFAS schemes"
+    }
+  ],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

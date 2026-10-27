@@ -151,6 +151,13 @@ window.switchView = function (viewName) {
     }
 };
 
+// Scenario Accordion Controls (3-Tier Hierarchy)
+window.toggleScenarioCard = function (scIdx) {
+    const group = document.getElementById(`scenario-group-${scIdx}`);
+    if (!group) return;
+    group.classList.toggle("collapsed");
+};
+
 // Accordion Controls (Multi-Test View)
 window.toggleTestCard = function (idx) {
     const card = document.getElementById(`test-card-${idx}`);
@@ -169,6 +176,9 @@ window.toggleTestCard = function (idx) {
 window.toggleAccordion = window.toggleTestCard;
 
 window.expandAllTests = function () {
+    document.querySelectorAll(".scenario-accordion-group").forEach(group => {
+        group.classList.remove("collapsed");
+    });
     document.querySelectorAll(".test-item-card").forEach(card => {
         card.classList.remove("collapsed");
         const header = card.querySelector(".test-accordion-header");
@@ -213,6 +223,16 @@ window.filterTests = function (status) {
             card.classList.remove("is-hidden");
         } else {
             card.classList.add("is-hidden");
+        }
+    });
+
+    // Update scenario groups visibility: hide if no visible test cards inside
+    document.querySelectorAll(".scenario-accordion-group").forEach(group => {
+        const visibleTests = group.querySelectorAll(".test-item-card:not(.is-hidden)");
+        if (visibleTests.length > 0) {
+            group.classList.remove("is-hidden");
+        } else {
+            group.classList.add("is-hidden");
         }
     });
 };

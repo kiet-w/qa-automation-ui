@@ -1,0 +1,84 @@
+{
+  "url": "http://localhost:5173/login",
+  "pathname": "/login",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h1",
+      "text": "Login",
+      "id": "login-heading"
+    },
+    {
+      "tag": "h2",
+      "text": "Welcome to\nadmin portal",
+      "id": "welcome-heading"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "_r_0_",
+      "placeholder": "Enter your username",
+      "label": "Username *",
+      "disabled": false,
+      "required": true,
+      "selector": "input[placeholder*=\"Enter your username\"]"
+    },
+    {
+      "tag": "input",
+      "type": "password",
+      "name": "",
+      "id": "_r_1_",
+      "placeholder": "Enter your password",
+      "label": "Password *",
+      "disabled": false,
+      "required": true,
+      "selector": "input[placeholder*=\"Enter your password\"]"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Show password",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Show password\"]"
+    },
+    {
+      "text": "Sign in",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Sign in\")"
+    },
+    {
+      "text": "Sign in with Microsoft",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Sign in with Microsoft\")"
+    }
+  ],
+  "tables": [],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

@@ -5,6 +5,7 @@ from core.exceptions import BusinessAssertionError, InfrastructureError
 from core.catalog import classify, ERROR_RULES, ErrorRule
 from core.exceptor import Exceptor
 from core.interceptor import Interceptor
+from core.sketch_annotator import SketchAnnotator
 
 __all__ = [
     "BusinessAssertionError",
@@ -14,4 +15,5 @@ __all__ = [
     "ErrorRule",
     "Exceptor",
     "Interceptor",
+    "SketchAnnotator",
 ]

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Curricula - Create Trainer Account</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f6f8;
+    color: #253142;
+  }
+  .page {
+    max-width: 1240px;
+    margin: 24px auto;
+    background: #fff;
+    border: 1px solid #d9dee5;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .topbar {
+    padding: 18px 26px;
+    border-bottom: 1px solid #e2e6ea;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #637083;
+  }
+  .content { padding: 24px; }
+  .section {
+    border: 1px solid #d9dee5;
+    margin-bottom: 22px;
+  }
+  .section-title {
+    background: #e9ecef;
+    padding: 13px 16px;
+    font-weight: 700;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .section-body { padding: 18px 16px 8px; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+  }
+  .full { grid-column: 1 / -1; }
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .req { color: #d62828; }
+  input[type="text"], input[type="email"], input[type="date"], select {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #9aa5b1;
+    padding: 7px 10px;
+    font-size: 14px;
+    background: #fff;
+  }
+  input:disabled, select:disabled {
+    background: #f0f2f4;
+    color: #657180;
+  }
+  .radio-row, .check-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-height: 38px;
+  }
+  .radio-row label, .check-row label {
+    margin: 0;
+    font-weight: 400;
+  }
+  .phone-row {
+    display: grid;
+    grid-template-columns: 150px 20px 1fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .upload {
+    border: 1px dashed #b9c2cc;
+    padding: 26px;
+    text-align: center;
+    color: #5f6c7b;
+    background: #fbfcfd;
+  }
+  .upload input { margin-top: 12px; }
+  .hint {
+    font-size: 13px;
+    color: #6b778c;
+    margin-top: 6px;
+  }
+  .error {
+    color: #c62828;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+  }
+  .invalid {
+    border-color: #c62828 !important;
+    outline: none;
+  }
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 18px 24px 26px;
+  }
+  button {
+    min-width: 110px;
+    height: 40px;
+    border: 1px solid #687386;
+    background: #fff;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .primary {
+    background: #1f5aa6;
+    color: white;
+    border-color: #1f5aa6;
+  }
+  .success {
+    display: none;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: #edf7ed;
+    border: 1px solid #9cc69c;
+    color: #285b2a;
+  }
+  .trainer-id {
+    font-weight: 700;
+  }
+  @media (max-width: 820px) {
+    .grid { grid-template-columns: 1fr; }
+    .full { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <div>
+      <div class="brand">Curricula</div>
+      <div class="subtitle">Trainer Management</div>
+    </div>
+    <div class="subtitle">Create Trainer Account</div>
+  </div>
+
+  <div class="content">
+    <div id="successBox" class="success"></div>
+
+    <div class="section">
+      <div class="section-title">⌄ Personal information</div>
+      <div class="section-body">
+        <div class="grid">
+
+          <div>
+            <label>Preferred name <span class="req">*</span></label>
+            <input id="preferredName" type="text" maxlength="255">
+            <div class="error" data-for="preferredName">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Gender <span class="req">*</span></label>
+            <div class="radio-row">
+              <label><input type="radio" name="gender" value="Male"> Male</label>
+              <label><input type="radio" name="gender" value="Female"> Female</label>
+            </div>
+            <div class="error" data-for="gender">This field is required.</div>
+          </div>
+
+          <div>
+            <label>ID type <span class="req">*</span></label>
+            <select id="idType">
+              <option value="">Select</option>
+              <option>NRIC</option>
+              <option>FIN</option>
+              <option>EP</option>
+              <option>S-Pass</option>
+              <option>Passport</option>
+            </select>
+            <div class="error" data-for="idType">This field is required.</div>
+          </div>
+
+          <div>
+            <label>ID number (NRIC/FIN/Passport) <span class="req">*</span></label>
+            <input id="idNumber" type="text" maxlength="255">
+            <div class="error" data-for="idNumber">This field is required.</div>
+          </div>
+
+          <div class="full">
+            <label>Singapore NRIC/EP/S-pass/Passport <span class="req">*</span></label>
+            <div class="hint">Please upload the front and back of your ID in a single file (if applicable)</div>
+            <div class="upload">
+              <div>Drag files here, or browse</div>
+              <div class="hint">Up to 10MB (JPG, JPEG, PNG, PDF)</div>
+              <input id="idDocument" type="file" accept=".jpg,.jpeg,.png,.pdf">
+            </div>
+            <div class="error" data-for="idDocument">Please upload a valid document.</div>
+          </div>
+
+          <div>
+            <label>Nationality <span class="req">*</span></label>
+            <select id="nationality">
+              <option value="">Select</option>
+              <option>Singaporean</option>
+              <option>Chinese</option>
+              <option>Malaysian</option>
+              <option>Indian</option>
+              <option>Indonesian</option>
+              <option>Filipino</option>
+              <option>Vietnamese</option>
+              <option>Others</option>
+            </select>
+            <div class="error" data-for="nationality">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Date of birth <span class="req">*</span></label>
+            <input id="dob" type="date">
+            <div class="error" data-for="dob">Enter a valid date of birth.</div>
+          </div>
+
+          <div>
+            <label>Race <span class="req">*</span></label>
+            <select id="race">
+              <option value="">Select</option>
+              <option>Chinese</option>
+              <option>Malay</option>
+              <option>Indian</option>
+              <option>Others</option>
+            </select>
+            <div class="error" data-for="race">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Country/Region of birth <span class="req">*</span></label>
+            <select id="birthCountry">
+              <option value="">Select</option>
+              <option>Singapore</option>
+              <option>China</option>
+              <option>Malaysia</option>
+              <option>India</option>
+              <option>Indonesia</option>
+              <option>Philippines</option>
+              <option>Vietnam</option>
+              <option>Other</option>
+            </select>
+            <div class="error" data-for="birthCountry">This field is required.</div>
+          </div>
+
+          <div class="full">
+            <label>Singapore tax resident status <span class="req">*</span></label>
+            <div class="radio-row">
+              <label><input type="radio" name="taxResident" value="Yes"> Yes</label>
+              <label><input type="radio" name="taxResident" value="No"> No</label>
+            </div>
+            <div class="error" data-for="taxResident">This field is required.</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⌄ Contact information</div>
+      <div class="section-body">
+        <div class="grid">
+          <div>
+            <label>Primary email address <span class="req">*</span></label>
+            <input id="primaryEmail" type="email" maxlength="100">
+            <div class="error" data-for="primaryEmail">Enter a valid email address.</div>
+          </div>
+
+          <div>
+            <label>Primary contact number <span class="req">*</span></label>
+            <div class="phone-row">
+              <select id="primaryCode">
+                <option value="+65">SINGAPORE (+65)</option>
+                <option value="+60">MALAYSIA (+60)</option>
+                <option value="+84">VIETNAM (+84)</option>
+                <option value="+86">CHINA (+86)</option>
+                <option value="+91">INDIA (+91)</option>
+              </select>
+              <div>-</div>
+              <input id="primaryPhone" type="text" maxlength="15">
+            </div>
+            <div class="error" data-for="primaryPhone">Enter a valid contact number.</div>
+          </div>
+
+          <div>
+            <label>Secondary contact number</label>
+            <div class="phone-row">
+              <select id="secondaryCode">
+                <option value="+65">SINGAPORE (+65)</option>
+                <option value="+60">MALAYSIA (+60)</option>
+                <option value="+84">VIETNAM (+84)</option>
+                <option value="+86">CHINA (+86)</option>
+                <option value="+91">INDIA (+91)</option>
+              </select>
+              <div>-</div>
+              <input id="secondaryPhone" type="text" maxlength="15">
+            </div>
+            <div class="error" data-for="secondaryPhone">Enter a valid contact number.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⌄ Emergency contact information</div>
+      <div class="section-body">
+        <div class="grid">
+          <div>
+            <label>Emergency contact name <span class="req">*</span></label>
+            <input id="emergencyName" type="text" maxlength="255">
+            <div class="error" data-for="emergencyName">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Emergency contact relationship <span class="req">*</span></label>
+            <select id="emergencyRelationship">
+              <option value="">Select</option>
+              <option>Father</option>
+              <option>Mother</option>
+              <option>Spouse</option>
+              <option>Sibling</option>
+              <option>Relative</option>
+              <option>Friend</option>
+              <option>Others</option>
+            </select>
+            <div class="error" data-for="emergencyRelationship">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Emergency contact number <span class="req">*</span></label>
+            <div class="phone-row">
+              <select id="emergencyCode">
+                <option value="+65">SINGAPORE (+65)</option>
+                <option value="+60">MALAYSIA (+60)</option>
+                <option value="+84">VIETNAM (+84)</option>
+                <option value="+86">CHINA (+86)</option>
+                <option value="+91">INDIA (+91)</option>
+              </select>
+              <div>-</div>
+              <input id="emergencyPhone" type="text" maxlength="15">
+            </div>
+            <div class="error" data-for="emergencyPhone">Enter a valid contact number.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">⌄ Residential address</div>
+      <div class="section-body">
+        <div class="grid">
+
+          <div class="full">
+            <label>Residential address</label>
+            <div class="radio-row">
+              <label><input type="radio" name="residentialType" value="Singapore" checked> Singapore</label>
+              <label><input type="radio" name="residentialType" value="Non-Singapore"> Non-Singapore</label>
+            </div>
+          </div>
+
+          <div>
+            <label>Country or region <span class="req">*</span></label>
+            <select id="countryRegion">
+              <option>Singapore</option>
+              <option>Malaysia</option>
+              <option>China</option>
+              <option>India</option>
+              <option>Vietnam</option>
+              <option>Indonesia</option>
+              <option>Philippines</option>
+              <option>Other</option>
+            </select>
+            <div class="error" data-for="countryRegion">This field is required.</div>
+          </div>
+
+          <div>
+            <label>Postal code <span class="req" id="postalReq">*</span></label>
+            <input id="postalCode" type="text" maxlength="255">
+            <div class="error" data-for="postalCode">Enter a valid postal code.</div>
+          </div>
+
+          <div id="sgBlockField">
+            <label>Block/Building number <span class="req">*</span></label>
+            <input id="blockNumber" type="text" maxlength="9">
+            <div class="error" data-for="blockNumber">This field is required.</div>
+          </div>
+
+          <div id="sgBuildingField">
+            <label>Building name</label>
+            <input id="buildingName" type="text" maxlength="255">
+          </div>
+
+          <div id="sgStreetField">
+            <label>Street name <span class="req">*</span></label>
+            <input id="streetName" type="text" maxlength="255">
+            <div class="error" data-for="streetName">This field is required.</div>
+          </div>
+
+          <div id="sgFloorUnitField">
+            <label>Floor number - unit number <span class="req">*</span></label>
+            <div class="phone-row" style="grid-template-columns:1fr 20px 1fr">
+              <input id="floorNumber" type="text" maxlength="5">
+              <div>-</div>
+              <input id="unitNumber" type="text" maxlength="9">
+            </div>
+            <div class="check-row" style="margin-top:8px">
+              <label><input id="floorNotApplicable" type="checkbox"> Floor/Unit number is not applicable</label>
+            </div>
+            <div class="error" data-for="floorUnit">Floor and unit number are required.</div>
+          </div>
+
+          <div id="nonSgAddress1" style="display:none">
+            <label>Address line 1 <span class="req">*</span></label>
+            <input id="address1" type="text" maxlength="255">
+            <div class="error" data-for="address1">This field is required.</div>
+          </div>
+
+          <div id="nonSgAddress2" style="display:none">
+            <label>Address line 2</label>
+            <input id="address2" type="text" maxlength="255">
+          </div>
+
+          <div id="nonSgCity" style="display:none">
+            <label>City <span class="req">*</span></label>
+            <input id="city" type="text" maxlength="100">
+            <div class="error" data-for="city">This field is required.</div>
+          </div>
+
+          <div id="nonSgState" style="display:none">
+            <label>State/Province</label>
+            <input id="stateProvince" type="text" maxlength="100">
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="cancelBtn">Cancel</button>
+    <button id="saveBtn" class="primary">Save</button>
+  </div>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function showError(key, show, inputId=null) {
+    const e = document.querySelector(`.error[data-for="${key}"]`);
+    if (e) e.style.display = show ? 'block' : 'none';
+    if (inputId) {
+      const el = $(inputId);
+      if (el) el.classList.toggle('invalid', show);
+    }
+  }
+
+  function requiredText(id, key=id) {
+    const v = $(id).value.trim();
+    const bad = !v;
+    showError(key, bad, id);
+    return !bad;
+  }
+
+  function validPhone(codeId, phoneId, required=true) {
+    const code = $(codeId).value;
+    const value = $(phoneId).value.trim();
+    if (!required && !value) {
+      showError(phoneId, false, phoneId);
+      return true;
+    }
+    let ok = /^\d+$/.test(value);
+    if (code === '+65') ok = ok && value.length === 8;
+    else ok = ok && value.length >= 8 && value.length <= 15;
+    showError(phoneId, !ok, phoneId);
+    return ok;
+  }
+
+  function getRadio(name) {
+    return document.querySelector(`input[name="${name}"]:checked`);
+  }
+
+  function setResidentialMode() {
+    const isSG = getRadio('residentialType').value === 'Singapore';
+    $('countryRegion').disabled = isSG;
+    if (isSG) $('countryRegion').value = 'Singapore';
+
+    $('sgBlockField').style.display = isSG ? '' : 'none';
+    $('sgBuildingField').style.display = isSG ? '' : 'none';
+    $('sgStreetField').style.display = isSG ? '' : 'none';
+    $('sgFloorUnitField').style.display = isSG ? '' : 'none';
+
+    $('nonSgAddress1').style.display = isSG ? 'none' : '';
+    $('nonSgAddress2').style.display = isSG ? 'none' : '';
+    $('nonSgCity').style.display = isSG ? 'none' : '';
+    $('nonSgState').style.display = isSG ? 'none' : '';
+
+    $('postalReq').style.display = isSG ? '' : 'none';
+
+    if (!isSG && $('countryRegion').value === 'Singapore') {
+      $('countryRegion').value = 'Malaysia';
+    }
+  }
+
+  document.querySelectorAll('input[name="residentialType"]').forEach(el =>
+    el.addEventListener('change', setResidentialMode)
+  );
+
+  $('floorNotApplicable').addEventListener('change', () => {
+    const disabled = $('floorNotApplicable').checked;
+    $('floorNumber').disabled = disabled;
+    $('unitNumber').disabled = disabled;
+    if (disabled) {
+      $('floorNumber').value = '';
+      $('unitNumber').value = '';
+      showError('floorUnit', false);
+    }
+  });
+
+  $('postalCode').addEventListener('blur', () => {
+    const isSG = getRadio('residentialType').value === 'Singapore';
+    if (!isSG) return;
+    const pc = $('postalCode').value.trim();
+
+    // Simple demo auto-population for QA practice
+    const addressMap = {
+      '120047': ['142', 'Commonwealth Drive'],
+      '238801': ['391B', 'Orchard Road'],
+      '569933': ['10', 'Ang Mo Kio Avenue 5']
+    };
+    if (addressMap[pc]) {
+      $('blockNumber').value = addressMap[pc][0];
+      $('streetName').value = addressMap[pc][1];
+    }
+  });
+
+  $('cancelBtn').addEventListener('click', () => {
+    const hasData = [...document.querySelectorAll('input[type="text"],input[type="email"],input[type="date"]')]
+      .some(x => x.value.trim() !== '') || $('idDocument').files.length > 0;
+
+    if (hasData) {
+      const leave = confirm('You have unsaved changes. Are you sure you want to leave this page?');
+      if (!leave) return;
+    }
+    location.reload();
+  });
+
+  $('saveBtn').addEventListener('click', () => {
+    let ok = true;
+
+    ok = requiredText('preferredName') && ok;
+
+    const gender = getRadio('gender');
+    showError('gender', !gender);
+    ok = !!gender && ok;
+
+    ok = requiredText('idType') && ok;
+    ok = requiredText('idNumber') && ok;
+
+    const f = $('idDocument').files[0];
+    let fileOk = !!f;
+    if (f) {
+      const allowed = ['image/jpeg','image/png','application/pdf'];
+      fileOk = allowed.includes(f.type) && f.size <= 10 * 1024 * 1024;
+    }
+    showError('idDocument', !fileOk);
+    ok = fileOk && ok;
+
+    ok = requiredText('nationality') && ok;
+
+    const dob = $('dob').value;
+    let dobOk = !!dob;
+    if (dob) {
+      const d = new Date(dob);
+      const today = new Date();
+      dobOk = d <= today;
+    }
+    showError('dob', !dobOk, 'dob');
+    ok = dobOk && ok;
+
+    ok = requiredText('race') && ok;
+    ok = requiredText('birthCountry') && ok;
+
+    const tax = getRadio('taxResident');
+    showError('taxResident', !tax);
+    ok = !!tax && ok;
+
+    const email = $('primaryEmail').value.trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    showError('primaryEmail', !emailOk, 'primaryEmail');
+    ok = emailOk && ok;
+
+    ok = validPhone('primaryCode','primaryPhone',true) && ok;
+    ok = validPhone('secondaryCode','secondaryPhone',false) && ok;
+    ok = requiredText('emergencyName') && ok;
+    ok = requiredText('emergencyRelationship') && ok;
+    ok = validPhone('emergencyCode','emergencyPhone',true) && ok;
+
+    const isSG = getRadio('residentialType').value === 'Singapore';
+    if (isSG) {
+      const pc = $('postalCode').value.trim();
+      const pcOk = /^\d{6}$/.test(pc);
+      showError('postalCode', !pcOk, 'postalCode');
+      ok = pcOk && ok;
+
+      ok = requiredText('blockNumber') && ok;
+      ok = requiredText('streetName') && ok;
+
+      if (!$('floorNotApplicable').checked) {
+        const floor = $('floorNumber').value.trim();
+        const unit = $('unitNumber').value.trim();
+        const fuOk = /^\d{1,5}$/.test(floor) && /^\d{1,9}$/.test(unit);
+        showError('floorUnit', !fuOk);
+        ok = fuOk && ok;
+      }
+    } else {
+      const countryOk = $('countryRegion').value && $('countryRegion').value !== 'Singapore';
+      showError('countryRegion', !countryOk, 'countryRegion');
+      ok = countryOk && ok;
+      showError('postalCode', false, 'postalCode');
+      ok = requiredText('address1') && ok;
+      ok = requiredText('city') && ok;
+    }
+
+    if (!ok) {
+      $('successBox').style.display = 'none';
+      window.scrollTo({top:0, behavior:'smooth'});
+      return;
+    }
+
+    const trainerId = 'TRN' + String(Math.floor(Math.random()*999999)+1).padStart(6,'0');
+    $('successBox').innerHTML =
+      `Trainer account has been created successfully.<br><span class="trainer-id">Trainer ID: ${trainerId}</span><br>Status: Active`;
+    $('successBox').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  setResidentialMode();
+</script>
+</body>
+</html>

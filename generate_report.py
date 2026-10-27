@@ -33,11 +33,24 @@ def main():
 
     generator = ReportGenerator(workspace_dir=workspace_dir)
     try:
-        generator.generate(
+        html_out = generator.generate(
             json_path=json_path,
             output_html_path=output_html_path,
             embed_media=embed_media,
         )
+
+        # Also auto-generate Minimalist Clean Report
+        import shutil
+        from reporting.clean_report import generate_clean_report
+        clean_html_path = json_path.parent / "bao_cao_tinh_gon.html"
+        generate_clean_report(json_path=json_path, output_html_path=clean_html_path)
+        print(f"✨ Minimalist Clean Report generated: {clean_html_path}")
+
+        # Also maintain workspace-level root reports/bao_cao_tinh_gon.html
+        root_clean_html = workspace_dir / "reports" / "bao_cao_tinh_gon.html"
+        if clean_html_path.resolve() != root_clean_html.resolve():
+            root_clean_html.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(clean_html_path, root_clean_html)
     except Exception as exc:
         print(f"[Error] Failed to generate execution report: {exc}")
         sys.exit(1)

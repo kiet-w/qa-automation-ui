@@ -99,13 +99,25 @@ def find_video_for_test(
     """
     Matches a test case to its corresponding .webm video recording in test-results/.
     Uses multiple strategies:
-    0. Direct metadata match: check test_metadata['video_path'] directly (stored by conftest/fixture).
-    1. Directory name contains slugified test function name.
-    2. Directory name contains slugified nodeid fragments.
-    3. Direct single-test 1:1 mapping fallback.
-    4. Index-based pairing if counts match.
+    0. Direct 3-tier hierarchy match: test-results/<scenario_slug>/<tc_slug>/video.webm
+    1. Direct metadata match: check test_metadata['video_path'] directly.
+    2. Directory name contains slugified test function name.
+    3. Directory name contains slugified nodeid fragments.
     """
-    # 0. Check direct video_path in test_metadata (stored by conftest)
+    # 0. Check direct 3-tier hierarchy match
+    if test_results_dir and test_results_dir.exists():
+        parts = test_nodeid.split("::")
+        file_path = Path(parts[0])
+        scenario_slug = re.sub(r"^test_", "", file_path.stem)
+        raw_func = parts[-1] if len(parts) > 1 else "test_case"
+        clean_func = re.sub(r"\[.*?\]$", "", raw_func)
+        tc_slug = re.sub(r"^test_", "", clean_func)
+
+        hier_video = test_results_dir / scenario_slug / tc_slug / "video.webm"
+        if hier_video.exists() and hier_video.is_file():
+            return hier_video.resolve()
+
+    # 1. Check direct video_path in test_metadata (stored by conftest)
     if test_metadata and isinstance(test_metadata, dict):
         raw_video_path = test_metadata.get("video_path")
         if raw_video_path:
@@ -163,20 +175,24 @@ def resolve_screenshot_path(
     Supports relative paths, absolute paths, reports/ subdirectories, and test-specific slugs.
     Never falls back to generic shared screenshots from other tests.
     """
-    candidates: List[Path] = []
-
+    # 1. Primary Resolution: Check explicit screenshot_path first
     if screenshot_path:
         p = Path(screenshot_path)
-        candidates.extend([
+        primary_candidates = [
             p,
             reports_dir / "screenshots" / p.name,
             reports_dir / p,
             reports_dir / p.name,
+            reports_dir / "test-results" / p.name,
             workspace_dir / p,
             workspace_dir / "reports" / "screenshots" / p.name,
-        ])
+        ]
+        for cand in primary_candidates:
+            if cand.exists() and cand.is_file():
+                return cand.resolve()
 
-    # Isolated fallback ONLY with test_name slug if provided (guarantees test isolation)
+    # 2. Isolated Fallback: Only when explicit screenshot_path is missing or not found on disk
+    candidates: List[Path] = []
     if test_name:
         slug = slugify(test_name)
         candidates.extend([
@@ -187,6 +203,12 @@ def resolve_screenshot_path(
             workspace_dir / "reports" / "screenshots" / f"{slug}_evidence.png",
             workspace_dir / "reports" / "screenshots" / f"execution_step5_{slug}.png",
         ])
+        clean_tc = re.sub(r"^test_", "", slugify(re.sub(r"\[.*?\]$", "", test_name)))
+        for sc_dir in (reports_dir / "test-results").glob("*"):
+            if sc_dir.is_dir():
+                cand_tc = sc_dir / clean_tc / "failure.png"
+                if cand_tc.exists():
+                    candidates.append(cand_tc)
 
     for cand in candidates:
         if cand.exists() and cand.is_file():

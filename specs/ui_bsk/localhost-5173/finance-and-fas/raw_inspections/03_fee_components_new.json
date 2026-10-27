@@ -1,0 +1,190 @@
+{
+  "url": "http://localhost:5173/fee-management/components/new",
+  "pathname": "/fee-management/components/new",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Create fee component",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "Progress",
+      "id": "_r_4_"
+    },
+    {
+      "tag": "h2",
+      "text": "Component details",
+      "id": "_r_5_"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "fee-component-name",
+      "placeholder": "",
+      "label": "Name *",
+      "disabled": false,
+      "required": true,
+      "selector": "#fee-component-name"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "fee-type",
+      "placeholder": "Search and select a fee type",
+      "label": "Fee type",
+      "disabled": false,
+      "required": false,
+      "selector": "#fee-type"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "fee-categories",
+      "placeholder": "",
+      "label": "Student categories",
+      "disabled": false,
+      "required": false,
+      "selector": "#fee-categories"
+    },
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "fee-stages",
+      "placeholder": "",
+      "label": "Education stages",
+      "disabled": false,
+      "required": false,
+      "selector": "#fee-stages"
+    },
+    {
+      "tag": "input",
+      "type": "checkbox",
+      "name": "",
+      "id": "fee-tax",
+      "placeholder": "",
+      "label": "Tax applies",
+      "disabled": false,
+      "required": false,
+      "selector": "#fee-tax"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    },
+    {
+      "tag": "input",
+      "name": "",
+      "id": "fee-type",
+      "label": "Fee type",
+      "options": [],
+      "selector": "#fee-type"
+    },
+    {
+      "tag": "input",
+      "name": "",
+      "id": "fee-categories",
+      "label": "Student categories",
+      "options": [],
+      "selector": "#fee-categories"
+    },
+    {
+      "tag": "input",
+      "name": "",
+      "id": "fee-stages",
+      "label": "Education stages",
+      "options": [],
+      "selector": "#fee-stages"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Back to list",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Back to list\")"
+    },
+    {
+      "text": "1",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"1\")"
+    },
+    {
+      "text": "2",
+      "type": "button",
+      "disabled": true,
+      "selector": "button:has-text(\"2\")"
+    },
+    {
+      "text": "Cancel",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Cancel\")"
+    },
+    {
+      "text": "Continue to rates",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Continue to rates\")"
+    }
+  ],
+  "tables": [],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

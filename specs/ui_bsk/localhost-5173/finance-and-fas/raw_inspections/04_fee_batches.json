@@ -1,0 +1,197 @@
+{
+  "url": "http://localhost:5173/fee-batches",
+  "pathname": "/fee-batches",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Fee publication batches",
+      "id": ""
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "search",
+      "name": "",
+      "id": "_r_4_",
+      "placeholder": "Search fee batches",
+      "label": "Search fee batches",
+      "disabled": false,
+      "required": false,
+      "selector": "input[placeholder*=\"Search fee batches\"]"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    },
+    {
+      "tag": "select",
+      "name": "",
+      "id": "_r_5_",
+      "label": "Status",
+      "options": [
+        {
+          "value": "ALL",
+          "text": "All statuses"
+        },
+        {
+          "value": "DRAFT",
+          "text": "Draft"
+        },
+        {
+          "value": "PROCESSING",
+          "text": "Processing"
+        },
+        {
+          "value": "COMPLETED",
+          "text": "Completed"
+        },
+        {
+          "value": "PARTIALLY_FAILED",
+          "text": "Partially failed"
+        },
+        {
+          "value": "FAILED",
+          "text": "Failed"
+        },
+        {
+          "value": "PUBLISHED",
+          "text": "Published"
+        }
+      ],
+      "selector": "select"
+    },
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "10",
+          "text": "10"
+        },
+        {
+          "value": "25",
+          "text": "25"
+        },
+        {
+          "value": "50",
+          "text": "50"
+        }
+      ],
+      "selector": "select"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "\u00d7",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Clear search\"]"
+    },
+    {
+      "text": "Search",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Search\")"
+    },
+    {
+      "text": "Reset filters",
+      "type": "button",
+      "disabled": true,
+      "selector": "button:has-text(\"Reset filters\")"
+    },
+    {
+      "text": "View details",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"View details\")"
+    },
+    {
+      "text": "Previous",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Previous\"]"
+    },
+    {
+      "text": "1",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Go to page 1\"]"
+    },
+    {
+      "text": "Next",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Next\"]"
+    }
+  ],
+  "tables": [
+    {
+      "headers": [
+        "Title",
+        "Fee component",
+        "Period",
+        "School scope",
+        "Publications",
+        "Status",
+        "Created at",
+        "Actions"
+      ],
+      "rowCount": 1,
+      "caption": "Fee publication batches"
+    }
+  ],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

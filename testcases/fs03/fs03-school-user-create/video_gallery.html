@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduFAMS FS03 — School User Create Video Evidence</title>
+  <style>
+    :root {
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent: #3B82F6;
+      --success: #22C55E;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .sidebar {
+      width: 440px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: #111827;
+    }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .sidebar-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .search-box {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px 12px;
+      background: #1F2937;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+    }
+    .tc-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+    .tc-item {
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      background: #1F2937;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .tc-item:hover {
+      background: #374151;
+    }
+    .tc-item.active {
+      background: #1E3A8A;
+      border-color: #3B82F6;
+    }
+    .tc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .tc-id {
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: bold;
+      color: #60A5FA;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ADE80;
+    }
+    .tc-title {
+      font-size: 12px;
+      color: #E2E8F0;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .main-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .video-wrapper {
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      max-height: 65vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      max-height: 65vh;
+      outline: none;
+    }
+    .info-panel {
+      margin-top: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .info-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #F8FAFC;
+      margin-bottom: 8px;
+    }
+    .info-desc {
+      font-size: 13px;
+      color: #94A3B8;
+      line-height: 1.5;
+    }
+    .info-actual {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: rgba(34, 197, 94, 0.1);
+      border-left: 3px solid #22C55E;
+      color: #86EFAC;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>🎬 FS03: School User Create Video Evidence</h1>
+      <p>63 Recordings (100% Passed) • TestCases View</p>
+      <input type="text" id="search" class="search-box" placeholder="🔍 Tìm kiếm test case (ID, tên)..." oninput="filterList()">
+    </div>
+    <div class="tc-list" id="tc-list"></div>
+  </div>
+  <div class="main-view">
+    <div class="video-wrapper">
+      <video id="player" controls autoplay>
+        <source id="video-source" src="" type="video/webm">
+        Trình duyệt không hỗ trợ thẻ video HTML5.
+      </video>
+    </div>
+    <div class="info-panel">
+      <div class="info-title" id="cur-title">Chọn một test case bên trái để xem video</div>
+      <div class="info-desc" id="cur-id"></div>
+      <div class="info-actual" id="cur-actual"></div>
+    </div>
+  </div>
+
+  <script>
+    const cases = [{"id": "TC-FS03-VAL-001", "pillar": "VAL", "title": "Verify entering invalid NRIC format triggers 'Validation failed' error alert", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-validation-py-testschooluservalidationanderrorhandling-test-tc-fs03-val-001-invalid-nric-format-shows-validation-failed-chromium/video.webm", "video_name": "tc_fs03_val_001.webm", "actual": "Verified: Alert 'Validation failed' displayed cleanly."}, {"id": "TC-FS03-VAL-002", "pillar": "VAL", "title": "Verify duplicate email triggers 'A user with email <email> already exists.' error alert", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_validation-py-testschooluservalidationanderrorhandling-test_tc_fs03_val_002_duplicate_email_error_handling-chromium/video.webm", "video_name": "tc_fs03_val_002.webm", "actual": "Verified: Exact error alert 'A user with email '...' already exists.' displayed."}, {"id": "TC-FS03-VAL-003", "pillar": "VAL", "title": "Verify duplicate NRIC triggers 'A user with username <nric> already exists.' error alert", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-validation-py-testschooluservalidationanderrorhandling-test-tc-fs03-val-003-duplicate-nric-error-handling-chromium/video.webm", "video_name": "tc_fs03_val_003.webm", "actual": "Verified: Exact error alert 'A user with username '...' already exists.' displayed."}, {"id": "TC-FS03-VAL-004", "pillar": "VAL", "title": "Verify non-existent MOE School Code triggers 'Validation failed' error alert", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-validation-py-testschooluservalidationanderrorhandling-test-tc-fs03-val-004-nonexistent-school-code-shows-validation-failed-chromium/video.webm", "video_name": "tc_fs03_val_004.webm", "actual": "Verified: Error alert 'Validation failed' displayed."}, {"id": "TC-FS03-VAL-005", "pillar": "VAL", "title": "Verify Create button remains disabled when mandatory fields are missing or whitespace only", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-validation-py-testschooluservalidationanderrorhandling-test-tc-fs03-val-005-mandatory-fields-gatekeeper-create-disabled-chromium/video.webm", "video_name": "tc_fs03_val_005.webm", "actual": "Verified: [Create] button disabled gatekeeper operates 100%."}, {"id": "TC-FS03-VAL-006", "pillar": "VAL", "title": "Verify Reset button clears all 5 fields and restores disabled button state", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_validation-py-testschooluservalidationanderrorhandling-test_tc_fs03_val_006_reset_button_restores_pristine_validation_state-chromium/video.webm", "video_name": "tc_fs03_val_006.webm", "actual": "Verified: All 5 inputs cleared, Create button disabled."}, {"id": "TC-FS03-FLOW-001", "pillar": "FLOW", "title": "Verify MOE HQ admin logged in, sidebar shows moehq, and navigation to School Users works", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-flow-py-testschoolusercreationflowandreview-test-tc-fs03-flow-001-moehq-login-and-navigate-via-sidebar-to-school-users-chromium/video.webm", "video_name": "tc_fs03_flow_001.webm", "actual": "Verified: moehq profile visible, sidebar navigates cleanly to School user management."}, {"id": "TC-FS03-FLOW-002", "pillar": "FLOW", "title": "Verify clicking '+ Create School User' button opens creation form screen", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-flow-py-testschoolusercreationflowandreview-test-tc-fs03-flow-002-click-create-school-user-navigates-to-new-form-chromium/video.webm", "video_name": "tc_fs03_flow_002.webm", "actual": "Verified: Transitions to /school-user-management/new with Single tab active."}, {"id": "TC-FS03-FLOW-003", "pillar": "FLOW", "title": "Verify successful creation with all 5 fields renders success toast and result card (Image 1)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_integration_school_user_flow-py-testschoolusercreationflowandreview-test_tc_fs03_flow_003_create_school_user_with_5_fields_and_assigned_school-chromium/video.webm", "video_name": "tc_fs03_flow_003.webm", "actual": "Verified: 100% matches Image 1 toast and result card layout."}, {"id": "TC-FS03-FLOW-004", "pillar": "FLOW", "title": "Verify 'Back to list' button returns to School User Management table and allows review (Image 2)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_integration_school_user_flow-py-testschoolusercreationflowandreview-test_tc_fs03_flow_004_back_to_list_and_review_created_user_in_table-chromium/video.webm", "video_name": "tc_fs03_flow_004.webm", "actual": "Verified: Returned to list, searched and reviewed newly created user row in table."}, {"id": "TC-FS03-FLOW-005", "pillar": "FLOW", "title": "Verify creating school user without School Code shows 'Unassigned in any school' in table (Image 2)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-flow-py-testschoolusercreationflowandreview-test-tc-fs03-flow-005-create-unassigned-school-user-and-review-in-table-chromium/video.webm", "video_name": "tc_fs03_flow_005.webm", "actual": "Verified: Unassigned school user displayed as 'Unassigned in any school' in table."}, {"id": "TC-FS03-BR-001", "pillar": "BR", "title": "Verify MOE HQ Admin successfully creates School User assigned to active School", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_integration_school_user_br-py-testschooluserbusinessrules-test_tc_fs03_br_001_create_user_assigned_to_active_school-chromium/video.webm", "video_name": "tc_fs03_br_001.webm", "actual": "Verified: User created with Rosyth Primary School (RPS-0201) assignment."}, {"id": "TC-FS03-BR-002", "pillar": "BR", "title": "Verify MOE HQ Admin creates unassigned/standalone School User when School Code is omitted", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-br-py-testschooluserbusinessrules-test-tc-fs03-br-002-create-unassigned-standalone-user-when-school-code-omitted-chromium/video.webm", "video_name": "tc_fs03_br_002.webm", "actual": "Verified: School user created successfully with School 'Not assigned'."}, {"id": "TC-FS03-BR-003", "pillar": "BR", "title": "Verify system blocks creation with non-existent or inactive School Code (Validation Error)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-br-py-testschooluserbusinessrules-test-tc-fs03-br-003-reject-nonexistent-or-inactive-school-code-chromium/video.webm", "video_name": "tc_fs03_br_003.webm", "actual": "Verified: Submission blocked, error alert 'Validation failed' displayed."}, {"id": "TC-FS03-BR-004", "pillar": "BR", "title": "Verify system rejects creation when NRIC / Username already exists (HTTP 409 Conflict)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_integration_school_user_br-py-testschooluserbusinessrules-test_tc_fs03_br_004_reject_duplicate_nric_http_409-chromium/video.webm", "video_name": "tc_fs03_br_004.webm", "actual": "Verified: Displays error alert 'A user with username 'S9876543A' already exists.'"}, {"id": "TC-FS03-BR-005", "pillar": "BR", "title": "Verify system rejects creation when Email already belongs to another user (HTTP 409 Conflict)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-br-py-testschooluserbusinessrules-test-tc-fs03-br-005-reject-duplicate-email-http-409-chromium/video.webm", "video_name": "tc_fs03_br_005.webm", "actual": "Verified: HTTP 409 Conflict triggered, error alert displayed."}, {"id": "TC-FS03-BR-006", "pillar": "BR", "title": "Verify backend automatically generates random 8-digit temporary password via cryptographic RNG", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-integration-school-user-br-py-testschooluserbusinessrules-test-tc-fs03-br-006-temporary-password-cryptographic-generation-chromium/video.webm", "video_name": "tc_fs03_br_006.webm", "actual": "Verified: 8-digit random temporary password returned in creation response."}, {"id": "TC-FS03-AC-001", "pillar": "AC", "title": "Verify 'Back to list' button navigates back to School User Management table", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-001-back-to-list-navigation-chromium/video.webm", "video_name": "tc_fs03_ac_001.webm", "actual": "Verified: Navigates to /school-user-management successfully."}, {"id": "TC-FS03-AC-002", "pillar": "AC", "title": "Verify 'Single' tab is selected by default and renders single user creation form", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_002_single_tab_default_active-chromium/video.webm", "video_name": "tc_fs03_ac_002.webm", "actual": "Verified: 'Single' tab active by default; form fields visible."}, {"id": "TC-FS03-AC-003", "pillar": "AC", "title": "Verify 'Create' button is strictly disabled when form is pristine/empty", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_003_create_button_disabled_when_empty-chromium/video.webm", "video_name": "tc_fs03_ac_003.webm", "actual": "Verified: [Create] button is disabled in pristine state."}, {"id": "TC-FS03-AC-004", "pillar": "AC", "title": "Verify 'Create' button remains disabled when NRIC field is missing or empty", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_004_create_button_disabled_missing_nric-chromium/video.webm", "video_name": "tc_fs03_ac_004.webm", "actual": "Verified: [Create] button remains disabled without NRIC."}, {"id": "TC-FS03-AC-005", "pillar": "AC", "title": "Verify 'Create' button remains disabled when First Name field is missing or empty", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-005-create-button-disabled-missing-first-name-chromium/video.webm", "video_name": "tc_fs03_ac_005.webm", "actual": "Verified: [Create] button remains disabled without First Name."}, {"id": "TC-FS03-AC-006", "pillar": "AC", "title": "Verify 'Create' button remains disabled when Last Name field is missing or empty", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-006-create-button-disabled-missing-last-name-chromium/video.webm", "video_name": "tc_fs03_ac_006.webm", "actual": "Verified: [Create] button remains disabled without Last Name."}, {"id": "TC-FS03-AC-007", "pillar": "AC", "title": "Verify 'Create' button remains disabled when Email field is missing or empty", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-007-create-button-disabled-missing-email-chromium/video.webm", "video_name": "tc_fs03_ac_007.webm", "actual": "Verified: [Create] button remains disabled without Email."}, {"id": "TC-FS03-AC-008", "pillar": "AC", "title": "Verify 'Create' button enables when all 4 required fields are filled without School Code", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_008_create_button_enabled_all_4_required_fields-chromium/video.webm", "video_name": "tc_fs03_ac_008.webm", "actual": "Verified: [Create] button enables with all 4 required fields."}, {"id": "TC-FS03-AC-009", "pillar": "AC", "title": "Verify 'Reset' button clears all input values and resets Create button to disabled", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-009-reset-button-clears-form-and-disables-create-chromium/video.webm", "video_name": "tc_fs03_ac_009.webm", "actual": "Verified: All fields cleared and Create button disabled upon Reset."}, {"id": "TC-FS03-AC-010", "pillar": "AC", "title": "Verify successful user creation renders success toast notification", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_010_success_toast_notification_rendered-chromium/video.webm", "video_name": "tc_fs03_ac_010.webm", "actual": "Verified: Success toast appears with expected message."}, {"id": "TC-FS03-AC-011", "pillar": "AC", "title": "Verify Created User Result card renders accurate account summary and polite aria-live", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-011-created-user-result-card-content-and-aria-live-chromium/video.webm", "video_name": "tc_fs03_ac_011.webm", "actual": "Verified: Result card renders full summary with aria-live='polite'."}, {"id": "TC-FS03-AC-012", "pillar": "AC", "title": "Verify switching to 'Bulk CSV' tab renders bulk upload form and 'Get Template' button", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_ac-py-testschooluseracceptancecriteria-test_tc_fs03_ac_012_bulk_csv_tab_content_and_get_template-chromium/video.webm", "video_name": "tc_fs03_ac_012.webm", "actual": "Verified: Bulk CSV tab active with template download and file upload."}, {"id": "TC-FS03-AC-013", "pillar": "AC", "title": "Verify switching between Single and Bulk tabs preserves form state seamlessly", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-013-tab-switching-preserves-form-state-chromium/video.webm", "video_name": "tc_fs03_ac_013.webm", "actual": "Verified: Form input preserved across tab switches."}, {"id": "TC-FS03-AC-014", "pillar": "AC", "title": "Verify 'Import' button on Bulk CSV tab is disabled when no file is selected", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-ac-py-testschooluseracceptancecriteria-test-tc-fs03-ac-014-bulk-csv-import-button-disabled-without-file-chromium/video.webm", "video_name": "tc_fs03_ac_014.webm", "actual": "Verified: [Import] button disabled without file."}, {"id": "TC-FS03-NRIC-001", "pillar": "Tech", "title": "Verify NRIC format enforcement: 1 letter, 7 digits, 1 letter regex pattern", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nric-001-format-regex-validation-chromium/video.webm", "video_name": "tc_fs03_nric_001.webm", "actual": "Verified: Regex ^[A-Za-z]\\d{7}[A-Za-z]$ accepts valid patterns."}, {"id": "TC-FS03-NRIC-002", "pillar": "Tech", "title": "Verify NRIC invalid format rejection: alphanumeric permutations and length violations", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nric_002_invalid_format_rejection-chromium/video.webm", "video_name": "tc_fs03_nric_002.webm", "actual": "Verified: Validation failure alert displayed."}, {"id": "TC-FS03-NRIC-003", "pillar": "Tech", "title": "Verify NRIC automatic uppercase normalization on backend (e.g. s1234567a -> S1234567A)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nric_003_uppercase_normalization-chromium/video.webm", "video_name": "tc_fs03_nric_003.webm", "actual": "Verified: Normalized to uppercase in result card and DB."}, {"id": "TC-FS03-NRIC-004", "pillar": "Tech", "title": "Verify NRIC leading and trailing whitespace trimming (e.g. '  S1234567A  ')", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nric-004-whitespace-trimming-chromium/video.webm", "video_name": "tc_fs03_nric_004.webm", "actual": "Verified: Whitespace trimmed cleanly."}, {"id": "TC-FS03-NRIC-005", "pillar": "Tech", "title": "Verify NRIC 8 characters (Min-1 length) is rejected and user is not created", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nric_005_bva_min_length_8_chars_rejected-chromium/video.webm", "video_name": "tc_fs03_nric_005.webm", "actual": "Verified: Validation error displayed, user creation blocked."}, {"id": "TC-FS03-NRIC-006", "pillar": "Tech", "title": "Verify NRIC 10 characters (Max+1 length) is rejected and user is not created", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nric_006_bva_max_length_10_chars_rejected-chromium/video.webm", "video_name": "tc_fs03_nric_006.webm", "actual": "Verified: Validation error displayed, user creation blocked."}, {"id": "TC-FS03-NRIC-007", "pillar": "Tech", "title": "Verify NRIC containing special characters is rejected and user is not created", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nric-007-special-characters-rejected-chromium/video.webm", "video_name": "tc_fs03_nric_007.webm", "actual": "Verified: Validation error displayed, user creation blocked."}, {"id": "TC-FS03-NRIC-008", "pillar": "Tech", "title": "Verify all-whitespace NRIC keeps Create button disabled and prevents creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nric_008_whitespace_only_disables_create-chromium/video.webm", "video_name": "tc_fs03_nric_008.webm", "actual": "Verified: Create button remains disabled, user creation blocked."}, {"id": "TC-FS03-NRIC-009", "pillar": "Tech", "title": "Verify missing NRIC keeps Create button disabled and prevents creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nric-009-missing-field-disables-create-chromium/video.webm", "video_name": "tc_fs03_nric_009.webm", "actual": "Verified: Create button remains disabled, user creation blocked."}, {"id": "TC-FS03-FNM-001", "pillar": "Tech", "title": "Verify First Name all-whitespace input is treated as empty and keeps Create disabled (ASM-15)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-fnm-001-whitespace-only-disables-create-chromium/video.webm", "video_name": "tc_fs03_fnm_001.webm", "actual": "Verified: All-whitespace First Name keeps Create button disabled."}, {"id": "TC-FS03-FNM-002", "pillar": "Tech", "title": "Verify First Name supports Unicode, diacritics, and multicultural Singapore names", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-fnm-002-unicode-multicultural-names-chromium/video.webm", "video_name": "tc_fs03_fnm_002.webm", "actual": "Verified: Unicode names preserved with full UTF-8 fidelity."}, {"id": "TC-FS03-FNM-003", "pillar": "Tech", "title": "Verify First Name accepts valid hyphens, apostrophes and dots (e.g. Mary-Jane, O'Connor)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-fnm-003-hyphen-apostrophe-punctuation-chromium/video.webm", "video_name": "tc_fs03_fnm_003.webm", "actual": "Verified: Punctuation in names accepted."}, {"id": "TC-FS03-FNM-004", "pillar": "Tech", "title": "Verify missing First Name keeps Create button disabled and prevents creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_fnm_004_missing_field_disables_create-chromium/video.webm", "video_name": "tc_fs03_fnm_004.webm", "actual": "Verified: Create button remains disabled without First Name."}, {"id": "TC-FS03-LNM-001", "pillar": "Tech", "title": "Verify Last Name all-whitespace input is treated as empty and keeps Create disabled (ASM-15)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_lnm_001_whitespace_only_disables_create-chromium/video.webm", "video_name": "tc_fs03_lnm_001.webm", "actual": "Verified: All-whitespace Last Name keeps Create button disabled."}, {"id": "TC-FS03-LNM-002", "pillar": "Tech", "title": "Verify Last Name supports Unicode and multicultural Singapore surnames", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-lnm-002-unicode-multicultural-surnames-chromium/video.webm", "video_name": "tc_fs03_lnm_002.webm", "actual": "Verified: UTF-8 Unicode characters preserved."}, {"id": "TC-FS03-LNM-003", "pillar": "Tech", "title": "Verify missing Last Name keeps Create button disabled and prevents creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_lnm_003_missing_field_disables_create-chromium/video.webm", "video_name": "tc_fs03_lnm_003.webm", "actual": "Verified: Create button remains disabled without Last Name."}, {"id": "TC-FS03-EML-001", "pillar": "Tech", "title": "Verify Email accepts valid RFC 5322 syntax (subdomains, dots, plus-addressing)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_eml_001_valid_rfc_syntax-chromium/video.webm", "video_name": "tc_fs03_eml_001.webm", "actual": "Verified: RFC email syntax accepted."}, {"id": "TC-FS03-EML-002", "pillar": "Tech", "title": "Verify Email rejects invalid syntax permutations (missing @, double @, space, missing domain)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_eml_002_invalid_syntax_rejection-chromium/video.webm", "video_name": "tc_fs03_eml_002.webm", "actual": "Verified: HTML5 input type='email' blocks invalid submission."}, {"id": "TC-FS03-EML-003", "pillar": "Tech", "title": "Verify Email automatic lowercase normalization on backend (e.g. User@Domain.COM -> user@domain.com)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-eml-003-lowercase-normalization-chromium/video.webm", "video_name": "tc_fs03_eml_003.webm", "actual": "Verified: Normalized to lowercase in result card."}, {"id": "TC-FS03-EML-004", "pillar": "Tech", "title": "Verify Email all-whitespace input is treated as empty and keeps Create disabled (ASM-15)", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_eml_004_whitespace_only_disables_create-chromium/video.webm", "video_name": "tc_fs03_eml_004.webm", "actual": "Verified: All-whitespace Email keeps Create button disabled."}, {"id": "TC-FS03-EML-005", "pillar": "Tech", "title": "Verify missing Email keeps Create button disabled and prevents creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-eml-005-missing-field-disables-create-chromium/video.webm", "video_name": "tc_fs03_eml_005.webm", "actual": "Verified: Create button remains disabled without Email."}, {"id": "TC-FS03-SCH-001", "pillar": "Tech", "title": "Verify MOE School Code whitespace trimming (e.g. '   RPS-0201   ')", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-sch-001-whitespace-trimming-chromium/video.webm", "video_name": "tc_fs03_sch_001.webm", "actual": "Verified: Whitespace trimmed cleanly in school lookup."}, {"id": "TC-FS03-SCH-002", "pillar": "Tech", "title": "Verify omitting optional School Code creates unassigned standalone user", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-sch-002-optional-empty-creates-unassigned-chromium/video.webm", "video_name": "tc_fs03_sch_002.webm", "actual": "Verified: User created successfully with School 'Not assigned'."}, {"id": "TC-FS03-SCH-003", "pillar": "Tech", "title": "Verify invalid or non-existent School Code triggers validation error and blocks creation", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-sch-003-invalid-school-code-rejected-chromium/video.webm", "video_name": "tc_fs03_sch_003.webm", "actual": "Verified: Validation error displayed, user creation blocked."}, {"id": "TC-FS03-SEC-001", "pillar": "Tech", "title": "Verify XSS injection payload in name fields is sanitized and rendered as plain text (OWASP A3)", "status": "Passed", "severity": "S1", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-sec-001-xss-sanitization-chromium/video.webm", "video_name": "tc_fs03_sec_001.webm", "actual": "Verified: React automatically escapes script tags; 0 XSS dialogs triggered."}, {"id": "TC-FS03-SEC-002", "pillar": "Tech", "title": "Verify SQL injection string in inputs does not compromise database query syntax (OWASP A3)", "status": "Passed", "severity": "S1", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_sec_002_sqli_safety-chromium/video.webm", "video_name": "tc_fs03_sec_002.webm", "actual": "Verified: Parameterized query executes safely."}, {"id": "TC-FS03-NFR-001", "pillar": "Tech", "title": "Verify Invariant 7 UI Health: Zero uncaught JavaScript errors in browser console during page lifecycle", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nfr-001-zero-console-errors-chromium/video.webm", "video_name": "tc_fs03_nfr_001.webm", "actual": "Verified: 0 console errors during full page interaction."}, {"id": "TC-FS03-NFR-002", "pillar": "Tech", "title": "Verify zero horizontal scrollbar (scrollWidth <= clientWidth) at desktop viewports (1280x720, 1920x1080)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nfr-002-zero-horizontal-scrollbar-chromium/video.webm", "video_name": "tc_fs03_nfr_002.webm", "actual": "Verified: Zero horizontal scrollbar detected."}, {"id": "TC-FS03-NFR-003", "pillar": "Tech", "title": "Verify anti-i18n leakage: Zero raw translation keys (e.g. 'features.*', '*.undefined') rendered in DOM", "status": "Passed", "severity": "S2", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nfr-003-anti-i18n-leakage-chromium/video.webm", "video_name": "tc_fs03_nfr_003.webm", "actual": "Verified: Zero raw translation keys found in rendered DOM."}, {"id": "TC-FS03-NFR-004", "pillar": "Tech", "title": "Verify keyboard navigation and tab order through all interactive elements in logical sequence", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test_atomic_school_user_tech_ui-py-testschooluserfieldleveltechui-test_tc_fs03_nfr_004_keyboard_navigation_tab_order-chromium/video.webm", "video_name": "tc_fs03_nfr_004.webm", "actual": "Verified: Logical tab order confirmed."}, {"id": "TC-FS03-NFR-005", "pillar": "Tech", "title": "Verify responsive layout adapts cleanly to tablet viewport (768x1024) without clipping", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-nfr-005-tablet-viewport-responsiveness-chromium/video.webm", "video_name": "tc_fs03_nfr_005.webm", "actual": "Verified: Tablet viewport renders cleanly."}, {"id": "TC-FS03-STR-001", "pillar": "Tech", "title": "Verify pasting 1000+ characters into text fields does not freeze browser or break layout (Stress Paste)", "status": "Passed", "severity": "S3", "video_src": "../../../reports/fs03/fs03-school-user-create/test-results/RUN-20261025-BFA7D1/tests-fs03-fs03-school-user-create-test-atomic-school-user-tech-ui-py-testschooluserfieldleveltechui-test-tc-fs03-str-001-stress-paste-1000-chars-chromium/video.webm", "video_name": "tc_fs03_str_001.webm", "actual": "Verified: 1000 chars pasted safely without browser lockup."}];
+    let activeIdx = 0;
+
+    function renderList(filtered = cases) {
+      const container = document.getElementById('tc-list');
+      container.innerHTML = '';
+      filtered.forEach((tc) => {
+        const div = document.createElement('div');
+        div.className = 'tc-item ' + (tc.id === cases[activeIdx].id ? 'active' : '');
+        div.onclick = () => selectCase(cases.indexOf(tc));
+        div.innerHTML = `
+          <div class="tc-top">
+            <span class="tc-id">${tc.id}</span>
+            <span class="badge">${tc.status}</span>
+          </div>
+          <div class="tc-title">${tc.title}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function selectCase(idx) {
+      activeIdx = idx;
+      const tc = cases[idx];
+      const player = document.getElementById('player');
+      const source = document.getElementById('video-source');
+      source.src = tc.video_src;
+      player.load();
+      player.play();
+
+      document.getElementById('cur-title').innerText = tc.title;
+      document.getElementById('cur-id').innerText = `${tc.id} • Pillar: ${tc.pillar} • Severity: ${tc.severity} • File: ${tc.video_name}`;
+      document.getElementById('cur-actual').innerText = tc.actual;
+
+      renderList();
+    }
+
+    function filterList() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const filtered = cases.filter(c => c.id.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
+      renderList(filtered);
+    }
+
+    if (cases.length > 0) {
+      selectCase(0);
+    }
+  </script>
+</body>
+</html>

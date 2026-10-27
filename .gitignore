@@ -13,4 +13,4 @@ archive/
 test-results/
 copy/
 /\[agile\]fs
-/fs08
+.wrangler/

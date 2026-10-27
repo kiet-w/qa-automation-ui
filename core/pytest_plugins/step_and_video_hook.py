@@ -11,6 +11,7 @@ import pytest
 from playwright.sync_api import Page
 from core.catalog import classify
 from core.exceptions import BusinessAssertionError, InfrastructureError
+from reporting.core.sanitizer import clean_error_message
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE_DIR = REPO_ROOT
@@ -28,8 +29,10 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
 
     if report.when == "call" and report.failed:
+        setattr(item, "_has_failed", True)
         exc = call.excinfo.value if call.excinfo else None
         if exc is not None:
+            setattr(item, "_failure_exc", exc)
             if isinstance(exc, (BusinessAssertionError, AssertionError)):
                 category = "BUSINESS_ASSERTION"
                 hint = "Business expectation failed; actual application state did not match specification."
@@ -47,6 +50,10 @@ def pytest_runtest_makereport(item, call):
                 if isinstance(jm, dict):
                     jm["error_category"] = category
                     jm["error_hint"] = hint
+    elif report.when == "setup" and report.failed:
+        setattr(item, "_has_failed", True)
+        if call.excinfo and call.excinfo.value:
+            setattr(item, "_failure_exc", call.excinfo.value)
 
     if hasattr(report, "wasxfail") and report.wasxfail:
         item.user_properties.append(("wasxfail", str(report.wasxfail)))
@@ -58,193 +65,14 @@ def pytest_runtest_makereport(item, call):
 
 def _highlight_failure_in_browser(page: Optional[Page], step_title: str, error_msg: str):
     """
-    Highlights the defective / failing UI element in the browser DOM before capturing screenshot and video.
-    - Accurately targets the tested input field (e.g. mobile number '71234567', invalid email, boundary street).
-    - Dismisses any unwanted modal dialog / backdrop covering the form so the defective field is visible.
-    - Scrolls the defective field into the center of the viewport.
-    - Injects high-contrast red outline, floating defect badge, and top diagnostic evidence banner.
-    - Holds the frame for 1.2s so the recorded WebM video shows the highlighted defect clearly.
+    Highlights the defective / failing UI element in the browser DOM before capturing screenshot and video
+    using SketchVLM-style SVG primitives, directional arrows, and diagnostic evidence cards.
     """
     if not page:
         return
     try:
-        if page.is_closed():
-            return
-        clean_err = error_msg.splitlines()[0] if error_msg else "Assertion / Execution Failure"
-        clean_err = clean_err.replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'")
-        clean_title = step_title.replace("\\", "\\\\").replace('"', '\\"').replace("'", "\\'")
-
-        page.evaluate(f"""(() => {{
-            // 1. Inject Top Diagnostic Banner
-            let banner = document.getElementById('__qa_evidence_banner__');
-            if (!banner) {{
-                banner = document.createElement('div');
-                banner.id = '__qa_evidence_banner__';
-                banner.style.position = 'fixed';
-                banner.style.top = '0';
-                banner.style.left = '0';
-                banner.style.right = '0';
-                banner.style.zIndex = '2147483647';
-                banner.style.background = 'linear-gradient(90deg, #cf222e 0%, #b31d28 100%)';
-                banner.style.color = '#ffffff';
-                banner.style.padding = '8px 16px';
-                banner.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-                banner.style.fontSize = '13px';
-                banner.style.fontWeight = 'bold';
-                banner.style.display = 'flex';
-                banner.style.alignItems = 'center';
-                banner.style.justifyContent = 'space-between';
-                banner.style.boxShadow = '0 4px 14px rgba(207, 34, 46, 0.4)';
-                banner.style.borderBottom = '2px solid rgba(255, 255, 255, 0.6)';
-                document.body.appendChild(banner);
-            }}
-            banner.innerHTML = `
-                <div style="display:flex;align-items:center;gap:8px;">
-                    <span style="background:#ffffff;color:#cf222e;padding:2px 6px;border-radius:3px;font-size:11px;font-weight:900;">DEFECT EVIDENCE</span>
-                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65vw;">{clean_err[:120]}</span>
-                </div>
-                <span style="font-size:11px;opacity:0.9;font-weight:normal;">Step: {clean_title[:45]}</span>
-            `;
-
-            // 2. Identify candidate failure elements with smart context detection
-            const contextText = (`{clean_title} {clean_err}`).toLowerCase();
-
-            // Extract quoted tokens like '71234567' or '7' from error/title
-            const tokens = [];
-            const quoteRegex = /['"]([^'"]+)['"]/g;
-            let match;
-            while ((match = quoteRegex.exec(`{clean_title} {clean_err}`)) !== null) {{
-                if (match[1].trim()) tokens.push(match[1].trim());
-            }}
-
-            let targetEl = null;
-            let defectDescription = "POINT OF DEFECT / ASSERTION";
-
-            // (A) Priority 1: Match input whose value contains one of the tested tokens (e.g. 71234567)
-            const allInputs = Array.from(document.querySelectorAll('input, textarea, select'));
-            for (const input of allInputs) {{
-                const val = (input.value || "").trim();
-                if (!val) continue;
-                for (const tok of tokens) {{
-                    if (val === tok || val.includes(tok) || tok.includes(val)) {{
-                        targetEl = input;
-                        defectDescription = `DEFECT: Value "${{val}}" accepted without validation`;
-                        break;
-                    }}
-                }}
-                if (targetEl) break;
-            }}
-
-            // (B) Priority 2: Semantic field mapping from error & step keywords
-            if (!targetEl) {{
-                let semanticSelector = null;
-                if (/phone|mobile|prefix|7/.test(contextText)) {{
-                    semanticSelector = "input[name='phoneNumber'], input[type='tel'], input[name*='phone' i], input[name*='mobile' i]";
-                    defectDescription = "DEFECT: Invalid Mobile Phone Number";
-                }} else if (/email|mail/.test(contextText)) {{
-                    semanticSelector = "input[name='email'], input[type='email'], input[name*='email' i]";
-                    defectDescription = "DEFECT: Invalid Email Address";
-                }} else if (/postal|zip/.test(contextText)) {{
-                    semanticSelector = "input[name*='postal' i], input[name*='zip' i]";
-                    defectDescription = "DEFECT: Postal Code";
-                }} else if (/street|address/.test(contextText)) {{
-                    semanticSelector = "input[name*='street' i], input[name*='address' i]";
-                    defectDescription = "DEFECT: Street Address";
-                }} else if (/block/.test(contextText)) {{
-                    semanticSelector = "input[name*='block' i]";
-                    defectDescription = "DEFECT: Block Number";
-                }} else if (/nric/.test(contextText)) {{
-                    semanticSelector = "[data-testid='nric'], input[name*='nric' i]";
-                    defectDescription = "DEFECT: NRIC Identity Field";
-                }}
-
-                if (semanticSelector) {{
-                    const found = document.querySelector(semanticSelector);
-                    if (found) {{
-                        targetEl = found;
-                        const val = (targetEl.value || "").trim();
-                        if (val) {{
-                            defectDescription = `DEFECT: Value "${{val}}" accepted without validation`;
-                        }}
-                    }}
-                }}
-            }}
-
-            // (C) Priority 3: Native / ARIA invalid attributes
-            if (!targetEl) {{
-                const candidateSelectors = [
-                    ':invalid',
-                    '[aria-invalid="true"]',
-                    '.is-invalid',
-                    '.error-message',
-                    '.field-error',
-                    '.invalid-feedback',
-                    '[role="alert"]',
-                    '.text-danger',
-                    '.toast-error'
-                ];
-                for (const sel of candidateSelectors) {{
-                    const el = document.querySelector(sel);
-                    if (el && el.offsetParent !== null) {{
-                        targetEl = el;
-                        defectDescription = "DEFECT: Validation Failure";
-                        break;
-                    }}
-                }}
-            }}
-
-            // (D) Handle obstructive modal/dialog:
-            // If an unwanted modal dialog is covering the target element on the form,
-            // dismiss / hide the modal so the form field is clearly visible!
-            const modalDialog = document.querySelector('div[role="alertdialog"], [aria-modal="true"], .modal');
-            if (modalDialog && targetEl && !modalDialog.contains(targetEl)) {{
-                // The dialog popped up when it shouldn't have!
-                // Dismiss modal to reveal the defective input field behind it:
-                modalDialog.style.display = 'none';
-                document.querySelectorAll('.fixed.inset-0, [class*="backdrop" i]').forEach(b => {{
-                    b.style.display = 'none';
-                }});
-            }}
-
-            // (E) Priority 4: Fallback to activeElement ONLY IF no modal button
-            if (!targetEl && document.activeElement && document.activeElement !== document.body) {{
-                const tag = document.activeElement.tagName.toLowerCase();
-                if (tag === 'input' || tag === 'textarea' || tag === 'select') {{
-                    targetEl = document.activeElement;
-                }}
-            }}
-
-            // (F) Highlight the target element!
-            if (targetEl) {{
-                targetEl.scrollIntoView({{ behavior: 'instant', block: 'center' }});
-                targetEl.style.outline = '4px solid #cf222e';
-                targetEl.style.outlineOffset = '4px';
-                targetEl.style.boxShadow = '0 0 24px rgba(207, 34, 46, 0.9)';
-                targetEl.style.backgroundColor = 'rgba(207, 34, 46, 0.12)';
-
-                // Add floating pointer badge directly above the element
-                let badge = document.getElementById('__qa_target_badge__');
-                if (!badge) {{
-                    badge = document.createElement('div');
-                    badge.id = '__qa_target_badge__';
-                    badge.style.position = 'absolute';
-                    badge.style.background = '#cf222e';
-                    badge.style.color = '#ffffff';
-                    badge.style.fontSize = '12px';
-                    badge.style.fontWeight = 'bold';
-                    badge.style.padding = '4px 10px';
-                    badge.style.borderRadius = '4px';
-                    badge.style.zIndex = '2147483647';
-                    badge.style.boxShadow = '0 3px 10px rgba(0,0,0,0.4)';
-                    document.body.appendChild(badge);
-                }}
-                badge.textContent = defectDescription;
-                const rect = targetEl.getBoundingClientRect();
-                badge.style.top = Math.max(45, window.scrollY + rect.top - 30) + 'px';
-                badge.style.left = Math.max(10, window.scrollX + rect.left) + 'px';
-            }}
-        }})();""")
-        page.wait_for_timeout(1200)
+        from core.sketch_annotator import SketchAnnotator
+        SketchAnnotator.highlight_defect(page, step_title=step_title, error_msg=error_msg, hold_ms=3000)
     except Exception:
         pass
 
@@ -252,8 +80,9 @@ def _highlight_failure_in_browser(page: Optional[Page], step_title: str, error_m
 class StepTracker:
     """Tracks and records execution steps, statuses, durations, and screenshots."""
 
-    def __init__(self, page: Page, json_metadata=None, reports_dir=None, test_name: str = ""):
+    def __init__(self, page: Page, json_metadata=None, reports_dir=None, test_name: str = "", node=None):
         self.page = page
+        self.node = node
         self.json_metadata = json_metadata if json_metadata is not None else {}
         if "steps" not in self.json_metadata:
             self.json_metadata["steps"] = []
@@ -262,14 +91,51 @@ class StepTracker:
         self.screenshots_dir = self.reports_dir / "screenshots"
         self.test_name = test_name
         self.test_slug = re.sub(r"[^\w]+", "_", test_name.lower()).strip("_") if test_name else ""
+        self.test_screenshots_dir = self.screenshots_dir / self.test_slug if self.test_slug else self.screenshots_dir
+        self.test_screenshots_dir.mkdir(parents=True, exist_ok=True)
         self.current_step = None
         self._step_counter = 0
         self._step_stack = []
         self.test_start_time = time.time()
+        self._attach_navigation_listener(self.page)
+
+    def _attach_navigation_listener(self, page: Optional[Page]):
+        """Persist active Step HUD across page.goto and SPA navigations."""
+        if not page:
+            return
+        try:
+            if page.is_closed() or getattr(page, "_qa_hud_listener_attached", False):
+                return
+
+            def _restore_hud(*args, **kwargs):
+                try:
+                    if page.is_closed() or not self.current_step:
+                        return
+                    step_title = self.current_step.get("title", "")
+                    step_idx = self.current_step.get("step_index", self._step_counter)
+                    if step_title:
+                        from core.sketch_annotator import SketchAnnotator
+                        SketchAnnotator.show_step_hud(page, step_title=step_title, step_index=step_idx)
+                except Exception:
+                    pass
+
+            def _on_nav(frame):
+                try:
+                    if frame == page.main_frame:
+                        _restore_hud()
+                except Exception:
+                    pass
+
+            page.on("framenavigated", _on_nav)
+            page.on("domcontentloaded", _restore_hud)
+            setattr(page, "_qa_hud_listener_attached", True)
+        except Exception:
+            pass
 
     def set_page(self, page: Page):
         """Update current active page for taking screenshots when switching context or tab."""
         self.page = page
+        self._attach_navigation_listener(page)
 
     def attach_screenshot(self, path: str):
         """Attach a screenshot file path to the current active step (or most recent step)."""
@@ -278,10 +144,17 @@ class StepTracker:
         elif self.steps:
             self.steps[-1]["screenshot"] = str(path)
 
-    def set_actual(self, actual_text: str):
-        """Set actual execution outcome description for the current step."""
+    def set_actual(self, actual_text: str, locator: Optional[Any] = None):
+        """Set actual execution outcome description and optional locator for the current step."""
         if self.current_step is not None:
             self.current_step["actual"] = actual_text
+            if locator is not None:
+                self.current_step["actual_locator"] = locator
+        if self.node:
+            if locator is not None:
+                setattr(self.node, "_qa_actual_locator", locator)
+            if actual_text:
+                setattr(self.node, "_qa_actual_text", actual_text)
 
     def set_expected(self, expected_text: str):
         """Set expected behavior description for the current step."""
@@ -335,8 +208,8 @@ class _StepContext:
     def attach_screenshot(self, path: str):
         self.tracker.attach_screenshot(path)
 
-    def set_actual(self, actual_text: str):
-        self.tracker.set_actual(actual_text)
+    def set_actual(self, actual_text: str, locator: Optional[Any] = None):
+        self.tracker.set_actual(actual_text, locator=locator)
 
     def set_expected(self, expected_text: str):
         self.tracker.set_expected(expected_text)
@@ -350,8 +223,13 @@ class _StepContext:
         if self.page is not None:
             self.tracker.set_page(self.page)
 
+        active_page = self.page or self.tracker.page
+        if active_page:
+            self.tracker._attach_navigation_listener(active_page)
+
         self.step_data = {
             "title": self.title,
+            "step_index": self.step_index,
             "status": "passed",
             "duration": 0.0,
             "start_offset": start_offset,
@@ -364,6 +242,14 @@ class _StepContext:
         self.tracker.steps.append(self.step_data)
         self.tracker._step_stack.append(self.step_data)
         self.tracker.current_step = self.step_data
+
+        if active_page:
+            try:
+                from core.sketch_annotator import SketchAnnotator
+                SketchAnnotator.show_step_hud(active_page, self.title, self.step_index)
+            except Exception:
+                pass
+
         return self.tracker
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -378,8 +264,9 @@ class _StepContext:
 
         if exc_type is not None:
             self.step_data["status"] = "failed"
-            self.step_data["error"] = str(exc_val)
-            self.step_data["actual"] = f"FAILED: {str(exc_val)}"
+            clean_err = clean_error_message(str(exc_val))
+            self.step_data["error"] = clean_err
+            self.step_data["actual"] = f"FAILED: {clean_err}"
 
             fail_filename = f"fail_{prefix}step_{self.step_index}_{timestamp}.png"
             fail_path = self.tracker.screenshots_dir / fail_filename
@@ -389,7 +276,7 @@ class _StepContext:
                 rel_fail_path = str(fail_path)
             try:
                 if active_page and not active_page.is_closed():
-                    _highlight_failure_in_browser(active_page, step_title=self.title, error_msg=str(exc_val))
+                    _highlight_failure_in_browser(active_page, step_title=self.title, error_msg=clean_err)
                     active_page.screenshot(path=str(fail_path), full_page=False)
                     self.step_data["screenshot"] = rel_fail_path
             except Exception:
@@ -405,9 +292,14 @@ class _StepContext:
         if not self.step_data.get("actual"):
             self.step_data["actual"] = "Passed: Step completed successfully."
 
-        if self.capture_screenshot and not self.step_data.get("screenshot"):
-            step_filename = f"{prefix}step_{self.step_index}_{timestamp}.png"
-            step_path = self.tracker.screenshots_dir / step_filename
+        # Auto-capture screenshot for EVERY step ("lúc thực hiện/nhập" và "lúc pass/kết quả")
+        should_capture = True
+
+        if should_capture and not self.step_data.get("screenshot"):
+            step_filename = f"step_{self.step_index}.png"
+            step_path = self.tracker.test_screenshots_dir / step_filename
+            legacy_filename = f"{prefix}step_{self.step_index}_{timestamp}.png"
+            legacy_path = self.tracker.screenshots_dir / legacy_filename
             try:
                 rel_step_path = str(step_path.relative_to(WORKSPACE_DIR))
             except Exception:
@@ -415,6 +307,10 @@ class _StepContext:
             try:
                 if active_page and not active_page.is_closed():
                     active_page.screenshot(path=str(step_path), full_page=False)
+                    try:
+                        shutil.copy2(step_path, legacy_path)
+                    except Exception:
+                        pass
                     self.step_data["screenshot"] = rel_step_path
             except Exception:
                 pass
@@ -432,4 +328,4 @@ def step(request, page: Page, json_metadata):
     """Fixture providing an isolated StepTracker instance for each test method."""
     reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
     test_name = request.node.name
-    return StepTracker(page=page, json_metadata=json_metadata, reports_dir=reports_dir, test_name=test_name)
+    return StepTracker(page=page, json_metadata=json_metadata, reports_dir=reports_dir, test_name=test_name, node=request.node)

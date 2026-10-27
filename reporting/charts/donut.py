@@ -15,13 +15,14 @@ def generate_donut_chart_svg(passed: int, failed: int, skipped: int = 0, xfailed
     circumference = 2 * 3.141592653589793 * r
 
     if total == 0:
-        pass_pct = 0
+        pass_pct_str = "0%"
         pass_dash = 0.0
         fail_dash = 0.0
         xfail_dash = 0.0
         skip_dash = 0.0
     else:
-        pass_pct = round(((passed + xfailed) / total) * 100)
+        raw_pct = (passed / total) * 100
+        pass_pct_str = f"{raw_pct:.1f}%" if raw_pct % 1 != 0 else f"{int(raw_pct)}%"
         pass_dash = (passed / total) * circumference
         fail_dash = (failed / total) * circumference
         xfail_dash = (xfailed / total) * circumference
@@ -78,7 +79,7 @@ def generate_donut_chart_svg(passed: int, failed: int, skipped: int = 0, xfailed
         svg_parts.append('  </g>')
 
     svg_parts.extend([
-        f'  <text x="{cx}" y="{cy - 4}" text-anchor="middle" font-size="28" font-weight="800" fill="var(--text-primary, #e6edf3)" class="chart-text-main" font-family="system-ui, -apple-system, sans-serif">{pass_pct}%</text>',
+        f'  <text x="{cx}" y="{cy - 4}" text-anchor="middle" font-size="28" font-weight="800" fill="var(--text-primary, #e6edf3)" class="chart-text-main" font-family="system-ui, -apple-system, sans-serif">{pass_pct_str}</text>',
         f'  <text x="{cx}" y="{cy + 18}" text-anchor="middle" font-size="11" font-weight="600" fill="var(--text-secondary, #8b949e)" font-family="system-ui, -apple-system, sans-serif" data-i18n="pass_rate">PASS RATE</text>',
         '</svg>',
     ])

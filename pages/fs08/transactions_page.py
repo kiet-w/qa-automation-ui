@@ -35,6 +35,7 @@ class TransactionsPage(BasePage):
     # Empty State & Pending Alert
     EMPTY_STATE = "p:has-text('No transactions found'), div:has-text('No transactions found')"
     PENDING_ALERT = "div[class*='pending'], section[class*='pending'], div[class*='_pending_']"
+    UNABLE_TO_LOAD = "h3:has-text('Unable to load data'), div:has-text('Unable to load data')"
 
     def __init__(self, page: Page):
         super().__init__(page)
@@ -153,3 +154,24 @@ class TransactionsPage(BasePage):
     def is_pending_alert_visible(self) -> bool:
         """Check if pending transaction box is visible."""
         return self.is_visible(self.PENDING_ALERT)
+
+    def get_student_options(self) -> List[str]:
+        """Return list of student options rendered in the dropdown."""
+        if not self.is_student_selector_visible(timeout=3000):
+            return []
+        options = self.page.locator(f"{self.STUDENT_SELECT} option")
+        return [options.nth(i).inner_text().strip() for i in range(options.count())]
+
+    def is_unable_to_load_visible(self, timeout: int = 8000) -> bool:
+        """Check if 'Unable to load data' error state is displayed."""
+        try:
+            self.page.locator(self.UNABLE_TO_LOAD).first.wait_for(state="visible", timeout=timeout)
+            return True
+        except Exception:
+            return False
+
+    def get_error_panel_text(self) -> str:
+        """Retrieve text from error panel on data load rejection."""
+        if self.is_unable_to_load_visible():
+            return self.page.locator(self.UNABLE_TO_LOAD).first.inner_text().strip()
+        return ""

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-05: Mailing Block & Unit Components | Báo Cáo Kiểm Thử Chuyên Biệt (8 TCs)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .freeze-col-1 { position: sticky; left: 0; z-index: 10; }
+    .freeze-col-2 { position: sticky; left: 48px; z-index: 10; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Nav Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs hover:bg-sky-50 transition">
+        <span>⬅️ Danh Sách 10 Test Suites</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 font-mono text-slate-600 font-bold">
+          File: tests/fs08/fs08-parent-profile/test_ts05_mailing_block_unit.py
+        </span>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Xuất Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🏢</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded border border-sky-200">
+            TS05_MAILING_BLOCK_UNIT
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-slate-100 text-slate-700">
+            8 Ca Kiểm Thử
+          </span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">TS-05: Mailing Block & Unit Components</h1>
+        <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">Kiểm thử 2 trường địa chỉ tùy chọn (optional): Số Block và Số căn hộ (Unit), định dạng #08-1234 chuẩn Singapore, biên 20 ký tự, và chuẩn hóa xuống dòng.</p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-emerald-700 uppercase">Passed</div>
+          <div class="text-xl font-black text-emerald-900">8</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-red-700 uppercase">Failed</div>
+          <div class="text-xl font-black text-red-900">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-slate-600 uppercase">Not Run</div>
+          <div class="text-xl font-black text-slate-800">0</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Table Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      
+      <!-- Search Bar -->
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-xs text-slate-600">
+          Chạy file test này bằng lệnh: <code class="font-mono font-bold bg-slate-100 text-sky-900 px-2 py-1 rounded border border-slate-200 select-all">.venv/bin/pytest tests/fs08/fs08-parent-profile/test_ts05_mailing_block_unit.py -v</code>
+        </div>
+        <div class="relative w-72">
+          <input type="text" id="suite-search" placeholder="Tìm theo mã TC, tiêu đề, selector..." oninput="handleSearch(this.value)" class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg outline-none w-full placeholder:text-slate-400">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px] relative">
+        <table class="w-full text-left border-collapse" style="min-width: 1350px;">
+          <thead class="sticky top-0 bg-[#1B365D] text-white text-[11px] font-mono uppercase tracking-wider z-20">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 freeze-col-1 bg-[#1B365D]">STT</th>
+              <th class="py-3 px-3 text-center w-28 freeze-col-2 bg-[#1B365D]">Mã TC</th>
+              <th class="py-3 px-3 text-center w-32">Trụ Cột</th>
+              <th class="py-3 px-4 min-w-[280px]">Tiêu Đề Ca Kiểm Thử</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">📍 Vị Trí &amp; DOM Selector</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">💾 Dữ Liệu Kiểm Thử (Test Data)</th>
+              <th class="py-3 px-2 text-center w-20">Ưu Tiên</th>
+              <th class="py-3 px-2 text-center w-24">Trạng Thái</th>
+              <th class="py-3 px-3 text-center w-24">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="suite-tbody" class="text-xs divide-y divide-slate-200 bg-white">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="tc-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white border border-slate-300 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tc-id" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-sky-100 text-sky-800 border border-sky-200">TC-001</span>
+          <span id="modal-tc-pillar" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Pillar</span>
+          <h3 id="modal-tc-title" class="text-sm font-bold text-slate-900 truncate max-w-lg">Tiêu đề</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        <!-- Target DOM Banner -->
+        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-800">📍 Vị Trí Kiểm Thử &amp; Element DOM Selector</div>
+            <div id="modal-target-name" class="text-xs font-bold text-slate-900 mt-0.5">Target Name</div>
+            <code id="modal-target-dom" class="text-[11px] font-mono text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-300 mt-1 inline-block">locator</code>
+          </div>
+          <span id="modal-priority" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-slate-800 border border-slate-200 self-start sm:self-center">High</span>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">1. Điều Kiện Tiên Quyết (Preconditions)</h4>
+          <div id="modal-preconditions" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">2. Dữ Liệu Kiểm Thử (Test Data)</h4>
+          <div id="modal-test-data" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap select-all"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">3. Các Bước Thực Hiện (Test Steps)</h4>
+          <div id="modal-steps" class="p-3 bg-slate-50 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-emerald-700 mb-1">4. Kết Quả Kỳ Vọng (Expected Result)</h4>
+            <div id="modal-expected" class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-emerald-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-sky-700 mb-1">5. Kết Quả Thực Tế (Actual Result)</h4>
+            <div id="modal-actual" class="p-3 bg-sky-50/70 border border-sky-200 rounded-lg text-sky-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">6. Nguồn Đối Soát (Traceability)</h4>
+          <div id="modal-traceability" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg text-xs transition">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testCases = [{"idx": 25, "id": "TC-R8-105", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-BLK", "title": "Verify optional Mailing Block can be left blank and saved successfully", "suite": "Mailing Block Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingBlock']", "target_name": "Ô Nhập Số Block (Mailing Block)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "MailingBlock = '' (empty); other required fields valid", "steps": "1. Clear Mailing Block input field\n2. Fill all other required fields with valid values\n3. Click [Save changes] and confirm in dialog", "expected": "Form passes validation without error\nProfile updates successfully with MSG-0807\nReloading shows empty Mailing Block", "actual": "Blank Mailing Block saved successfully with MSG-0807.", "assumption": "CR: FSD section 6 table defines Mailing Block as optional (Bắt buộc: Không)", "defect": "", "traceability": "FS R8 sec. 6 field table (Mailing block optional); Appendix A Parent_Profile.MailingBlock", "note": "Landed properties and private estates often do not have block numbers."}, {"idx": 42, "id": "TC-R8-BLK-01", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-BLK", "title": "Verify alphanumeric Mailing Block values (e.g. 'Blk 123A', 'Tower 2', '123', 'A') are saved accurately", "suite": "Mailing Block Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingBlock']", "target_name": "Ô Nhập Số Block (Mailing Block)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Valid blocks: 'Blk 123A', 'Tower 2', 'Block 9B', '123', 'A'", "steps": "1. Enter 'Blk 123A' into Mailing Block\n2. Save and reload profile", "expected": "Block value persists accurately and renders 'Blk 123A' on view screen\nSaved with MSG-0807", "actual": "Alphanumeric block string saved and reloaded accurately.", "assumption": "TD: Standard alphanumeric address text field", "defect": "", "traceability": "FS R8 sec. 6 field table; Appendix A", "note": "Supports common HDB and Condo block naming schemes."}, {"idx": 43, "id": "TC-R8-106", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-BLK", "title": "Verify Mailing Block maximum length boundary of 20 characters (BVA Length)", "suite": "Mailing Block Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingBlock']", "target_name": "Ô Nhập Số Block (Mailing Block)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "BVA", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "BVA: 20 chars ('B'*20) vs 21 chars ('B'*21)", "steps": "1. Enter 20-character string into Mailing Block, save and verify\n2. Enter 21-character string into Mailing Block and attempt save", "expected": "20 chars: Successfully saved with MSG-0807\n21 chars: Truncated by maxlength='20' attribute or blocked with field length error", "actual": "20 chars accepted and saved; 21 chars prevented by input length constraint.", "assumption": "ASM-09: No message code defined for max-length; field-level validation blocks Save.", "defect": "", "traceability": "FS R8 field table (Block max 20) - BVA; Appendix A Parent_Profile.MailingBlock NVARCHAR(20)", "note": "Prevents database truncation error in Parent_Profile table."}, {"idx": 44, "id": "TC-R8-BLK-02", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-BLK", "title": "Verify Mailing Block allows address symbols (/ , . - #) and rejects forbidden symbols (< > { } ;) or 1000-char paste", "suite": "Mailing Block Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingBlock']", "target_name": "Ô Nhập Số Block (Mailing Block)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Allowed: 'Blk 12-A/B #01'; Forbidden: '<script>', '{blk}'", "steps": "1. Enter 'Blk 12-A/B #01' and verify save\n2. Enter '<script>' and verify rejection or sanitization\n3. Paste 1000 characters", "expected": "Legitimate punctuation saved accurately\nDangerous HTML symbols sanitized or blocked\n1000 chars truncated to maxlength='20'", "actual": "Address punctuation accepted; dangerous symbols sanitized; length bounded.", "assumption": "TD: Address field character whitelist and boundary protection", "defect": "", "traceability": "NFR Security; Invariant 8", "note": "Protects input integrity across address components."}, {"idx": 26, "id": "TC-R8-UNT-01", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-UNT", "title": "Verify optional Mailing Unit can be left blank and saved successfully", "suite": "Mailing Unit Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingUnit']", "target_name": "Ô Nhập Số Căn Hộ (Mailing Unit)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "MailingUnit = '' (empty); other required fields valid", "steps": "1. Clear Mailing Unit input field\n2. Save form and confirm in dialog", "expected": "Form passes validation without error\nProfile updates successfully with MSG-0807\nReloading shows empty Mailing Unit", "actual": "Blank Mailing Unit saved successfully with MSG-0807.", "assumption": "CR: FSD section 6 table defines Mailing Unit as optional (Bắt buộc: Không)", "defect": "", "traceability": "FS R8 sec. 6 field table (Mailing unit optional); Appendix A Parent_Profile.MailingUnit", "note": "Landed houses (bungalows, terraces) do not possess unit numbers."}, {"idx": 45, "id": "TC-R8-UNT-03", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-UNT", "title": "Verify standard Singapore apartment unit notation (e.g. '#02-01', '#12-345', '12-34A', 'Level 2') is saved accurately", "suite": "Mailing Unit Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingUnit']", "target_name": "Ô Nhập Số Căn Hộ (Mailing Unit)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Unit inputs: '#02-01', '#12-345', '12-34A', 'Level 2'", "steps": "1. Enter '#02-01' into Mailing Unit\n2. Save and reload profile", "expected": "Unit string persists accurately and renders '#02-01' on view screen\nSaved with MSG-0807", "actual": "Standard unit format saved and displayed correctly.", "assumption": "TD: Standard Singapore address unit notation with '#' and hyphen", "defect": "", "traceability": "FS R8 sec. 6 field table; Appendix A", "note": "Typical HDB/condo floor-and-unit format."}, {"idx": 46, "id": "TC-R8-UNT-02", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-UNT", "title": "Verify Mailing Unit maximum length boundary of 20 characters (BVA Length)", "suite": "Mailing Unit Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingUnit']", "target_name": "Ô Nhập Số Căn Hộ (Mailing Unit)", "test_area": "Mailing Address", "severity": "S4 (lowest)", "priority": "Low", "status": "Passed", "test_type": "BVA", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "BVA: 20 chars ('#12-123456789012345') vs 21 chars ('#12-1234567890123456')", "steps": "1. Enter 20-character string into Mailing Unit, save and verify\n2. Enter 21-character string into Mailing Unit and attempt save", "expected": "20 chars: Successfully saved with MSG-0807\n21 chars: Truncated by maxlength='20' attribute or blocked with field length error", "actual": "20 chars accepted; 21 chars blocked by field constraint.", "assumption": "ASM-09: No message code defined for max-length; field-level validation blocks Save.", "defect": "", "traceability": "FS R8 field table (Unit max 20) - BVA; Appendix A Parent_Profile.MailingUnit NVARCHAR(20)", "note": "Protects against database column buffer overflow."}, {"idx": 47, "id": "TC-R8-UNT-04", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-UNT", "title": "Verify forbidden symbols (< > { } ;) in Mailing Unit are rejected and multiline paste handles newlines gracefully", "suite": "Mailing Unit Component", "page": "Parent Portal > Profile", "target_dom": "input[name='mailingUnit']", "target_name": "Ô Nhập Số Căn Hộ (Mailing Unit)", "test_area": "Mailing Address", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Forbidden: '<script>', '{01-02}'; Multiline: '#02-01\\nTower A'", "steps": "1. Enter '<script>' in Mailing Unit and blur\n2. Paste multiline string '#02-01\\nTower A'\n3. Inspect input state", "expected": "HTML script tags are sanitized or rejected\nNewlines in multiline paste are stripped/collapsed into single space without crashing layout", "actual": "Forbidden characters blocked; multiline newlines stripped cleanly.", "assumption": "TD: Input sanitization and newline normalization", "defect": "", "traceability": "NFR Security; Invariant 8", "note": "Prevents malformed addresses and UI disruption."}];
+    let searchQuery = '';
+
+    function handleSearch(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('suite-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = testCases.filter(tc => {
+        if (!searchQuery) return true;
+        const matchStr = (tc.id + ' ' + tc.title + ' ' + tc.target_name + ' ' + tc.target_dom + ' ' + tc.test_data + ' ' + tc.traceability).toLowerCase();
+        return matchStr.includes(searchQuery);
+      });
+
+      filtered.forEach((tc, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        let pillarBadgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        if (tc.pillar === 'BR') pillarBadgeClass = 'bg-purple-50 text-purple-800 border-purple-200';
+        if (tc.pillar === 'AC') pillarBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-emerald-100 text-emerald-800">Passed</span>`;
+        if (tc.status.toUpperCase() === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-red-100 text-red-800">Failed</span>`;
+        } else if (tc.status.toUpperCase() === 'NOT RUN') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">Not Run</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono freeze-col-1 bg-white">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 freeze-col-2 bg-white">${tc.id}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pillarBadgeClass}">
+              ${tc.pillar_badge}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 font-medium text-slate-800 leading-snug">
+            <div>${tc.title}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm" title="${tc.traceability}">🔎 ${tc.traceability}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span>📍</span> <span>${tc.target_name}</span>
+            </div>
+            <div class="font-mono text-[11px] text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 mt-1 inline-block truncate max-w-[220px]" title="${tc.target_dom}">
+              ${tc.target_dom}
+            </div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-mono text-[11px] text-emerald-950 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200 max-h-16 overflow-y-auto leading-relaxed select-all" title="${tc.test_data}">
+              ${tc.test_data}
+            </div>
+          </td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700">${tc.priority}</td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="openModal('${tc.id}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition shadow-2xs">
+              Chi Tiết
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(tcId) {
+      const tc = testCases.find(t => t.id === tcId);
+      if (!tc) return;
+
+      document.getElementById('modal-tc-id').innerText = tc.id;
+      document.getElementById('modal-tc-pillar').innerText = tc.pillar_badge;
+      document.getElementById('modal-tc-title').innerText = tc.title;
+      document.getElementById('modal-target-name').innerText = tc.target_name;
+      document.getElementById('modal-target-dom').innerText = tc.target_dom;
+      document.getElementById('modal-priority').innerText = tc.priority;
+
+      document.getElementById('modal-preconditions').innerText = tc.preconditions;
+      document.getElementById('modal-test-data').innerText = tc.test_data;
+      document.getElementById('modal-steps').innerText = tc.steps;
+      document.getElementById('modal-expected').innerText = tc.expected;
+      document.getElementById('modal-actual').innerText = tc.actual;
+      document.getElementById('modal-traceability').innerText = tc.traceability + ' | ' + (tc.assumption || 'None');
+
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

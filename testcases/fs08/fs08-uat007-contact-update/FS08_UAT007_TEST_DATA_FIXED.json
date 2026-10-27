@@ -1,0 +1,308 @@
+{
+  "test_data_fs08_uat007_contact_update": {
+    "persona": {
+      "howard": {
+        "name": "TAN WEI MING",
+        "display_name": "Howard (TAN WEI MING)",
+        "nric_masked": "*****321B",
+        "nric_unmasked": "S7654321B",
+        "residential_address": "BLK 210 JURONG EAST STREET 21 #05-12 SINGAPORE 600210"
+      }
+    },
+    
+    "permitted_contact_baseline": {
+      "phoneNumber": "92345678",
+      "email": "wei.ming.s2345678b@example.com",
+      "mailingBlock": "12",
+      "mailingStreet": "Science Park Drive",
+      "mailingUnit": "#01-01",
+      "mailingPostalCode": "118225",
+      "mailingCountry": "Singapore"
+    },
+    
+    "permitted_contact_updated": {
+      "phoneNumber": "91234567",
+      "email": "howard.tan.updated@example.com",
+      "mailingBlock": "123",
+      "mailingStreet": "Orchard Boulevard",
+      "mailingUnit": "#08-16",
+      "mailingPostalCode": "237973",
+      "mailingCountry": "Singapore"
+    },
+    
+    "mobile_number_test_vectors": {
+      "valid": [
+        "91234567",
+        "82345678",
+        "62345678",
+        "87654321",
+        "98765432"
+      ],
+      "invalid_format": {
+        "empty": "",
+        "whitespace_8": "        ",
+        "7_digits": "9123456",
+        "9_digits": "912345678",
+        "invalid_prefix_1": "11234567",
+        "invalid_prefix_2": "21234567",
+        "invalid_prefix_3": "31234567",
+        "invalid_prefix_4": "41234567",
+        "invalid_prefix_5": "51234567",
+        "invalid_prefix_7": "71234567",
+        "letters_mixed": "9123abcd",
+        "all_letters": "abcdefgh",
+        "special_chars": "9123@456",
+        "xss_vector": "<script>alert(1)</script>",
+        "sql_injection": "' OR 1=1 --",
+        "full_width_numbers": "９１２３４５６７",
+        "arabic_numbers": "٩١٢٣٤٥٦٧",
+        "leading_zero": "09123456",
+        "with_spaces": "9123 4567",
+        "negative_number": "-9123456",
+        "decimal_number": "91.234567",
+        "1000_chars": "9" * 1000,
+        "unicode_emoji": "9😀123456"
+      },
+      "boundary_values": {
+        "min_valid": "60000000",
+        "max_valid": "99999999",
+        "below_min": "59999999",
+        "above_max": "100000000"
+      }
+    },
+    
+    "email_test_vectors": {
+      "valid": [
+        "user@example.com",
+        "user.name@example.com",
+        "user+tag@example.com",
+        "user@sub.example.com",
+        "user@example.co.uk",
+        "user@example.com.sg",
+        "a@b.cd"
+      ],
+      "invalid_format": {
+        "empty": "",
+        "whitespace_8": "        ",
+        "no_at": "userexample.com",
+        "no_domain": "user@",
+        "no_tld": "user@example",
+        "double_at": "user@@example.com",
+        "spaces_in_email": "user name@example.com",
+        "double_dot": "user@example..com",
+        "comma_tld": "user@example,com",
+        "short_tld": "user@example.c",
+        "xss_vector": "<script>alert(1)</script>@example.com",
+        "sql_injection": "' OR 1=1 --@example.com",
+        "151_chars": "a" * 64 + "@" + "b" * 86,
+        "local_part_65_chars": "a" * 65 + "@example.com",
+        "domain_256_chars": "user@" + "a" * 256 + ".com",
+        "unicode_emoji": "😀@example.com"
+      },
+      "boundary_values": {
+        "max_length_150": "a" * 64 + "@" + "b" * 85,
+        "exceeds_150": "a" * 64 + "@" + "b" * 86
+      }
+    },
+    
+    "block_test_vectors": {
+      "valid": [
+        "123",
+        "12A",
+        "BLK 123",
+        "Blk 456",
+        "Blk 12A",
+        "12-34",
+        "#12-34",
+        "Level 2",
+        ""
+      ],
+      "invalid": {
+        "whitespace_only": "        ",
+        "forbidden_chars_lt": "<script>",
+        "forbidden_chars_gt": "script>",
+        "forbidden_chars_semicolon": "test;drop",
+        "forbidden_chars_curly": "{test}",
+        "xss_vector": "<script>alert(1)</script>",
+        "21_chars": "A" * 21,
+        "1000_chars": "A" * 1000,
+        "newline_chars": "Line1\nLine2",
+        "unicode_emoji": "😀123"
+      },
+      "boundary_values": {
+        "max_length_20": "A" * 20,
+        "exceeds_20": "A" * 21
+      }
+    },
+    
+    "street_test_vectors": {
+      "valid": [
+        "Science Park Drive",
+        "ORCHARD ROAD",
+        "123 Main Street",
+        "Blk 123 Street 45",
+        "Ang Mo Kio Avenue 3",
+        "Tampines Street 81",
+        "Jurong East Street 21",
+        "Bishan Street 11"
+      ],
+      "invalid": {
+        "empty": "",
+        "whitespace_only": "        ",
+        "forbidden_chars_lt": "<script>",
+        "forbidden_chars_gt": "script>",
+        "forbidden_chars_semicolon": "test;drop",
+        "forbidden_chars_curly": "{test}",
+        "xss_vector": "<script>alert(1)</script>",
+        "101_chars": "A" * 101,
+        "1000_chars": "A" * 1000,
+        "newline_chars": "Line1\nLine2"
+      },
+      "boundary_values": {
+        "max_length_100": "A" * 100,
+        "exceeds_100": "A" * 101
+      }
+    },
+    
+    "unit_test_vectors": {
+      "valid": [
+        "#01-01",
+        "#12-34",
+        "12-34",
+        "12-34A",
+        "01-01",
+        "Level 2",
+        "Unit 5",
+        ""
+      ],
+      "invalid": {
+        "whitespace_only": "        ",
+        "forbidden_chars_lt": "<script>",
+        "forbidden_chars_gt": "script>",
+        "forbidden_chars_semicolon": "test;drop",
+        "forbidden_chars_curly": "{test}",
+        "xss_vector": "<script>alert(1)</script>",
+        "21_chars": "A" * 21,
+        "1000_chars": "A" * 1000,
+        "newline_chars": "Line1\nLine2"
+      },
+      "boundary_values": {
+        "max_length_20": "A" * 20,
+        "exceeds_20": "A" * 21
+      }
+    },
+    
+    "postal_code_test_vectors": {
+      "valid": [
+        "118225",
+        "237973",
+        "600210",
+        "123456",
+        "000001",
+        "999999"
+      ],
+      "invalid_format": {
+        "empty": "",
+        "whitespace_6": "      ",
+        "5_digits": "12345",
+        "7_digits": "1234567",
+        "letters_mixed": "12345a",
+        "all_letters": "abcdef",
+        "special_chars": "123@56",
+        "xss_vector": "<script>",
+        "sql_injection": "' OR 1",
+        "with_spaces": "123 456",
+        "negative": "-123456",
+        "decimal": "123.456",
+        "1000_chars": "1" * 1000,
+        "unicode_emoji": "12345😀"
+      },
+      "boundary_values": {
+        "min_valid": "000000",
+        "max_valid": "999999",
+        "below_min": "-00001",
+        "above_max": "1000000"
+      }
+    },
+    
+    "country_test_vectors": {
+      "valid": [
+        "Singapore",
+        "SINGAPORE",
+        "singapore",
+        "Singapore Country",
+        "Republic of Singapore"
+      ],
+      "invalid": {
+        "empty": "",
+        "whitespace_only": "        ",
+        "numbers_mixed": "Singapore123",
+        "all_numbers": "12345678",
+        "special_chars_only": "@#$%^&*",
+        "xss_vector": "<script>alert(1)</script>",
+        "sql_injection": "' OR 1=1 --",
+        "101_chars": "A" * 101,
+        "1000_chars": "A" * 1000
+      },
+      "boundary_values": {
+        "max_length_100": "A" * 100,
+        "exceeds_100": "A" * 101
+      }
+    },
+    
+    "system_messages": {
+      "MSG-0001": "Enter your",
+      "MSG-0805": "Enter a mobile number in the correct format, like 9123 4567",
+      "MSG-0806": "Enter an email address in the correct format, like name@example.com",
+      "MSG-0807": "Your details have been updated.",
+      "MSG-0808": "We could not update your details. Please try again."
+    },
+    
+    "api_endpoints": {
+      "update_profile": "/iam/v1/parent/update/profile",
+      "get_profile": "/iam/v1/parent/profile"
+    },
+    
+    "form_states": {
+      "pristine": {
+        "save_enabled": false,
+        "hint_visible": true,
+        "hint_text": "Make a change to enable saving."
+      },
+      "dirty": {
+        "save_enabled": true,
+        "hint_visible": false
+      }
+    },
+    
+    "modal_dialog": {
+      "title": "Save your changes?",
+      "keep_editing_button": "Keep editing",
+      "confirm_save_button": "Save changes"
+    },
+    
+    "ui_selectors": {
+      "full_name": "dt:has-text('Full Name') + dd",
+      "nric": "dt:has-text('NRIC') + dd",
+      "residential_address": "dt:has-text('Residential') + dd",
+      "show_nric_button": "button:has-text('Show NRIC')",
+      "hide_nric_button": "button:has-text('Hide NRIC')",
+      "update_details_button": "button:has-text('Update details')",
+      "phone_input": "input[name='phoneNumber']",
+      "email_input": "input[name='email']",
+      "block_input": "input[name='mailingBlock']",
+      "street_input": "input[name='mailingStreet']",
+      "unit_input": "input[name='mailingUnit']",
+      "postal_input": "input[name='mailingPostalCode']",
+      "country_input": "input[name='mailingCountry']",
+      "save_button": "button:has-text('Save changes')",
+      "cancel_button": "button:has-text('Cancel')",
+      "dirty_state_hint": "p:has-text('Make a change to enable saving.')",
+      "confirm_alertdialog": "div[role='alertdialog']",
+      "dialog_keep_editing": "div[role='alertdialog'] button:has-text('Keep editing')",
+      "dialog_confirm_save": "div[role='alertdialog'] button:has-text('Save changes')",
+      "dialog_error_message": "div[role='alertdialog'] p[role='alert'], div[role='alertdialog'] p[class*='error']",
+      "success_toast": "p[role='status']:has-text('Your details have been updated.')"
+    }
+  }
+}

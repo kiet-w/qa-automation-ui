@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-02: Child Age Access Control & Isolation | Báo Cáo Kiểm Thử Chuyên Biệt (4 TCs)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .freeze-col-1 { position: sticky; left: 0; z-index: 10; }
+    .freeze-col-2 { position: sticky; left: 48px; z-index: 10; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Nav Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs hover:bg-sky-50 transition">
+        <span>⬅️ Danh Sách 10 Test Suites</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 font-mono text-slate-600 font-bold">
+          File: tests/fs08/fs08-parent-profile/test_ts02_child_age_access.py
+        </span>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Xuất Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">👶</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded border border-sky-200">
+            TS02_CHILD_AGE_ACCESS
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-slate-100 text-slate-700">
+            4 Ca Kiểm Thử
+          </span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">TS-02: Child Age Access Control & Isolation</h1>
+        <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">Quy tắc nghiệp vụ cốt lõi: Khóa form hồ sơ khi mọi con >= 16 tuổi, cho phép sửa khi có con < 16, và chặn tấn công BOLA/IDOR sửa chéo hồ sơ giữa cha và mẹ.</p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-emerald-700 uppercase">Passed</div>
+          <div class="text-xl font-black text-emerald-900">3</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-red-700 uppercase">Failed</div>
+          <div class="text-xl font-black text-red-900">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-slate-600 uppercase">Not Run</div>
+          <div class="text-xl font-black text-slate-800">1</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Table Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      
+      <!-- Search Bar -->
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-xs text-slate-600">
+          Chạy file test này bằng lệnh: <code class="font-mono font-bold bg-slate-100 text-sky-900 px-2 py-1 rounded border border-slate-200 select-all">.venv/bin/pytest tests/fs08/fs08-parent-profile/test_ts02_child_age_access.py -v</code>
+        </div>
+        <div class="relative w-72">
+          <input type="text" id="suite-search" placeholder="Tìm theo mã TC, tiêu đề, selector..." oninput="handleSearch(this.value)" class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg outline-none w-full placeholder:text-slate-400">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px] relative">
+        <table class="w-full text-left border-collapse" style="min-width: 1350px;">
+          <thead class="sticky top-0 bg-[#1B365D] text-white text-[11px] font-mono uppercase tracking-wider z-20">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 freeze-col-1 bg-[#1B365D]">STT</th>
+              <th class="py-3 px-3 text-center w-28 freeze-col-2 bg-[#1B365D]">Mã TC</th>
+              <th class="py-3 px-3 text-center w-32">Trụ Cột</th>
+              <th class="py-3 px-4 min-w-[280px]">Tiêu Đề Ca Kiểm Thử</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">📍 Vị Trí &amp; DOM Selector</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">💾 Dữ Liệu Kiểm Thử (Test Data)</th>
+              <th class="py-3 px-2 text-center w-20">Ưu Tiên</th>
+              <th class="py-3 px-2 text-center w-24">Trạng Thái</th>
+              <th class="py-3 px-3 text-center w-24">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="suite-tbody" class="text-xs divide-y divide-slate-200 bg-white">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="tc-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white border border-slate-300 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tc-id" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-sky-100 text-sky-800 border border-sky-200">TC-001</span>
+          <span id="modal-tc-pillar" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Pillar</span>
+          <h3 id="modal-tc-title" class="text-sm font-bold text-slate-900 truncate max-w-lg">Tiêu đề</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        <!-- Target DOM Banner -->
+        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-800">📍 Vị Trí Kiểm Thử &amp; Element DOM Selector</div>
+            <div id="modal-target-name" class="text-xs font-bold text-slate-900 mt-0.5">Target Name</div>
+            <code id="modal-target-dom" class="text-[11px] font-mono text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-300 mt-1 inline-block">locator</code>
+          </div>
+          <span id="modal-priority" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-slate-800 border border-slate-200 self-start sm:self-center">High</span>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">1. Điều Kiện Tiên Quyết (Preconditions)</h4>
+          <div id="modal-preconditions" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">2. Dữ Liệu Kiểm Thử (Test Data)</h4>
+          <div id="modal-test-data" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap select-all"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">3. Các Bước Thực Hiện (Test Steps)</h4>
+          <div id="modal-steps" class="p-3 bg-slate-50 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-emerald-700 mb-1">4. Kết Quả Kỳ Vọng (Expected Result)</h4>
+            <div id="modal-expected" class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-emerald-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-sky-700 mb-1">5. Kết Quả Thực Tế (Actual Result)</h4>
+            <div id="modal-actual" class="p-3 bg-sky-50/70 border border-sky-200 rounded-lg text-sky-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">6. Nguồn Đối Soát (Traceability)</h4>
+          <div id="modal-traceability" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg text-xs transition">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testCases = [{"idx": 5, "id": "TC-R8-110", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-AGE", "title": "Verify My details is strictly view-only when all linked children are 16+ years old", "suite": "Child Age Access & Isolation", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Update details'), /profile", "target_name": "Khóa Quyền Sửa Theo Tuổi Con", "test_area": "Access Control", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "Parent PE logged in (all linked children E1 age 16, E2 age 17)", "test_data": "Parent PE (S7000007G); Children >= 16", "steps": "1. Log in as Parent PE\n2. Navigate to /profile\n3. Inspect profile screen for edit controls\n4. Attempt to call PUT /api/parent/profile directly via API", "expected": "All fields rendered as read-only\nNo [Update details] button exists on UI\nDirect API update attempt is rejected with HTTP 403 Forbidden\nBanner displays: 'Profile editing is unavailable when all children have reached 16.'", "actual": "Profile is strictly view-only; edit button hidden; API rejects update.", "assumption": "CR: Business rule BR-08-06.4 and R8-AC09 - view-only when all children 16+", "defect": "", "traceability": "FR-08.3 precondition; R8-AC09; BR-08-06.4", "note": "Child adulthood transition lifecycle rule."}, {"idx": 6, "id": "TC-R8-111", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-AGE", "title": "Verify My details is editable when at least one child is under 16 years old", "suite": "Child Age Access & Isolation", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Update details'), /profile", "target_name": "Khóa Quyền Sửa Theo Tuổi Con", "test_area": "Access Control", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "Parent PB logged in (Child B1 age 16, Child B2 age 14)", "test_data": "Parent PB (S7000002B); Child B2 under 16", "steps": "1. Log in as Parent PB\n2. Navigate to /profile\n3. Inspect profile screen", "expected": "[Update details] button is visible and active\nClicking enters Edit Mode with editable contact and mailing fields\nSave action is permitted", "actual": "[Update details] button is available and functional.", "assumption": "CR: FSD section 6 precondition: parent with at least one child < 16 can edit", "defect": "", "traceability": "FR-08.3 precondition; R8-AC09", "note": "Per-family mixed age rule."}, {"idx": 7, "id": "TC-R8-112", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-AGE", "title": "Verify a parent cannot update another parent's profile via API IDOR tampering (BOLA/IDOR Protection)", "suite": "Child Age Access & Isolation", "page": "API Service", "target_dom": "PUT /api/parent/profile/{parentId}", "target_name": "Kiểm Soát Quyền API BOLA/IDOR", "test_area": "Security Guard", "severity": "S1 (highest)", "priority": "Critical", "status": "Not Run", "test_type": "Security", "env": "SIT • API client (Postman/Playwright API) • Mock SingPass + mock data API", "preconditions": "Father FA logged in; Mother MA's Parent_Profile ID known", "test_data": "Target ID: MA's Profile ID; Token: FA's auth bearer token", "steps": "1. Send PUT /api/parent/profile/{MA_ID} using FA's session token\n2. Check HTTP status code and response payload\n3. Inspect MA's profile in DB", "expected": "API rejects request with HTTP 403 Forbidden and MSG-0003: 'You do not have permission to perform this action.'\nMother MA's profile remains completely unchanged", "actual": "Server-side tenancy & ownership verification on user claims.", "assumption": "TD: Server-side tenancy & ownership verification on user claims", "defect": "", "traceability": "FR-08.3 rules (own data only); NFR Security; MSG-0003", "note": "OWASP Top 10 API1: Broken Object Level Authorization (BOLA/IDOR)."}, {"idx": 8, "id": "TC-R8-113", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-AGE", "title": "Verify father's profile update does not alter mother's personal details (Independent Records)", "suite": "Child Age Access & Isolation", "page": "Parent Portal > Profile", "target_dom": "Parent_Profile DB Table, /profile", "target_name": "Cách Ly Hồ Sơ Độc Lập Cha & Mẹ", "test_area": "Data Isolation", "severity": "S2", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "Father FA and Mother MA both registered in system for same children", "test_data": "FA new phone: '98887777'; MA original phone: '81112222'", "steps": "1. Log in as Father FA and update phone number to '98887777'\n2. Confirm update and log out\n3. Log in as Mother MA and navigate to /profile", "expected": "Mother MA's phone number remains '81112222' (unchanged)\nEach parent maintains an independent Parent_Profile entity in DB", "actual": "Father update is isolated; mother profile remains unchanged.", "assumption": "CR: FSD Appendix A shows separate Parent_Profile row per NRIC", "defect": "", "traceability": "FR-08.3 rules; Appendix A Parent_Profile", "note": "Ensures parent profiles are strictly de-coupled."}];
+    let searchQuery = '';
+
+    function handleSearch(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('suite-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = testCases.filter(tc => {
+        if (!searchQuery) return true;
+        const matchStr = (tc.id + ' ' + tc.title + ' ' + tc.target_name + ' ' + tc.target_dom + ' ' + tc.test_data + ' ' + tc.traceability).toLowerCase();
+        return matchStr.includes(searchQuery);
+      });
+
+      filtered.forEach((tc, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        let pillarBadgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        if (tc.pillar === 'BR') pillarBadgeClass = 'bg-purple-50 text-purple-800 border-purple-200';
+        if (tc.pillar === 'AC') pillarBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-emerald-100 text-emerald-800">Passed</span>`;
+        if (tc.status.toUpperCase() === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-red-100 text-red-800">Failed</span>`;
+        } else if (tc.status.toUpperCase() === 'NOT RUN') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">Not Run</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono freeze-col-1 bg-white">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 freeze-col-2 bg-white">${tc.id}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pillarBadgeClass}">
+              ${tc.pillar_badge}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 font-medium text-slate-800 leading-snug">
+            <div>${tc.title}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm" title="${tc.traceability}">🔎 ${tc.traceability}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span>📍</span> <span>${tc.target_name}</span>
+            </div>
+            <div class="font-mono text-[11px] text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 mt-1 inline-block truncate max-w-[220px]" title="${tc.target_dom}">
+              ${tc.target_dom}
+            </div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-mono text-[11px] text-emerald-950 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200 max-h-16 overflow-y-auto leading-relaxed select-all" title="${tc.test_data}">
+              ${tc.test_data}
+            </div>
+          </td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700">${tc.priority}</td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="openModal('${tc.id}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition shadow-2xs">
+              Chi Tiết
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(tcId) {
+      const tc = testCases.find(t => t.id === tcId);
+      if (!tc) return;
+
+      document.getElementById('modal-tc-id').innerText = tc.id;
+      document.getElementById('modal-tc-pillar').innerText = tc.pillar_badge;
+      document.getElementById('modal-tc-title').innerText = tc.title;
+      document.getElementById('modal-target-name').innerText = tc.target_name;
+      document.getElementById('modal-target-dom').innerText = tc.target_dom;
+      document.getElementById('modal-priority').innerText = tc.priority;
+
+      document.getElementById('modal-preconditions').innerText = tc.preconditions;
+      document.getElementById('modal-test-data').innerText = tc.test_data;
+      document.getElementById('modal-steps').innerText = tc.steps;
+      document.getElementById('modal-expected').innerText = tc.expected;
+      document.getElementById('modal-actual').innerText = tc.actual;
+      document.getElementById('modal-traceability').innerText = tc.traceability + ' | ' + (tc.assumption || 'None');
+
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

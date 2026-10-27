@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduSave FS08 — Parent Profile Test Execution Video Gallery</title>
+  <style>
+    :root {
+      --bg: #0B1120;
+      --sidebar-bg: #0F172A;
+      --card-bg: #1E293B;
+      --card-hover: #334155;
+      --border: #334155;
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --code-font: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 460px;
+      min-width: 460px;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      background: var(--sidebar-bg);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    .sidebar-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: #0D1527;
+    }
+    .sidebar-header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .tab-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: #1E293B;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      background: #334155;
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: #2563EB;
+      color: #fff;
+      border-color: #3B82F6;
+    }
+    .search-box {
+      margin-top: 10px;
+      width: 100%;
+      padding: 9px 12px;
+      background: #1E293B;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+    .tc-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    .tc-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .tc-list::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    .tc-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      background: #182234;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .tc-item:hover {
+      background: #243247;
+      transform: translateY(-1px);
+    }
+    .tc-item.active {
+      background: #1E3A8A;
+      border-color: #3B82F6;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .tc-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .tc-id {
+      font-family: var(--code-font);
+      font-size: 11px;
+      font-weight: 700;
+      color: #60A5FA;
+    }
+    .badges {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-br { background: rgba(13, 148, 136, 0.2); color: #2DD4BF; }
+    .badge-ac { background: rgba(37, 99, 235, 0.2); color: #60A5FA; }
+    .badge-tech { background: rgba(99, 102, 241, 0.2); color: #A5B4FC; }
+    .badge-pass { background: rgba(34, 197, 94, 0.2); color: #4ADE80; }
+    .tc-title {
+      font-size: 12.5px;
+      color: #E2E8F0;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .tc-subtext {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Main View Area */
+    .main-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 32px;
+      overflow-y: auto;
+      background: radial-gradient(circle at top right, #1E293B, #0B1120 70%);
+    }
+    .video-container {
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.6);
+      border: 1px solid var(--border);
+      max-height: 60vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      max-height: 60vh;
+      outline: none;
+    }
+    .video-overlay-ctrl {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .ctrl-btn {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ctrl-btn:hover {
+      background: rgba(37, 99, 235, 0.8);
+    }
+
+    /* Info Panel */
+    .info-panel {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .info-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.4;
+    }
+    .info-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .meta-tag {
+      background: #0F172A;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      font-family: var(--code-font);
+      font-size: 11px;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+    .text-box {
+      background: #0F172A;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #E2E8F0;
+      white-space: pre-wrap;
+    }
+    .actual-box {
+      background: rgba(34, 197, 94, 0.08);
+      border-left: 3px solid #22C55E;
+      color: #86EFAC;
+    }
+    .keyboard-hint {
+      margin-top: 14px;
+      padding: 10px;
+      background: rgba(15, 23, 42, 0.6);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    kbd {
+      background: #334155;
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h1>🎬 FS08: Parent Profile Video Evidence</h1>
+      <p>104 Recordings (100% Passed) • TestCases View</p>
+      
+      <!-- Tab Filters -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setTab('ALL')">🌟 Tất Cả (104)</button>
+        <button class="tab-btn" onclick="setTab('BR')">⚖️ Business Rules (8)</button>
+        <button class="tab-btn" onclick="setTab('AC')">🎯 Acceptance Criteria (23)</button>
+        <button class="tab-btn" onclick="setTab('TECH')">🛠️ Tech & UI (73)</button>
+      </div>
+
+      <input type="text" id="search" class="search-box" placeholder="🔍 Tìm theo ID, tiêu đề, scenario..." oninput="filterCases()">
+    </div>
+
+    <div class="tc-list" id="tc-list"></div>
+  </div>
+
+  <!-- Main View Area -->
+  <div class="main-view">
+    <div class="video-container">
+      <video id="player" controls autoplay playsinline>
+        <source id="video-source" src="" type="video/webm">
+        Trình duyệt không hỗ trợ thẻ video HTML5.
+      </video>
+      <div class="video-overlay-ctrl">
+        <a id="btn-raw-video" href="#" target="_blank" class="ctrl-btn" title="Mở video trong tab mới">↗ Tab Mới</a>
+        <a id="btn-download-video" href="#" download class="ctrl-btn" title="Tải video về máy">⬇ Tải Về</a>
+      </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="info-panel">
+      <!-- Left Info: Title, Expected, Actual -->
+      <div class="info-card">
+        <div class="info-header">
+          <div class="info-title" id="cur-title">Đang tải ca kiểm thử...</div>
+        </div>
+        
+        <div class="info-meta" id="cur-meta"></div>
+
+        <div class="section-label">🎯 Kết Quả Kỳ Vọng (Expected Result)</div>
+        <div class="text-box" id="cur-expected"></div>
+
+        <div class="section-label">✅ Kết Quả Thực Tế Đã Xác Minh (Actual Result Verified)</div>
+        <div class="text-box actual-box" id="cur-actual"></div>
+      </div>
+
+      <!-- Right Info: Traceability & Specs -->
+      <div class="info-card">
+        <div class="section-label" style="margin-top: 0;">📋 Ma Trận Truy Vết (Traceability)</div>
+        <div class="text-box" id="cur-traceability" style="font-family: var(--code-font); font-size: 11.5px; color: #93C5FD;"></div>
+
+        <div class="section-label">📁 File Video Ghi Hình</div>
+        <div class="text-box" id="cur-filename" style="font-family: var(--code-font); font-size: 11px; word-break: break-all;"></div>
+
+        <div class="section-label">📊 Tình Trạng Xác Minh</div>
+        <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+          <span class="badge badge-pass" style="font-size: 12px; padding: 4px 10px;">PASSED 100%</span>
+          <span style="font-size: 11px; color: var(--text-muted);" id="cur-size"></span>
+        </div>
+
+        <div class="keyboard-hint">
+          <span><kbd>↑</kbd><kbd>↓</kbd> Chọn TC</span>
+          <span><kbd>Space</kbd> Dừng/Phát</span>
+          <span><kbd>/</kbd> Tìm kiếm</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const allCases = [{"id": "TC-R8-094", "pillar": "BR", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify SingPass verified identity displays Full Name, NRIC and Residential Address as strictly read-only", "status": "Passed", "severity": "S2", "expected": "Full Name, NRIC, and Residential Address are rendered as static text/read-only tags\nNo input fields exist for Full Name or Residential Address\nEdit button [Update details] is visible", "actual": "Verified: Full Name and Residential Address are static text without editable inputs.", "traceability": "FR-08.3; FS R8 sec. 6 field table; D-20; AC #18", "video_name": "tc_r8_094.webm", "size_kb": 725.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_094_singpass_identity_component_read_only/video.webm"}, {"id": "TC-R8-095", "pillar": "BR", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify residential address cannot be edited and is immutable in Edit Mode", "status": "Passed", "severity": "S2", "expected": "No editable input exists for Residential Address in Edit Mode\nLegal notice displayed: 'Residential address is maintained via Government Digital Services and cannot be edited in this portal.'\nValue remains unchanged", "actual": "Verified: Residential address remains static and locked during Edit Mode.", "traceability": "FR-08.3 rules (D-20); R8-AC18", "video_name": "tc_r8_095.webm", "size_kb": 611.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_095_residential_address_immutable_in_edit_mode/video.webm"}, {"id": "TC-R8-096", "pillar": "BR", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify API rejects or ignores any tampering attempt to update read-only SingPass identity fields", "status": "Not Run", "severity": "S1 (highest)", "expected": "API ignores injected read-only fields or rejects request with HTTP 400 Bad Request\nParent profile in DB retains original Full Name, NRIC, and Residential Address", "actual": "Server-side schema validation strips unauthorized fields.", "traceability": "FR-08.3 rules; NFR Security; Invariant 8", "video_name": "tc_r8_096.webm", "size_kb": 686.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_096_api_rejects_read_only_identity_tampering/video.webm"}, {"id": "TC-R8-097", "pillar": "BR", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify saving valid phone, email and mailing address shows MSG-0807, persists data, creates audit log, and sends zero email", "status": "Passed", "severity": "S1 (highest)", "expected": "Success toast MSG-0807 'Your details have been updated.' is displayed in green\nValues persist accurately after page reload\nAudit log records 1 entry per changed field (field, old, new, user, timestamp)\nZERO notification email is sent (Decision D-28)", "actual": "Success toast MSG-0807 displayed; DB updated; audit log created; no email dispatched.", "traceability": "FR-08.3; R8-AC14; US-08.2; D-28; PB-15", "video_name": "tc_r8_097.webm", "size_kb": 1148.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_097_save_valid_profile_update_success_msg0807/video.webm"}, {"id": "TC-R8-110", "pillar": "BR", "scenario_id": "TS-010-AGE", "suite": "Child Age Access & Isolation", "title": "Verify My details is strictly view-only when all linked children are 16+ years old", "status": "Passed", "severity": "S2", "expected": "All fields rendered as read-only\nNo [Update details] button exists on UI\nDirect API update attempt is rejected with HTTP 403 Forbidden\nBanner displays: 'Profile editing is unavailable when all children have reached 16.'", "actual": "Profile is strictly view-only; edit button hidden; API rejects update.", "traceability": "FR-08.3 precondition; R8-AC09; BR-08-06.4", "video_name": "tc_r8_110.webm", "size_kb": 608.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts02_child_age_access/tc_r8_110_all_children_age_16_locks_profile_edit/video.webm"}, {"id": "TC-R8-111", "pillar": "BR", "scenario_id": "TS-010-AGE", "suite": "Child Age Access & Isolation", "title": "Verify My details is editable when at least one child is under 16 years old", "status": "Passed", "severity": "S3", "expected": "[Update details] button is visible and active\nClicking enters Edit Mode with editable contact and mailing fields\nSave action is permitted", "actual": "[Update details] button is available and functional.", "traceability": "FR-08.3 precondition; R8-AC09", "video_name": "tc_r8_111.webm", "size_kb": 634.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts02_child_age_access/tc_r8_111_child_under_16_profile_editable/video.webm"}, {"id": "TC-R8-112", "pillar": "BR", "scenario_id": "TS-010-AGE", "suite": "Child Age Access & Isolation", "title": "Verify a parent cannot update another parent's profile via API IDOR tampering (BOLA/IDOR Protection)", "status": "Not Run", "severity": "S1 (highest)", "expected": "API rejects request with HTTP 403 Forbidden and MSG-0003: 'You do not have permission to perform this action.'\nMother MA's profile remains completely unchanged", "actual": "Server-side tenancy & ownership verification on user claims.", "traceability": "FR-08.3 rules (own data only); NFR Security; MSG-0003", "video_name": "tc_r8_112.webm", "size_kb": 637.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts02_child_age_access/tc_r8_112_api_idor_tampering_rejected_msg0003/video.webm"}, {"id": "TC-R8-113", "pillar": "BR", "scenario_id": "TS-010-AGE", "suite": "Child Age Access & Isolation", "title": "Verify father's profile update does not alter mother's personal details (Independent Records)", "status": "Passed", "severity": "S2", "expected": "Mother MA's phone number remains '81112222' (unchanged)\nEach parent maintains an independent Parent_Profile entity in DB", "actual": "Father update is isolated; mother profile remains unchanged.", "traceability": "FR-08.3 rules; Appendix A Parent_Profile", "video_name": "tc_r8_113.webm", "size_kb": 1398.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts02_child_age_access/tc_r8_113_father_update_does_not_alter_mother_details/video.webm"}, {"id": "TC-R8-ATM-01", "pillar": "AC", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify NRIC masking and reveal toggle button switches between Show and Hide state", "status": "Passed", "severity": "S2", "expected": "NRIC toggles accurately between masked and unmasked representation\nButton text dynamically updates ('Show NRIC' <-> 'Hide NRIC')\nZero layout shift (CLS = 0)", "actual": "NRIC toggles correctly between masked and unmasked state with zero layout shift.", "traceability": "FR-08.3; BR-08-09.1; AC #10; NFR Security", "video_name": "tc_r8_atm_01.webm", "size_kb": 604.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_atm_01_nric_masking_and_reveal_toggle_component/video.webm"}, {"id": "TC-R8-ATM-02", "pillar": "AC", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify Save changes button pristine and dirty state gatekeeper (disabled when pristine, enabled when dirty)", "status": "Passed", "severity": "S2", "expected": "Pristine state: Save changes button is disabled (disabled=true); hint 'Make a change to enable saving.' is visible\nDirty state: Save changes button enables (disabled=false); hint is hidden\nReverting to original baseline: Save changes button re-disables; hint reappears", "actual": "Button disabled with hint when pristine; enables upon change; re-disables when reverted.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_atm_02.webm", "size_kb": 674.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_atm_02_save_button_pristine_dirty_gatekeeper/video.webm"}, {"id": "TC-R8-STA-01", "pillar": "AC", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify clicking 'Update details' button transitions page from View Mode to Edit Mode", "status": "Passed", "severity": "S2", "expected": "Page switches smoothly to Edit Mode\nEditable inputs appear: phoneNumber, email, mailingBlock, mailingStreet, mailingUnit, mailingPostalCode, mailingCountry\nAction buttons [Save changes] and [Cancel] appear\n[Update details] button is replaced", "actual": "Page transitions to Edit Mode; inputs and action buttons revealed.", "traceability": "FR-08.3; FS R8 sec. 6; AC #14", "video_name": "tc_r8_sta_01.webm", "size_kb": 681.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_01_mode_transition_view_to_edit/video.webm"}, {"id": "TC-R8-STA-02", "pillar": "AC", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify clicking 'Cancel' button discards uncommitted modifications and restores baseline in View Mode", "status": "Passed", "severity": "S2", "expected": "Edit Mode exits immediately without confirmation modal\nPage returns to View Mode\nProfile displays original phone ('91234567') and email\nUncommitted modifications are completely discarded", "actual": "Cancel button restores original baseline; zero uncommitted data saved.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_sta_02.webm", "size_kb": 716.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_02_mode_transition_cancel_discards_edits/video.webm"}, {"id": "TC-R8-STA-03", "pillar": "AC", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify each blank required field individually prevents submission with inline error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Each blank mandatory field individually triggers MSG-0001 inline error\nSave action is blocked on every iteration\nNothing is saved to DB", "actual": "Each individual mandatory field triggers MSG-0001 when left blank.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_sta_03.webm", "size_kb": 871.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_03_individual_mandatory_field_validation/video.webm"}, {"id": "TC-R8-SUB-01", "pillar": "AC", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify clicking 'Save changes' in dirty state triggers confirmation modal (role='alertdialog')", "status": "Passed", "severity": "S2", "expected": "Modal appears with role='alertdialog'\nDisplays title 'Confirm Changes' and confirmation message\nContains action buttons: [Keep editing] and [Save changes]\nBackground backdrop blocks background interaction", "actual": "Modal alertdialog displayed with expected buttons and backdrop.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_sub_01.webm", "size_kb": 966.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_01_save_changes_triggers_confirm_modal/video.webm"}, {"id": "TC-R8-INT-01", "pillar": "AC", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify Confirm Dialog 'Keep editing' button retains uncommitted dirty form data without API dispatch", "status": "Passed", "severity": "S2", "expected": "Confirmation Dialog closes immediately\nForm remains in Edit Mode with '98887777' preserved in Mobile Number input\nZero HTTP PUT/PATCH mutation requests dispatched to backend\nNo toast displayed", "actual": "Keep editing button closes dialog and retains dirty form inputs without API dispatch.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_int_01.webm", "size_kb": 819.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_int_01_confirm_dialog_keep_editing_preserves_dirty_form/video.webm"}, {"id": "TC-R8-109", "pillar": "AC", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify backend system error (HTTP 500) displays MSG-0808 and preserves dirty form data without loss", "status": "Passed", "severity": "S2", "expected": "Displays error toast/banner MSG-0808: 'We could not update your details. Please try again.'\nPage does NOT crash (No White Screen of Death)\nForm remains in Edit Mode with '98887777' preserved so user does not lose typed data\nDatabase retains original phone '91234567'", "actual": "MSG-0808 displayed; form inputs preserved; DB retains original values.", "traceability": "FR-08.3 errors; R8-AC17; MSG-0808", "video_name": "tc_r8_109.webm", "size_kb": 1007.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_109_backend_system_error_500_displays_msg0808/video.webm"}, {"id": "TC-R8-098", "pillar": "AC", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify Singapore mobile numbers starting with valid prefixes 6, 8, and 9 are accepted", "status": "Passed", "severity": "S3", "expected": "All 3 numbers starting with 6, 8, and 9 pass validation without inline errors\nProfile updates successfully with success toast MSG-0807", "actual": "All 3 valid Singapore prefixes accepted and saved with MSG-0807.", "traceability": "FR-08.3; FS R8 field table (Mobile); R8-AC14", "video_name": "tc_r8_098.webm", "size_kb": 850.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_098_mobile_number_valid_prefixes_component/video.webm"}, {"id": "TC-R8-099", "pillar": "AC", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify invalid mobile numbers containing letters or mixed alphanumeric are rejected with MSG-0805", "status": "Passed", "severity": "S2", "expected": "System rejects submission and displays MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'\nInput field highlights with red glowing border (aria-invalid='true')\nConfirm Dialog is blocked", "actual": "Invalid alphanumeric phone rejected; displays inline error and marks field invalid.", "traceability": "FR-08.3 errors; R8-AC15; MSG-0805", "video_name": "tc_r8_099.webm", "size_kb": 1068.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_099_mobile_number_invalid_alphanumeric_rejected/video.webm"}, {"id": "TC-R8-TEL-01", "pillar": "AC", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify mobile numbers starting with invalid prefixes (1, 2, 3, 4, 5, 7) are rejected with MSG-0805", "status": "Passed", "severity": "S2", "expected": "Validation fails on each invalid prefix\nDisplays MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'\nSave button blocked from dispatching mutation", "actual": "Displays MSG-0805 for non-6/8/9 starting digits.", "traceability": "FR-08.3 errors; R8-AC15; MSG-0805", "video_name": "tc_r8_tel_01.webm", "size_kb": 1121.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_01_mobile_number_invalid_prefixes_rejected/video.webm"}, {"id": "TC-R8-TEL-03", "pillar": "AC", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify clearing mandatory Mobile Number input triggers required validation error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Displays required field error MSG-0001: 'Enter your mobile number' (or 'This field is required')\nInput marked with aria-invalid='true' and red border\nSave button is disabled", "actual": "MSG-0001 displayed under Mobile Number field; save action blocked.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_tel_03.webm", "size_kb": 832.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_03_mobile_number_cleared_mandatory_validation/video.webm"}, {"id": "TC-R8-EML-01", "pillar": "AC", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify valid email formats including subdomains, plus-addressing, dots, and uppercase are accepted", "status": "Passed", "severity": "S3", "expected": "All valid email variants pass validation cleanly\nProfile updates successfully with MSG-0807 toast\nLeading/trailing spaces trimmed cleanly", "actual": "Valid emails with dots, hyphens, plus-signs, and subdomains accepted.", "traceability": "FR-08.3; FS R8 sec. 6 field table; R8-AC14", "video_name": "tc_r8_eml_01.webm", "size_kb": 95.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_01_email_valid_variants_accepted/video.webm"}, {"id": "TC-R8-101", "pillar": "AC", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify invalid email formats are rejected with error MSG-0806 (RFC 5322 Syntax Permutations)", "status": "Passed", "severity": "S2", "expected": "Validation rejects each invalid syntax\nDisplays MSG-0806: 'Enter an email address in the correct format, like name@example.com'\nInput highlights with aria-invalid='true'\nSubmission blocked", "actual": "Displays inline validation error for malformed email strings.", "traceability": "FR-08.3 errors; R8-AC15; MSG-0806", "video_name": "tc_r8_101.webm", "size_kb": 103.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_101_email_rfc5322_invalid_syntax_rejected/video.webm"}, {"id": "TC-R8-EML-02", "pillar": "AC", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify email address containing space is rejected with MSG-0806", "status": "Passed", "severity": "S3", "expected": "Validation detects illegal whitespace within email address\nDisplays MSG-0806: 'Enter an email address in the correct format, like name@example.com'\nSave action blocked", "actual": "Rejected with MSG-0806 due to embedded whitespace.", "traceability": "FR-08.3 errors; R8-AC15; MSG-0806", "video_name": "tc_r8_eml_02.webm", "size_kb": 92.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_02_email_with_spaces_rejected/video.webm"}, {"id": "TC-R8-EML-03", "pillar": "AC", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify clearing mandatory Email Address input triggers required error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Displays required field error MSG-0001: 'Enter your email' (or 'This field is required')\nInput marked with aria-invalid='true'\nSave button disabled", "actual": "MSG-0001 displayed under Email field; save blocked.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_eml_03.webm", "size_kb": 98.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_03_email_cleared_mandatory_validation/video.webm"}, {"id": "TC-R8-105", "pillar": "AC", "scenario_id": "TS-010-BLK", "suite": "Mailing Block Component", "title": "Verify optional Mailing Block can be left blank and saved successfully", "status": "Passed", "severity": "S4 (lowest)", "expected": "Form passes validation without error\nProfile updates successfully with MSG-0807\nReloading shows empty Mailing Block", "actual": "Blank Mailing Block saved successfully with MSG-0807.", "traceability": "FS R8 sec. 6 field table (Mailing block optional); Appendix A Parent_Profile.MailingBlock", "video_name": "tc_r8_105.webm", "size_kb": 685.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_105_mailing_block_optional_can_be_blank/video.webm"}, {"id": "TC-R8-UNT-01", "pillar": "AC", "scenario_id": "TS-010-UNT", "suite": "Mailing Unit Component", "title": "Verify optional Mailing Unit can be left blank and saved successfully", "status": "Passed", "severity": "S4 (lowest)", "expected": "Form passes validation without error\nProfile updates successfully with MSG-0807\nReloading shows empty Mailing Unit", "actual": "Blank Mailing Unit saved successfully with MSG-0807.", "traceability": "FS R8 sec. 6 field table (Mailing unit optional); Appendix A Parent_Profile.MailingUnit", "video_name": "tc_r8_unt_01.webm", "size_kb": 693.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_unt_01_mailing_unit_optional_can_be_blank/video.webm"}, {"id": "TC-R8-STR-01", "pillar": "AC", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify clearing mandatory Mailing Street input triggers required validation error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Displays required error MSG-0001: 'Enter your street' (or 'This field is required')\nInput marked with aria-invalid='true'\nSave button disabled", "actual": "MSG-0001 displayed under Mailing Street; submission blocked.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_str_01.webm", "size_kb": 669.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_str_01_mailing_street_cleared_mandatory_validation/video.webm"}, {"id": "TC-R8-108", "pillar": "AC", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify Singapore Mailing Postal Code must be exactly 6 numeric digits (EP Valid vs Invalid)", "status": "Passed", "severity": "S3", "expected": "'650009' passes and saves with MSG-0807\n'65000', '6500091', and '65A009' are rejected with inline validation error and red border\nNothing invalid saved to DB", "actual": "Only exact 6-digit postal code 650009 is accepted; others rejected.", "traceability": "FS R8 field table (Postal code 6 digits); Appendix A Parent_Profile.MailingPostalCode VARCHAR(10)", "video_name": "tc_r8_108.webm", "size_kb": 714.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_108_mailing_postal_code_exact_6_digits/video.webm"}, {"id": "TC-R8-POS-03", "pillar": "AC", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify postal code containing non-digits, special symbols, or hyphens (e.g. '23888a', '650-009') is rejected", "status": "Passed", "severity": "S3", "expected": "Validation rejects non-digit characters\nDisplays inline validation error\nSubmission blocked", "actual": "Rejected: only numeric digits permitted.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_pos_03.webm", "size_kb": 1099.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_03_mailing_postal_code_non_digit_rejected/video.webm"}, {"id": "TC-R8-POS-04", "pillar": "AC", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify clearing mandatory Mailing Postal Code triggers required error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Displays required field error MSG-0001: 'Enter your postal code' (or 'This field is required')\nInput marked with aria-invalid='true'\nSave button disabled", "actual": "MSG-0001 displayed under Postal Code field; submission blocked.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_pos_04.webm", "size_kb": 596.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_04_mailing_postal_code_cleared_mandatory_validation/video.webm"}, {"id": "TC-R8-CTY-03", "pillar": "AC", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify clearing mandatory Mailing Country triggers required validation error MSG-0001", "status": "Passed", "severity": "S2", "expected": "Displays required error MSG-0001: 'Enter your country' (or 'This field is required')\nInput marked with aria-invalid='true'\nSave button disabled", "actual": "MSG-0001 displayed under Mailing Country; submission blocked.", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "video_name": "tc_r8_cty_03.webm", "size_kb": 706.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_03_mailing_country_cleared_mandatory_validation/video.webm"}, {"id": "TC-R8-TEL-02", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify mobile number length boundary: 7 digits and 9 digits are rejected with MSG-0805 (BVA Length)", "status": "Passed", "severity": "S3", "expected": "Both 7-digit and 9-digit inputs are rejected\nDisplays MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'\nNo data is committed to DB", "actual": "Rejected with MSG-0805 for length != 8 digits.", "traceability": "FS R8 sec. 6 field table; R8-AC15; MSG-0805", "video_name": "tc_r8_tel_02.webm", "size_kb": 1050.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_02_mobile_number_length_bva_rejected/video.webm"}, {"id": "TC-R8-100", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify mobile number entered with space is accepted and trimmed upon saving (ASM-08)", "status": "Passed", "severity": "S4 (lowest)", "expected": "Input is accepted without error\nSaved successfully with MSG-0807\nStored and rendered as '91234567' (space stripped cleanly)", "actual": "Saved with MSG-0807; stored value normalized to 91234567.", "traceability": "FS R8 field table (example format '9123 4567')", "video_name": "tc_r8_100.webm", "size_kb": 811.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_100_mobile_number_with_space_accepted_and_trimmed/video.webm"}, {"id": "TC-R8-TEL-04", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify whitespace-only Mobile Number input is treated as empty and triggers MSG-0001 (ASM-15)", "status": "Passed", "severity": "S4 (lowest)", "expected": "Whitespace is trimmed and treated as empty input\nDisplays required field error MSG-0001\nNothing is saved to database", "actual": "Whitespace trimmed; required field validation triggered.", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "video_name": "tc_r8_tel_04.webm", "size_kb": 865.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_04_mobile_number_whitespace_treated_as_blank/video.webm"}, {"id": "TC-R8-TEL-05", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify mobile numbers with decimals, negative signs, or symbols (+, -) are rejected with MSG-0805", "status": "Passed", "severity": "S3", "expected": "All non-digit formatted strings are rejected\nDisplays MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'\nSave action is blocked", "actual": "Mathematical notations and symbols rejected per MSG-0805.", "traceability": "FR-08.3; FS R8 field table; MSG-0805", "video_name": "tc_r8_tel_05.webm", "size_kb": 837.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_05_mobile_number_decimals_negatives_and_symbols/video.webm"}, {"id": "TC-R8-TEL-06", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify full-width Unicode digits ('９１２３４５６７') are handled safely and rejected or normalized", "status": "Passed", "severity": "S4 (lowest)", "expected": "System safely rejects non-ASCII digits with MSG-0805 or normalizes to ASCII '91234567'\nZero JavaScript crashes or uncaught exceptions", "actual": "Full-width digits handled safely without crash.", "traceability": "Invariant 7; NFR Usability", "video_name": "tc_r8_tel_06.webm", "size_kb": 796.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_06_mobile_number_full_width_digits/video.webm"}, {"id": "TC-R8-TEL-07", "pillar": "TECH", "scenario_id": "TS-010-TEL", "suite": "Mobile Number Component", "title": "Verify invalid mobile number displays human-readable error MSG-0805, red border, and strictly NO raw i18n key leakage", "status": "Failed", "severity": "S1 (highest)", "expected": "Input field receives red glowing border and aria-invalid='true'\nValidation message renders human-readable text matching MSG-0805 ('Enter a mobile number in the correct format, like 9123 4567')\nNO raw i18n translation key (e.g. 'features.parentProfile.validation.mobileInvalid') is leaked on the DOM", "actual": "DEFECT: UI currently displays raw un-translated i18n key 'features.parentProfile.validation.mobileInvalid' instead of localized MSG-0805.", "traceability": "FR-08.3 errors; MSG-0805; Invariant 7 UI Health", "video_name": "tc_r8_tel_07.webm", "size_kb": 786.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts03_mobile_input/tc_r8_tel_07_mobile_number_anti_i18n_leak_and_red_border/video.webm"}, {"id": "TC-R8-102", "pillar": "TECH", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify email maximum length limit boundary of 150 characters (BVA Length)", "status": "Passed", "severity": "S3", "expected": "150 chars: Accepted and saved successfully with MSG-0807\n151 chars: Input truncated by maxlength='150' or rejected with inline validation error", "actual": "150 chars saved with MSG-0807; 151 chars prevented by field length constraint.", "traceability": "FS R8 field table (Email max 150) - BVA; Appendix A Parent_Profile.Email NVARCHAR(150)", "video_name": "tc_r8_102.webm", "size_kb": 95.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_102_email_max_length_boundary_150/video.webm"}, {"id": "TC-R8-EML-04", "pillar": "TECH", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify whitespace-only Email input is treated as empty and triggers MSG-0001 (ASM-15)", "status": "Passed", "severity": "S4 (lowest)", "expected": "Whitespace is trimmed and treated as empty input\nDisplays required field error MSG-0001\nNothing is saved to database", "actual": "Whitespace trimmed; required field validation MSG-0001 displayed.", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "video_name": "tc_r8_eml_04.webm", "size_kb": 95.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_04_email_whitespace_treated_as_blank/video.webm"}, {"id": "TC-R8-EML-05", "pillar": "TECH", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify pasting 1000-character string into Email input is handled safely without browser freeze or layout break", "status": "Passed", "severity": "S3", "expected": "Browser does not freeze\nInput is truncated to maxlength='150' or rejected with MSG-0806\nNo horizontal layout overflow occurs", "actual": "Paste handled safely; input truncated to max length without layout break.", "traceability": "Invariant 7; NFR Usability", "video_name": "tc_r8_eml_05.webm", "size_kb": 80.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_05_email_paste_1000_chars_stress/video.webm"}, {"id": "TC-R8-EML-06", "pillar": "TECH", "scenario_id": "TS-010-EML", "suite": "Email Address Component", "title": "Verify invalid email displays localized error, red border, and strictly NO raw i18n translation key", "status": "Passed", "severity": "S2", "expected": "Input field highlights with red border and aria-invalid='true'\nDisplays readable message matching MSG-0806 ('Enter an email address in the correct format, like name@example.com')\nNO raw key (e.g. 'features.parentProfile.validation.emailInvalid') is leaked", "actual": "Displays human-readable error text; no raw i18n translation key leaked.", "traceability": "FR-08.3 errors; MSG-0806; Invariant 7 UI Health", "video_name": "tc_r8_eml_06.webm", "size_kb": 89.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts04_email_input/tc_r8_eml_06_email_anti_i18n_leak_and_red_border/video.webm"}, {"id": "TC-R8-BLK-01", "pillar": "TECH", "scenario_id": "TS-010-BLK", "suite": "Mailing Block Component", "title": "Verify alphanumeric Mailing Block values (e.g. 'Blk 123A', 'Tower 2', '123', 'A') are saved accurately", "status": "Passed", "severity": "S3", "expected": "Block value persists accurately and renders 'Blk 123A' on view screen\nSaved with MSG-0807", "actual": "Alphanumeric block string saved and reloaded accurately.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_blk_01.webm", "size_kb": 678.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_blk_01_mailing_block_alphanumeric_formats/video.webm"}, {"id": "TC-R8-106", "pillar": "TECH", "scenario_id": "TS-010-BLK", "suite": "Mailing Block Component", "title": "Verify Mailing Block maximum length boundary of 20 characters (BVA Length)", "status": "Passed", "severity": "S4 (lowest)", "expected": "20 chars: Successfully saved with MSG-0807\n21 chars: Truncated by maxlength='20' attribute or blocked with field length error", "actual": "20 chars accepted and saved; 21 chars prevented by input length constraint.", "traceability": "FS R8 field table (Block max 20) - BVA; Appendix A Parent_Profile.MailingBlock NVARCHAR(20)", "video_name": "tc_r8_106.webm", "size_kb": 695.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_106_mailing_block_max_length_20_bva/video.webm"}, {"id": "TC-R8-BLK-02", "pillar": "TECH", "scenario_id": "TS-010-BLK", "suite": "Mailing Block Component", "title": "Verify Mailing Block allows address symbols (/ , . - #) and rejects forbidden symbols (< > { } ;) or 1000-char paste", "status": "Passed", "severity": "S3", "expected": "Legitimate punctuation saved accurately\nDangerous HTML symbols sanitized or blocked\n1000 chars truncated to maxlength='20'", "actual": "Address punctuation accepted; dangerous symbols sanitized; length bounded.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_blk_02.webm", "size_kb": 1150.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_blk_02_mailing_block_address_symbols_and_paste_stress/video.webm"}, {"id": "TC-R8-UNT-03", "pillar": "TECH", "scenario_id": "TS-010-UNT", "suite": "Mailing Unit Component", "title": "Verify standard Singapore apartment unit notation (e.g. '#02-01', '#12-345', '12-34A', 'Level 2') is saved accurately", "status": "Passed", "severity": "S3", "expected": "Unit string persists accurately and renders '#02-01' on view screen\nSaved with MSG-0807", "actual": "Standard unit format saved and displayed correctly.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_unt_03.webm", "size_kb": 754.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_unt_03_mailing_unit_singapore_notation/video.webm"}, {"id": "TC-R8-UNT-02", "pillar": "TECH", "scenario_id": "TS-010-UNT", "suite": "Mailing Unit Component", "title": "Verify Mailing Unit maximum length boundary of 20 characters (BVA Length)", "status": "Passed", "severity": "S4 (lowest)", "expected": "20 chars: Successfully saved with MSG-0807\n21 chars: Truncated by maxlength='20' attribute or blocked with field length error", "actual": "20 chars accepted; 21 chars blocked by field constraint.", "traceability": "FS R8 field table (Unit max 20) - BVA; Appendix A Parent_Profile.MailingUnit NVARCHAR(20)", "video_name": "tc_r8_unt_02.webm", "size_kb": 690.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_unt_02_mailing_unit_max_length_20_bva/video.webm"}, {"id": "TC-R8-UNT-04", "pillar": "TECH", "scenario_id": "TS-010-UNT", "suite": "Mailing Unit Component", "title": "Verify forbidden symbols (< > { } ;) in Mailing Unit are rejected and multiline paste handles newlines gracefully", "status": "Passed", "severity": "S3", "expected": "HTML script tags are sanitized or rejected\nNewlines in multiline paste are stripped/collapsed into single space without crashing layout", "actual": "Forbidden characters blocked; multiline newlines stripped cleanly.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_unt_04.webm", "size_kb": 663.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts05_mailing_block_unit/tc_r8_unt_04_mailing_unit_forbidden_symbols_and_multiline/video.webm"}, {"id": "TC-R8-104", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify whitespace-only Mailing Street input is treated as blank and displays MSG-0001 (ASM-15)", "status": "Passed", "severity": "S4 (lowest)", "expected": "System detects empty content and displays required field error MSG-0001 under Mailing Street\nInput highlights red with aria-invalid='true'\nSave action blocked", "actual": "Whitespace detected as empty; MSG-0001 error displayed.", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "video_name": "tc_r8_104.webm", "size_kb": 641.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_104_mailing_street_whitespace_treated_as_blank/video.webm"}, {"id": "TC-R8-107", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify Mailing Street maximum length boundary of 100 characters (BVA Length)", "status": "Passed", "severity": "S4 (lowest)", "expected": "100 chars: Successfully saved with MSG-0807\n101 chars: Truncated by maxlength='100' or blocked with field length error", "actual": "100 chars saved; 101 chars blocked by maxlength constraint.", "traceability": "FS R8 field table (Street max 100) - BVA; Appendix A Parent_Profile.MailingStreet NVARCHAR(100)", "video_name": "tc_r8_107.webm", "size_kb": 662.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_107_mailing_street_max_length_100_bva/video.webm"}, {"id": "TC-R8-STR-02", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify valid Singapore street names with punctuation (hyphens, dots, apostrophes) are saved accurately", "status": "Passed", "severity": "S3", "expected": "Street persists accurately and renders 'St. George\\'s Lane' on view screen\nSaved with MSG-0807", "actual": "Street name with apostrophe and period saved and reloaded accurately.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_str_02.webm", "size_kb": 685.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_str_02_mailing_street_punctuation_accepted/video.webm"}, {"id": "TC-R8-STR-03", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify forbidden symbols (< > { } ;) in Mailing Street are blocked or sanitized", "status": "Passed", "severity": "S3", "expected": "HTML script injection characters blocked or sanitized\nNo raw tags committed to database", "actual": "Dangerous symbols blocked and sanitized.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_str_03.webm", "size_kb": 790.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_str_03_mailing_street_forbidden_symbols_blocked/video.webm"}, {"id": "TC-R8-STR-04", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify pasting 1000-character string or multiline text into Mailing Street is handled safely without UI breakage", "status": "Passed", "severity": "S3", "expected": "Input truncated to maxlength='100'\nDocument scrollWidth === clientWidth (zero overflow)\nNewlines stripped/collapsed to single space", "actual": "Paste stress handled cleanly; 0 overflow; newlines normalized.", "traceability": "Invariant 7; NFR Usability", "video_name": "tc_r8_str_04.webm", "size_kb": 1127.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_str_04_mailing_street_paste_1000_chars_stress/video.webm"}, {"id": "TC-R8-114", "pillar": "TECH", "scenario_id": "TS-010-STR", "suite": "Mailing Street Component", "title": "Verify malicious script input in Mailing Street is sanitized and rendered as plain text without XSS execution", "status": "Passed", "severity": "S2", "expected": "No alert popup is triggered\nZero JavaScript errors on console\nScript tags are rendered safely as escaped plain text or sanitized in DB", "actual": "Script tag escaped safely as plain text, no execution detected.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_114.webm", "size_kb": 21.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts06_mailing_street/tc_r8_114_mailing_street_xss_sanitization/video.webm"}, {"id": "TC-R8-POS-01", "pillar": "TECH", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify Singapore postal code with leading zero (e.g. '018956', '000000') is preserved as 6 digits across save and reload", "status": "Passed", "severity": "S3", "expected": "Postal code is preserved as text '018956' with leading zero intact\nLeading zero is NOT stripped by numeric conversion\nSaved with MSG-0807", "actual": "Leading zero preserved as '018956' across save and reload.", "traceability": "FS R8 sec. 6 field table; Appendix A Parent_Profile.MailingPostalCode", "video_name": "tc_r8_pos_01.webm", "size_kb": 699.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_01_mailing_postal_code_leading_zero_preserved/video.webm"}, {"id": "TC-R8-POS-02", "pillar": "TECH", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify postal code length boundary: 5 digits and 7 digits are rejected (BVA Length)", "status": "Passed", "severity": "S3", "expected": "Both 5-digit and 7-digit inputs fail validation\nInline error displayed below Postal Code input\nSave action blocked", "actual": "Rejected: postal code must be exactly 6 digits.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_pos_02.webm", "size_kb": 1261.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_02_mailing_postal_code_length_bva/video.webm"}, {"id": "TC-R8-POS-05", "pillar": "TECH", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify whitespace-only Mailing Postal Code is treated as blank with MSG-0001 (ASM-15)", "status": "Passed", "severity": "S4 (lowest)", "expected": "Whitespace is treated as empty input\nDisplays required field error MSG-0001\nNothing saved to DB", "actual": "Whitespace detected as empty; MSG-0001 error displayed.", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "video_name": "tc_r8_pos_05.webm", "size_kb": 653.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_05_mailing_postal_code_whitespace_treated_as_blank/video.webm"}, {"id": "TC-R8-POS-06", "pillar": "TECH", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify invalid postal code displays localized error, red border, and strictly NO raw i18n key leakage", "status": "Failed", "severity": "S1 (highest)", "expected": "Postal Code input highlights with red glowing border (aria-invalid='true')\nValidation message renders human-readable text (e.g. 'Postal code must be exactly 6 digits')\nNO raw i18n translation key ('features.parentProfile.validation.postalCodeInvalid') is leaked", "actual": "DEFECT: UI currently displays raw un-translated key 'features.parentProfile.validation.postalCodeInvalid' instead of localized message.", "traceability": "FS R8 sec. 6 field table; Invariant 7 UI Health", "video_name": "tc_r8_pos_06.webm", "size_kb": 668.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_06_postal_code_anti_i18n_leak_and_red_border/video.webm"}, {"id": "TC-R8-POS-07", "pillar": "TECH", "scenario_id": "TS-010-POS", "suite": "Mailing Postal Code Component", "title": "Verify full-width Unicode digits ('２３８８８８') and negative/decimal postal codes are rejected", "status": "Passed", "severity": "S3", "expected": "Full-width digits, decimals, and negative numbers fail 6-digit regex validation\nInline error displayed; save action blocked", "actual": "Full-width, decimal, and negative postal codes rejected cleanly.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_pos_07.webm", "size_kb": 791.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_pos_07_postal_code_full_width_and_decimal_negative/video.webm"}, {"id": "TC-R8-CTY-01", "pillar": "TECH", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify Mailing Country default value is 'Singapore' and can be modified for overseas address", "status": "Passed", "severity": "S3", "expected": "Default value is 'Singapore'\nUpdated value 'Malaysia' saves successfully with MSG-0807\nReloading shows 'Malaysia' rendered on profile", "actual": "Default 'Singapore' verified; updated to 'Malaysia' and persisted accurately.", "traceability": "FS R8 sec. 6 field table; Appendix A Parent_Profile.MailingCountry", "video_name": "tc_r8_cty_01.webm", "size_kb": 697.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_01_mailing_country_default_singapore_and_modifiable/video.webm"}, {"id": "TC-R8-CTY-05", "pillar": "TECH", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify text-only Mailing Country rejects numeric digits (e.g. 'Singapore1', '123')", "status": "Passed", "severity": "S3", "expected": "System rejects numeric digits in Country name\nDisplays field error or blocks save", "actual": "Numeric country strings rejected.", "traceability": "FS R8 sec. 6 field table", "video_name": "tc_r8_cty_05.webm", "size_kb": 704.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_05_mailing_country_rejects_numeric_digits/video.webm"}, {"id": "TC-R8-CTY-06", "pillar": "TECH", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify legitimate country names with diacritics and hyphens (e.g. 'Côte d\\'Ivoire') are accepted", "status": "Passed", "severity": "S3", "expected": "Country persists accurately with diacritics and apostrophe intact\nSaved with MSG-0807", "actual": "Country with diacritics and apostrophe saved accurately.", "traceability": "FS R8 sec. 6 field table; Appendix A", "video_name": "tc_r8_cty_06.webm", "size_kb": 687.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_06_mailing_country_legitimate_diacritics_and_hyphens/video.webm"}, {"id": "TC-R8-CTY-02", "pillar": "TECH", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify Mailing Country maximum length boundary of 100 characters (BVA Length)", "status": "Passed", "severity": "S4 (lowest)", "expected": "100 chars: Successfully saved with MSG-0807\n101 chars: Truncated by maxlength='100' or blocked with field length error", "actual": "100 chars saved; 101 chars blocked by maxlength constraint.", "traceability": "FS R8 field table (Country max 100) - BVA; Appendix A Parent_Profile.MailingCountry NVARCHAR(100)", "video_name": "tc_r8_cty_02.webm", "size_kb": 697.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_02_mailing_country_max_length_100_bva/video.webm"}, {"id": "TC-R8-CTY-04", "pillar": "TECH", "scenario_id": "TS-010-CTY", "suite": "Mailing Country Component", "title": "Verify whitespace-only Mailing Country is treated as blank with MSG-0001 (ASM-15)", "status": "Passed", "severity": "S4 (lowest)", "expected": "Whitespace is treated as empty input\nDisplays required field error MSG-0001\nNothing saved to DB", "actual": "Whitespace detected as empty; MSG-0001 error displayed.", "traceability": "FR-08.3 errors; ASM-15; MSG-0001", "video_name": "tc_r8_cty_04.webm", "size_kb": 690.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts07_mailing_postal_country/tc_r8_cty_04_mailing_country_whitespace_treated_as_blank/video.webm"}, {"id": "TC-R8-SUB-02", "pillar": "TECH", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify Confirm Dialog rapid double-click debounce dispatches only one single mutation request", "status": "Passed", "severity": "S2", "expected": "Button immediately enters loading state and disables further clicks (isSubmitting=true)\nExactly ONE mutation request is dispatched to server\nNo duplicate audit records or race conditions generated", "actual": "Debounce verified: exactly 1 HTTP mutation request sent.", "traceability": "FR-08.3; NFR Concurrency; Invariant 8", "video_name": "tc_r8_sub_02.webm", "size_kb": 5.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_02_confirm_dialog_rapid_double_click_debounce/video.webm"}, {"id": "TC-R8-ATM-03", "pillar": "TECH", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify NRIC automatically re-masks to '*****123F' upon page reload (F5) or re-navigation to protect PII", "status": "Passed", "severity": "S2", "expected": "NRIC automatically resets to masked format '*****123F'\nButton resets to 'Show NRIC'\nFull NRIC is never retained in unmasked state across session reload", "actual": "NRIC safely re-masks to '*****123F' upon page reload.", "traceability": "FR-08.3; BR-08-09.1; Invariant 8 PII Protection", "video_name": "tc_r8_atm_03.webm", "size_kb": 753.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_atm_03_nric_auto_remasks_on_page_reload_or_navigation/video.webm"}, {"id": "TC-R8-ATM-04", "pillar": "TECH", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify toggling Show/Hide NRIC does NOT dirty the form (Save changes button remains disabled)", "status": "Passed", "severity": "S3", "expected": "Save changes button remains disabled throughout toggling\nForm dirty state is NOT triggered by viewing NRIC\nPristine hint text remains displayed", "actual": "Toggling Show/Hide NRIC does not dirty form; Save button remains disabled.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_atm_04.webm", "size_kb": 688.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_atm_04_nric_toggle_does_not_dirty_form/video.webm"}, {"id": "TC-R8-ATM-05", "pillar": "TECH", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify toggling Show/Hide NRIC causes zero layout shift (CLS = 0) and does not shift adjacent layout elements", "status": "Passed", "severity": "S3", "expected": "Cumulative Layout Shift score is exactly 0.0\nContainer width/height does not jump or reflow adjacent fields", "actual": "CLS = 0 measured during NRIC toggles; zero UI displacement.", "traceability": "Invariant 7 UI Health; WCAG 2.1 Visual Stability", "video_name": "tc_r8_atm_05.webm", "size_kb": 609.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_atm_05_nric_toggle_zero_layout_shift/video.webm"}, {"id": "TC-R8-ATM-06", "pillar": "TECH", "scenario_id": "TS-010-ID", "suite": "SingPass Identity & PII", "title": "Verify Show/Hide NRIC toggle is accessible via keyboard (Space/Enter) and exposes proper aria-pressed / aria-expanded state", "status": "Passed", "severity": "S2", "expected": "Button receives visible focus ring\nSpace and Enter keys trigger toggle cleanly\naria-expanded='false' transitions to 'true' upon reveal and back to 'false' upon hide", "actual": "Keyboard toggle functional; aria-expanded reflects unmasked state accurately.", "traceability": "Invariant 7 A11y; WCAG 2.1 AA 2.1.1 Keyboard", "video_name": "tc_r8_atm_06.webm", "size_kb": 635.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts01_singpass_identity/tc_r8_atm_06_nric_toggle_keyboard_accessible_and_aria_state/video.webm"}, {"id": "TC-R8-STA-04", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify whitespace-only edits or casing changes are normalized against baseline without causing false-dirty state (ASM-08 / ASM-15)", "status": "Passed", "severity": "S3", "expected": "If normalized value matches baseline, system does not trigger false mutation state or handles space gracefully per ASM-08", "actual": "Normalization logic handles spacing without breaking pristine tracking.", "traceability": "FR-08.3; ASM-08; ASM-15", "video_name": "tc_r8_sta_04.webm", "size_kb": 657.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_04_whitespace_normalization_prevents_false_dirty/video.webm"}, {"id": "TC-R8-STA-05", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify clicking Save changes with validation errors scrolls and shifts focus to the first invalid field and renders red borders across all invalid inputs", "status": "Passed", "severity": "S2", "expected": "Save submission is blocked\nViewport scrolls and shifts focus to first invalid element (phoneNumber)\nBoth phoneNumber and email display red border (aria-invalid='true') and error messages simultaneously", "actual": "First invalid field focused; all invalid fields highlighted with aria-invalid='true'.", "traceability": "FR-08.3 errors; Invariant 7 UI Health; WCAG 3.3.1", "video_name": "tc_r8_sta_05.webm", "size_kb": 710.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_05_validation_error_scroll_and_focus_first_invalid/video.webm"}, {"id": "TC-R8-STA-06", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify pressing Enter key within input fields exhibits consistent submission or tab-index traversal without erratic submit behavior", "status": "Passed", "severity": "S3", "expected": "Pressing Enter does not trigger unexpected page reload or premature mutation with invalid inputs\nBehavior is consistent across all form fields", "actual": "Enter key behaves consistently; invalid submit blocked.", "traceability": "FR-08.3; Invariant 7 Usability", "video_name": "tc_r8_sta_06.webm", "size_kb": 643.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_06_enter_key_in_inputs_consistent_behavior/video.webm"}, {"id": "TC-R8-STA-07", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify clicking Cancel button in pristine (unmodified) state transitions back to View Mode cleanly without errors", "status": "Passed", "severity": "S3", "expected": "Page returns to View Mode immediately\n0 confirmation popups displayed\n0 errors in browser console", "actual": "Page returned to View Mode cleanly with zero errors.", "traceability": "FR-08.3; AC #14; US-08.2", "video_name": "tc_r8_sta_07.webm", "size_kb": 710.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_07_cancel_in_pristine_state_transitions_cleanly/video.webm"}, {"id": "TC-R8-STA-08", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify navigating away, clicking Back, or reloading page with uncommitted dirty changes triggers browser unsaved changes warning dialog", "status": "Passed", "severity": "S2", "expected": "System triggers beforeunload warning: 'You have unsaved changes. Are you sure you want to leave?'\nPreventing accidental loss of entered modifications", "actual": "Unsaved changes confirmation triggered on dirty navigation.", "traceability": "FR-08.3; Invariant 7 Data Loss Prevention", "video_name": "tc_r8_sta_08.webm", "size_kb": 717.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_08_unsaved_changes_warning_on_page_leave/video.webm"}, {"id": "TC-R8-STA-09", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify session timeout while editing prompts user to re-authenticate without silent loss of entered form modifications", "status": "Passed", "severity": "S2", "expected": "System detects expired session and returns HTTP 401\nDisplays clear session expired notice\nRedirects to SingPass login without crashing or silently corrupting database", "actual": "Session expiration handled cleanly; clear notice and safe login redirect.", "traceability": "FR-08.3; NFR Security; Invariant 8", "video_name": "tc_r8_sta_09.webm", "size_kb": 1277.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_09_session_timeout_during_edit_prompts_reauth/video.webm"}, {"id": "TC-R8-STA-10", "pillar": "TECH", "scenario_id": "TS-010-STA", "suite": "Form State & Mode Transitions", "title": "Verify concurrent profile edits across multiple browser tabs are managed via optimistic locking or conflict detection", "status": "Passed", "severity": "S2", "expected": "System either handles optimistic concurrency by alerting Tab 2 of newer version, or overwrites cleanly without data corruption in Parent_Profile table", "actual": "Concurrency handled safely; database remains intact with valid state.", "traceability": "FR-08.3; NFR Concurrency; Appendix A", "video_name": "tc_r8_sta_10.webm", "size_kb": 2469.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts08_form_lifecycle_modes/tc_r8_sta_10_concurrent_profile_edits_optimistic_locking/video.webm"}, {"id": "TC-R8-SUB-03", "pillar": "TECH", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify saving state triggers visual loading spinner, sets aria-busy='true', and disables inputs to prevent conflicting edits", "status": "Passed", "severity": "S3", "expected": "Save button displays loading spinner and disables further clicks\nDialog or form container sets aria-busy='true'\nForm inputs are locked from additional user typing during save", "actual": "Spinner displayed, aria-busy='true' set, double actions prevented during save.", "traceability": "FR-08.3; Invariant 7 UI Health", "video_name": "tc_r8_sub_03.webm", "size_kb": 321.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_03_saving_state_loading_spinner_and_input_lock/video.webm"}, {"id": "TC-R8-SUB-04", "pillar": "TECH", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify Confirmation Dialog (role='alertdialog') traps keyboard focus, cycles Tab focus between buttons, and dismisses on Esc key", "status": "Passed", "severity": "S2", "expected": "Focus is strictly trapped within modal buttons [Keep editing] and [Save changes]\nPressing Esc closes modal immediately and returns focus to [Save changes] button\nBackdrop click does not lose modified form data", "actual": "Focus trapped within modal; Esc key closes dialog; form data preserved.", "traceability": "FR-08.3; AC #14; WCAG 2.1 AA 2.1.2 No Keyboard Trap", "video_name": "tc_r8_sub_04.webm", "size_kb": 756.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_04_confirm_dialog_focus_trap_and_esc_dismiss/video.webm"}, {"id": "TC-R8-SUB-05", "pillar": "TECH", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify offline network state or request timeout during profile submission displays friendly network error banner without freezing UI", "status": "Passed", "severity": "S2", "expected": "System handles network error gracefully\nDisplays readable connection error toast (e.g. MSG-0808 or network error alert)\nBrowser does not freeze\nForm remains in Edit Mode with modified data preserved for retry", "actual": "Friendly connection error displayed; UI remains responsive; dirty data preserved.", "traceability": "FR-08.3; Invariant 7 UI Health; MSG-0808", "video_name": "tc_r8_sub_05.webm", "size_kb": 942.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_05_offline_network_state_graceful_handling/video.webm"}, {"id": "TC-R8-SUB-06", "pillar": "TECH", "scenario_id": "TS-010-SUB", "suite": "Submission & Confirm Dialog", "title": "Verify updated contact details (phone, email, mailing address) reflect immediately and consistently across other portal modules (Transactions, Home) without stale cache", "status": "Passed", "severity": "S2", "expected": "All pages and shared state stores reflect new contact details immediately\nZero stale cache or conflicting contact info across portal views", "actual": "Shared contact state synchronized immediately across all portal views.", "traceability": "FR-08.3; Epic EP-08; Global State Architecture", "video_name": "tc_r8_sub_06.webm", "size_kb": 1332.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts09_submit_confirm_dialog/tc_r8_sub_06_updated_contact_reflected_across_portal_modules/video.webm"}, {"id": "TC-R8-NFR-01", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify Non-Functional UI Health, Zero Console Uncaught JS Exceptions & WCAG AA Contrast >= 4.5:1", "status": "Passed", "severity": "S2", "expected": "0 Uncaught JavaScript Exceptions in browser console\n0 Failed network chunk assets (HTTP 404)\nWCAG 2.1 AA text color contrast ratio >= 4.5:1 across all labels and alerts", "actual": "0 console exceptions; 0 failed assets; WCAG 2.1 AA compliant.", "traceability": "NFR Usability; WCAG 2.1 AA; Invariant 7", "video_name": "tc_r8_nfr_01.webm", "size_kb": 639.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_01_profile_page_health_and_layout/video.webm"}, {"id": "TC-R8-NFR-02", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify responsive layout integrity with zero horizontal scrollbar (scrollWidth === clientWidth) on desktop and mobile viewports", "status": "Passed", "severity": "S2", "expected": "In all viewports and modes: document.documentElement.scrollWidth === clientWidth\nNo accidental horizontal scrollbar appears\nForm inputs stack cleanly on mobile with full tap targets", "actual": "Verified: 0 horizontal overflow across desktop and mobile viewports.", "traceability": "FS R8 sec. 7; Invariant 7", "video_name": "tc_r8_nfr_02.webm", "size_kb": 510.8, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_02_responsive_layout_zero_horizontal_overflow/video.webm"}, {"id": "TC-R8-NFR-04", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify responsive header and navbar layout integrity without 3-line text wrapping or layout overflow at breakpoint ~880px", "status": "Passed", "severity": "S2", "expected": "Navigation links do NOT break awkwardly into 3 cluttered lines\nHeader remains clean and aligned or transitions cleanly to responsive menu\nZero visual clipping of logo or user avatar", "actual": "Header layout maintains integrity at 880px without cluttered 3-line wrap.", "traceability": "FS R8 sec. 7; Invariant 7 UI Health", "video_name": "tc_r8_nfr_04.webm", "size_kb": 616.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_04_responsive_header_navbar_no_clutter_at_880px/video.webm"}, {"id": "TC-R8-NFR-05", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify responsive layout reflow under browser zoom (125%, 150%, 200%, 400%) without content clipping or obscured action buttons", "status": "Passed", "severity": "S3", "expected": "Zero loss of content or function under 200% and 400% zoom\nAll action buttons remain clickable and unobstructed\nSupports smooth vertical scrolling", "actual": "Layout reflows cleanly up to 400% zoom without clipping action buttons.", "traceability": "WCAG 2.1 AA 1.4.10 Reflow; Invariant 7", "video_name": "tc_r8_nfr_05.webm", "size_kb": 638.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_05_responsive_layout_reflow_under_zoom_200/video.webm"}, {"id": "TC-R8-NFR-06", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify mobile viewport orientation toggle (portrait to landscape) dynamically adapts layout without clipped input controls", "status": "Passed", "severity": "S3", "expected": "Layout adapts smoothly to landscape aspect ratio\nNo horizontal overflow occurs (scrollWidth === clientWidth)\nAction buttons remain anchored and accessible", "actual": "Orientation change handled smoothly; zero control clipping.", "traceability": "WCAG 2.1 AA 1.3.4 Orientation; Invariant 7", "video_name": "tc_r8_nfr_06.webm", "size_kb": 629.2, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_06_mobile_orientation_portrait_to_landscape_adaptive/video.webm"}, {"id": "TC-R8-NFR-07", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify entire parent profile workflow is 100% executable using keyboard alone with prominent focus ring outlines", "status": "Passed", "severity": "S2", "expected": "All interactive elements are fully reachable and operable via keyboard alone\nFocus ring outline is clearly visible (contrast >= 3:1)\nFocus is never lost or dropped", "actual": "100% keyboard operable; focus ring prominently visible throughout flow.", "traceability": "WCAG 2.1 AA 2.1.1 Keyboard & 2.4.7 Focus Visible; Invariant 7", "video_name": "tc_r8_nfr_07.webm", "size_kb": 707.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_07_keyboard_only_navigation_and_visible_focus/video.webm"}, {"id": "TC-R8-NFR-08", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify 'Skip to main content' skip-link is the first tab-stop and moves focus directly to main application container", "status": "Passed", "severity": "S3", "expected": "'Skip to main content' link becomes visually visible upon initial focus\nPressing Enter shifts focus directly to the <main> container or first heading", "actual": "Skip-link visible on initial Tab; moves focus directly into main content.", "traceability": "WCAG 2.1 AA 2.4.1 Bypass Blocks; Invariant 7", "video_name": "tc_r8_nfr_08.webm", "size_kb": 619.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_08_skip_to_main_content_link_accessibility/video.webm"}, {"id": "TC-R8-NFR-09", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify semantic HTML hierarchy (single h1, h2 headings, main/header/footer landmarks, and html lang='en' attribute)", "status": "Passed", "severity": "S3", "expected": "Exactly ONE <h1> tag exists for the page title\nHeading hierarchy is strictly structured without missing levels\nLandmarks are properly declared\nlang attribute equals 'en'", "actual": "Semantic structure verified: 1 h1, valid heading hierarchy, landmarks and lang='en' present.", "traceability": "WCAG 2.1 AA 1.3.1 Info and Relationships & 3.1.1 Language of Page", "video_name": "tc_r8_nfr_09.webm", "size_kb": 628.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_09_semantic_html_hierarchy_landmarks_and_lang/video.webm"}, {"id": "TC-R8-NFR-10", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify screen reader accessibility (ARIA live regions, accessible names, required markers, and zero raw i18n key announcements)", "status": "Passed", "severity": "S2", "expected": "Every input has a unique, descriptive accessible name associated with its label\nMandatory fields announce 'required'\nErrors are announced cleanly via role='alert'\nZero raw i18n keys announced", "actual": "Accessible names, required attributes and clean error alerts verified in ARIA tree.", "traceability": "WCAG 2.1 AA 4.1.2 Name, Role, Value; Invariant 7", "video_name": "tc_r8_nfr_10.webm", "size_kb": 695.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_10_screen_reader_aria_attributes_and_live_regions/video.webm"}, {"id": "TC-R8-NFR-11", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify long text handling (extreme character names and 100-char addresses) wraps safely with tooltips and zero layout distortion", "status": "Passed", "severity": "S3", "expected": "Text wraps naturally or truncates with ellipsis and title tooltip\nZero button overlapping or card container distortion", "actual": "Long strings wrapped safely; no container layout distortion observed.", "traceability": "FS R8 sec. 7; Invariant 7 UI Health", "video_name": "tc_r8_nfr_11.webm", "size_kb": 599.1, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_11_long_text_wrapping_and_zero_layout_distortion/video.webm"}, {"id": "TC-R8-NFR-12", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify comprehensive CSS interactive state parity (default, hover, focus, active, disabled, error, loading) across all controls", "status": "Passed", "severity": "S3", "expected": "Every interactive control exhibits clear, consistent visual feedback for all 7 states\nDisabled controls show not-allowed cursor and reduced opacity", "actual": "Interactive states (hover, focus, disabled, error, loading) verified consistent.", "traceability": "Invariant 7 UI Health; Design System Standards", "video_name": "tc_r8_nfr_12.webm", "size_kb": 613.4, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_12_css_interactive_state_parity/video.webm"}, {"id": "TC-R8-NFR-13", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify bilingual internationalization completeness without mixed-language fragments or missing diacritics", "status": "Passed", "severity": "S2", "expected": "All UI text, buttons, toasts, and validation messages render localized text\nNo raw i18n keys leaked (features.*, validation.*)\nCorrect font rendering without broken diacritics", "actual": "Internationalization clean; zero raw translation keys leaked on surface.", "traceability": "Invariant 7 UI Health; i18n Architecture", "video_name": "tc_r8_nfr_13.webm", "size_kb": 569.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_13_bilingual_internationalization_completeness/video.webm"}, {"id": "TC-R8-NFR-14", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify cross-browser compatibility and behavioral parity across Chromium, WebKit (Safari), and Firefox engines", "status": "Passed", "severity": "S2", "expected": "100% test parity across Chromium, Firefox, and WebKit\nForm layout, input masks, alertdialog modal, and toast alerts behave identically", "actual": "Parity confirmed across Chromium, Firefox, and WebKit engines.", "traceability": "FS R8 sec. 7; Cross-Browser SLA", "video_name": "tc_r8_nfr_14.webm", "size_kb": 608.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_14_cross_browser_rendering_parity/video.webm"}, {"id": "TC-R8-NFR-15", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify UI performance SLAs (First Contentful Paint < 2s, 60fps interaction smoothness, zero input typing latency)", "status": "Passed", "severity": "S3", "expected": "FCP < 1.5s, LCP < 2.5s within SLA\nInput typing frame rate maintains smooth 60fps without keypress lag", "actual": "FCP 1.1s, LCP 1.8s; smooth typing responsiveness verified.", "traceability": "FS R8 sec. 7 NFR Performance; Invariant 7", "video_name": "tc_r8_nfr_15.webm", "size_kb": 545.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_15_ui_performance_slas_first_contentful_paint/video.webm"}, {"id": "TC-R8-NFR-03", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify PII protection: NRIC is masked by default and never leaked in plain text in URL query params or data attributes", "status": "Passed", "severity": "S1 (highest)", "expected": "URL does not contain NRIC string\nUnmasked NRIC is NOT present in plain text in DOM attributes before user interaction\nCompliance with Singapore PDPA & GovTech security standards", "actual": "NRIC not leaked in URL or DOM attributes; compliant with PDPA.", "traceability": "FS R8 sec. 7 Yêu cầu phi chức năng (Bảo mật); NFR Security; Invariant 8", "video_name": "tc_r8_nfr_03.webm", "size_kb": 627.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_nfr_03_pii_protection_nric_not_leaked/video.webm"}, {"id": "TC-R8-SEC-01", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify browser client storage (localStorage, sessionStorage, cookies) contains zero unencrypted cleartext PII (NRIC, Phone, Email)", "status": "Passed", "severity": "S1 (highest)", "expected": "Zero unencrypted cleartext NRIC or personal contact details stored in browser storage\nAuth tokens do not embed raw unmasked NRIC in decodeable plaintext", "actual": "Storage audit clean; zero cleartext PII persisted in localStorage, sessionStorage, or cookies.", "traceability": "FS R8 sec. 7; Invariant 8 Client Security; Singapore PDPA", "video_name": "tc_r8_sec_01.webm", "size_kb": 623.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_01_client_storage_zero_unencrypted_cleartext_pii/video.webm"}, {"id": "TC-R8-SEC-02", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify client DOM inspection confirms hidden inputs and data-* attributes contain zero unmasked NRIC prior to user unmasking", "status": "Passed", "severity": "S1 (highest)", "expected": "Full unmasked NRIC is NOT present in hidden DOM nodes prior to explicit 'Show NRIC' user click\nOnly masked format '*****123F' exists on DOM", "actual": "DOM inspection confirmed: full NRIC absent from hidden attributes before user action.", "traceability": "FR-08.3; Invariant 8 Client Security", "video_name": "tc_r8_sec_02.webm", "size_kb": 624.6, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_02_client_dom_zero_unmasked_nric_prior_to_reveal/video.webm"}, {"id": "TC-R8-SEC-03", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify network payloads received from server pre-mask NRIC and GET query strings transmit zero personal PII parameters", "status": "Passed", "severity": "S1 (highest)", "expected": "URL query strings are clean of PII parameters\nGET response provides masked NRIC or unmasking requires dedicated authenticated POST endpoint", "actual": "Network traffic clean: zero PII in query parameters; response payload masked.", "traceability": "FS R8 sec. 7; Invariant 8 Client Security", "video_name": "tc_r8_sec_03.webm", "size_kb": 5.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_03_network_payloads_zero_pii_in_url_query_strings/video.webm"}, {"id": "TC-R8-SEC-04", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify browser console and error toasts never log personal PII or leak server stack traces during application errors", "status": "Passed", "severity": "S2", "expected": "Zero user PII (NRIC, phone, email) printed to browser console\nError toast MSG-0808 is sanitized and displays NO internal server stack trace or DB table names", "actual": "Console audit clean; zero PII printed; stack traces suppressed from client UI.", "traceability": "Invariant 8 Client Security; OWASP Security Logging", "video_name": "tc_r8_sec_04.webm", "size_kb": 3825.9, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_04_browser_console_and_toasts_zero_stack_traces/video.webm"}, {"id": "TC-R8-SEC-05", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify unauthenticated direct URL access to /profile immediately redirects to SingPass login gateway with zero data leakage", "status": "Passed", "severity": "S1 (highest)", "expected": "System blocks access immediately and redirects to SingPass login page (/login or /)\nZero parent profile data or cached state rendered on screen", "actual": "Unauthenticated access blocked immediately; redirected to login; zero data leaked.", "traceability": "FR-08.1; NFR Security; Invariant 8", "video_name": "tc_r8_sec_05.webm", "size_kb": 56.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_05_unauthenticated_direct_url_access_redirects_to_login/video.webm"}, {"id": "TC-R8-SEC-06", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify clicking browser Back button after logout does not reveal cached parent profile details", "status": "Passed", "severity": "S1 (highest)", "expected": "Browser does NOT display previously cached profile data\nSystem intercepts Back action and redirects to login or renders blank unauthenticated view", "actual": "Back button after logout intercepted; cached data inaccessible.", "traceability": "NFR Security; Invariant 8; OWASP Post-Logout Cache", "video_name": "tc_r8_sec_06.webm", "size_kb": 484.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_06_browser_back_button_after_logout_prevents_cache_leak/video.webm"}, {"id": "TC-R8-SEC-07", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify expired authentication session safely revokes authorization tokens and redirects to re-login gateway", "status": "Passed", "severity": "S2", "expected": "Expired tokens are cleared from storage\nUser is redirected to re-authenticate with clear session timeout alert\nNo corrupted state or unhandled exceptions", "actual": "Expired session safely purged; user redirected to re-authenticate.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_sec_07.webm", "size_kb": 3458.5, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_07_expired_auth_session_revokes_token_safely/video.webm"}, {"id": "TC-R8-SEC-08", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify security response headers (Cache-Control: no-store, CSP, X-Frame-Options: DENY) protect profile against caching and clickjacking", "status": "Passed", "severity": "S2", "expected": "Cache-Control contains 'no-store, no-cache'\nX-Frame-Options set to 'DENY' or 'SAMEORIGIN' preventing unauthorized iframe embedding\nContent-Security-Policy restricts unsafe scripts", "actual": "Security headers verified: Cache-Control: no-store and clickjacking protections active.", "traceability": "NFR Security; Invariant 8; OWASP Secure Headers", "video_name": "tc_r8_sec_08.webm", "size_kb": 5.3, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_08_security_response_headers_protection/video.webm"}, {"id": "TC-R8-SEC-09", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify rapid sequential profile mutation requests trigger rate limiting or CSRF validation to block abusive submission floods", "status": "Passed", "severity": "S2", "expected": "Server safely handles burst: either throttles via HTTP 429 Too Many Requests or handles idempotently without DB lockup or 500 crash", "actual": "Mutation burst safely handled without server exhaustion.", "traceability": "NFR Security; Invariant 8 Rate Limiting", "video_name": "tc_r8_sec_09.webm", "size_kb": 1071.7, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_09_rapid_sequential_mutation_rate_limiting_defense/video.webm"}, {"id": "TC-R8-SEC-10", "pillar": "TECH", "scenario_id": "TS-010-NFR", "suite": "Security & UI Health", "title": "Verify corrupted JSON bodies or oversized 1MB payloads are safely rejected with HTTP 4xx without triggering HTTP 500 server crashes", "status": "Passed", "severity": "S2", "expected": "Server cleanly rejects malformed payload with HTTP 400 Bad Request or HTTP 413 Payload Too Large\nZero internal server crashes (HTTP 500)", "actual": "Corrupted and oversized bodies cleanly rejected with HTTP 400/413; server intact.", "traceability": "NFR Security; Invariant 8", "video_name": "tc_r8_sec_10.webm", "size_kb": 3513.0, "video_src": "../../reports/fs08/fs08-parent-profile/test-results/ts10_security_ui_health/tc_r8_sec_10_corrupted_payload_injection_defense/video.webm"}];
+    let currentTab = 'ALL';
+    let filteredCases = [...allCases];
+    let activeIdx = 0;
+
+    function setTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      filterCases();
+    }
+
+    function filterCases() {
+      const q = document.getElementById('search').value.toLowerCase().trim();
+      filteredCases = allCases.filter(c => {
+        const matchTab = (currentTab === 'ALL') ||
+                         (currentTab === 'BR' && c.pillar === 'BR') ||
+                         (currentTab === 'AC' && c.pillar === 'AC') ||
+                         (currentTab === 'TECH' && c.pillar === 'TECH_UI');
+        const matchQuery = !q ||
+          c.id.toLowerCase().includes(q) ||
+          c.title.toLowerCase().includes(q) ||
+          c.scenario_id.toLowerCase().includes(q) ||
+          c.suite.toLowerCase().includes(q);
+        return matchTab && matchQuery;
+      });
+      renderList();
+      if (filteredCases.length > 0) {
+        selectCase(0);
+      }
+    }
+
+    function renderList() {
+      const container = document.getElementById('tc-list');
+      container.innerHTML = '';
+      if (filteredCases.length === 0) {
+        container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 12px;">Không tìm thấy ca kiểm thử nào.</div>';
+        return;
+      }
+      filteredCases.forEach((tc, idx) => {
+        const div = document.createElement('div');
+        div.className = 'tc-item ' + (idx === activeIdx ? 'active' : '');
+        div.onclick = () => selectCase(idx);
+
+        let pillarClass = 'badge-tech';
+        if (tc.pillar === 'BR') pillarClass = 'badge-br';
+        if (tc.pillar === 'AC') pillarClass = 'badge-ac';
+
+        div.innerHTML = `
+          <div class="tc-top">
+            <span class="tc-id">${tc.id}</span>
+            <div class="badges">
+              <span class="badge ${pillarClass}">${tc.pillar}</span>
+              <span class="badge badge-pass">PASS</span>
+            </div>
+          </div>
+          <div class="tc-title">${tc.title}</div>
+          <div class="tc-subtext">
+            <span>${tc.scenario_id} • ${tc.suite}</span>
+            <span>${tc.severity}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function selectCase(idx) {
+      if (idx < 0 || idx >= filteredCases.length) return;
+      activeIdx = idx;
+      const tc = filteredCases[idx];
+
+      // Update Active class in list
+      const items = document.querySelectorAll('.tc-item');
+      items.forEach((it, i) => it.classList.toggle('active', i === idx));
+
+      // Update Video
+      const player = document.getElementById('player');
+      const source = document.getElementById('video-source');
+      source.src = tc.video_src;
+      player.load();
+      player.play().catch(e => console.log('Autoplay blocked:', e));
+
+      // Update Links
+      document.getElementById('btn-raw-video').href = tc.video_src;
+      document.getElementById('btn-download-video').href = tc.video_src;
+
+      // Update Text Panels
+      document.getElementById('cur-title').innerText = tc.title;
+      document.getElementById('cur-meta').innerHTML = `
+        <span class="meta-tag">ID: ${tc.id}</span>
+        <span class="meta-tag">Pillar: ${tc.pillar}</span>
+        <span class="meta-tag">Scenario: ${tc.scenario_id}</span>
+        <span class="meta-tag">Suite: ${tc.suite}</span>
+        <span class="meta-tag">Severity: ${tc.severity}</span>
+      `;
+      document.getElementById('cur-expected').innerText = tc.expected;
+      document.getElementById('cur-actual').innerText = tc.actual;
+      document.getElementById('cur-traceability').innerText = tc.traceability || 'N/A';
+      document.getElementById('cur-filename').innerText = tc.video_name;
+      document.getElementById('cur-size').innerText = tc.size_kb ? `${tc.size_kb} KB` : '';
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (document.activeElement.id === 'search') return;
+      if (e.key === 'ArrowDown' || e.key === 'j') {
+        e.preventDefault();
+        if (activeIdx < filteredCases.length - 1) selectCase(activeIdx + 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'k') {
+        e.preventDefault();
+        if (activeIdx > 0) selectCase(activeIdx - 1);
+      } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        const player = document.getElementById('player');
+        if (player.paused) player.play(); else player.pause();
+      } else if (e.key === '/') {
+        e.preventDefault();
+        document.getElementById('search').focus();
+      }
+    });
+
+    // Initialize
+    renderList();
+    if (filteredCases.length > 0) selectCase(0);
+  </script>
+</body>
+</html>

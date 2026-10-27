@@ -81,6 +81,9 @@ class ReportGenerator:
         full_html = assemble_html_document(
             parsed=parsed_data,
             report_data=report_data,
+            reports_dir=self.reports_dir,
+            workspace_dir=self.workspace_dir,
+            embed_media=embed_media,
         )
 
         target_html.parent.mkdir(parents=True, exist_ok=True)

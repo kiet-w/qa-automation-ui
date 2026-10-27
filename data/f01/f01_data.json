@@ -1,0 +1,42 @@
+{
+  "base_url": "http://localhost:5173",
+  "target_route": "/education-accounts",
+  "api_endpoint": "/api/education-account/v1/accounts",
+  "sync_endpoint": "/api/education-account/v1/accounts/trigger-citizen-sync",
+  "uat_001": {
+    "feature_title": "Khởi tạo tài khoản EA không trùng lặp (Provision eligible EAs without duplicates)",
+    "user_story": "US-001",
+    "eligible_student": {
+      "nric": "T0000787X",
+      "fullName": "Isaac Teo",
+      "age": 10,
+      "citizenship": "Singapore Citizen",
+      "status": "Active",
+      "fatherNric": "T1000787X",
+      "motherNric": "T2000787X"
+    },
+    "eligible_student_missing_parent": {
+      "nric": "T0000539X",
+      "fullName": "Adam Wong",
+      "age": 9,
+      "citizenship": "Singapore Citizen",
+      "status": "Active"
+    },
+    "ineligible_student_over_age": {
+      "nric": "T0000911X",
+      "fullName": "Ethan Rahman",
+      "age": 17,
+      "citizenship": "Singapore Citizen",
+      "status": "Deactive"
+    },
+    "search_queries": {
+      "by_nric": "T0000787X",
+      "by_name": "Isaac Teo",
+      "not_found": "NON_EXISTENT_NRIC_9999"
+    },
+    "sync_confirmation": {
+      "title": "Confirm system synchronization",
+      "description": "This action will scan the entire government system for children aged 7 to 16. Are you sure you want to proceed?"
+    }
+  }
+}

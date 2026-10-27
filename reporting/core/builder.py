@@ -9,6 +9,7 @@ Modularized for maintainability and token efficiency:
 """
 
 from reporting.core.document import assemble_html_document
+from reporting.core.enterprise_builder import build_enterprise_html
 from reporting.core.generator import ReportGenerator
 from reporting.core.views_dashboard import build_extent_dashboard_html
 from reporting.core.views_tests import build_extent_tests_html, build_test_cards_html
@@ -16,6 +17,7 @@ from reporting.core.views_tests import build_extent_tests_html, build_test_cards
 __all__ = [
     "ReportGenerator",
     "assemble_html_document",
+    "build_enterprise_html",
     "build_extent_dashboard_html",
     "build_extent_tests_html",
     "build_test_cards_html",

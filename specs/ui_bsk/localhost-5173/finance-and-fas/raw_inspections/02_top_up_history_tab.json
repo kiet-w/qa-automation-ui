@@ -1,0 +1,200 @@
+{
+  "url": "http://localhost:5173/top-up?tab=history",
+  "pathname": "/top-up",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Education Account Top-Up Management",
+      "id": "top-up-page-heading"
+    },
+    {
+      "tag": "h2",
+      "text": "Top-Up History",
+      "id": ""
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "search",
+      "name": "",
+      "id": "_r_8_",
+      "placeholder": "A0000001A",
+      "label": "Search",
+      "disabled": false,
+      "required": false,
+      "selector": "input[placeholder*=\"A0000001A\"]"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    },
+    {
+      "tag": "select",
+      "name": "historyStatus",
+      "id": "history-status-filter",
+      "label": "Status",
+      "options": [
+        {
+          "value": "all",
+          "text": "All Statuses"
+        },
+        {
+          "value": "Success",
+          "text": "Success"
+        },
+        {
+          "value": "Failed",
+          "text": "Failed"
+        }
+      ],
+      "selector": "#history-status-filter"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Individual Top-Up",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-individual"
+    },
+    {
+      "text": "Bulk Campaigns",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-campaigns"
+    },
+    {
+      "text": "Top-Up History",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-history"
+    },
+    {
+      "text": "Individual Top-Ups",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Individual Top-Ups\")"
+    },
+    {
+      "text": "Bulk Batches",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Bulk Batches\")"
+    },
+    {
+      "text": "\u00d7",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Clear search\"]"
+    },
+    {
+      "text": "Search",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Search\")"
+    },
+    {
+      "text": "Reset",
+      "type": "button",
+      "disabled": true,
+      "selector": "button:has-text(\"Reset\")"
+    },
+    {
+      "text": "Date / Time",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Sort by Date / Time\"]"
+    },
+    {
+      "text": "Amount",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Sort by Amount\"]"
+    },
+    {
+      "text": "Previous",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Previous\"]"
+    },
+    {
+      "text": "1",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Go to page 1\"]"
+    },
+    {
+      "text": "Next",
+      "type": "button",
+      "disabled": true,
+      "selector": "button[aria-label=\"Next\"]"
+    }
+  ],
+  "tables": [
+    {
+      "headers": [
+        "Date / Time",
+        "Reference",
+        "Student",
+        "Account",
+        "Amount",
+        "Status",
+        "Note"
+      ],
+      "rowCount": 1,
+      "caption": "Data table"
+    }
+  ],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

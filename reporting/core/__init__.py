@@ -11,6 +11,7 @@ from reporting.core.media import (
     slugify,
 )
 from reporting.core.parser import load_report_json, process_report_data
+from reporting.core.sanitizer import clean_error_message, extract_clean_defect_hint
 
 __all__ = [
     "ReportGenerator",
@@ -23,4 +24,6 @@ __all__ = [
     "slugify",
     "load_report_json",
     "process_report_data",
+    "clean_error_message",
+    "extract_clean_defect_hint",
 ]

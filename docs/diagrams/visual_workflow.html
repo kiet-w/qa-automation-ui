@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sơ Đồ Trực Quan: AI + BSK + Playwright UI Automation</title>
+<style>
+  :root {
+    --bg: #070a13;
+    --panel: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --blue: #38bdf8;
+    --purple: #c084fc;
+    --amber: #fbbf24;
+    --green: #4ade80;
+    --rose: #fb7185;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .wrap {
+    max-width: 1100px;
+    width: 100%;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  h1 {
+    font-size: 26px;
+    margin: 0 0 8px;
+    background: linear-gradient(90deg, #38bdf8, #c084fc, #4ade80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  p.lead {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0;
+  }
+
+  /* 6-Step Visual Timeline */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 768px) {
+    .timeline { grid-template-columns: repeat(3, 1fr); }
+  }
+  .t-step {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+  }
+  .t-step.active {
+    border-color: var(--blue);
+    background: rgba(56, 189, 248, 0.08);
+  }
+  .t-num {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .t-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 4px;
+  }
+
+  /* Main Flowchart SVG */
+  .diagram-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Animated pulse connector */
+  @keyframes flow {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+  .wire {
+    stroke-dasharray: 6 6;
+    animation: flow 1.2s linear infinite;
+  }
+
+  /* Comparison Card */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  @media (max-width: 640px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .card h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Quy Trình 6 Bước Trực Quan: AI + BSK + Playwright</h1>
+    <p class="lead">Từ bản vẽ tay trên Bảng Trắng ➔ Thành hệ thống Automation vận hành mượt mà</p>
+  </header>
+
+  <!-- 6 Timeline Steps -->
+  <div class="timeline">
+    <div class="t-step active">
+      <div class="t-num">Bước 1 & 2</div>
+      <div class="t-name">📄 Specs & Backlog</div>
+    </div>
+    <div class="t-step active">
+      <div class="t-num">Bước 3 (Gửi)</div>
+      <div class="t-name">🤖 AI Ra Lệnh</div>
+    </div>
+    <div class="t-step active">
+      <div class="t-num">Bước 3 (Soi)</div>
+      <div class="t-name">🌐 BSK Soi DOM</div>
+    </div>
+    <div class="t-step active">
+      <div class="t-num">Bước 4 (3 Nhánh)</div>
+      <div class="t-name">📝 Atomic · UAT · Break_It</div>
+    </div>
+    <div class="t-step active">
+      <div class="t-num">Bước 5</div>
+      <div class="t-name">⚙️ Chạy Playwright</div>
+    </div>
+    <div class="t-step active">
+      <div class="t-num">Bước 6</div>
+      <div class="t-name">📊 Báo Cáo HTML</div>
+    </div>
+  </div>
+
+  <!-- SVG Visual Diagram -->
+  <div class="diagram-box">
+    <svg viewBox="0 0 1000 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+      
+      <!-- STEP 1 & 2: INPUTS -->
+      <g id="step1-2">
+        <rect x="20" y="40" width="160" height="180" rx="12" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+        <text x="100" y="70" text-anchor="middle" font-size="28">📄</text>
+        <text x="100" y="100" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="700">1. BACKLOG</text>
+        <text x="100" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">User Story, AC</text>
+        <line x1="40" y1="135" x2="160" y2="135" stroke="#334155"/>
+        <text x="100" y="160" text-anchor="middle" font-size="24">📚</text>
+        <text x="100" y="185" text-anchor="middle" fill="#38bdf8" font-size="14" font-weight="700">2. FSD SPECS</text>
+        <text x="100" y="205" text-anchor="middle" fill="#94a3b8" font-size="11">Business Rules</text>
+      </g>
+
+      <!-- CONNECTOR 1 -> 3 -->
+      <path d="M 180 130 L 260 130" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow)"/>
+      <text x="220" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">Nạp yêu cầu</text>
+
+      <!-- STEP 3: VÒNG LẶP MÁY 🔁 BSK -->
+      <g id="step3-loop">
+        <rect x="260" y="20" width="230" height="230" rx="14" fill="#111827" stroke="#c084fc" stroke-width="2"/>
+        <text x="375" y="45" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="800" letter-spacing="1">3. VÒNG LẶP TRINH SÁT DOM</text>
+        
+        <!-- Máy (AI) -->
+        <rect x="280" y="60" width="190" height="65" rx="8" fill="#1e293b" stroke="#c084fc"/>
+        <text x="300" y="88" font-size="18">🤖</text>
+        <text x="325" y="88" fill="#f8fafc" font-size="13" font-weight="700">Máy (AI Assistant)</text>
+        <text x="325" y="108" fill="#94a3b8" font-size="11">Chưa vội đoán selector</text>
+
+        <!-- Dây xuống BSK -->
+        <path d="M 340 125 L 340 155" stroke="#fbbf24" stroke-width="2" class="wire" marker-end="url(#arrow-amber)"/>
+        <text x="315" y="145" text-anchor="end" fill="#fbbf24" font-size="10">Gọi mở web</text>
+
+        <!-- BSK -->
+        <rect x="280" y="160" width="190" height="65" rx="8" fill="#1e293b" stroke="#fbbf24"/>
+        <text x="300" y="188" font-size="18">🌐</text>
+        <text x="325" y="188" fill="#fbbf24" font-size="13" font-weight="700">BSK Browser-Skill</text>
+        <text x="325" y="208" fill="#94a3b8" font-size="11">Soi DOM thật trên live tab</text>
+
+        <!-- Dây trả về Máy -->
+        <path d="M 420 160 L 420 125" stroke="#4ade80" stroke-width="2" class="wire" marker-end="url(#arrow-green)"/>
+        <text x="430" y="145" fill="#4ade80" font-size="10">Trả Selector 100%</text>
+      </g>
+
+      <!-- CONNECTOR 3 -> 4 -->
+      <path d="M 490 90 L 550 90" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)"/>
+      <text x="520" y="80" text-anchor="middle" fill="#c084fc" font-size="11">Viết 3 loại test</text>
+
+      <!-- STEP 4: KỊCH BẢN (ATOMIC + UAT + BREAK_IT) -->
+      <g id="step4-specs">
+        <rect x="550" y="15" width="210" height="240" rx="12" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+        <text x="655" y="38" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="700">4. KỊCH BẢN KIỂM THỬ</text>
+        
+        <!-- Atomic card -->
+        <rect x="565" y="48" width="180" height="56" rx="6" fill="#0f172a" stroke="#38bdf8"/>
+        <text x="578" y="72" font-size="15">⚡</text>
+        <text x="598" y="70" fill="#38bdf8" font-size="11" font-weight="700">Atomic Test Cases</text>
+        <text x="598" y="88" fill="#94a3b8" font-size="9.5">Biên, format, lỗi form (@smoke)</text>
+
+        <!-- UAT card -->
+        <rect x="565" y="110" width="180" height="56" rx="6" fill="#0f172a" stroke="#c084fc"/>
+        <text x="578" y="134" font-size="15">🚀</text>
+        <text x="598" y="132" fill="#c084fc" font-size="11" font-weight="700">UAT User Journeys</text>
+        <text x="598" y="150" fill="#94a3b8" font-size="9.5">Luồng dài xuyên trang (@uat)</text>
+
+        <!-- Break_It card -->
+        <rect x="565" y="172" width="180" height="72" rx="6" fill="#0f172a" stroke="#fb7185" stroke-width="1.5"/>
+        <text x="578" y="196" font-size="15">💥</text>
+        <text x="598" y="194" fill="#fb7185" font-size="11" font-weight="700">Break_It (Phá kỷ luật)</text>
+        <text x="598" y="212" fill="#94a3b8" font-size="9.5">Gỡ client, XSS, 500, dblclick</text>
+        <text x="598" y="228" fill="#fb7185" font-size="9">(@break_it - Bắt 80% bug ngầm)</text>
+      </g>
+
+      <!-- CONNECTOR 4 -> 5 -->
+      <path d="M 760 130 L 810 130" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+      <text x="785" y="120" text-anchor="middle" fill="#38bdf8" font-size="11">Chạy test</text>
+
+      <!-- STEP 5: PLAYWRIGHT RUNNER -->
+      <g id="step5-playwright">
+        <rect x="810" y="40" width="170" height="180" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+        <text x="895" y="75" text-anchor="middle" font-size="32">🎭</text>
+        <text x="895" y="110" text-anchor="middle" fill="#38bdf8" font-size="14" font-weight="700">5. PLAYWRIGHT</text>
+        <text x="895" y="130" text-anchor="middle" fill="#f8fafc" font-size="12">md_runner.py</text>
+        <text x="895" y="155" text-anchor="middle" fill="#94a3b8" font-size="11">✓ Mở Chromium ngầm</text>
+        <text x="895" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">✓ Quay Video WebM</text>
+        <text x="895" y="195" text-anchor="middle" fill="#94a3b8" font-size="11">✓ Bắt Console/500</text>
+      </g>
+
+      <!-- CONNECTOR 5 -> 6 (Loop down) -->
+      <path d="M 895 220 L 895 300 L 590 300" stroke="#4ade80" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+      <text x="740" y="290" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="700">Xuất kết quả tự động</text>
+
+      <!-- STEP 6: REPORT -->
+      <g id="step6-report">
+        <rect x="180" y="280" width="390" height="160" rx="14" fill="#111827" stroke="#4ade80" stroke-width="2"/>
+        <text x="210" y="315" font-size="26">📊</text>
+        <text x="245" y="312" fill="#4ade80" font-size="15" font-weight="800">6. BÁO CÁO EXTENTREPORTS (4 CẤP ĐỘ)</text>
+        <text x="245" y="332" fill="#94a3b8" font-size="12">bao_cao_tinh_gon.html & execution_report.html</text>
+
+        <rect x="200" y="345" width="165" height="75" rx="8" fill="#1e293b"/>
+        <text x="215" y="370" fill="#f8fafc" font-size="12" font-weight="700">🎯 Báo Cáo Tinh Gọn</text>
+        <text x="215" y="390" fill="#94a3b8" font-size="11">• SUITE ➔ SCENARIO ➔ CASE</text>
+        <text x="215" y="405" fill="#94a3b8" font-size="11">• Nút nhảy lỗi 1-click</text>
+
+        <rect x="385" y="345" width="165" height="75" rx="8" fill="#1e293b"/>
+        <text x="400" y="370" fill="#38bdf8" font-size="12" font-weight="700">🎬 Video & Bằng Chứng</text>
+        <text x="400" y="390" fill="#94a3b8" font-size="11">• Video WebM nhúng thẳng</text>
+        <text x="400" y="405" fill="#94a3b8" font-size="11">• Ảnh chụp màn hình khi fail</text>
+      </g>
+
+      <!-- Defs Markers -->
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8"/>
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#38bdf8"/>
+        </marker>
+        <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#c084fc"/>
+        </marker>
+        <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#fbbf24"/>
+        </marker>
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#4ade80"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <!-- Highlights -->
+  <div class="compare-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card">
+      <h3 style="color:var(--rose);">❌ Cách cũ (Dễ hỏng & mất thời gian)</h3>
+      <p>AI đọc chữ trong tài liệu rồi <strong>tự suy diễn selector</strong>. Khi dev đặt tên ID hoặc class khác với tài liệu, script chạy fail liên tục và tester mất 80% thời gian để debug sửa locator.</p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--green);">✅ Cách mới trên Bảng Trắng (Chính xác 100%)</h3>
+      <p>AI gọi <strong>BSK mở web thật</strong> để trích xuất đúng cây DOM, ID và class thực tế. Sau đó mới sinh test Markdown ({Atomic, UAT, Break_It}). Playwright chạy tự động là <strong>Pass ngay lần đầu tiên</strong>!</p>
+    </div>
+    <div class="card" style="border-color: rgba(251, 113, 133, 0.4);">
+      <h3 style="color:var(--rose);">💥 Nhánh Break_It ("Phá có kỷ luật")</h3>
+      <p>Không chỉ test luồng ngoan ngoãn. Sinh kịch bản <strong>gỡ client validation, double click, bơm XSS / 10k ký tự, sập mạng 500</strong> để bắt trọn 80% lỗi unhandled crash và duplicate charge!</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

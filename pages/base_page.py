@@ -281,11 +281,21 @@ class BasePage:
     def click_element(self, selector_or_locator: Union[str, Locator], timeout: int = 10000):
         """Wait for an element to be visible and clickable, then click it."""
         locator = self.wait_for_visible(selector_or_locator, timeout=timeout)
+        try:
+            from core.sketch_annotator import SketchAnnotator
+            SketchAnnotator.spotlight_action(self.page, locator, action_type="click")
+        except Exception:
+            pass
         locator.click()
 
     def fill_text(self, selector_or_locator: Union[str, Locator], text: str, timeout: int = 10000):
         """Wait for an input element and fill text."""
         locator = self.wait_for_visible(selector_or_locator, timeout=timeout)
+        try:
+            from core.sketch_annotator import SketchAnnotator
+            SketchAnnotator.spotlight_action(self.page, locator, action_type="fill", label=text)
+        except Exception:
+            pass
         locator.fill(text)
 
     def get_title(self) -> str:

@@ -1,0 +1,210 @@
+{
+  "url": "http://localhost:5173/top-up?tab=campaigns",
+  "pathname": "/top-up",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Education Account Top-Up Management",
+      "id": "top-up-page-heading"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "search",
+      "name": "",
+      "id": "_r_8_",
+      "placeholder": "CMP-00009",
+      "label": "Search",
+      "disabled": false,
+      "required": false,
+      "selector": "input[placeholder*=\"CMP-00009\"]"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    },
+    {
+      "tag": "select",
+      "name": "campaignStatus",
+      "id": "campaign-status-filter",
+      "label": "Status",
+      "options": [
+        {
+          "value": "all",
+          "text": "All Statuses"
+        },
+        {
+          "value": "0",
+          "text": "Draft"
+        },
+        {
+          "value": "1",
+          "text": "Active"
+        },
+        {
+          "value": "2",
+          "text": "Inactive"
+        }
+      ],
+      "selector": "#campaign-status-filter"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Individual Top-Up",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-individual"
+    },
+    {
+      "text": "Bulk Campaigns",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-campaigns"
+    },
+    {
+      "text": "Top-Up History",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-history"
+    },
+    {
+      "text": "\u00d7",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Clear search\"]"
+    },
+    {
+      "text": "Search",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Search\")"
+    },
+    {
+      "text": "Reset",
+      "type": "button",
+      "disabled": true,
+      "selector": "button:has-text(\"Reset\")"
+    },
+    {
+      "text": "Create Campaign",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Create Campaign\")"
+    },
+    {
+      "text": "Amount Per Account (SGD)",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Sort by Amount Per Account (SGD)\"]"
+    },
+    {
+      "text": "Batches Run",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Sort by Batches Run\"]"
+    },
+    {
+      "text": "Preview",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Preview\")"
+    },
+    {
+      "text": "Edit",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Edit\")"
+    },
+    {
+      "text": "Run Campaign",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Run Campaign\")"
+    },
+    {
+      "text": "Preview",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Preview\")"
+    },
+    {
+      "text": "Edit",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Edit\")"
+    },
+    {
+      "text": "Run Campaign",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Run Campaign\")"
+    }
+  ],
+  "tables": [
+    {
+      "headers": [
+        "Campaign Code",
+        "Campaign Name",
+        "Amount Per Account (SGD)",
+        "Batches Run",
+        "Status",
+        ""
+      ],
+      "rowCount": 2,
+      "caption": "Data table"
+    }
+  ],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

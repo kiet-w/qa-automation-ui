@@ -10,13 +10,163 @@ import sys
 import time
 from typing import Optional
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Locator, Page
 from playwright_stealth import Stealth
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE_DIR = REPO_ROOT
 DEFAULT_REPORTS_DIR = WORKSPACE_DIR / "reports"
 THANKS_PAGE = WORKSPACE_DIR / "docs" / "thanks.html"
+
+_CURRENT_ACTIVE_NODE = None
+
+# Patch Locator methods to capture action/input screenshot automatically ("lúc nhập xong / thực hiện")
+_ORIG_LOCATOR_FILL = Locator.fill
+_ORIG_LOCATOR_SELECT = Locator.select_option
+_ORIG_LOCATOR_CHECK = Locator.check
+_ORIG_LOCATOR_CLICK = Locator.click
+
+_ORIG_PAGE_FILL = Page.fill
+_ORIG_PAGE_SELECT = Page.select_option
+_ORIG_PAGE_CHECK = Page.check
+_ORIG_PAGE_CLICK = Page.click
+
+def _capture_action_from_locator(locator, is_button: bool = False, action_type: str = "fill", value: str = ""):
+    global _CURRENT_ACTIVE_NODE
+    node = _CURRENT_ACTIVE_NODE
+    if not node:
+        return
+    try:
+        page = getattr(locator, "page", None)
+        if not page or page.is_closed():
+            return
+        reports_dir = getattr(node.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
+        test_slug = re.sub(r"[^\w]+", "_", node.name.lower()).strip("_")
+
+        # 1. Test-specific folder: reports/screenshots/<test_slug>/
+        test_screenshots_dir = Path(reports_dir) / "screenshots" / test_slug
+        test_screenshots_dir.mkdir(parents=True, exist_ok=True)
+        screenshots_dir = Path(reports_dir) / "screenshots"
+        screenshots_dir.mkdir(parents=True, exist_ok=True)
+
+        # 2. Highlight action element in browser DOM
+        from core.evidence_annotator import EvidenceAnnotator
+        act_name = "click" if is_button else action_type
+        clean_val = str(value) if value is not None else ""
+        EvidenceAnnotator.highlight_action_input(page, locator, value=clean_val, action_type=act_name)
+
+        # 3. Determine action/step index
+        action_counter = getattr(node, "_qa_action_counter", 0) + 1
+        setattr(node, "_qa_action_counter", action_counter)
+
+        # 4. Save step action screenshot
+        action_file = test_screenshots_dir / f"step_{action_counter}_{act_name}.png"
+        page.screenshot(path=str(action_file), full_page=False)
+
+        # 5. Keep legacy action screenshot for backward compatibility
+        legacy_action_file = screenshots_dir / f"{test_slug}_action.png"
+        try:
+            shutil.copy2(action_file, legacy_action_file)
+        except Exception:
+            pass
+
+        try:
+            rel_path = str(action_file.relative_to(WORKSPACE_DIR))
+        except Exception:
+            rel_path = str(action_file)
+
+        step_screens = getattr(node, "_qa_step_screenshots", [])
+        step_screens.append((action_counter, act_name, clean_val, rel_path))
+        setattr(node, "_qa_step_screenshots", step_screens)
+        setattr(node, "_qa_action_screenshot", rel_path)
+
+        # 6. Clear overlay
+        EvidenceAnnotator.clear_overlays(page)
+    except Exception:
+        pass
+
+def _patched_locator_fill(self, *args, **kwargs):
+    val = args[0] if args else kwargs.get("value", "")
+    res = _ORIG_LOCATOR_FILL(self, *args, **kwargs)
+    _capture_action_from_locator(self, action_type="fill", value=str(val))
+    return res
+
+def _patched_locator_select(self, *args, **kwargs):
+    val = args[0] if args else (kwargs.get("value") or kwargs.get("label") or "")
+    res = _ORIG_LOCATOR_SELECT(self, *args, **kwargs)
+    _capture_action_from_locator(self, action_type="select", value=str(val))
+    return res
+
+def _patched_locator_check(self, *args, **kwargs):
+    res = _ORIG_LOCATOR_CHECK(self, *args, **kwargs)
+    _capture_action_from_locator(self, action_type="check", value="checked")
+    return res
+
+def _patched_locator_click(self, *args, **kwargs):
+    tag = ""
+    try:
+        tag = self.evaluate("el => (el.tagName + ' ' + (el.type || '') + ' ' + (el.className || '') + ' ' + (el.innerText || '')).toLowerCase()")
+    except Exception:
+        pass
+    res = _ORIG_LOCATOR_CLICK(self, *args, **kwargs)
+    try:
+        if any(w in tag for w in ("button", "submit", "create", "cancel", "tạo", "hủy", "btn", "save", "tiếp", "next")):
+            label = ""
+            try:
+                label = (self.inner_text() or "").strip()[:30]
+            except Exception:
+                pass
+            _capture_action_from_locator(self, is_button=True, action_type="click", value=label)
+    except Exception:
+        pass
+    return res
+
+Locator.fill = _patched_locator_fill
+Locator.select_option = _patched_locator_select
+Locator.check = _patched_locator_check
+Locator.click = _patched_locator_click
+
+def _patched_page_fill(self, selector, value, *args, **kwargs):
+    res = _ORIG_PAGE_FILL(self, selector, value, *args, **kwargs)
+    try:
+        loc = self.locator(selector).first
+        _capture_action_from_locator(loc, action_type="fill", value=str(value))
+    except Exception:
+        pass
+    return res
+
+def _patched_page_select(self, selector, *args, **kwargs):
+    val = args[0] if args else (kwargs.get("value") or kwargs.get("label") or "")
+    res = _ORIG_PAGE_SELECT(self, selector, *args, **kwargs)
+    try:
+        loc = self.locator(selector).first
+        _capture_action_from_locator(loc, action_type="select", value=str(val))
+    except Exception:
+        pass
+    return res
+
+def _patched_page_check(self, selector, *args, **kwargs):
+    res = _ORIG_PAGE_CHECK(self, selector, *args, **kwargs)
+    try:
+        loc = self.locator(selector).first
+        _capture_action_from_locator(loc, action_type="check", value="checked")
+    except Exception:
+        pass
+    return res
+
+Page.fill = _patched_page_fill
+Page.select_option = _patched_page_select
+Page.check = _patched_page_check
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_setup(item):
+    global _CURRENT_ACTIVE_NODE
+    _CURRENT_ACTIVE_NODE = item
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_call(item):
+    global _CURRENT_ACTIVE_NODE
+    _CURRENT_ACTIVE_NODE = item
 
 BROWSER_PROFILES = {
     "chromium": {"browser_name": "chromium"},
@@ -117,7 +267,7 @@ def browser_type_launch_args(browser_type_launch_args, pytestconfig, browser_nam
     target_choice = pytestconfig.getoption("--target-browser", default="chromium")
     profile = BROWSER_PROFILES.get(target_choice, {"browser_name": "chromium"})
 
-    # Apply Chromium-specific anti-bot arguments only when running Chromium-family engines
+    # Apply Chromium-specific anti-bot and RAM-optimization arguments
     effective_browser = browser_name or profile.get("browser_name", "chromium")
     if effective_browser == "chromium":
         anti_bot_args = [
@@ -125,6 +275,23 @@ def browser_type_launch_args(browser_type_launch_args, pytestconfig, browser_nam
             "--no-sandbox",
             "--disable-infobars",
             "--disable-dev-shm-usage",
+            "--mute-audio",
+            "--disable-extensions",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-backgrounding-occluded-windows",
+            "--disable-breakpad",
+            "--disable-component-update",
+            "--disable-default-apps",
+            "--disable-sync",
+            "--no-first-run",
+            "--js-flags=--max-old-space-size=256",
+            "--disable-gpu",
+            "--disable-software-rasterizer",
+            "--renderer-process-limit=2",
+            "--disk-cache-size=1",
+            "--media-cache-size=1",
+            "--disable-features=Translate,BackForwardCache,AcceptCHFrame,MediaRouter,OptimizationHints",
             "--window-size=1920,1080",
             "--start-maximized",
         ]
@@ -145,7 +312,7 @@ def browser_type_launch_args(browser_type_launch_args, pytestconfig, browser_nam
     custom_path = pytestconfig.getoption("--browser-path")
     target_explicit = is_option_explicit(pytestconfig, "--target-browser")
 
-    if profile.get("executable") == "brave":
+    if profile.get("executable") == "brave" or (target_explicit and pytestconfig.getoption("--target-browser") == "brave"):
         brave_bin = custom_path or _find_brave()
         if not brave_bin or not Path(brave_bin).exists():
             raise pytest.UsageError(
@@ -158,11 +325,7 @@ def browser_type_launch_args(browser_type_launch_args, pytestconfig, browser_nam
         if not Path(custom_path).exists():
             raise FileNotFoundError(f"[conftest] Specified --browser-path does not exist: {custom_path}")
         opts["executable_path"] = custom_path
-    elif not target_explicit and effective_browser == "chromium":
-        # Default behavior: If system has Brave installed, auto-use it to prevent bot detection
-        auto_brave = _find_brave()
-        if auto_brave and Path(auto_brave).exists():
-            opts["executable_path"] = auto_brave
+    # Note: When target is default chromium, use Playwright's lightweight bundled Chromium (saves ~70% RAM over desktop Brave)
 
     # If running parallel and user did not explicitly request --headed on CLI, enforce headless=True
     if is_parallel_execution(pytestconfig) and not is_cli_headed_explicit(pytestconfig):
@@ -174,12 +337,12 @@ def browser_type_launch_args(browser_type_launch_args, pytestconfig, browser_nam
 
 
 @pytest.fixture(scope="session")
-def browser_context_args(browser_context_args):
-    """Configure realistic desktop browser profile with Full HD 1080p resolution and crisp video recording."""
-    return {
+def browser_context_args(browser_context_args, pytestconfig):
+    """Configure realistic desktop browser profile with Full HD 1080p resolution and conditional video recording."""
+    video_mode = pytestconfig.getoption("--video", default="off")
+    args = {
         **browser_context_args,
         "viewport": {"width": 1920, "height": 1080},
-        "record_video_size": {"width": 1920, "height": 1080},
         "device_scale_factor": 1,
         "user_agent": (
             "Mozilla/5.0 (X11; Linux x86_64) "
@@ -189,6 +352,9 @@ def browser_context_args(browser_context_args):
         "locale": "en-US",
         "timezone_id": "America/New_York",
     }
+    if video_mode != "off":
+        args["record_video_size"] = {"width": 1280, "height": 720}
+    return args
 
 
 @pytest.fixture(autouse=True)
@@ -198,6 +364,10 @@ def setup_page(page: Page, json_metadata, request, browser_name):
     Teardown: Safely closes browser context, captures 1:1 video per test,
     and records video_path into json_metadata["video_path"].
     """
+    global _CURRENT_ACTIVE_NODE
+    _CURRENT_ACTIVE_NODE = request.node
+    test_start_time = time.time()
+
     # 1. Apply Playwright Stealth evasion patches (Chromium only)
     if browser_name == "chromium":
         try:
@@ -231,41 +401,378 @@ def setup_page(page: Page, json_metadata, request, browser_name):
             document.addEventListener('DOMContentLoaded', initObserver);
         }
     """)
-    test_failed = False
-    try:
-        yield page
-    except BaseException:
-        test_failed = True
-        raise
-    finally:
-        # 1. Auto-capture Final Evidence Screenshot if test passed and last step has no screenshot
+
+    # 3. Automatic Action Spotlight & Ripple Visualizer for Recorded Videos (Only active when video is enabled)
+    video_mode = getattr(request.config.option, "video", "off")
+    is_video_enabled = (video_mode in ("on", "retain-on-failure"))
+    if is_video_enabled:
+        page.add_init_script(r"""
+        (() => {
+            if (window.__qa_action_visualizer_initialized) return;
+            window.__qa_action_visualizer_initialized = true;
+
+            const injectStyles = () => {
+                if (document.getElementById('__qa_action_visualizer_styles__')) return;
+                const style = document.createElement('style');
+                style.id = '__qa_action_visualizer_styles__';
+                style.textContent = `
+                    @keyframes qa_video_ripple {
+                        0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; border-width: 4px; }
+                        50% { opacity: 0.8; }
+                        100% { transform: translate(-50%, -50%) scale(2.4); opacity: 0; border-width: 1px; }
+                    }
+                    @keyframes qa_element_pulse {
+                        0% { outline: 3px solid #38bdf8; outline-offset: 2px; }
+                        50% { outline: 4px solid #0284c7; outline-offset: 4px; }
+                        100% { outline: 2px solid transparent; outline-offset: 2px; }
+                    }
+                    .qa-action-ripple {
+                        position: absolute;
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 2147483646;
+                        box-sizing: border-box;
+                    }
+                    .qa-action-badge {
+                        position: absolute;
+                        pointer-events: none;
+                        z-index: 2147483647;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        font-size: 11px;
+                        font-weight: 700;
+                        padding: 3px 8px;
+                        border-radius: 6px;
+                        white-space: nowrap;
+                        color: #ffffff;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+                        transition: opacity 0.3s ease, transform 0.3s ease;
+                        opacity: 0.96;
+                    }
+                `;
+                (document.head || document.documentElement).appendChild(style);
+            };
+
+            const triggerRipple = (x, y, color = '#0284c7', label = '👆 CLICK') => {
+                injectStyles();
+                const container = document.body || document.documentElement;
+                if (!container) return;
+
+                // 1. Radar Ripple Circle
+                const ripple = document.createElement('div');
+                ripple.className = 'qa-action-ripple';
+                const size = 44;
+                ripple.style.width = size + 'px';
+                ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.border = `3px solid ${color}`;
+                ripple.style.background = `radial-gradient(circle, ${color}33 0%, transparent 70%)`;
+                ripple.style.animation = 'qa_video_ripple 0.65s cubic-bezier(0.1, 0.8, 0.3, 1) forwards';
+                container.appendChild(ripple);
+
+                // 2. Action Badge Pill
+                const badge = document.createElement('div');
+                badge.className = 'qa-action-badge';
+                badge.style.left = (x + 14) + 'px';
+                badge.style.top = (y - 28) + 'px';
+                badge.style.background = color === '#10b981' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+                badge.textContent = label;
+                container.appendChild(badge);
+
+                setTimeout(() => {
+                    ripple.remove();
+                    badge.style.opacity = '0';
+                    badge.style.transform = 'translateY(-4px)';
+                    setTimeout(() => badge.remove(), 300);
+                }, 600);
+            };
+
+            // Global capture-phase listeners for clicks & form inputs
+            window.addEventListener('click', (e) => {
+                const x = e.pageX;
+                const y = e.pageY;
+                const target = e.target;
+                let label = '👆 CLICK';
+                if (target && target.innerText && target.innerText.trim().length <= 25) {
+                    label = `👆 CLICK: "${target.innerText.trim()}"`;
+                } else if (target && target.tagName) {
+                    label = `👆 CLICK: <${target.tagName.toLowerCase()}>`;
+                }
+                triggerRipple(x, y, '#0284c7', label);
+
+                if (target && target.style) {
+                    const origAnimation = target.style.animation;
+                    target.style.animation = 'qa_element_pulse 0.7s ease-out';
+                    setTimeout(() => {
+                        target.style.animation = origAnimation;
+                    }, 700);
+                }
+            }, true);
+
+            window.addEventListener('input', (e) => {
+                const target = e.target;
+                if (!target || !target.getBoundingClientRect) return;
+                const rect = target.getBoundingClientRect();
+                const x = window.scrollX + rect.left + 15;
+                const y = window.scrollY + rect.top + rect.height / 2;
+                const val = target.value ? (target.type === 'password' ? '••••••' : String(target.value).slice(0, 15)) : '';
+                const label = val ? `✏️ INPUT: "${val}"` : '✏️ INPUT';
+                triggerRipple(x, y, '#10b981', label);
+            }, true);
+        })();
+    """)
+
+    # 4. Step HUD auto-persistence across page navigations
+    def _on_page_nav(frame):
         try:
-            step_tracker = request.node.funcargs.get("step")
-            if not test_failed and step_tracker and getattr(step_tracker, "steps", None):
-                last_step = step_tracker.steps[-1]
-                if not last_step.get("screenshot"):
-                    active_page = getattr(step_tracker, "page", None) or page
-                    if active_page and not active_page.is_closed():
-                        prefix = f"{step_tracker.test_slug}_" if step_tracker.test_slug else ""
-                        evidence_filename = f"{prefix}evidence.png"
-                        evidence_path = step_tracker.screenshots_dir / evidence_filename
-                        evidence_path.parent.mkdir(parents=True, exist_ok=True)
-                        active_page.screenshot(path=str(evidence_path), full_page=False)
-                        try:
-                            rel_evidence_path = str(evidence_path.relative_to(WORKSPACE_DIR))
-                        except Exception:
-                            rel_evidence_path = str(evidence_path)
-                        last_step["screenshot"] = rel_evidence_path
+            st = request.node.funcargs.get("step") if hasattr(request.node, "funcargs") else None
+            if st and getattr(st, "current_step", None) and not page.is_closed():
+                cur = st.current_step
+                title = cur.get("title", "")
+                idx = cur.get("step_index", getattr(st, "_step_counter", 1))
+                if title:
+                    from core.sketch_annotator import SketchAnnotator
+                    SketchAnnotator.show_step_hud(page, title, idx)
         except Exception:
             pass
 
-        # 2. Teardown: Safely close context and record video path 1:1 per test
+    page.on("framenavigated", lambda frame: _on_page_nav(frame) if frame == page.main_frame else None)
+    page.on("domcontentloaded", lambda _: _on_page_nav(None))
+
+    test_failed = False
+    exc_caught = None
+    try:
+        yield page
+    except BaseException as exc:
+        test_failed = True
+        exc_caught = exc
+        setattr(request.node, "_has_failed", True)
+        setattr(request.node, "_failure_exc", exc)
+        raise
+    finally:
+        # Determine failure status across fixtures, assertions, and steps
+        step_tracker = None
         try:
-            active_page = None
-            step_tracker = request.node.funcargs.get("step")
-            if step_tracker:
-                active_page = getattr(step_tracker, "page", None)
-            target_page_for_video = active_page or page
+            step_tracker = request.node.funcargs.get("step") if hasattr(request.node, "funcargs") else None
+        except Exception:
+            pass
+
+        has_failed = (
+            test_failed
+            or getattr(request.node, "_has_failed", False)
+            or (step_tracker and any(s.get("status") == "failed" for s in getattr(step_tracker, "steps", [])))
+        )
+        active_page = getattr(step_tracker, "page", None) if step_tracker else None
+        target_page = active_page or page
+
+        # 1. Fallback Defect Annotation & Video Frame Flushing on Test Failure
+        if has_failed and target_page and not target_page.is_closed():
+            try:
+                overlay_present = False
+                try:
+                    overlay_present = target_page.evaluate("""() => {
+                        return !!(document.getElementById('__qa_sketch_defect_svg__') || 
+                                  document.getElementById('__qa_sketch_defect_banner__'));
+                    }""")
+                except Exception:
+                    overlay_present = False
+
+                if not overlay_present:
+                    last_step_title = "Test Failure"
+                    error_msg = ""
+
+                    if exc_caught:
+                        error_msg = str(exc_caught)
+                    elif getattr(request.node, "_failure_exc", None):
+                        error_msg = str(request.node._failure_exc)
+
+                    if step_tracker and getattr(step_tracker, "steps", None):
+                        failed_step = next((s for s in reversed(step_tracker.steps) if s.get("status") == "failed"), None)
+                        if failed_step:
+                            last_step_title = failed_step.get("title") or last_step_title
+                            if not error_msg:
+                                error_msg = failed_step.get("error") or failed_step.get("actual") or ""
+                        elif step_tracker.steps:
+                            last_step = step_tracker.steps[-1]
+                            last_step_title = last_step.get("title") or last_step_title
+                            if not error_msg:
+                                error_msg = last_step.get("error") or last_step.get("actual") or ""
+
+                    if not error_msg:
+                        for prop, val in getattr(request.node, "user_properties", []):
+                            if prop in ("error_hint", "error_category") and val:
+                                error_msg = val
+                                break
+
+                    if not error_msg:
+                        error_msg = "Assertion / Execution Failure"
+
+                    from core.sketch_annotator import SketchAnnotator
+                    SketchAnnotator.highlight_defect(
+                        target_page,
+                        step_title=last_step_title,
+                        error_msg=error_msg,
+                        hold_ms=3000 if is_video_enabled else 300,
+                    )
+                elif is_video_enabled:
+                    # Overlay already present, hold at least 2500ms to guarantee video buffer flush
+                    target_page.wait_for_timeout(2500)
+            except Exception:
+                pass
+
+        # 2. Auto-capture Step Actions & Highlighted Actual Result Evidence Screenshot
+        try:
+            reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
+            test_slug = re.sub(r"[^\w]+", "_", request.node.name.lower()).strip("_")
+            screenshots_dir = Path(reports_dir) / "screenshots"
+            screenshots_dir.mkdir(parents=True, exist_ok=True)
+            test_screenshots_dir = screenshots_dir / test_slug
+            test_screenshots_dir.mkdir(parents=True, exist_ok=True)
+
+            if target_page and not target_page.is_closed():
+                from core.evidence_annotator import EvidenceAnnotator
+
+                status_label = "defect" if has_failed else "passed"
+                actual_loc = getattr(request.node, "_qa_actual_locator", None)
+                actual_text = getattr(request.node, "_qa_actual_text", None)
+
+                # Highlight Actual Result element in DOM
+                EvidenceAnnotator.highlight_actual_result(
+                    target_page,
+                    locator_or_selector=actual_loc,
+                    status=status_label,
+                    actual_text=actual_text,
+                )
+
+                # Capture Actual Result Screenshot into test directory
+                actual_filename = "actual_result.png"
+                actual_path = test_screenshots_dir / actual_filename
+                target_page.screenshot(path=str(actual_path), full_page=False)
+
+                # Legacy fallback copies for backward compatibility
+                legacy_filename = f"fail_{test_slug}_teardown.png" if has_failed else f"{test_slug}_pass.png"
+                legacy_path = screenshots_dir / legacy_filename
+                try:
+                    shutil.copy2(actual_path, legacy_path)
+                    shutil.copy2(actual_path, screenshots_dir / f"{test_slug}_actual_result.png")
+                except Exception:
+                    pass
+
+                try:
+                    rel_actual_path = str(actual_path.relative_to(WORKSPACE_DIR))
+                except Exception:
+                    rel_actual_path = str(actual_path)
+
+                setattr(request.node, "_qa_actual_screenshot", rel_actual_path)
+                EvidenceAnnotator.clear_overlays(target_page)
+
+                # Synchronize with step_tracker or json_metadata
+                step_screens = getattr(request.node, "_qa_step_screenshots", [])
+                if step_tracker and getattr(step_tracker, "steps", None):
+                    # Preserve all captured setup / action screenshots into steps timeline
+                    existing_screenshots = {s.get("screenshot") for s in step_tracker.steps if s.get("screenshot")}
+                    for idx, act, val, path in step_screens:
+                        if path not in existing_screenshots:
+                            insert_pos = max(0, len(step_tracker.steps) - 1)
+                            step_tracker.steps.insert(insert_pos, {
+                                "title": f"Setup / Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip(),
+                                "step_index": len(step_tracker.steps) + 1,
+                                "status": "passed",
+                                "duration": 0.1,
+                                "start_offset": 0.0,
+                                "end_offset": 0.1,
+                                "expected": f"Thực hiện thành công thao tác {act}",
+                                "actual": f"Đã thực hiện {act} trên trường tương ứng",
+                                "screenshot": path,
+                                "error": None,
+                            })
+                            existing_screenshots.add(path)
+
+                    # Ensure actual result has its own dedicated evidence without overwriting setup images
+                    last_step_shot = step_tracker.steps[-1].get("screenshot")
+                    if last_step_shot and last_step_shot != rel_actual_path and ("step_" in str(last_step_shot)):
+                        actual_step_title = "Kiểm chứng kết quả thực tế (PASSED)" if not has_failed else "Kiểm chứng kết quả thực tế (DEFECT / FAILED)"
+                        err_msg = str(exc_caught) if exc_caught else None
+                        step_tracker.steps.append({
+                            "title": actual_step_title,
+                            "step_index": len(step_tracker.steps) + 1,
+                            "status": "failed" if has_failed else "passed",
+                            "duration": 0.1,
+                            "start_offset": 0.0,
+                            "end_offset": 0.1,
+                            "expected": "Các điều kiện kiểm tra (assertions) và trạng thái giao diện đạt chuẩn nghiệp vụ",
+                            "actual": f"FAILED: {err_msg}" if has_failed else (actual_text or "Kết quả thực tế (Actual Result) chính xác theo đặc tả"),
+                            "screenshot": rel_actual_path,
+                            "error": err_msg,
+                            "is_actual_result": True,
+                        })
+                    else:
+                        step_tracker.steps[-1]["screenshot"] = rel_actual_path
+                        step_tracker.steps[-1]["is_actual_result"] = True
+                else:
+                    # Construct steps list with captured step actions + final actual result
+                    func_name = request.node.name
+                    doc = getattr(request.node.obj, "__doc__", "") or ""
+                    first_line = doc.strip().split("\n")[0].strip() if doc.strip() else ""
+                    m_tc = re.search(r"\b(TC-[A-Za-z0-9_-]+)\b", first_line)
+                    tc_badge = m_tc.group(1) if m_tc else func_name
+
+                    dur_total = round(time.time() - test_start_time, 2) if 'test_start_time' in locals() else 0.5
+                    steps_list = []
+                    step_screens = getattr(request.node, "_qa_step_screenshots", [])
+                    if step_screens:
+                        step_dur = round(dur_total / (len(step_screens) + 1), 2)
+                        for idx, act, val, path in step_screens:
+                            steps_list.append({
+                                "title": f"Bước {idx}: Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip(),
+                                "status": "passed",
+                                "duration": step_dur,
+                                "start_offset": 0.0,
+                                "end_offset": step_dur,
+                                "expected": f"Thực hiện thành công thao tác {act}",
+                                "actual": f"Đã thực hiện {act} trên trường tương ứng",
+                                "screenshot": path,
+                                "error": None,
+                            })
+                    else:
+                        rel_action = getattr(request.node, "_qa_action_screenshot", rel_actual_path)
+                        steps_list.append({
+                            "title": f"Bước 1: Trạng thái nhập liệu hoàn tất ({tc_badge})",
+                            "status": "passed",
+                            "duration": round(dur_total / 2, 2),
+                            "start_offset": 0.0,
+                            "end_offset": round(dur_total / 2, 2),
+                            "expected": "Giao diện và các trường thông tin được nhập liệu chính xác",
+                            "actual": "Đã hoàn thành các bước tương tác / nhập liệu trên giao diện màn hình",
+                            "screenshot": rel_action,
+                            "error": None,
+                        })
+
+                    actual_step_title = "Kiểm chứng kết quả thực tế (PASSED)" if not has_failed else "Kiểm chứng kết quả thực tế (DEFECT / FAILED)"
+                    err_msg = str(exc_caught) if exc_caught else None
+                    steps_list.append({
+                        "title": f"Bước {len(steps_list) + 1}: {actual_step_title}",
+                        "status": "failed" if has_failed else "passed",
+                        "duration": round(dur_total / 2, 2),
+                        "start_offset": round(dur_total / 2, 2),
+                        "end_offset": dur_total,
+                        "expected": "Các điều kiện kiểm tra (assertions) và trạng thái giao diện đạt chuẩn nghiệp vụ",
+                        "actual": f"FAILED: {err_msg}" if has_failed else (actual_text or "Kết quả thực tế (Actual Result) chính xác theo đặc tả"),
+                        "screenshot": rel_actual_path,
+                        "error": err_msg,
+                        "is_actual_result": True,
+                    })
+
+                    if "steps" not in json_metadata:
+                        json_metadata["steps"] = []
+                    json_metadata["steps"].clear()
+                    json_metadata["steps"].extend(steps_list)
+        except Exception:
+            pass
+
+        # 3. Teardown: Safely close context and record video path 1:1 per test
+        try:
+            target_page_for_video = target_page or page
 
             video = getattr(target_page_for_video, "video", None) or getattr(page, "video", None)
             context = getattr(page, "context", None)
@@ -276,7 +783,10 @@ def setup_page(page: Page, json_metadata, request, browser_name):
                 except Exception:
                     pass
 
-            if video:
+            video_mode = getattr(request.config.option, "video", "retain-on-failure")
+            should_save_video = (video_mode == "on") or (has_failed)
+
+            if video and should_save_video:
                 video_path = None
                 try:
                     video_path = video.path()
@@ -304,6 +814,11 @@ def setup_page(page: Page, json_metadata, request, browser_name):
 
                 if recorded_path:
                     json_metadata["video_path"] = recorded_path
+            elif video and not should_save_video:
+                try:
+                    video.delete()
+                except Exception:
+                    pass
         except Exception:
             pass
 

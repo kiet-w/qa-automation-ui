@@ -1,0 +1,140 @@
+{
+  "url": "http://localhost:5173/top-up?tab=individual",
+  "pathname": "/top-up",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Education Account Top-Up Management",
+      "id": "top-up-page-heading"
+    },
+    {
+      "tag": "h2",
+      "text": "Individual Account Top-Up",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "Progress",
+      "id": "_r_8_"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "studentIdentifier",
+      "id": "student-search-input",
+      "placeholder": "Enter NRIC (e.g. T1500123A) or Wallet / Account Code...",
+      "label": "Search Account by",
+      "disabled": false,
+      "required": false,
+      "selector": "#student-search-input"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Individual Top-Up",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-individual"
+    },
+    {
+      "text": "Bulk Campaigns",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-campaigns"
+    },
+    {
+      "text": "Top-Up History",
+      "type": "button",
+      "disabled": false,
+      "selector": "#radix-_r_4_-trigger-history"
+    },
+    {
+      "text": "1",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"1\")"
+    },
+    {
+      "text": "2",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"2\")"
+    },
+    {
+      "text": "3",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"3\")"
+    },
+    {
+      "text": "4",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"4\")"
+    },
+    {
+      "text": "Search",
+      "type": "submit",
+      "disabled": true,
+      "selector": "button:has-text(\"Search\")"
+    }
+  ],
+  "tables": [],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

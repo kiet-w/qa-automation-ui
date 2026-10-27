@@ -9,7 +9,9 @@
       "role": "Parent",
       "email": "wei.ming.s2345678b@example.com",
       "phone": "+6592345678",
-      "children": ["Chloe Chan"],
+      "children": [
+        "Chloe Chan"
+      ],
       "has_active_child": true,
       "description": "Happy path standard parent with active children (AC #1, #6, #14)"
     },
@@ -18,7 +20,9 @@
       "name": "NGUYEN VAN MINH",
       "nric": "S7890123F",
       "role": "Parent",
-      "children": ["Tan Wei Ming"],
+      "children": [
+        "Tan Wei Ming"
+      ],
       "has_active_child": true,
       "description": "Second happy path parent for multi-account validation (AC #4)"
     },
@@ -41,8 +45,8 @@
     },
     "PAR-ALL-16": {
       "id": "PAR-ALL-16",
-      "name": "Ng Chee Meng",
-      "nric": "S8901234G",
+      "name": "AHMAD BIN RAHMAN",
+      "nric": "S8901234H",
       "role": "Parent",
       "description": "Parent where all children are >= 16yo, form read-only (AC #9)"
     },
@@ -81,7 +85,7 @@
     }
   },
   "profile_update_valid": {
-    "phoneNumber": "+6591234567",
+    "phoneNumber": "91234567",
     "email": "tan.wei.ming.updated@example.com",
     "mailingBlock": "210",
     "mailingStreet": "JURONG EAST STREET 21",
@@ -90,7 +94,7 @@
     "mailingCountry": "SINGAPORE"
   },
   "profile_update_restore": {
-    "phoneNumber": "+6592345678",
+    "phoneNumber": "92345678",
     "email": "wei.ming.s2345678b@example.com",
     "mailingBlock": "210",
     "mailingStreet": "JURONG EAST STREET 21",
@@ -122,20 +126,72 @@
     "ABCDEF"
   ],
   "profile_bva_dataset": {
+    "universal_vectors": {
+      "empty": "",
+      "whitespace_only": "     ",
+      "leading_trailing_spaces": "  Tan Wei Ming  ",
+      "paste_1000_chars": "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2W3x4Y5z6!@#$%^&*()_+-=[]{}|;:,.<>/?`~ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+      "special_chars": "!@#$%^&*()",
+      "forbidden_address_chars": "< > { } ;",
+      "multilingual_unicode": [
+        "\ud83d\ude00",
+        "Nguy\u1ec5n V\u0103n Minh",
+        "\u4e2d\u6587\u6d4b\u8bd5",
+        "Tokyo \u6771\u4eac"
+      ],
+      "security_injection": [
+        "<script>alert(1)</script>",
+        "' OR 1=1 --",
+        "\"><svg/onload=alert(1)>"
+      ]
+    },
     "phones": {
-      "valid_prefixes": ["91234567", "81234567", "61234567"],
-      "invalid_prefixes": ["71234567", "51234567", "12345678", "23456789", "34567890", "45678901"],
-      "invalid_lengths": ["9123456", "912345678"],
-      "invalid_alphanumeric": ["9123abcd", "abcdefgh"],
-      "special_chars": ["9123-4567", "(65)91234567"],
-      "with_space": "9123 4567"
+      "valid_prefixes": [
+        "91234567",
+        "81234567",
+        "61234567"
+      ],
+      "invalid_prefixes": [
+        "71234567",
+        "51234567",
+        "12345678",
+        "23456789",
+        "34567890",
+        "45678901"
+      ],
+      "invalid_lengths": [
+        "9123456",
+        "912345678"
+      ],
+      "invalid_alphanumeric": [
+        "9123abcd",
+        "12345qqqq",
+        "abcdefgh"
+      ],
+      "special_chars": [
+        "9123-4567",
+        "(65)91234567",
+        "+6591234567"
+      ],
+      "with_space": "9123 4567",
+      "decimals_and_negatives": [
+        "91.234567",
+        "-9123456"
+      ],
+      "full_width_and_eastern": [
+        "\uff19\uff11\uff12\uff13\uff14\uff15\uff16\uff17",
+        "\u0669\u0661\u0662\u0663\u0664\u0665\u0666\u0667"
+      ],
+      "leading_zero_phone": "01234567"
     },
     "emails": {
       "valid_formats": [
         "tan.wei.ming@example.com",
         "parent@mail.junior.school.edu.sg",
         "parent+moe.alerts@gmail.com",
-        "wei-ming.tan_parent@domain-test.com"
+        "wei-ming.tan_parent@domain-test.com",
+        "ABC@GMAIL.COM",
+        " abc@gmail.com "
       ],
       "invalid_formats": [
         "invalidemail",
@@ -145,23 +201,83 @@
         "@example.com",
         "tan.wei.ming@example",
         "tan@wei@example.com",
-        "tan wei@example.com"
+        "tan wei@example.com",
+        "abc@@gmail.com",
+        "abc@gmail..com",
+        "abc@gmail,com",
+        "abc@gmail.c",
+        "nguy\u1ec5n@gmail.com"
       ],
-      "length_149": "valid_user_name_test_for_boundary_check_149chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllll@longdomainname.example.com",
-      "length_150": "valid_user_name_test_for_boundary_check_150chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkkllllll@longdomainname.example.com",
-      "length_151": "valid_user_name_test_for_boundary_check_151chars_long_string_padding_aaaaabbbbbcccccdddddeeeeefffffggggghhhhhiiiiijjjjjkkkkklllllll@longdomainname.example.com"
+      "length_149": "user_bva_check_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@longdomainname.example.com",
+      "length_150": "user_bva_check_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@longdomainname.example.com",
+      "length_151": "user_bva_check_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@longdomainname.example.com"
     },
     "mailing": {
       "street_min_1": "A",
+      "street_valid_punctuation": [
+        "St. George's Lane",
+        "Jalan Jurong Kechil",
+        "Ang Mo Kio Ave 3 #08-1234"
+      ],
       "street_max_100": "Blk 210 Jurong East St 21 #05-12 Tower B Singapore 600210 Extra Long Address Description Padding String",
       "street_overflow_101": "Blk 210 Jurong East St 21 #05-12 Tower B Singapore 600210 Extra Long Address Description Padding String X",
-      "postal_valid_6_digits": ["600210", "018956", "560123"],
-      "postal_invalid_lengths": ["60021", "6002100"],
-      "postal_invalid_chars": ["60021A", "ABCDEF"],
+      "street_multiline": "Line 1 Street\nLine 2 Landmark",
+      "postal_valid_6_digits": [
+        "600210",
+        "018956",
+        "560123",
+        "238888",
+        "000000"
+      ],
+      "postal_invalid_lengths": [
+        "60021",
+        "6002100",
+        "23888",
+        "2388888"
+      ],
+      "postal_invalid_chars": [
+        "60021A",
+        "ABCDEF",
+        "23888a",
+        "650-009",
+        "650 09"
+      ],
+      "postal_full_width": "\uff12\uff13\uff18\uff18\uff18\uff18",
+      "postal_decimals_negatives": [
+        "238.88",
+        "-23888"
+      ],
+      "block_valid_alphanumeric": [
+        "Blk 123A",
+        "Tower 2",
+        "Block 9B",
+        "123",
+        "A"
+      ],
       "block_max_20": "Block 12345678901234",
+      "block_overflow_21": "Block 123456789012345",
+      "unit_valid_notations": [
+        "#05-12",
+        "#02-01",
+        "#12-345",
+        "12-34A",
+        "Level 2"
+      ],
       "unit_max_20": "#05-123456789012345",
-      "country_default": "SINGAPORE",
-      "country_max_100": "Republic of Singapore National Education Service Mainland Area Jurisdiction District Zone Singapore"
+      "unit_overflow_21": "#05-1234567890123456",
+      "country_default": "Singapore",
+      "country_valid_punctuation": [
+        "Singapore",
+        "Malaysia",
+        "C\u00f4te d'Ivoire"
+      ],
+      "country_invalid_with_digits": [
+        "Singapore1",
+        "123",
+        "Country 404"
+      ],
+      "country_max_100": "Republic of Singapore National Education Service Mainland Area Jurisdiction District Zone Singapore",
+      "country_overflow_101": "Republic of Singapore National Education Service Mainland Area Jurisdiction District Zone Singapore X"
     }
   },
   "xss_payload": "<script>alert('xss')</script>",
@@ -199,5 +315,147 @@
     "dirty_state_hint": "Make a change to enable saving.",
     "invalid_email_inline_alert": "Enter a valid email address.",
     "success_update_toast": "Your details have been updated."
+  },
+  "uat_005": {
+    "parent_a": {
+      "persona_name": "LIM WEI MINH",
+      "nric": "S7890123F",
+      "username": "S7890123F",
+      "expected_children": [
+        "Tan Wei Ming",
+        "Lucas Lim",
+        "Nathan Lim"
+      ],
+      "verified_count": 3
+    },
+    "parent_b": {
+      "persona_name": "PHAM VAN DUC",
+      "nric": "S7654321B",
+      "username": "S7654321B",
+      "expected_children": [
+        "Chloe Chan",
+        "Liam Pham",
+        "Grace Pham"
+      ],
+      "verified_count": 3
+    },
+    "idor_test": {
+      "target_unauthorized_student": "STU-001",
+      "target_student_name": "Liam Pham",
+      "target_child_uuid": "01a15a22-dddf-750e-ac12-6d155e779d11",
+      "expected_error_header": "Unable to load data",
+      "expected_api_status": [400, 401, 403]
+    }
+  },
+  "uat_006": {
+    "persona_howard": {
+      "name": "PHAM VAN DUC",
+      "display_name": "Howard (PHAM VAN DUC)",
+      "nric": "S7654321B",
+      "expected_children": [
+        "Chloe Chan",
+        "Liam Pham",
+        "Grace Pham"
+      ],
+      "active_child": {
+        "name": "Chloe Chan",
+        "student_id": "EDU-00002",
+        "uuid": "01a15a22-dddf-750e-ac12-6d155e779d11",
+        "masked_nric": "*****784X",
+        "expected_balance": "SGD 500.00",
+        "expected_account": "WA-00002"
+      },
+      "second_active_child": {
+        "name": "Liam Pham",
+        "student_id": "EDU-01001",
+        "expected_balance": "SGD 500.00"
+      }
+    },
+    "persona_lim": {
+      "name": "LIM WEI MINH",
+      "nric": "S7890123F",
+      "active_child": {
+        "name": "Tan Wei Ming",
+        "student_id": "EDU-00172",
+        "uuid": "01a15a22-f573-7ba6-93d2-71ac9a4ce40b",
+        "expected_balance": "SGD 500.00",
+        "expected_account": "WA-00172"
+      }
+    },
+    "ledger_table": {
+      "expected_headers": [
+        "Date",
+        "Description",
+        "Amount"
+      ],
+      "rows_per_page_options": [
+        "10",
+        "25",
+        "50",
+        "100"
+      ]
+    },
+    "idor_test": {
+      "unauthorized_student_id": "STU-9999-UNAUTH",
+      "expected_error": "Unable to load data"
+    },
+    "empty_filter": {
+      "expected_message": "No transactions found."
+    }
+  },
+  "uat_007": {
+    "persona": {
+      "name": "TAN WEI MING",
+      "display_name": "Howard (TAN WEI MING)",
+      "nric_masked": "*****321B",
+      "nric_unmasked": "S7654321B",
+      "residential_address": "BLK 210 JURONG EAST STREET 21 #05-12 SINGAPORE 600210"
+    },
+    "permitted_contact_valid": {
+      "phoneNumber": "91234567",
+      "email": "howard.tan.updated@example.com",
+      "mailingBlock": "123",
+      "mailingStreet": "Orchard Boulevard",
+      "mailingUnit": "#08-16",
+      "mailingPostalCode": "237973",
+      "mailingCountry": "Singapore"
+    },
+    "permitted_contact_restore": {
+      "phoneNumber": "92345678",
+      "email": "wei.ming.s2345678b@example.com",
+      "mailingBlock": "12",
+      "mailingStreet": "Science Park Drive",
+      "mailingUnit": "#01-01",
+      "mailingPostalCode": "118225",
+      "mailingCountry": "Singapore"
+    },
+    "validation_test_vectors": {
+      "invalid_phone_short": "9123456",
+      "invalid_phone_prefix": "51234567",
+      "invalid_phone_whitespace": "        ",
+      "invalid_email_format": "howard.invalid.email",
+      "invalid_email_whitespace": "               ",
+      "invalid_postal_short": "12345",
+      "expected_msg_0001": "Enter your",
+      "expected_msg_0805": "Enter a mobile number in the correct format, like 9123 4567",
+      "expected_msg_0806": "Enter an email address in the correct format, like name@example.com",
+      "expected_msg_0807": "Your details have been updated.",
+      "expected_msg_0808": "We could not update your details. Please try again."
+    },
+    "ui_health": {
+      "desktop_viewport": {"width": 1280, "height": 720},
+      "mobile_viewport": {"width": 375, "height": 667},
+      "raw_i18n_prefixes": ["features.", "validation.", "errors.", "profile."],
+      "identity_field_names": ["fullName", "nric", "residentialAddress"],
+      "editable_field_names": [
+        "phoneNumber",
+        "email",
+        "mailingBlock",
+        "mailingStreet",
+        "mailingUnit",
+        "mailingPostalCode",
+        "mailingCountry"
+      ]
+    }
   }
 }

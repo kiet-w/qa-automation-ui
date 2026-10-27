@@ -1,0 +1,171 @@
+{
+  "url": "http://localhost:5173/moe-hq/moe-fas/new",
+  "pathname": "/moe-hq/moe-fas/new",
+  "title": "EduFAMS | Admin Portal",
+  "headings": [
+    {
+      "tag": "h2",
+      "text": "DASHBOARD",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "EDUSAVE",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "ACADEMIC MANAGEMENT",
+      "id": ""
+    },
+    {
+      "tag": "h2",
+      "text": "FINANCIAL",
+      "id": ""
+    },
+    {
+      "tag": "h1",
+      "text": "Create new scheme",
+      "id": "moefas-create-title"
+    },
+    {
+      "tag": "h2",
+      "text": "New scheme details",
+      "id": "moefas-create-general-title"
+    }
+  ],
+  "inputs": [
+    {
+      "tag": "input",
+      "type": "text",
+      "name": "",
+      "id": "moefas-create-name",
+      "placeholder": "e.g. MOEFAS 2028",
+      "label": "Scheme name *",
+      "disabled": false,
+      "required": true,
+      "selector": "#moefas-create-name"
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "name": "",
+      "id": "moefas-create-form-opens",
+      "placeholder": "",
+      "label": "Form opens *",
+      "disabled": false,
+      "required": true,
+      "selector": "#moefas-create-form-opens"
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "name": "",
+      "id": "moefas-create-form-closes",
+      "placeholder": "",
+      "label": "Form closes *",
+      "disabled": false,
+      "required": true,
+      "selector": "#moefas-create-form-closes"
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "name": "",
+      "id": "moefas-create-effective-from",
+      "placeholder": "",
+      "label": "Effective from *",
+      "disabled": false,
+      "required": true,
+      "selector": "#moefas-create-effective-from"
+    },
+    {
+      "tag": "input",
+      "type": "date",
+      "name": "",
+      "id": "moefas-create-effective-to",
+      "placeholder": "",
+      "label": "Effective to",
+      "disabled": false,
+      "required": false,
+      "selector": "#moefas-create-effective-to"
+    },
+    {
+      "tag": "input",
+      "type": "number",
+      "name": "",
+      "id": "moefas-create-total-budget",
+      "placeholder": "0",
+      "label": "Total budget (SGD) *",
+      "disabled": false,
+      "required": true,
+      "selector": "#moefas-create-total-budget"
+    },
+    {
+      "tag": "textarea",
+      "type": "text",
+      "name": "",
+      "id": "moefas-create-context",
+      "placeholder": "Short description of the scheme",
+      "label": "Description",
+      "disabled": false,
+      "required": false,
+      "selector": "#moefas-create-context"
+    }
+  ],
+  "selects": [
+    {
+      "tag": "select",
+      "name": "",
+      "id": "",
+      "label": "",
+      "options": [
+        {
+          "value": "en-US",
+          "text": "English"
+        },
+        {
+          "value": "vi-VN",
+          "text": "Vietnamese"
+        }
+      ],
+      "selector": "select[aria-label=\"Language\"]"
+    }
+  ],
+  "buttons": [
+    {
+      "text": "Open navigation",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Open navigation\"]"
+    },
+    {
+      "text": "SA",
+      "type": "button",
+      "disabled": false,
+      "selector": "button[aria-label=\"Account: System Admin\"]"
+    },
+    {
+      "text": "Discard",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Discard\")"
+    },
+    {
+      "text": "Draft",
+      "type": "button",
+      "disabled": false,
+      "selector": "button:has-text(\"Draft\")"
+    },
+    {
+      "text": "Next",
+      "type": "submit",
+      "disabled": false,
+      "selector": "button:has-text(\"Next\")"
+    }
+  ],
+  "tables": [],
+  "dialogs": [],
+  "alerts": [],
+  "badges": []
+}

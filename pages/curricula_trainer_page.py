@@ -86,6 +86,11 @@ class CurriculaTrainerPage(BasePage):
         """Scroll element smoothly into view, focus, and fill text directly for local HTML."""
         loc = self.wait_for_visible(selector_or_locator)
         loc.scroll_into_view_if_needed()
+        try:
+            from core.sketch_annotator import SketchAnnotator
+            SketchAnnotator.spotlight_action(self.page, loc, action_type="fill", label=str(text))
+        except Exception:
+            pass
         loc.fill(str(text))
 
     # --- Personal Information Actions ---
@@ -337,6 +342,11 @@ class CurriculaTrainerPage(BasePage):
         """Scroll smoothly to Save button, highlight/focus, click, and wait for form reaction."""
         save_btn = self.wait_for_visible(self.SAVE_BTN)
         save_btn.scroll_into_view_if_needed()
+        try:
+            from core.sketch_annotator import SketchAnnotator
+            SketchAnnotator.spotlight_action(self.page, save_btn, action_type="click", label="Save Account")
+        except Exception:
+            pass
         self.page.wait_for_timeout(350)
         save_btn.click()
         # Wait for form reaction (success notification or validation error highlights)
@@ -346,6 +356,11 @@ class CurriculaTrainerPage(BasePage):
         """Click the Cancel button."""
         cancel_btn = self.wait_for_visible(self.CANCEL_BTN)
         cancel_btn.scroll_into_view_if_needed()
+        try:
+            from core.sketch_annotator import SketchAnnotator
+            SketchAnnotator.spotlight_action(self.page, cancel_btn, action_type="click", label="Cancel")
+        except Exception:
+            pass
         self.page.wait_for_timeout(250)
         cancel_btn.click()
         self.page.wait_for_timeout(400)

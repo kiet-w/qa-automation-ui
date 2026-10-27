@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-08: Form Lifecycle & Mode Transitions | Báo Cáo Kiểm Thử Chuyên Biệt (11 TCs)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .freeze-col-1 { position: sticky; left: 0; z-index: 10; }
+    .freeze-col-2 { position: sticky; left: 48px; z-index: 10; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Nav Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs hover:bg-sky-50 transition">
+        <span>⬅️ Danh Sách 10 Test Suites</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 font-mono text-slate-600 font-bold">
+          File: tests/fs08/fs08-parent-profile/test_ts08_form_lifecycle_modes.py
+        </span>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Xuất Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🔄</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded border border-sky-200">
+            TS08_FORM_LIFECYCLE_MODES
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-slate-100 text-slate-700">
+            11 Ca Kiểm Thử
+          </span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">TS-08: Form Lifecycle & Mode Transitions</h1>
+        <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">Cổng chặn trạng thái Form: Khóa nút Save khi Pristine, mở nút Save khi Dirty, nút Cancel hoàn nguyên dữ liệu, phím Enter an toàn và bảo vệ beforeunload.</p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-emerald-700 uppercase">Passed</div>
+          <div class="text-xl font-black text-emerald-900">11</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-red-700 uppercase">Failed</div>
+          <div class="text-xl font-black text-red-900">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-slate-600 uppercase">Not Run</div>
+          <div class="text-xl font-black text-slate-800">0</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Table Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      
+      <!-- Search Bar -->
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-xs text-slate-600">
+          Chạy file test này bằng lệnh: <code class="font-mono font-bold bg-slate-100 text-sky-900 px-2 py-1 rounded border border-slate-200 select-all">.venv/bin/pytest tests/fs08/fs08-parent-profile/test_ts08_form_lifecycle_modes.py -v</code>
+        </div>
+        <div class="relative w-72">
+          <input type="text" id="suite-search" placeholder="Tìm theo mã TC, tiêu đề, selector..." oninput="handleSearch(this.value)" class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg outline-none w-full placeholder:text-slate-400">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px] relative">
+        <table class="w-full text-left border-collapse" style="min-width: 1350px;">
+          <thead class="sticky top-0 bg-[#1B365D] text-white text-[11px] font-mono uppercase tracking-wider z-20">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 freeze-col-1 bg-[#1B365D]">STT</th>
+              <th class="py-3 px-3 text-center w-28 freeze-col-2 bg-[#1B365D]">Mã TC</th>
+              <th class="py-3 px-3 text-center w-32">Trụ Cột</th>
+              <th class="py-3 px-4 min-w-[280px]">Tiêu Đề Ca Kiểm Thử</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">📍 Vị Trí &amp; DOM Selector</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">💾 Dữ Liệu Kiểm Thử (Test Data)</th>
+              <th class="py-3 px-2 text-center w-20">Ưu Tiên</th>
+              <th class="py-3 px-2 text-center w-24">Trạng Thái</th>
+              <th class="py-3 px-3 text-center w-24">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="suite-tbody" class="text-xs divide-y divide-slate-200 bg-white">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="tc-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white border border-slate-300 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tc-id" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-sky-100 text-sky-800 border border-sky-200">TC-001</span>
+          <span id="modal-tc-pillar" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Pillar</span>
+          <h3 id="modal-tc-title" class="text-sm font-bold text-slate-900 truncate max-w-lg">Tiêu đề</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        <!-- Target DOM Banner -->
+        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-800">📍 Vị Trí Kiểm Thử &amp; Element DOM Selector</div>
+            <div id="modal-target-name" class="text-xs font-bold text-slate-900 mt-0.5">Target Name</div>
+            <code id="modal-target-dom" class="text-[11px] font-mono text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-300 mt-1 inline-block">locator</code>
+          </div>
+          <span id="modal-priority" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-slate-800 border border-slate-200 self-start sm:self-center">High</span>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">1. Điều Kiện Tiên Quyết (Preconditions)</h4>
+          <div id="modal-preconditions" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">2. Dữ Liệu Kiểm Thử (Test Data)</h4>
+          <div id="modal-test-data" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap select-all"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">3. Các Bước Thực Hiện (Test Steps)</h4>
+          <div id="modal-steps" class="p-3 bg-slate-50 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-emerald-700 mb-1">4. Kết Quả Kỳ Vọng (Expected Result)</h4>
+            <div id="modal-expected" class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-emerald-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-sky-700 mb-1">5. Kết Quả Thực Tế (Actual Result)</h4>
+            <div id="modal-actual" class="p-3 bg-sky-50/70 border border-sky-200 rounded-lg text-sky-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">6. Nguồn Đối Soát (Traceability)</h4>
+          <div id="modal-traceability" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg text-xs transition">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testCases = [{"idx": 10, "id": "TC-R8-ATM-02", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-STA", "title": "Verify Save changes button pristine and dirty state gatekeeper (disabled when pristine, enabled when dirty)", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Save changes')", "target_name": "Nút Lưu [Save changes] & Hint Dirty", "test_area": "Form Controls", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; enter Edit Mode via [Update details]", "test_data": "Pristine form vs 1 char edit ('91234567' -> '91234568')", "steps": "1. Open Edit Mode\n2. Inspect Save changes button state and hint text\n3. Type 1 character into phone number\n4. Inspect Save changes button state and hint text\n5. Revert character back to original baseline", "expected": "Pristine state: Save changes button is disabled (disabled=true); hint 'Make a change to enable saving.' is visible\nDirty state: Save changes button enables (disabled=false); hint is hidden\nReverting to original baseline: Save changes button re-disables; hint reappears", "actual": "Button disabled with hint when pristine; enables upon change; re-disables when reverted.", "assumption": "CR: UI interaction design confirmed to prevent redundant mutation dispatches", "defect": "", "traceability": "FR-08.3; AC #14; US-08.2", "note": "Prevents redundant PUT mutation dispatches when no changes exist."}, {"idx": 11, "id": "TC-R8-STA-01", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-STA", "title": "Verify clicking 'Update details' button transitions page from View Mode to Edit Mode", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Update details')", "target_name": "Nút Chuyển Vào Edit Mode", "test_area": "Mode Transition", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; on /profile page (View Mode)", "test_data": "Parent FA (Tan Wei Ming); View Mode baseline; Click button [Update details] to reveal editable inputs", "steps": "1. Open /profile page in View Mode\n2. Click 'Update details' button\n3. Verify presence of editable form inputs and action buttons", "expected": "Page switches smoothly to Edit Mode\nEditable inputs appear: phoneNumber, email, mailingBlock, mailingStreet, mailingUnit, mailingPostalCode, mailingCountry\nAction buttons [Save changes] and [Cancel] appear\n[Update details] button is replaced", "actual": "Page transitions to Edit Mode; inputs and action buttons revealed.", "assumption": "TD: React component state transition (isEditing: false -> true)", "defect": "", "traceability": "FR-08.3; FS R8 sec. 6; AC #14", "note": "Core mode transition entry point."}, {"idx": 12, "id": "TC-R8-STA-02", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-STA", "title": "Verify clicking 'Cancel' button discards uncommitted modifications and restores baseline in View Mode", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Cancel')", "target_name": "Nút Hủy Thay Đổi [Cancel]", "test_area": "Mode Transition", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Original phone: '91234567'; Modified phone: '98887777'", "steps": "1. Change Mobile Number to '98887777'\n2. Change Email to 'uncommitted@example.sg'\n3. Click [Cancel] button\n4. Inspect View Mode profile values", "expected": "Edit Mode exits immediately without confirmation modal\nPage returns to View Mode\nProfile displays original phone ('91234567') and email\nUncommitted modifications are completely discarded", "actual": "Cancel button restores original baseline; zero uncommitted data saved.", "assumption": "TD: Local state reset without backend mutation", "defect": "", "traceability": "FR-08.3; AC #14; US-08.2", "note": "Ensures clean escape from dirty form."}, {"idx": 13, "id": "TC-R8-STA-03", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-STA", "title": "Verify each blank required field individually prevents submission with inline error MSG-0001", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "input[name='phoneNumber'], input[name='email'], ...", "target_name": "5 Ô Nhập Bắt Buộc & Inline Error", "test_area": "Form Validation", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "5 mandatory fields: phoneNumber, email, mailingStreet, mailingPostalCode, mailingCountry", "steps": "1. Clear phoneNumber, attempt save -> verify MSG-0001\n2. Restore phoneNumber, clear email, attempt save -> verify MSG-0001\n3. Restore email, clear mailingStreet, attempt save -> verify MSG-0001\n4. Restore street, clear mailingPostalCode, attempt save -> verify MSG-0001\n5. Restore postal, clear mailingCountry, attempt save -> verify MSG-0001", "expected": "Each blank mandatory field individually triggers MSG-0001 inline error\nSave action is blocked on every iteration\nNothing is saved to DB", "actual": "Each individual mandatory field triggers MSG-0001 when left blank.", "assumption": "CR: FSD section 6 table and AC #16 require MSG-0001 per required field", "defect": "", "traceability": "FR-08.3 errors; R8-AC16; MSG-0001", "note": "Granular mandatory validation across all 5 required fields."}, {"idx": 69, "id": "TC-R8-STA-04", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify whitespace-only edits or casing changes are normalized against baseline without causing false-dirty state (ASM-08 / ASM-15)", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Save changes')", "target_name": "Nút Lưu [Save changes] & Hint Dirty", "test_area": "Form Controls", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open with baseline phone '91234567'", "test_data": "Input: '9123 4567' -> normalized '91234567'", "steps": "1. Type a space in phone '9123 4567'\n2. Blur input\n3. Check Save changes button state", "expected": "If normalized value matches baseline, system does not trigger false mutation state or handles space gracefully per ASM-08", "actual": "Normalization logic handles spacing without breaking pristine tracking.", "assumption": "Mục G.8: Pristine <-> Dirty - Chỉ thêm dấu cách thừa / đổi hoa thường đối soát rule", "defect": "", "traceability": "FR-08.3; ASM-08; ASM-15", "note": "Prevents redundant backend mutation dispatches for non-semantic differences."}, {"idx": 70, "id": "TC-R8-STA-05", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify clicking Save changes with validation errors scrolls and shifts focus to the first invalid field and renders red borders across all invalid inputs", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Save changes')", "target_name": "Nút Lưu [Save changes] & Hint Dirty", "test_area": "Form Controls", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open", "test_data": "Invalid phone: '123' and invalid email: 'abc'", "steps": "1. Enter invalid phone '123' and invalid email 'abc'\n2. Scroll to bottom and click [Save changes]\n3. Inspect focused element, input borders, and error alert messages", "expected": "Save submission is blocked\nViewport scrolls and shifts focus to first invalid element (phoneNumber)\nBoth phoneNumber and email display red border (aria-invalid='true') and error messages simultaneously", "actual": "First invalid field focused; all invalid fields highlighted with aria-invalid='true'.", "assumption": "Mục G.8: Save khi lỗi - Không gửi request, focus nhảy tới ô lỗi đầu tiên, nhiều lỗi hiện cùng lúc", "defect": "", "traceability": "FR-08.3 errors; Invariant 7 UI Health; WCAG 3.3.1", "note": "Essential usability and accessibility requirement for form validation."}, {"idx": 71, "id": "TC-R8-STA-06", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify pressing Enter key within input fields exhibits consistent submission or tab-index traversal without erratic submit behavior", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "form#parent-profile-form", "target_name": "Toàn Bộ Khung Form Cập Nhật", "test_area": "Form Lifecycle", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open with focus in Mobile Number input", "test_data": "Key event: 'Enter'", "steps": "1. Focus inside Mobile Number input\n2. Press Enter key\n3. Inspect page response (form submit or tab focus shift)", "expected": "Pressing Enter does not trigger unexpected page reload or premature mutation with invalid inputs\nBehavior is consistent across all form fields", "actual": "Enter key behaves consistently; invalid submit blocked.", "assumption": "Mục G.8: Nhấn Enter trong ô - submit hoặc không làm gì nhưng nhất quán", "defect": "", "traceability": "FR-08.3; Invariant 7 Usability", "note": "Prevents accidental partial form submissions via keyboard."}, {"idx": 72, "id": "TC-R8-STA-07", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify clicking Cancel button in pristine (unmodified) state transitions back to View Mode cleanly without errors", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Cancel')", "target_name": "Nút Hủy Thay Đổi [Cancel]", "test_area": "Mode Transition", "severity": "S3", "priority": "Low", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; click [Update details] to enter Edit Mode without making any modifications", "test_data": "Pristine form", "steps": "1. Enter Edit Mode\n2. Immediately click [Cancel] button without typing any changes\n3. Inspect UI state", "expected": "Page returns to View Mode immediately\n0 confirmation popups displayed\n0 errors in browser console", "actual": "Page returned to View Mode cleanly with zero errors.", "assumption": "Mục G.8: Cancel khi chưa sửa - Không lỗi, về View Mode an toàn", "defect": "", "traceability": "FR-08.3; AC #14; US-08.2", "note": "Guarantees graceful exit from unmodified Edit Mode."}, {"idx": 73, "id": "TC-R8-STA-08", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify navigating away, clicking Back, or reloading page with uncommitted dirty changes triggers browser unsaved changes warning dialog", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Save changes')", "target_name": "Nút Lưu [Save changes] & Hint Dirty", "test_area": "Form Controls", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open with modified phone number '98887777'", "test_data": "Uncommitted dirty changes", "steps": "1. Enter modified phone '98887777'\n2. Click Home navigation link or trigger browser reload (beforeunload event)\n3. Inspect browser dialog prompt", "expected": "System triggers beforeunload warning: 'You have unsaved changes. Are you sure you want to leave?'\nPreventing accidental loss of entered modifications", "actual": "Unsaved changes confirmation triggered on dirty navigation.", "assumption": "Mục G.8: Rời trang khi chưa lưu - Cảnh báo thay đổi chưa lưu để chống mất dữ liệu", "defect": "", "traceability": "FR-08.3; Invariant 7 Data Loss Prevention", "note": "Protects users from accidental loss of entered contact data."}, {"idx": 74, "id": "TC-R8-STA-09", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify session timeout while editing prompts user to re-authenticate without silent loss of entered form modifications", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "form#parent-profile-form", "target_name": "Toàn Bộ Khung Form Cập Nhật", "test_area": "Form Lifecycle", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Security", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open with modified contact data; auth token expires", "test_data": "Simulated token expiration (HTTP 401)", "steps": "1. Modify phone and email in Edit Mode\n2. Invalidate session token in localStorage / cookie\n3. Click [Save changes] and confirm in dialog", "expected": "System detects expired session and returns HTTP 401\nDisplays clear session expired notice\nRedirects to SingPass login without crashing or silently corrupting database", "actual": "Session expiration handled cleanly; clear notice and safe login redirect.", "assumption": "Mục G.8: Phiên - Hết phiên khi đang sửa rồi Save -> về đăng nhập, báo rõ", "defect": "", "traceability": "FR-08.3; NFR Security; Invariant 8", "note": "Graceful session handling prevents silent data drops."}, {"idx": 75, "id": "TC-R8-STA-10", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-STA", "title": "Verify concurrent profile edits across multiple browser tabs are managed via optimistic locking or conflict detection", "suite": "Form State & Mode Transitions", "page": "Parent Portal > Profile", "target_dom": "form#parent-profile-form", "target_name": "Toàn Bộ Khung Form Cập Nhật", "test_area": "Form Lifecycle", "severity": "S2", "priority": "Medium", "status": "Passed", "test_type": "Concurrency", "env": "SIT • Chrome (latest), 2 Browser Tabs • Mock SingPass + mock data API", "preconditions": "Parent FA logged in; Tab 1 and Tab 2 open /profile simultaneously in Edit Mode", "test_data": "Tab 1: Phone '98881111'; Tab 2: Phone '98882222'", "steps": "1. Open /profile in Tab 1 and Tab 2\n2. Tab 1 updates phone to '98881111' and saves successfully\n3. Tab 2 then attempts to save phone '98882222' without reloading", "expected": "System either handles optimistic concurrency by alerting Tab 2 of newer version, or overwrites cleanly without data corruption in Parent_Profile table", "actual": "Concurrency handled safely; database remains intact with valid state.", "assumption": "Mục G.8: Đồng thời - 2 tab cùng sửa, lưu lần lượt có cơ chế xử lý rõ ràng", "defect": "", "traceability": "FR-08.3; NFR Concurrency; Appendix A", "note": "Guarantees database consistency under multi-tab editing."}];
+    let searchQuery = '';
+
+    function handleSearch(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('suite-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = testCases.filter(tc => {
+        if (!searchQuery) return true;
+        const matchStr = (tc.id + ' ' + tc.title + ' ' + tc.target_name + ' ' + tc.target_dom + ' ' + tc.test_data + ' ' + tc.traceability).toLowerCase();
+        return matchStr.includes(searchQuery);
+      });
+
+      filtered.forEach((tc, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        let pillarBadgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        if (tc.pillar === 'BR') pillarBadgeClass = 'bg-purple-50 text-purple-800 border-purple-200';
+        if (tc.pillar === 'AC') pillarBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-emerald-100 text-emerald-800">Passed</span>`;
+        if (tc.status.toUpperCase() === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-red-100 text-red-800">Failed</span>`;
+        } else if (tc.status.toUpperCase() === 'NOT RUN') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">Not Run</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono freeze-col-1 bg-white">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 freeze-col-2 bg-white">${tc.id}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pillarBadgeClass}">
+              ${tc.pillar_badge}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 font-medium text-slate-800 leading-snug">
+            <div>${tc.title}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm" title="${tc.traceability}">🔎 ${tc.traceability}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span>📍</span> <span>${tc.target_name}</span>
+            </div>
+            <div class="font-mono text-[11px] text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 mt-1 inline-block truncate max-w-[220px]" title="${tc.target_dom}">
+              ${tc.target_dom}
+            </div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-mono text-[11px] text-emerald-950 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200 max-h-16 overflow-y-auto leading-relaxed select-all" title="${tc.test_data}">
+              ${tc.test_data}
+            </div>
+          </td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700">${tc.priority}</td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="openModal('${tc.id}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition shadow-2xs">
+              Chi Tiết
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(tcId) {
+      const tc = testCases.find(t => t.id === tcId);
+      if (!tc) return;
+
+      document.getElementById('modal-tc-id').innerText = tc.id;
+      document.getElementById('modal-tc-pillar').innerText = tc.pillar_badge;
+      document.getElementById('modal-tc-title').innerText = tc.title;
+      document.getElementById('modal-target-name').innerText = tc.target_name;
+      document.getElementById('modal-target-dom').innerText = tc.target_dom;
+      document.getElementById('modal-priority').innerText = tc.priority;
+
+      document.getElementById('modal-preconditions').innerText = tc.preconditions;
+      document.getElementById('modal-test-data').innerText = tc.test_data;
+      document.getElementById('modal-steps').innerText = tc.steps;
+      document.getElementById('modal-expected').innerText = tc.expected;
+      document.getElementById('modal-actual').innerText = tc.actual;
+      document.getElementById('modal-traceability').innerText = tc.traceability + ' | ' + (tc.assumption || 'None');
+
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

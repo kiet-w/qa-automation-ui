@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sơ Đồ Kiến Trúc: AI Coding + Markdown UI Automation Testing</title>
+<style>
+  :root {
+    --bg-canvas: #0b101b;
+    --card-bg: #151d2f;
+    --card-border: #243049;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent-blue: #38bdf8;
+    --accent-purple: #a855f7;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 16px 80px;
+    background: #070a12;
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .header h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin: 0;
+  }
+  .badge-tech {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    color: #38bdf8;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  /* Stage Bezel Window */
+  .stage {
+    background: var(--bg-canvas);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+    overflow: hidden;
+  }
+  .stage-topbar {
+    background: #0f1523;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .dot.red { background: #ef4444; }
+  .dot.yellow { background: #eab308; }
+  .dot.green { background: #22c55e; }
+  .stage-title {
+    margin-left: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-weight: 600;
+  }
+
+  .canvas-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Legend */
+  .legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+    padding: 18px 20px;
+    background: var(--bg-canvas);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+  }
+  @media (max-width: 768px) {
+    .legend { grid-template-columns: 1fr 1fr; }
+  }
+  .legend-item { display: flex; align-items: center; gap: 10px; }
+  .legend-color { width: 14px; height: 14px; border-radius: 4px; flex-none: true; }
+  .legend-text { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+  .legend-text strong { color: var(--text-primary); display: block; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Hệ Sinh Thái UI Automation: Con Người 🤝 AI Coding + Markdown</h1>
+    <p>Quy trình khép kín từ Tiếp nhận yêu cầu FSD ➔ Tạo kịch bản Markdown ➔ Playwright Runner ➔ Báo cáo ExtentReports</p>
+    <div class="badge-tech">Playwright · Python · Markdown Specs · Smart Locators · Offline ExtentReports</div>
+  </div>
+
+  <div class="stage">
+    <div class="stage-topbar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="stage-title">ecosystem_workflow_architecture.svg (Editorial Dark #0B101B)</span>
+    </div>
+
+    <!-- Editorial High-Contrast SVG -->
+    <svg class="canvas-svg" viewBox="0 0 1120 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Background Solid Rect -->
+      <rect width="100%" height="100%" fill="#0B101B" />
+
+      <!-- Grid Background -->
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#162035" stroke-width="1" />
+      </pattern>
+      <rect width="100%" height="100%" fill="url(#grid)" opacity="0.6" />
+
+      <!-- ============================================================== -->
+      <!-- PHASE 1: YÊU CẦU & AI THẨM ĐỊNH                                 -->
+      <!-- ============================================================== -->
+      <rect x="40" y="40" width="480" height="290" rx="14" fill="#111827" stroke="#1E293B" stroke-width="2" />
+      <text x="64" y="74" fill="#94A3B8" font-size="12" font-weight="700" letter-spacing="1">PHA 1: TIẾP NHẬN YÊU CẦU & ĐỐI SOÁT NGHIỆP VỤ</text>
+
+      <!-- Node 1.1: Con người / QA -->
+      <rect x="64" y="96" width="200" height="96" rx="10" fill="#1E293B" stroke="#38BDF8" stroke-width="2" />
+      <text x="80" y="126" fill="#38BDF8" font-size="15" font-weight="700">👤 Con Người / QA Tester</text>
+      <text x="80" y="148" fill="#94A3B8" font-size="12">• Đọc Backlog & User Story</text>
+      <text x="80" y="166" fill="#94A3B8" font-size="12">• Test manual thăm dò UI thật</text>
+
+      <!-- Node 1.2: Kho Specs / FSD -->
+      <rect x="296" y="96" width="200" height="96" rx="10" fill="#1E293B" stroke="#34D399" stroke-width="2" />
+      <text x="312" y="126" fill="#34D399" font-size="15" font-weight="700">📚 Kho Specs (specs/md/)</text>
+      <text x="312" y="148" fill="#94A3B8" font-size="12">• FSD Phân hệ (FS01-FS10)</text>
+      <text x="312" y="166" fill="#94A3B8" font-size="12">• Tiêu chí AC-xxx & Rule BR-xxx</text>
+
+      <!-- Connector 1.1 -> 1.2 -->
+      <path d="M 264 144 L 296 144" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)" />
+
+      <!-- Node 1.3: AI Coding Assistant (Antigravity) -->
+      <rect x="64" y="214" width="432" height="92" rx="10" fill="#1E293B" stroke="#A855F7" stroke-width="2" />
+      <text x="84" y="244" fill="#A855F7" font-size="15" font-weight="700">🤖 AI Coding Assistant (Antigravity / LLM)</text>
+      <text x="84" y="266" fill="#94A3B8" font-size="12">• Đối soát EAFAMS_UI_SPECIFICATION (Lấy Selector, ID, Form rules)</text>
+      <text x="84" y="286" fill="#CBD5E1" font-size="12">↳ <tspan fill="#F59E0B" font-weight="700">Invariant 6:</tspan> Tuyệt đối không tự suy diễn mã lỗi / selector</text>
+
+      <!-- Arrow down from 1.1/1.2 to 1.3 -->
+      <path d="M 164 192 L 164 214" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow)" />
+      <path d="M 396 192 L 396 214" stroke="#34D399" stroke-width="2" marker-end="url(#arrow)" />
+
+      <!-- ============================================================== -->
+      <!-- PHASE 2: KỊCH BẢN HÓA MARKDOWN (test_specs/)                   -->
+      <!-- ============================================================== -->
+      <rect x="600" y="40" width="480" height="290" rx="14" fill="#111827" stroke="#1E293B" stroke-width="2" />
+      <text x="624" y="74" fill="#94A3B8" font-size="12" font-weight="700" letter-spacing="1">PHA 2: KỊCH BẢN HÓA MARKDOWN (test_specs/)</text>
+
+      <!-- Node 2.1: Atomic Test Cases -->
+      <rect x="624" y="96" width="206" height="110" rx="10" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5" />
+      <text x="638" y="124" fill="#38BDF8" font-size="14" font-weight="700">⚡ Atomic Cases (@smoke)</text>
+      <text x="638" y="146" fill="#94A3B8" font-size="12">• Kiểm tra biên & Negative</text>
+      <text x="638" y="164" fill="#94A3B8" font-size="12">• Độc lập, 1 browser session</text>
+      <text x="638" y="184" fill="#64748B" font-size="11">Tags: @p0 @p1 @smoke</text>
+
+      <!-- Node 2.2: UAT User Journeys -->
+      <rect x="850" y="96" width="206" height="110" rx="10" fill="#1E293B" stroke="#A855F7" stroke-width="1.5" />
+      <text x="864" y="124" fill="#A855F7" font-size="14" font-weight="700">🚀 UAT Journeys (@uat)</text>
+      <text x="864" y="146" fill="#94A3B8" font-size="12">• Luồng dài qua nhiều trang</text>
+      <text x="864" y="164" fill="#94A3B8" font-size="12">• Giữ phiên login liên tục</text>
+      <text x="864" y="184" fill="#64748B" font-size="11">Vị trí: test_specs/uat/</text>
+
+      <!-- Node 2.3: Hybrid Syntax Box -->
+      <rect x="624" y="224" width="432" height="82" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      <text x="640" y="248" fill="#F8FAFC" font-size="13" font-weight="700">Cú pháp Hybrid (Dễ viết, Không cần code Python):</text>
+      <text x="640" y="270" fill="#94A3B8" font-size="12">• <tspan fill="#38BDF8">- Click: "Đăng nhập"</tspan> | <tspan fill="#34D399">- Fill: #email "a@b.com"</tspan></text>
+      <text x="640" y="290" fill="#94A3B8" font-size="12">• Bảng dữ liệu: <tspan fill="#CBD5E1">| Step | Action | Target | Expected |</tspan></text>
+
+      <!-- Connector Phase 1 -> Phase 2 -->
+      <path d="M 496 260 L 548 260 L 548 150 L 624 150" stroke="#A855F7" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow-purple)" />
+      <text x="508" y="248" fill="#A855F7" font-size="11" font-weight="700">Sinh file .md</text>
+
+      <!-- ============================================================== -->
+      <!-- PHASE 3: PLAYWRIGHT ENGINE (md_runner.py)                       -->
+      <!-- ============================================================== -->
+      <rect x="40" y="370" width="480" height="300" rx="14" fill="#111827" stroke="#1E293B" stroke-width="2" />
+      <text x="64" y="404" fill="#94A3B8" font-size="12" font-weight="700" letter-spacing="1">PHA 3: BỘ ĐIỀU KHIỂN & GIÁM SÁT (md_runner.py)</text>
+
+      <rect x="64" y="424" width="432" height="226" rx="10" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5" />
+      <text x="84" y="452" fill="#38BDF8" font-size="16" font-weight="700">⚙️ Playwright Smart Runner</text>
+
+      <!-- 3 Sub-modules inside Runner -->
+      <rect x="84" y="470" width="392" height="46" rx="6" fill="#0F172A" stroke="#334155" />
+      <text x="96" y="498" fill="#E2E8F0" font-size="13">🎯 <tspan font-weight="700">Smart Locators:</tspan> Tự nhận diện nút bấm, label, placeholder</text>
+
+      <rect x="84" y="526" width="392" height="46" rx="6" fill="#0F172A" stroke="#334155" />
+      <text x="96" y="554" fill="#F59E0B" font-size="13">🛡️ <tspan font-weight="700">Quality Watchdog:</tspan> Bắt console.error, HTTP 500, crash WSoD</text>
+
+      <rect x="84" y="582" width="392" height="46" rx="6" fill="#0F172A" stroke="#334155" />
+      <text x="96" y="610" fill="#34D399" font-size="13">📹 <tspan font-weight="700">Bằng Chứng HD:</tspan> Quay video WebM + Chụp ảnh khi fail</text>
+
+      <!-- Connector Phase 2 -> Phase 3 -->
+      <path d="M 840 330 L 840 350 L 280 350 L 280 370" stroke="#38BDF8" stroke-width="2" marker-end="url(#arrow-blue)" />
+      <text x="520" y="344" fill="#38BDF8" font-size="12" font-weight="700">python3 md_runner.py --tags @smoke</text>
+
+      <!-- ============================================================== -->
+      <!-- PHASE 4: BÁO CÁO & XỬ LÝ LỖI (reporting/)                       -->
+      <!-- ============================================================== -->
+      <rect x="600" y="370" width="480" height="300" rx="14" fill="#111827" stroke="#1E293B" stroke-width="2" />
+      <text x="624" y="404" fill="#94A3B8" font-size="12" font-weight="700" letter-spacing="1">PHA 4: BÁO CÁO ĐỒ HỌA 4 CẤP ĐỘ (reporting/)</text>
+
+      <!-- Node 4.1: Minimalist Clean Report -->
+      <rect x="624" y="424" width="206" height="130" rx="10" fill="#1E293B" stroke="#22C55E" stroke-width="2" />
+      <text x="638" y="452" fill="#22C55E" font-size="14" font-weight="700">📊 Báo Cáo Tinh Gọn</text>
+      <text x="638" y="474" fill="#94A3B8" font-size="12">• 5 Thẻ chỉ số to</text>
+      <text x="638" y="492" fill="#94A3B8" font-size="12">• Cần xử lý (Jump lỗi)</text>
+      <text x="638" y="510" fill="#94A3B8" font-size="12">• Accordion 1 dòng/case</text>
+      <text x="638" y="534" fill="#64748B" font-size="11">bao_cao_tinh_gon.html</text>
+
+      <!-- Node 4.2: Full ExtentReports -->
+      <rect x="850" y="424" width="206" height="130" rx="10" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5" />
+      <text x="864" y="452" fill="#38BDF8" font-size="14" font-weight="700">🎬 ExtentReports Đầy Đủ</text>
+      <text x="864" y="474" fill="#94A3B8" font-size="12">• Biểu đồ SVG Donut</text>
+      <text x="864" y="492" fill="#94A3B8" font-size="12">• Video WebM nhúng</text>
+      <text x="864" y="510" fill="#94A3B8" font-size="12">• Offline 100% tự chứa</text>
+      <text x="864" y="534" fill="#64748B" font-size="11">execution_report.html</text>
+
+      <!-- Node 4.3: 4-Tier Hierarchy View -->
+      <rect x="624" y="568" width="432" height="82" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      <text x="640" y="592" fill="#F8FAFC" font-size="13" font-weight="700">Cấu trúc hiển thị phân cấp chuẩn QA:</text>
+      <text x="640" y="614" fill="#94A3B8" font-size="12">
+        <tspan fill="#38BDF8" font-weight="700">[SUITE]</tspan> ➔ 
+        <tspan fill="#94A3B8" font-weight="700">[SCENARIO]</tspan> ➔ 
+        <tspan fill="#A855F7" font-weight="700">[UAT JOURNEY]</tspan> ➔ 
+        <tspan fill="#34D399" font-weight="700">[TEST CASE]</tspan> ➔ 
+        <tspan fill="#E2E8F0">[STEP]</tspan>
+      </text>
+      <text x="640" y="636" fill="#64748B" font-size="11">So sánh song song: Kỳ vọng (Expected) vs Thực tế (Actual)</text>
+
+      <!-- Connector Phase 3 -> Phase 4 -->
+      <path d="M 496 537 L 624 537" stroke="#22C55E" stroke-width="2" marker-end="url(#arrow-green)" />
+      <text x="522" y="525" fill="#22C55E" font-size="11" font-weight="700">report.json</text>
+
+      <!-- Markers -->
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748B" />
+        </marker>
+        <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#A855F7" />
+        </marker>
+        <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#38BDF8" />
+        </marker>
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 8 5 L 0 9 z" fill="#22C55E" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background:#38bdf8;"></div>
+      <div class="legend-text">
+        <strong>Con người & Input</strong>
+        QA định hướng, chọn AC & Review kết quả
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#a855f7;"></div>
+      <div class="legend-text">
+        <strong>AI Coding (Antigravity)</strong>
+        Đọc FSD, đối soát selector & sinh Markdown
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#22c55e;"></div>
+      <div class="legend-text">
+        <strong>Playwright Engine</strong>
+        Smart Locators, video HD & console watchdog
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#f59e0b;"></div>
+      <div class="legend-text">
+        <strong>Quality Gate & Report</strong>
+        4 cấp độ hiển thị, 1-click jump lỗi & offline
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

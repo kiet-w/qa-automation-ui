@@ -1,0 +1,122 @@
+{
+  "base_url": "http://localhost:5173",
+  "target_path": "/school-user-management/new",
+  "api_base_url": "http://localhost:5173",
+  "credentials": {
+    "admin": {
+      "username": "moehq",
+      "email": "admin@IAM.edu.vn",
+      "name": "System Administrator",
+      "role": "MOEHQ"
+    },
+    "school": {
+      "username": "staff1",
+      "email": "staff1@IAM.edu.vn",
+      "name": "Bui Thi H",
+      "role": "SCHOOL"
+    }
+  },
+  "schools": {
+    "valid_active": {
+      "code": "RPS-0201",
+      "name": "Rosyth Primary School"
+    },
+    "secondary_active": {
+      "code": "HCI-0102",
+      "name": "Hwa Chong Institution"
+    },
+    "invalid_code": "INVALID_SCH_999",
+    "inactive_code": "SCH-INACTIVE-999"
+  },
+  "business_rules": {
+    "duplicate_email": "admin@IAM.edu.vn",
+    "known_existing_nric": "S8407384A",
+    "expected_password_length": 8,
+    "error_messages": {
+      "duplicate_nric": "already exists",
+      "duplicate_email": "already exists",
+      "validation_failed": "Validation failed",
+      "duplicate_email_template": "A user with email '{email}' already exists.",
+      "duplicate_username_template": "A user with username '{username}' already exists."
+    },
+    "user_provided_examples": {
+      "duplicate_email": "lpokmoppokid@gmail.com",
+      "duplicate_nric": "S1234567A",
+      "invalid_nric": "12345678",
+      "validation_failed_msg": "Validation failed"
+    }
+  },
+  "acceptance_criteria": {
+    "expected_headings": {
+      "page_title": "Create school user",
+      "page_subtitle": "Create one account or import school users from a CSV file.",
+      "form_title": "Create school user",
+      "bulk_title": "Bulk create school users"
+    },
+    "toast": {
+      "success_title": "School user created",
+      "success_description": "The school user was created successfully."
+    },
+    "result_card": {
+      "title": "School user created",
+      "subtitle": "The account was created successfully. Basic account information is shown below.",
+      "unassigned_text": "Not assigned"
+    },
+    "school_user_management_screen": {
+      "path": "/school-user-management",
+      "heading": "School user management",
+      "subtitle": "Manage users assigned to schools.",
+      "search_label": "Search school users",
+      "create_button_text": "Create School User",
+      "unassigned_school_text": "Unassigned in any school"
+    }
+  },
+  "sample_payloads": {
+    "valid_standalone": {
+      "first_name": "Alan",
+      "last_name": "Turing",
+      "email_prefix": "alan.turing"
+    },
+    "valid_assigned": {
+      "first_name": "Grace",
+      "last_name": "Hopper",
+      "email_prefix": "grace.hopper",
+      "school_code": "RPS-0201"
+    },
+    "image1_matching": {
+      "first_name": "aa",
+      "last_name": "zx",
+      "email_prefix": "lpokmoppokid4",
+      "email_domain": "@gmail.com"
+    }
+  },
+  "school_create": {
+    "target_url": "http://localhost:5173/school-management/new",
+    "duplicate_moe_code": "qwe",
+    "expected_duplicate_error": "School with MOE code 'qwe' already exists.",
+    "expected_summary_banner": "Please correct the errors below.",
+    "validation_errors": {
+      "moe_school_code_required": "MOE school code is required.",
+      "school_name_required": "School name is required.",
+      "school_type_required": "Select a school type.",
+      "academic_levels_required": "Select at least one academic level."
+    },
+    "toast": {
+      "title": "School created",
+      "description": "School created successfully."
+    },
+    "approved_school_types": [
+      "Select a school type",
+      "Government",
+      "Government aided",
+      "Autonomous",
+      "Independent",
+      "Specialised"
+    ],
+    "sample_school": {
+      "moe_code_prefix": "SCH-AUT-",
+      "name": "Automated Quality High School",
+      "school_type": "Government"
+    }
+  }
+}

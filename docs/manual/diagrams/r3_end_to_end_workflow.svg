@@ -1,0 +1,176 @@
+<svg viewBox="0 0 1260 840" width="100%" height="auto" class="select-none font-sans" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow-sky" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#38BDF8"/>
+    </marker>
+    <marker id="arrow-emerald" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#10B981"/>
+    </marker>
+    <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#F59E0B"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#C084FC"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" rx="14" fill="#0B101B"/>
+  <text x="35" y="42" font-size="16" font-weight="700" fill="#F8FAFC" letter-spacing="0.5">PHÂN HỆ R3: SCHOOL, STUDENT &amp; FEE MANAGEMENT — END-TO-END WORKFLOW</text>
+  <text x="35" y="62" font-size="11" font-weight="500" fill="#94A3B8" font-family="monospace">EduFAMS v2026.10 • Admin Portal (Port 5173) &amp; E-Service Parent Portal (Port 5174)</text>
+  <line x1="35" y1="75" x2="1225" y2="75" stroke="#334155" stroke-width="1"/>
+  <rect x="35" y="90" width="1190" height="235" rx="12" fill="#121929" stroke="#1E293B" stroke-width="1.5"/>
+  <rect x="50" y="80" width="370" height="22" rx="4" fill="#0284C7"/>
+  <text x="60" y="95" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="monospace">TRACK 1: QUẢN LÝ CẤU TRÚC TRƯỜNG &amp; HỌC SINH (F01–F08)</text>
+  <g filter="url(#shadow)">
+    <rect x="55" y="115" width="200" height="72" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="65" y="125" width="45" height="15" rx="3" fill="#0369A1"/>
+    <text x="87" y="136" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">MOE HQ</text>
+    <text x="65" y="156" font-size="11.5" font-weight="700" fill="#F8FAFC">F01: School Management</text>
+    <text x="65" y="172" font-size="9.5" fill="#94A3B8">School Code, Type, Status</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="290" y="115" width="200" height="72" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="300" y="125" width="45" height="15" rx="3" fill="#0369A1"/>
+    <text x="322" y="136" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">MOE HQ</text>
+    <text x="300" y="156" font-size="11.5" font-weight="700" fill="#F8FAFC">F02: User Assignment</text>
+    <text x="300" y="172" font-size="9.5" fill="#94A3B8">Create &amp; Assign School User</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="525" y="115" width="220" height="72" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="535" y="125" width="70" height="15" rx="3" fill="#0369A1"/>
+    <text x="570" y="136" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">HQ &amp; SCHOOL</text>
+    <text x="535" y="156" font-size="11.5" font-weight="700" fill="#F8FAFC">F03: Year, Level &amp; Offering</text>
+    <text x="535" y="172" font-size="9.5" fill="#94A3B8">P1-P6 / S1-S5, Level Offering</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="780" y="115" width="200" height="72" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="790" y="125" width="65" height="15" rx="3" fill="#047857"/>
+    <text x="822" y="136" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">SCHOOL USER</text>
+    <text x="790" y="156" font-size="11.5" font-weight="700" fill="#F8FAFC">F04: Class Management</text>
+    <text x="790" y="172" font-size="9.5" fill="#94A3B8">Class Code, Class Name</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1015" y="115" width="190" height="72" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="1025" y="125" width="65" height="15" rx="3" fill="#047857"/>
+    <text x="1057" y="136" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">SCHOOL USER</text>
+    <text x="1025" y="156" font-size="11.5" font-weight="700" fill="#F8FAFC">F05: Student Profile</text>
+    <text x="1025" y="172" font-size="9.5" fill="#94A3B8">ID, NRIC, Category (SC/PR/IS)</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="525" y="225" width="220" height="72" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="535" y="235" width="65" height="15" rx="3" fill="#047857"/>
+    <text x="567" y="246" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">CORE ENGINE</text>
+    <text x="535" y="266" font-size="11.5" font-weight="700" fill="#F8FAFC">F06: Enrolment Profile</text>
+    <text x="535" y="282" font-size="9.5" fill="#34D399">Active Profile (School, Level, Class)</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="235" y="225" width="255" height="72" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+    <rect x="245" y="235" width="70" height="15" rx="3" fill="#B45309"/>
+    <text x="280" y="246" font-size="9" font-weight="700" fill="#FEF3C7" text-anchor="middle" font-family="monospace">HQ / SCHOOL</text>
+    <text x="245" y="266" font-size="11.5" font-weight="700" fill="#F8FAFC">F07: Transfer / Class Change</text>
+    <text x="245" y="282" font-size="9.5" fill="#94A3B8">End Assignment / Transferred Old</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="780" y="225" width="200" height="72" rx="8" fill="#1E293B" stroke="#C084FC" stroke-width="1.5"/>
+    <rect x="790" y="235" width="75" height="15" rx="3" fill="#7E22CE"/>
+    <text x="827" y="246" font-size="9" font-weight="700" fill="#F3E8FF" text-anchor="middle" font-family="monospace">AUTO SYSTEM</text>
+    <text x="790" y="266" font-size="11.5" font-weight="700" fill="#F8FAFC">F08: EA Account Linkage</text>
+    <text x="790" y="282" font-size="9.5" fill="#E879F9">Check NRIC (SC) &rarr; Link EA Wallet</text>
+  </g>
+  <path d="M 255 151 L 290 151" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow-sky)"/>
+  <path d="M 490 151 L 525 151" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow-sky)"/>
+  <path d="M 745 151 L 780 151" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow-sky)"/>
+  <path d="M 1015 151 L 995 151 Q 980 151 980 166 L 980 195 Q 980 205 970 205 L 635 205 Q 635 215 635 225" stroke="#10B981" stroke-width="1.8" fill="none" marker-end="url(#arrow-emerald)"/>
+  <path d="M 880 187 L 880 200 Q 880 210 870 210 L 645 210 Q 645 215 645 225" stroke="#10B981" stroke-width="1.8" fill="none"/>
+  <path d="M 745 261 L 780 261" stroke="#C084FC" stroke-width="1.8" marker-end="url(#arrow-purple)"/>
+  <path d="M 525 261 L 490 261" stroke="#F59E0B" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <rect x="35" y="345" width="1190" height="235" rx="12" fill="#121929" stroke="#1E293B" stroke-width="1.5"/>
+  <rect x="50" y="335" width="370" height="22" rx="4" fill="#047857"/>
+  <text x="60" y="350" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="monospace">TRACK 2: QUẢN LÝ PHÍ &amp; PHÁT HÀNH PHÍ (F09–F16)</text>
+  <g filter="url(#shadow)">
+    <rect x="55" y="375" width="220" height="75" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="65" y="385" width="70" height="15" rx="3" fill="#0369A1"/>
+    <text x="100" y="396" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">HQ &amp; SCHOOL</text>
+    <text x="65" y="416" font-size="11.5" font-weight="700" fill="#F8FAFC">F09/F10: Types &amp; Components</text>
+    <text x="65" y="432" font-size="9.5" fill="#94A3B8">HQ (School/Misc), School (Program)</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="310" y="375" width="215" height="75" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="320" y="385" width="70" height="15" rx="3" fill="#0369A1"/>
+    <text x="355" y="396" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">RULE ENGINE</text>
+    <text x="320" y="416" font-size="11.5" font-weight="700" fill="#F8FAFC">F11: Rate Rule Configuration</text>
+    <text x="320" y="432" font-size="9.5" fill="#94A3B8">Stage, Student Cat (SC/PR/IS), Dates</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="560" y="375" width="220" height="75" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="570" y="385" width="65" height="15" rx="3" fill="#047857"/>
+    <text x="602" y="396" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">SCHOOL USER</text>
+    <text x="570" y="416" font-size="11.5" font-weight="700" fill="#F8FAFC">F12/F13: Fee Publication</text>
+    <text x="570" y="432" font-size="9.5" fill="#94A3B8">Charge Date, Due Date, Scope Target</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="815" y="375" width="205" height="75" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="825" y="385" width="65" height="15" rx="3" fill="#047857"/>
+    <text x="857" y="396" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">CORE ENGINE</text>
+    <text x="825" y="416" font-size="11.5" font-weight="700" fill="#F8FAFC">F14: Recipient Resolution</text>
+    <text x="825" y="432" font-size="9.5" fill="#94A3B8">Scan Active Enrolment at Date</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1045" y="375" width="165" height="75" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="2"/>
+    <rect x="1055" y="385" width="65" height="15" rx="3" fill="#B45309"/>
+    <text x="1087" y="396" font-size="9" font-weight="700" fill="#FEF3C7" text-anchor="middle" font-family="monospace">CHARGE GEN</text>
+    <text x="1055" y="416" font-size="11.5" font-weight="700" fill="#FCD34D">F15: Charge Gen</text>
+    <text x="1055" y="432" font-size="9.5" fill="#FDE68A">POSTED State + GST</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="815" y="485" width="205" height="75" rx="8" fill="#1E293B" stroke="#C084FC" stroke-width="1.5"/>
+    <rect x="825" y="495" width="70" height="15" rx="3" fill="#7E22CE"/>
+    <text x="860" y="506" font-size="9" font-weight="700" fill="#F3E8FF" text-anchor="middle" font-family="monospace">ADJUSTMENT</text>
+    <text x="825" y="526" font-size="11.5" font-weight="700" fill="#F8FAFC">F16: Charge Adjustment</text>
+    <text x="825" y="542" font-size="9.5" fill="#94A3B8">Original Amt Lock + Audit Trail</text>
+  </g>
+  <path d="M 275 412 L 310 412" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow-sky)"/>
+  <path d="M 525 412 L 560 412" stroke="#38BDF8" stroke-width="1.8" marker-end="url(#arrow-sky)"/>
+  <path d="M 780 412 L 815 412" stroke="#10B981" stroke-width="1.8" marker-end="url(#arrow-emerald)"/>
+  <path d="M 1020 412 L 1045 412" stroke="#10B981" stroke-width="1.8" marker-end="url(#arrow-emerald)"/>
+  <path d="M 635 297 L 635 320 Q 635 330 645 330 L 917 330 Q 927 330 927 340 L 927 375" stroke="#38BDF8" stroke-width="1.8" stroke-dasharray="4 3" fill="none" marker-end="url(#arrow-sky)"/>
+  <path d="M 1127 450 L 1127 522 Q 1127 522 1115 522 L 1020 522" stroke="#C084FC" stroke-width="1.8" fill="none" marker-end="url(#arrow-purple)"/>
+  <rect x="35" y="600" width="1190" height="205" rx="12" fill="#121929" stroke="#1E293B" stroke-width="1.5"/>
+  <rect x="50" y="590" width="410" height="22" rx="4" fill="#7E22CE"/>
+  <text x="60" y="605" font-size="10.5" font-weight="700" fill="#FFFFFF" font-family="monospace">DOWNSTREAM INTEGRATION: PARENT PORTAL (R9) &amp; FAS (R4)</text>
+  <g filter="url(#shadow)">
+    <rect x="55" y="630" width="270" height="75" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+    <rect x="65" y="640" width="75" height="15" rx="3" fill="#B45309"/>
+    <text x="102" y="651" font-size="9" font-weight="700" fill="#FEF3C7" text-anchor="middle" font-family="monospace">R4 FAS MODULE</text>
+    <text x="65" y="671" font-size="11.5" font-weight="700" fill="#F8FAFC">R4: FAS Subsidy Approval</text>
+    <text x="65" y="687" font-size="9.5" fill="#FBBF24">Net = Original Amt &minus; Subsidy</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="375" y="630" width="250" height="75" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+    <rect x="385" y="640" width="95" height="15" rx="3" fill="#0369A1"/>
+    <text x="432" y="651" font-size="9" font-weight="700" fill="#E0F2FE" text-anchor="middle" font-family="monospace">R9 E-SERVICE :5174</text>
+    <text x="385" y="671" font-size="11.5" font-weight="700" fill="#F8FAFC">R9: Outstanding Fees Inbox</text>
+    <text x="385" y="687" font-size="9.5" fill="#94A3B8">Sync on login, Select charges</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="675" y="630" width="280" height="75" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.8"/>
+    <rect x="685" y="640" width="95" height="15" rx="3" fill="#047857"/>
+    <text x="732" y="651" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">PAYMENT ENGINE</text>
+    <text x="685" y="671" font-size="11.5" font-weight="700" fill="#F8FAFC">R9: Split Payment (Both)</text>
+    <text x="685" y="687" font-size="9.5" fill="#34D399">1st: Deduct EA Wallet &bull; 2nd: Online</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="1000" y="630" width="210" height="75" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="1010" y="640" width="80" height="15" rx="3" fill="#047857"/>
+    <text x="1050" y="651" font-size="9" font-weight="700" fill="#D1FAE5" text-anchor="middle" font-family="monospace">SETTLEMENT</text>
+    <text x="1010" y="671" font-size="11.5" font-weight="700" fill="#F8FAFC">Ledger &amp; Receipt</text>
+    <text x="1010" y="687" font-size="9.5" fill="#94A3B8">PAID Status, Official Receipt</text>
+  </g>
+  <path d="M 1127 450 L 1127 580 Q 1127 590 1115 590 L 500 590 Q 500 600 500 630" stroke="#38BDF8" stroke-width="1.8" fill="none" marker-end="url(#arrow-sky)"/>
+  <path d="M 325 667 L 375 667" stroke="#F59E0B" stroke-width="1.8" marker-end="url(#arrow-amber)"/>
+  <path d="M 625 667 L 675 667" stroke="#10B981" stroke-width="1.8" marker-end="url(#arrow-emerald)"/>
+  <path d="M 955 667 L 1000 667" stroke="#10B981" stroke-width="1.8" marker-end="url(#arrow-emerald)"/>
+  <path d="M 880 297 L 880 320 Q 880 330 870 330 L 760 330 Q 750 330 750 340 L 750 610 Q 750 620 760 620 L 760 630" stroke="#C084FC" stroke-width="1.8" stroke-dasharray="4 3" fill="none" marker-end="url(#arrow-purple)"/>
+</svg>

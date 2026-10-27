@@ -47,15 +47,15 @@ def determine_report_json_path(user_args: list[str], default_path: str = "report
         if arg.startswith("--json-report-file="):
             return arg.split("=", 1)[1]
 
-    # Detect ticket folder from CLI arguments (e.g. tests/us01_bing_search or tests/us01_bing_search/test_bing_search.py)
+    # Detect ticket folder from CLI arguments (e.g. tests/us01_bing_search or tests/fs08/fs08-parent-profile)
     for arg in user_args:
         if not arg.startswith("-"):
             parts = Path(arg).parts
             if "tests" in parts:
                 idx = parts.index("tests")
-                if idx + 1 < len(parts):
-                    candidate = parts[idx + 1]
-                    ticket = candidate if not candidate.endswith(".py") else Path(arg).parent.name
+                rel_parts = [p for p in parts[idx + 1:] if not p.endswith(".py")]
+                if rel_parts:
+                    ticket = "/".join(rel_parts)
                     if ticket and not ticket.startswith(("_", ".")) and ticket != "tests":
                         return f"reports/{ticket}/report.json"
 
@@ -307,12 +307,16 @@ def main():
             parts = Path(arg).parts
             if "tests" in parts:
                 idx = parts.index("tests")
-                if idx + 1 < len(parts):
-                    ticket_folder = parts[idx + 1] if not parts[idx + 1].endswith(".py") else Path(arg).parent.name
+                rel_parts = [p for p in parts[idx + 1:] if not p.endswith(".py")]
+                if rel_parts:
+                    ticket_folder = "/".join(rel_parts)
                     break
 
-    lock_name = f".{ticket_folder}.lock" if ticket_folder else ".run_tests.lock"
-    lock_file = reports_dir / lock_name
+    safe_lock = ticket_folder.replace("/", "_") if ticket_folder else "run_tests"
+    lock_name = f".{safe_lock}.lock"
+    locks_dir = reports_dir / ".locks"
+    locks_dir.mkdir(parents=True, exist_ok=True)
+    lock_file = locks_dir / lock_name
     lock_fd = open(lock_file, "w")
     try:
         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)

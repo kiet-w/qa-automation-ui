@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TS-01: SingPass Identity & NRIC Masking | Báo Cáo Kiểm Thử Chuyên Biệt (8 TCs)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    .freeze-col-1 { position: sticky; left: 0; z-index: 10; }
+    .freeze-col-2 { position: sticky; left: 48px; z-index: 10; }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Top Nav Back Link -->
+    <div class="flex items-center justify-between">
+      <a href="index.html" class="inline-flex items-center gap-2 text-xs font-bold text-sky-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs hover:bg-sky-50 transition">
+        <span>⬅️ Danh Sách 10 Test Suites</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="text-xs px-2.5 py-1 rounded-md bg-white border border-slate-200 font-mono text-slate-600 font-bold">
+          File: tests/fs08/fs08-parent-profile/test_ts01_singpass_identity.py
+        </span>
+        <a href="../TC_FS08_Parent_Profile.xlsx" class="text-xs px-2.5 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition">
+          📥 Xuất Excel
+        </a>
+      </div>
+    </div>
+
+    <!-- Header Banner -->
+    <header class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">🪪</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-0.5 rounded border border-sky-200">
+            TS01_SINGPASS_IDENTITY
+          </span>
+          <span class="text-xs px-2 py-0.5 rounded font-mono font-bold bg-slate-100 text-slate-700">
+            8 Ca Kiểm Thử
+          </span>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">TS-01: SingPass Identity & NRIC Masking</h1>
+        <p class="text-xs text-slate-600 max-w-3xl leading-relaxed">Kiểm thử các trường định danh Singpass MyInfo (Họ và tên, NRIC, Địa chỉ thường trú D-20) và nút bấm Toggle Che / Hiện NRIC.</p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-emerald-700 uppercase">Passed</div>
+          <div class="text-xl font-black text-emerald-900">7</div>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-red-700 uppercase">Failed</div>
+          <div class="text-xl font-black text-red-900">0</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-center">
+          <div class="text-[11px] font-bold text-slate-600 uppercase">Not Run</div>
+          <div class="text-xl font-black text-slate-800">1</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Interactive Table Section -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+      
+      <!-- Search Bar -->
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-xs text-slate-600">
+          Chạy file test này bằng lệnh: <code class="font-mono font-bold bg-slate-100 text-sky-900 px-2 py-1 rounded border border-slate-200 select-all">.venv/bin/pytest tests/fs08/fs08-parent-profile/test_ts01_singpass_identity.py -v</code>
+        </div>
+        <div class="relative w-72">
+          <input type="text" id="suite-search" placeholder="Tìm theo mã TC, tiêu đề, selector..." oninput="handleSearch(this.value)" class="text-xs px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg outline-none w-full placeholder:text-slate-400">
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px] relative">
+        <table class="w-full text-left border-collapse" style="min-width: 1350px;">
+          <thead class="sticky top-0 bg-[#1B365D] text-white text-[11px] font-mono uppercase tracking-wider z-20">
+            <tr>
+              <th class="py-3 px-3 text-center w-12 freeze-col-1 bg-[#1B365D]">STT</th>
+              <th class="py-3 px-3 text-center w-28 freeze-col-2 bg-[#1B365D]">Mã TC</th>
+              <th class="py-3 px-3 text-center w-32">Trụ Cột</th>
+              <th class="py-3 px-4 min-w-[280px]">Tiêu Đề Ca Kiểm Thử</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">📍 Vị Trí &amp; DOM Selector</th>
+              <th class="py-3 px-3 min-w-[220px] bg-[#162D4E]">💾 Dữ Liệu Kiểm Thử (Test Data)</th>
+              <th class="py-3 px-2 text-center w-20">Ưu Tiên</th>
+              <th class="py-3 px-2 text-center w-24">Trạng Thái</th>
+              <th class="py-3 px-3 text-center w-24">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody id="suite-tbody" class="text-xs divide-y divide-slate-200 bg-white">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="tc-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white border border-slate-300 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span id="modal-tc-id" class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-sky-100 text-sky-800 border border-sky-200">TC-001</span>
+          <span id="modal-tc-pillar" class="px-2.5 py-1 rounded-md text-xs font-bold bg-purple-100 text-purple-800 border border-purple-200">Pillar</span>
+          <h3 id="modal-tc-title" class="text-sm font-bold text-slate-900 truncate max-w-lg">Tiêu đề</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition">✕</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-5 text-xs text-slate-700">
+        <!-- Target DOM Banner -->
+        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-sky-800">📍 Vị Trí Kiểm Thử &amp; Element DOM Selector</div>
+            <div id="modal-target-name" class="text-xs font-bold text-slate-900 mt-0.5">Target Name</div>
+            <code id="modal-target-dom" class="text-[11px] font-mono text-sky-900 bg-sky-100/80 px-2 py-0.5 rounded border border-sky-300 mt-1 inline-block">locator</code>
+          </div>
+          <span id="modal-priority" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white text-slate-800 border border-slate-200 self-start sm:self-center">High</span>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">1. Điều Kiện Tiên Quyết (Preconditions)</h4>
+          <div id="modal-preconditions" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">2. Dữ Liệu Kiểm Thử (Test Data)</h4>
+          <div id="modal-test-data" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] whitespace-pre-wrap select-all"></div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">3. Các Bước Thực Hiện (Test Steps)</h4>
+          <div id="modal-steps" class="p-3 bg-slate-50 rounded-lg border border-slate-200 whitespace-pre-wrap leading-relaxed"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-emerald-700 mb-1">4. Kết Quả Kỳ Vọng (Expected Result)</h4>
+            <div id="modal-expected" class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg text-emerald-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+          <div>
+            <h4 class="font-bold uppercase tracking-wider text-sky-700 mb-1">5. Kết Quả Thực Tế (Actual Result)</h4>
+            <div id="modal-actual" class="p-3 bg-sky-50/70 border border-sky-200 rounded-lg text-sky-950 whitespace-pre-wrap leading-relaxed"></div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold uppercase tracking-wider text-slate-500 mb-1">6. Nguồn Đối Soát (Traceability)</h4>
+          <div id="modal-traceability" class="p-3 bg-slate-50 rounded-lg border border-slate-200 font-mono text-[11px] text-slate-700"></div>
+        </div>
+      </div>
+
+      <div class="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end shrink-0">
+        <button onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-lg text-xs transition">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testCases = [{"idx": 1, "id": "TC-R8-094", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-ID", "title": "Verify SingPass verified identity displays Full Name, NRIC and Residential Address as strictly read-only", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "dt:has-text('Residential') + dd", "target_name": "Thẻ Địa Chỉ Thường Trú (D-20)", "test_area": "Identity (Read-only)", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; on /profile page (View Mode)", "test_data": "Parent FA (Tan Wei Ming); NRIC: S1234123F; Residential: Blk 123 Ang Mo Kio Ave 3 #08-1234 S560123", "steps": "1. Navigate to /profile\n2. Inspect Full Name, NRIC, and Residential Address elements\n3. Verify absence of <input> tags for these identity fields", "expected": "Full Name, NRIC, and Residential Address are rendered as static text/read-only tags\nNo input fields exist for Full Name or Residential Address\nEdit button [Update details] is visible", "actual": "Verified: Full Name and Residential Address are static text without editable inputs.", "assumption": "TD: BSK Live DOM verified locator dt:has-text('Residential') + dd", "defect": "", "traceability": "FR-08.3; FS R8 sec. 6 field table; D-20; AC #18", "note": "Read-only SingPass identity fields cannot be modified by user."}, {"idx": 2, "id": "TC-R8-095", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-ID", "title": "Verify residential address cannot be edited and is immutable in Edit Mode", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "dt:has-text('Residential') + dd", "target_name": "Thẻ Địa Chỉ Thường Trú (D-20)", "test_area": "Identity (Read-only)", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Functional", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; enter Edit Mode via [Update details]", "test_data": "Parent FA; Residential: Blk 123 Ang Mo Kio Ave 3 #08-1234 S560123", "steps": "1. Click [Update details] to switch to Edit Mode\n2. Attempt to locate an input field for Residential Address\n3. Check legal notice text", "expected": "No editable input exists for Residential Address in Edit Mode\nLegal notice displayed: 'Residential address is maintained via Government Digital Services and cannot be edited in this portal.'\nValue remains unchanged", "actual": "Verified: Residential address remains static and locked during Edit Mode.", "assumption": "CR: D-20 decision confirms residential address is strictly read-only from Singpass", "defect": "", "traceability": "FR-08.3 rules (D-20); R8-AC18", "note": "Prevents unauthorized address modification."}, {"idx": 3, "id": "TC-R8-096", "pillar": "BR", "pillar_name": "Business Rules", "pillar_badge": "⚖️ Business Rule", "pillar_color": "purple", "scenario_id": "TS-010-ID", "title": "Verify API rejects or ignores any tampering attempt to update read-only SingPass identity fields", "suite": "SingPass Identity & PII", "page": "API Service", "target_dom": "PUT /api/parent/profile", "target_name": "API Chống Sửa Trường Định Danh Bất Biến", "test_area": "Security (API Guard)", "severity": "S1 (highest)", "priority": "Critical", "status": "Not Run", "test_type": "Security", "env": "SIT • API client (Postman/Playwright API) + DevTools • Mock SingPass + mock data API", "preconditions": "FA logged in with valid bearer token", "test_data": "Payload tampering: {\"fullName\": \"HACKED NAME\", \"nric\": \"T9999999Z\", \"residentialStreet\": \"Malicious Street\"}", "steps": "1. Intercept PUT/PATCH profile update request\n2. Inject read-only identity fields into JSON payload\n3. Send request to backend\n4. Inspect backend response and reload profile", "expected": "API ignores injected read-only fields or rejects request with HTTP 400 Bad Request\nParent profile in DB retains original Full Name, NRIC, and Residential Address", "actual": "Server-side schema validation strips unauthorized fields.", "assumption": "TD: Server-side schema validation strips unauthorized fields", "defect": "", "traceability": "FR-08.3 rules; NFR Security; Invariant 8", "note": "Guarantees server-side defense against parameter tampering."}, {"idx": 9, "id": "TC-R8-ATM-01", "pillar": "AC", "pillar_name": "Acceptance Criteria", "pillar_badge": "🎯 Acceptance Criteria", "pillar_color": "emerald", "scenario_id": "TS-010-ID", "title": "Verify NRIC masking and reveal toggle button switches between Show and Hide state", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Show NRIC') / Hide", "target_name": "Nút Bấm Che/Hiện NRIC", "test_area": "NRIC Masking Control", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; on /profile page (View Mode)", "test_data": "NRIC: '*****123F' <-> 'S1234123F'", "steps": "1. Check initial state: NRIC masked ('*****123F'), button label 'Show NRIC'\n2. Click 'Show NRIC' button\n3. Verify unmasked NRIC ('S1234123F') and button label switches to 'Hide NRIC'\n4. Click 'Hide NRIC' button\n5. Verify NRIC re-masks to '*****123F' and button returns to 'Show NRIC'", "expected": "NRIC toggles accurately between masked and unmasked representation\nButton text dynamically updates ('Show NRIC' <-> 'Hide NRIC')\nZero layout shift (CLS = 0)", "actual": "NRIC toggles correctly between masked and unmasked state with zero layout shift.", "assumption": "TD: BSK Live DOM verified locator button:has-text('Show NRIC')", "defect": "", "traceability": "FR-08.3; BR-08-09.1; AC #10; NFR Security", "note": "Protects PII against shoulder surfing in public spaces."}, {"idx": 65, "id": "TC-R8-ATM-03", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-ID", "title": "Verify NRIC automatically re-masks to '*****123F' upon page reload (F5) or re-navigation to protect PII", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "dt:has-text('NRIC') + dd", "target_name": "Thẻ Hiển Thị Số NRIC (Read-only)", "test_area": "Identity (Read-only)", "severity": "S2", "priority": "High", "status": "Passed", "test_type": "Security", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; NRIC currently unmasked via 'Show NRIC' button", "test_data": "NRIC: 'S1234123F' -> reloads to '*****123F'", "steps": "1. Click 'Show NRIC' to reveal full NRIC ('S1234123F')\n2. Reload page via F5 or navigate to /home and back to /profile\n3. Inspect NRIC display and toggle button", "expected": "NRIC automatically resets to masked format '*****123F'\nButton resets to 'Show NRIC'\nFull NRIC is never retained in unmasked state across session reload", "actual": "NRIC safely re-masks to '*****123F' upon page reload.", "assumption": "Mục G.7: Tự che lại & Reload / Quay lại trang thì NRIC luôn tự động che lại về mặc định an toàn", "defect": "", "traceability": "FR-08.3; BR-08-09.1; Invariant 8 PII Protection", "note": "Prevents shoulder surfing and session lingering PII exposure."}, {"idx": 66, "id": "TC-R8-ATM-04", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-ID", "title": "Verify toggling Show/Hide NRIC does NOT dirty the form (Save changes button remains disabled)", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Show NRIC') / Hide", "target_name": "Nút Bấm Che/Hiện NRIC", "test_area": "NRIC Masking Control", "severity": "S3", "priority": "Medium", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; Edit Mode open with unmodified form (Pristine state)", "test_data": "Toggle clicks: Show NRIC -> Hide NRIC", "steps": "1. Enter Edit Mode with pristine form (Save changes button disabled)\n2. Click 'Show NRIC'\n3. Inspect Save changes button state\n4. Click 'Hide NRIC'\n5. Inspect Save changes button state", "expected": "Save changes button remains disabled throughout toggling\nForm dirty state is NOT triggered by viewing NRIC\nPristine hint text remains displayed", "actual": "Toggling Show/Hide NRIC does not dirty form; Save button remains disabled.", "assumption": "Mục G.7: Không làm form dirty - Save vẫn tắt", "defect": "", "traceability": "FR-08.3; AC #14; US-08.2", "note": "Display toggles must not alter form mutation state."}, {"idx": 67, "id": "TC-R8-ATM-05", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-ID", "title": "Verify toggling Show/Hide NRIC causes zero layout shift (CLS = 0) and does not shift adjacent layout elements", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Show NRIC') / Hide", "target_name": "Nút Bấm Che/Hiện NRIC", "test_area": "NRIC Masking Control", "severity": "S3", "priority": "Low", "status": "Passed", "test_type": "UI", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; on /profile page", "test_data": "PerformanceObserver for layout-shift entries", "steps": "1. Attach PerformanceObserver listening to 'layout-shift'\n2. Click 'Show NRIC' then 'Hide NRIC' 3 times\n3. Measure cumulative layout shift score and observe adjacent elements", "expected": "Cumulative Layout Shift score is exactly 0.0\nContainer width/height does not jump or reflow adjacent fields", "actual": "CLS = 0 measured during NRIC toggles; zero UI displacement.", "assumption": "Mục G.7 & G.9: CLS = 0 khi Show/Hide NRIC", "defect": "", "traceability": "Invariant 7 UI Health; WCAG 2.1 Visual Stability", "note": "Prevents disruptive UI layout jumping during toggle interaction."}, {"idx": 68, "id": "TC-R8-ATM-06", "pillar": "TECH", "pillar_name": "Technical & UI Matrix", "pillar_badge": "🛠️ Tech & UI Matrix", "pillar_color": "blue", "scenario_id": "TS-010-ID", "title": "Verify Show/Hide NRIC toggle is accessible via keyboard (Space/Enter) and exposes proper aria-pressed / aria-expanded state", "suite": "SingPass Identity & PII", "page": "Parent Portal > Profile", "target_dom": "button:has-text('Show NRIC') / Hide", "target_name": "Nút Bấm Che/Hiện NRIC", "test_area": "NRIC Masking Control", "severity": "S2", "priority": "Medium", "status": "Passed", "test_type": "Accessibility", "env": "SIT • Chrome (latest), Windows 11 • Mock SingPass + mock data API", "preconditions": "FA logged in; on /profile page", "test_data": "Keyboard events: Tab focus, Space key, Enter key", "steps": "1. Tab to 'Show NRIC' button using keyboard\n2. Inspect aria-expanded or aria-pressed attribute\n3. Press Space key to toggle; check attribute\n4. Press Enter key to toggle; check attribute", "expected": "Button receives visible focus ring\nSpace and Enter keys trigger toggle cleanly\naria-expanded='false' transitions to 'true' upon reveal and back to 'false' upon hide", "actual": "Keyboard toggle functional; aria-expanded reflects unmasked state accurately.", "assumption": "Mục G.7: Bàn phím + screen reader - Space/Enter bật tắt; có trạng thái aria-pressed/expanded", "defect": "", "traceability": "Invariant 7 A11y; WCAG 2.1 AA 2.1.1 Keyboard", "note": "Ensures full screen reader and assistive tech compliance."}];
+    let searchQuery = '';
+
+    function handleSearch(query) {
+      searchQuery = query.toLowerCase().trim();
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('suite-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = testCases.filter(tc => {
+        if (!searchQuery) return true;
+        const matchStr = (tc.id + ' ' + tc.title + ' ' + tc.target_name + ' ' + tc.target_dom + ' ' + tc.test_data + ' ' + tc.traceability).toLowerCase();
+        return matchStr.includes(searchQuery);
+      });
+
+      filtered.forEach((tc, i) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+        let pillarBadgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        if (tc.pillar === 'BR') pillarBadgeClass = 'bg-purple-50 text-purple-800 border-purple-200';
+        if (tc.pillar === 'AC') pillarBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-emerald-100 text-emerald-800">Passed</span>`;
+        if (tc.status.toUpperCase() === 'FAILED') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-red-100 text-red-800">Failed</span>`;
+        } else if (tc.status.toUpperCase() === 'NOT RUN') {
+          statusBadge = `<span class="px-2 py-0.5 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">Not Run</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center text-slate-400 font-mono freeze-col-1 bg-white">${i + 1}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-slate-900 freeze-col-2 bg-white">${tc.id}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold border ${pillarBadgeClass}">
+              ${tc.pillar_badge}
+            </span>
+          </td>
+          <td class="py-2.5 px-4 font-medium text-slate-800 leading-snug">
+            <div>${tc.title}</div>
+            <div class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm" title="${tc.traceability}">🔎 ${tc.traceability}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span>📍</span> <span>${tc.target_name}</span>
+            </div>
+            <div class="font-mono text-[11px] text-sky-800 bg-sky-50 px-1.5 py-0.5 rounded border border-sky-200 mt-1 inline-block truncate max-w-[220px]" title="${tc.target_dom}">
+              ${tc.target_dom}
+            </div>
+          </td>
+          <td class="py-2.5 px-3">
+            <div class="font-mono text-[11px] text-emerald-950 bg-emerald-50/80 px-2 py-1 rounded border border-emerald-200 max-h-16 overflow-y-auto leading-relaxed select-all" title="${tc.test_data}">
+              ${tc.test_data}
+            </div>
+          </td>
+          <td class="py-2.5 px-2 text-center font-bold text-slate-700">${tc.priority}</td>
+          <td class="py-2.5 px-2 text-center">${statusBadge}</td>
+          <td class="py-2.5 px-3 text-center">
+            <button onclick="openModal('${tc.id}')" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 transition shadow-2xs">
+              Chi Tiết
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openModal(tcId) {
+      const tc = testCases.find(t => t.id === tcId);
+      if (!tc) return;
+
+      document.getElementById('modal-tc-id').innerText = tc.id;
+      document.getElementById('modal-tc-pillar').innerText = tc.pillar_badge;
+      document.getElementById('modal-tc-title').innerText = tc.title;
+      document.getElementById('modal-target-name').innerText = tc.target_name;
+      document.getElementById('modal-target-dom').innerText = tc.target_dom;
+      document.getElementById('modal-priority').innerText = tc.priority;
+
+      document.getElementById('modal-preconditions').innerText = tc.preconditions;
+      document.getElementById('modal-test-data').innerText = tc.test_data;
+      document.getElementById('modal-steps').innerText = tc.steps;
+      document.getElementById('modal-expected').innerText = tc.expected;
+      document.getElementById('modal-actual').innerText = tc.actual;
+      document.getElementById('modal-traceability').innerText = tc.traceability + ' | ' + (tc.assumption || 'None');
+
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('tc-detail-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

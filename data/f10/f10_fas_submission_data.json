@@ -1,0 +1,115 @@
+{
+  "valid_applicant": {
+    "fullName": "TAN AH TECK",
+    "nric": "S7812345A",
+    "dateOfBirth": "1980-05-15",
+    "gender": "MALE",
+    "nationality": "SC",
+    "race": "CHINESE",
+    "relationshipToBeneficiary": "FATHER",
+    "phoneNumber": "91234567",
+    "email": "tan.ahteck@example.sg",
+    "address": "Block 123 Ang Mo Kio Ave 4 #08-12, Singapore 560123",
+    "commitmentAgreed": true,
+    "forwardToSchoolAgreed": true
+  },
+  "valid_beneficiary": {
+    "fullName": "TAN KAH KEE",
+    "nric": "T1234567B",
+    "dateOfBirth": "2015-08-20",
+    "gender": "MALE",
+    "schoolName": "Raffles Institution",
+    "classLevel": "PRIMARY",
+    "grade": "Primary 5"
+  },
+  "second_beneficiary": {
+    "fullName": "TAN MEI LING",
+    "nric": "T1456789C",
+    "dateOfBirth": "2017-03-10",
+    "gender": "FEMALE",
+    "schoolName": "Raffles Girls' Primary School",
+    "classLevel": "PRIMARY",
+    "grade": "Primary 3"
+  },
+  "secondary_beneficiary": {
+    "fullName": "TAN JUN WEI",
+    "nric": "T1122334D",
+    "dateOfBirth": "2012-04-15",
+    "gender": "MALE",
+    "schoolName": "Victoria School",
+    "classLevel": "SECONDARY",
+    "grade": "Secondary 2"
+  },
+  "third_beneficiary": {
+    "fullName": "TAN KAI WEN",
+    "nric": "T1678901E",
+    "dateOfBirth": "2018-09-05",
+    "gender": "MALE",
+    "schoolName": "Anglo-Chinese School (Junior)",
+    "classLevel": "PRIMARY",
+    "grade": "Primary 2"
+  },
+  "pre_uni_beneficiary": {
+    "fullName": "TAN KAI EN",
+    "nric": "T1890123F",
+    "dateOfBirth": "2010-02-14",
+    "gender": "FEMALE",
+    "schoolName": "National Junior College",
+    "classLevel": "PRE_UNIVERSITY",
+    "grade": "JC 2"
+  },
+  "family_member": {
+    "fullName": "WONG SIEW LING",
+    "nric": "S8012345D",
+    "dateOfBirth": "1982-11-20",
+    "gender": "FEMALE",
+    "hasIncome": false
+  },
+  "family_member_income": {
+    "fullName": "TAN AH KOW",
+    "nric": "S5512345E",
+    "dateOfBirth": "1955-01-10",
+    "gender": "MALE",
+    "hasIncome": true
+  },
+  "invalid_inputs": {
+    "underage_dob": "2023-01-01",
+    "overage_dob": "2008-01-01",
+    "bva_age_6_dob": "2020-05-01",
+    "bva_age_7_dob": "2019-05-01",
+    "bva_age_16_dob": "2010-05-01",
+    "bva_age_17_dob": "2009-05-01",
+    "future_dob": "2029-01-01",
+    "invalid_nrics": [
+      "12345678",
+      "S123456",
+      "S123456789A",
+      "12345678A"
+    ],
+    "invalid_phones": [
+      "abc12345",
+      "1234567890123",
+      "phone_number"
+    ],
+    "invalid_emails": [
+      "tan@@email.com",
+      "tan.email.com",
+      "tan@",
+      "@email.com",
+      "tan email@domain.com"
+    ],
+    "whitespace_string": "     "
+  },
+  "expected_messages": {
+    "required": "This field is required.",
+    "commitment_required": "You must agree to the commitment before submitting.",
+    "invalid_nric": "Enter a valid NRIC or FIN.",
+    "invalid_phone": "Enter a valid phone number.",
+    "invalid_email": "Enter a valid email address.",
+    "duplicate_nric": "Each NRIC or FIN must be unique.",
+    "future_date": "Date of birth cannot be in the future.",
+    "age_range": "The beneficiary must be between 7 and 16 years old.",
+    "has_income_required": "Select whether this family member has income.",
+    "server_error_fallback": "We could not submit your application. Please try again."
+  }
+}

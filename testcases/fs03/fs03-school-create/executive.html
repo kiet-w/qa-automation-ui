@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Dashboard — FS03: Create a School Test Cases</title>
+  <style>
+    :root {
+      --primary: #1B365D;
+      --primary-light: #2A4D80;
+      --accent: #0070BA;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --success-bg: #DCFCE7;
+      --success-text: #166534;
+      --error-bg: #FEE2E2;
+      --error-text: #991B1B;
+      --radius: 10px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+    .header-title h1 {
+      font-size: 24px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .bento-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .bento-card .metric-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .bento-card .metric-val {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 8px;
+    }
+    .bento-card .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Controls */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+    }
+    .pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .pill.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      border-color: var(--primary);
+    }
+    .search-box {
+      position: relative;
+      flex-grow: 1;
+      max-width: 320px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      outline: none;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      fill: var(--text-muted);
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      max-height: 650px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      background: var(--primary);
+      color: #FFFFFF;
+      z-index: 10;
+    }
+    th {
+      padding: 12px 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+    tr:hover {
+      background: #F1F5F9;
+    }
+    .tc-id {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    .pill-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .pill-s1 { background: #FEE2E2; color: #991B1B; }
+    .pill-s2 { background: #FEF3C7; color: #92400E; }
+    .pill-s3 { background: #DCFCE7; color: #166534; }
+    .pill-pass { background: #DCFCE7; color: #166534; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-title">
+      <h1>Executive Test Case Dashboard — FS03: Create a School</h1>
+      <p>EduFAMS Admin Portal (http://localhost:5173/school-management/new) • 3-Tier Enterprise Architecture</p>
+    </div>
+    <div>
+      <span class="badge">SIT Sprint 1 • 100% Verified</span>
+    </div>
+  </div>
+
+  <div class="bento-grid">
+    <div class="bento-card">
+      <div class="metric-label">Total Test Cases</div>
+      <div class="metric-val">46</div>
+      <div class="metric-sub">Single Source of Truth (19 Cols)</div>
+    </div>
+    <div class="bento-card">
+      <div class="metric-label">⚖️ 1. Business Rules (BR)</div>
+      <div class="metric-val">6</div>
+      <div class="metric-sub">BR-R3-01 Uniqueness, Lifecycle, RBAC</div>
+    </div>
+    <div class="bento-card">
+      <div class="metric-label">🎯 2. Acceptance Criteria (AC)</div>
+      <div class="metric-val">12</div>
+      <div class="metric-sub">F01-AC01..AC06, 4 Errors, Toast, Chips</div>
+    </div>
+    <div class="bento-card">
+      <div class="metric-label">🛠️ 3. Tech & UI Matrix</div>
+      <div class="metric-val">28</div>
+      <div class="metric-sub">12-Layer Input, BVA, Invariant 7 NFR</div>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <div class="filter-pills">
+      <button class="pill active" onclick="filterPillar('ALL')">All (46)</button>
+      <button class="pill" onclick="filterPillar('BR')">1. Business Rules (6)</button>
+      <button class="pill" onclick="filterPillar('AC')">2. Acceptance Criteria (12)</button>
+      <button class="pill" onclick="filterPillar('TECH_UI')">3. Tech & UI Matrix (28)</button>
+    </div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="searchInput" placeholder="Search test cases by ID, title, keyword..." onkeyup="filterSearch()">
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table id="tcTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Scenario ID</th>
+          <th>Title</th>
+          <th>Test Suite</th>
+          <th>Severity</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Test Type</th>
+          <th>Preconditions</th>
+          <th>Test Data</th>
+          <th>Test Steps</th>
+          <th>Expected Result</th>
+          <th>Traceability</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE HQ Admin successfully creates a new School with unique MOE code, default Active status, 0 classes and 0 students</td>
+          <td>School Master Data & Lifecycle</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin logged in as System Admin (moehq); School code 'SCH-VAL-01' does not exist in schools table</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-VAL-01', Name: 'Valence International School', Type: 'Independent', Academic Level: 'PRI-1 - Primary 1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Navigate to http://localhost:5173/school-management/new<br>2. Fill MOE school code 'SCH-VAL-01'<br>3. Fill School name 'Valence International School'<br>4. Select School type 'Independent'<br>5. Select Academic level 'PRI-1 - Primary 1'<br>6. Click [Create school]<br>7. Verify redirect and school record in list</td>
+          <td style="min-width:260px; font-size:12px;">1. System creates school record with is_active = true, active_classes = 0, active_students = 0<br>2. Success toast 'School created: School created successfully.' appears<br>3. Navigates to /school-management table<br>4. Newly created school is listed</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01-AC01; BR-R3-01; BR-R3-02; TC-R3-F01-001</td>
+        </tr>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify system strictly rejects School creation with duplicate MOE school code (HTTP 409 Conflict) and displays alert 'Unable to create school'</td>
+          <td>School Master Data & Lifecycle</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Negative</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin logged in; School with MOE code 'qwe' already exists in schools table</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'qwe' (duplicate), Name: 'Duplicate Secondary School', Type: 'Government', Academic Level: 'SEC-1 - Secondary 1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Navigate to http://localhost:5173/school-management/new<br>2. Fill duplicate MOE school code 'qwe'<br>3. Fill School name, select Type 'Government' and an Academic Level<br>4. Click [Create school]<br>5. Inspect response and alert container</td>
+          <td style="min-width:260px; font-size:12px;">1. Backend rejects request with HTTP 409 Conflict<br>2. System displays error alert: 'Unable to create school / School with MOE code 'qwe' already exists.'<br>3. Duplicate school is not inserted into database (BR-R3-01)</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01-AC02; BR-R3-01; E-03-09; TC-R3-F01-002</td>
+        </tr>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify RBAC access control: Only MOE HQ Admin (moehq) can access School Creation form; School Users and Anonymous are blocked</td>
+          <td>RBAC & Authorization</td>
+          <td><span class="pill-tag pill-s1">S1</span></td>
+          <td>Critical</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Security</td>
+          <td style="min-width:180px; font-size:12px;">Logged in as School User (non-HQ) or unauthenticated session</td>
+          <td style="min-width:160px; font-size:12px;">URL: http://localhost:5173/school-management/new</td>
+          <td style="min-width:260px; font-size:12px;">1. Attempt direct access to http://localhost:5173/school-management/new with non-HQ session<br>2. Attempt direct access without authentication token<br>3. Inspect page redirect and authorization response</td>
+          <td style="min-width:260px; font-size:12px;">1. Non-HQ users are denied access and redirected or receive 403 Forbidden<br>2. Anonymous sessions are redirected to /login<br>3. School creation form is accessible exclusively to MOE HQ Admin</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §1.2; §3.1 F01; BR-R3-04</td>
+        </tr>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-004</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify School Type must belong to Singapore approved classifications: Government, Government aided, Autonomous, Independent, Specialised</td>
+          <td>School Master Data & Lifecycle</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin logged in on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Valid types: ['Government', 'Government aided', 'Autonomous', 'Independent', 'Specialised']</td>
+          <td style="min-width:260px; font-size:12px;">1. Inspect dropdown options for #school-schoolType<br>2. Create a school with each approved School Type<br>3. Verify persistence and type display in School Management table</td>
+          <td style="min-width:260px; font-size:12px;">1. Dropdown contains exact approved Singapore School Type options<br>2. Selected type is stored and rendered correctly in the school list</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; WA-R3-10; TC-R3-F01-004</td>
+        </tr>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-005</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify School Creation mandates selecting at least one Academic Level before persisting to database</td>
+          <td>Academic Configuration</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin logged in on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-LVL-01', Name: 'Academic Level Test School', Type: 'Government', Levels: none</td>
+          <td style="min-width:260px; font-size:12px;">1. Fill valid MOE school code, School name, and School type<br>2. Leave Academic levels with 0 selected<br>3. Click [Create school]<br>4. Inspect validation feedback</td>
+          <td style="min-width:260px; font-size:12px;">1. Submission is blocked<br>2. Summary banner includes 'Select at least one academic level.'<br>3. Field inline error displays 'Select at least one academic level.'<br>4. No school record is persisted</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §2.A F01; §3.1 F01; F03</td>
+        </tr>
+        <tr data-pillar="BR">
+          <td class="tc-id">TC-FS03-SCH-BR-006</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-BR</td>
+          <td style="font-weight:600; min-width:240px;">Verify optional School Users association allows creating standalone unassigned school or pre-assigning active users</td>
+          <td>User Provisioning & Assignment</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin logged in; on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Case A: 0 users selected; Case B: 1 or more users selected from #school-schoolUsers combobox</td>
+          <td style="min-width:260px; font-size:12px;">1. Case A: Fill required fields, leave School users empty, click [Create school]<br>2. Verify school created with 0 users<br>3. Case B: Fill required fields, select active user, click [Create school]<br>4. Verify school created and user associated</td>
+          <td style="min-width:260px; font-size:12px;">1. Case A: School created successfully without requiring user assignment<br>2. Case B: School created and selected user(s) linked to school</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; §3.2 F02; BR-R3-04</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAV</td>
+          <td style="font-weight:600; min-width:240px;">Verify 'Cancel' button abandons creation and navigates back to School Management list without persisting data</td>
+          <td>Navigation & Form Actions</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on http://localhost:5173/school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Partially entered MOE code 'CANCEL-01', Name 'Cancelled School'</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter partial data into form fields<br>2. Click [Cancel] button<br>3. Inspect browser URL and school list</td>
+          <td style="min-width:260px; font-size:12px;">1. Browser navigates immediately back to /school-management<br>2. No new school record is created<br>3. Cancelled School does not appear in table</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-VAL</td>
+          <td style="font-weight:600; min-width:240px;">Verify clicking 'Create school' with pristine empty form triggers summary error banner 'Please correct the errors below.'</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on http://localhost:5173/school-management/new with pristine empty form</td>
+          <td style="min-width:160px; font-size:12px;">All fields empty</td>
+          <td style="min-width:260px; font-size:12px;">1. Load /school-management/new<br>2. Click [Create school] button without entering data<br>3. Inspect summary error banner at top of School details section</td>
+          <td style="min-width:260px; font-size:12px;">1. Error banner appears with heading: 'Please correct the errors below.'<br>2. Banner lists all 4 required field failures<br>3. Form submission is halted</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec Form Validation</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify inline error under MOE school code displays 'MOE school code is required.' when submitted empty</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: '', Name: 'Valid School', Type: 'Government', Level: 'PRI-1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Leave MOE school code empty<br>2. Fill School name, select School type and Academic level<br>3. Click [Create school]<br>4. Inspect text under MOE school code input</td>
+          <td style="min-width:260px; font-size:12px;">1. Inline error text 'MOE school code is required.' renders directly beneath input<br>2. Input #school-moeSchoolCode has aria-invalid='true' and red border indicator</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-004</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify inline error under School name displays 'School name is required.' when submitted empty</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-NEW-01', Name: '', Type: 'Government', Level: 'PRI-1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Fill MOE school code, select Type and Level<br>2. Leave School name empty<br>3. Click [Create school]<br>4. Inspect text under School name input</td>
+          <td style="min-width:260px; font-size:12px;">1. Inline error text 'School name is required.' renders directly beneath input<br>2. Input #school-name has aria-invalid='true' and red border indicator</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-005</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-TYP</td>
+          <td style="font-weight:600; min-width:240px;">Verify inline error under School type displays 'Select a school type.' when unselected placeholder is submitted</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-NEW-01', Name: 'Valid School', Type: 'Select a school type' (value=''), Level: 'PRI-1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Fill MOE school code and School name<br>2. Leave School type at default 'Select a school type'<br>3. Select an Academic level<br>4. Click [Create school]<br>5. Inspect text under School type select</td>
+          <td style="min-width:260px; font-size:12px;">1. Inline error text 'Select a school type.' renders directly beneath select control<br>2. Select #school-schoolType has aria-invalid='true' and error border</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-006</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LVL</td>
+          <td style="font-weight:600; min-width:240px;">Verify inline error under Academic levels displays 'Select at least one academic level.' when 0 levels selected</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-NEW-01', Name: 'Valid School', Type: 'Government', Levels: 0 selected</td>
+          <td style="min-width:260px; font-size:12px;">1. Fill MOE school code, School name, and School type<br>2. Do not select any Academic level<br>3. Click [Create school]<br>4. Inspect text under Academic levels control</td>
+          <td style="min-width:260px; font-size:12px;">1. Inline error text 'Select at least one academic level.' renders directly beneath control<br>2. Combobox container receives error styling indicator</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-007</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-VAL</td>
+          <td style="font-weight:600; min-width:240px;">Verify inline validation errors and red borders automatically clear when valid input is entered (Auto-dismissal)</td>
+          <td>Form Validation & Feedback</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">Form in error state after empty submission</td>
+          <td style="min-width:160px; font-size:12px;">Type 'SCH-01' into MOE code, 'School A' into name, select Type 'Government'</td>
+          <td style="min-width:260px; font-size:12px;">1. Trigger errors by clicking [Create school]<br>2. Type valid value into #school-moeSchoolCode<br>3. Inspect inline error under MOE school code<br>4. Type valid value into #school-name<br>5. Inspect inline error under School name</td>
+          <td style="min-width:260px; font-size:12px;">1. Error messages under respective inputs disappear immediately upon typing/selecting valid data<br>2. aria-invalid changes from 'true' to 'false'<br>3. Red border indicator is removed</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 11; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-008</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LVL</td>
+          <td style="font-weight:600; min-width:240px;">Verify selecting academic levels adds visible chips and updates selected counter text (e.g. '1 selected', '2 selected')</td>
+          <td>Academic Levels Multi-Select</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Select 'PRI-1 - Primary 1', then 'PRI-2 - Primary 2'</td>
+          <td style="min-width:260px; font-size:12px;">1. Click or focus #school-academicLevels input<br>2. Click option 'PRI-1 - Primary 1' from listbox<br>3. Check counter text and rendered chip<br>4. Click option 'PRI-2 - Primary 2'<br>5. Check counter text and rendered chips</td>
+          <td style="min-width:260px; font-size:12px;">1. Counter updates from '0 selected' -> '1 selected' -> '2 selected'<br>2. Distinct chips for PRI-1 and PRI-2 appear within the input container<br>3. Screen reader text updates accurately</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-009</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LVL</td>
+          <td style="font-weight:600; min-width:240px;">Verify removing an academic level chip removes it from selected list and decrements counter</td>
+          <td>Academic Levels Multi-Select</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">Two academic levels ('PRI-1', 'PRI-2') selected in #school-academicLevels</td>
+          <td style="min-width:160px; font-size:12px;">Remove 'PRI-2'</td>
+          <td style="min-width:260px; font-size:12px;">1. Click the remove button (x) on 'PRI-2' chip<br>2. Inspect remaining chips and counter text</td>
+          <td style="min-width:260px; font-size:12px;">1. 'PRI-2' chip is removed from container<br>2. Counter updates to '1 selected'<br>3. Remaining chip 'PRI-1' is intact</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-010</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-USR</td>
+          <td style="font-weight:600; min-width:240px;">Verify selecting optional school users adds user chips and associates them upon creation</td>
+          <td>School Users Assignment</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new; active school users available in system</td>
+          <td style="min-width:160px; font-size:12px;">Select user from #school-schoolUsers combobox</td>
+          <td style="min-width:260px; font-size:12px;">1. Focus #school-schoolUsers input<br>2. Select an available user option<br>3. Verify user chip appears and counter updates to '1 selected'</td>
+          <td style="min-width:260px; font-size:12px;">1. User chip rendered with user name/email<br>2. Counter updates to '1 selected'<br>3. Associated with school upon submission</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; §3.2 F02</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-011</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NOT</td>
+          <td style="font-weight:600; min-width:240px;">Verify successful school creation renders success toast popup notification 'School created: School created successfully.'</td>
+          <td>Submission & Notifications</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">Valid school payload prepared</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-TOAST-01', Name: 'Toast Verification School', Type: 'Government', Level: 'PRI-1'</td>
+          <td style="min-width:260px; font-size:12px;">1. Fill all required fields with unique values<br>2. Click [Create school]<br>3. Inspect top-right corner of viewport for toast notification</td>
+          <td style="min-width:260px; font-size:12px;">1. Toast popup appears in top-right corner<br>2. Title: 'School created'<br>3. Description: 'School created successfully.'<br>4. Dismiss button (x) is present</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01; UI Spec Toast Feedback</td>
+        </tr>
+        <tr data-pillar="AC">
+          <td class="tc-id">TC-FS03-SCH-AC-012</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NOT</td>
+          <td style="font-weight:600; min-width:240px;">Verify successful school creation redirects to /school-management and displays newly created school in the table</td>
+          <td>Submission & Notifications</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">Valid school created</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-LIST-01', Name: 'Listing Verification Academy', Type: 'Government-Aided'</td>
+          <td style="min-width:260px; font-size:12px;">1. Submit valid school creation<br>2. Wait for navigation to /school-management<br>3. Inspect table rows for MOE code, Name, Type, Active classes (0), Active students (0), and Actions</td>
+          <td style="min-width:260px; font-size:12px;">1. URL transitions to http://localhost:5173/school-management<br>2. Newly created school is rendered in the table<br>3. Columns match: MOE code, School name, School type, 0 classes, 0 students<br>4. Action icons (View, Edit, Deactivate) are visible</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">FS-03 §3.1 F01-AC01; Tender R3 Item 3</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code empty input triggers required validation and sets aria-invalid='true' (Universal Lớp 1)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: ''</td>
+          <td style="min-width:260px; font-size:12px;">1. Leave MOE school code empty<br>2. Fill other required fields<br>3. Click [Create school]<br>4. Check aria-invalid attribute on #school-moeSchoolCode</td>
+          <td style="min-width:260px; font-size:12px;">1. Error 'MOE school code is required.' displayed<br>2. #school-moeSchoolCode has aria-invalid='true'</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 1; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code all-whitespace input is treated as empty per ASM-15 and triggers required error (Universal Lớp 3)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Negative</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: '     ' (spaces only)</td>
+          <td style="min-width:260px; font-size:12px;">1. Type only whitespace into MOE school code<br>2. Fill other fields<br>3. Click [Create school]</td>
+          <td style="min-width:260px; font-size:12px;">1. System trims whitespace and evaluates field as empty<br>2. Displays 'MOE school code is required.'<br>3. Submission blocked</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 3; ASM-15</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code leading and trailing whitespace is automatically trimmed (Universal Lớp 4)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: '   HCI-0999   '</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter MOE code with leading and trailing spaces<br>2. Fill other required fields and submit<br>3. Verify stored code in table</td>
+          <td style="min-width:260px; font-size:12px;">1. Whitespace trimmed cleanly to 'HCI-0999'<br>2. School created and listed as 'HCI-0999' without padding</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 4; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-004</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code accepts valid alphanumeric and hyphenated patterns (e.g. HCI-0102, MPS-0301) (Universal Lớp 5)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Codes: 'HCI-0102', 'MPS-0301', 'NYPS-0202', 'NTU-0402', 'NUS-0401'</td>
+          <td style="min-width:260px; font-size:12px;">1. Test Singapore standard school code patterns<br>2. Verify system accepts each pattern cleanly</td>
+          <td style="min-width:260px; font-size:12px;">1. Alphanumeric strings with uppercase letters, numbers, and hyphens accepted without validation errors</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 3; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-005</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code boundary length BVA Min: 1 character vs 2 characters (Universal Lớp 5)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>BVA</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'Q' (1 char) vs 'Q1' (2 chars)</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter 1-character code<br>2. Verify system behavior and submission<br>3. Enter 2-character code and verify</td>
+          <td style="min-width:260px; font-size:12px;">1. System processes code according to minimum length specification cleanly</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 5; TC-R3-F01-005</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-006</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify MOE school code boundary length BVA Max: 20 characters vs 21 characters (Universal Lớp 6)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>BVA</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">20 chars 'SCH12345678901234567' vs 21 chars 'SCH123456789012345678'</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter 20 characters into MOE school code<br>2. Submit and verify acceptance<br>3. Enter 21 characters and verify truncation or validation error</td>
+          <td style="min-width:260px; font-size:12px;">1. 20-character string accepted cleanly<br>2. 21st character blocked by maxlength or rejected by backend validation</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 6; TC-R3-F01-005</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-007</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify XSS injection payload in MOE school code is sanitized and rendered safely as plain text (Universal Lớp 10)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s1">S1</span></td>
+          <td>Critical</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Security</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: "<script>alert('xss')</script>"</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter XSS script payload into MOE school code<br>2. Fill required fields and submit<br>3. Verify browser does not trigger any script alert modal</td>
+          <td style="min-width:260px; font-size:12px;">1. Script characters encoded as HTML entities<br>2. Zero dialog execution<br>3. Safe string handling in UI and table</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 10; OWASP A3</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-COD-008</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-COD</td>
+          <td style="font-weight:600; min-width:240px;">Verify SQL injection payload in MOE school code is parameterized and does not compromise database syntax (Universal Lớp 10)</td>
+          <td>MOE School Code Matrix</td>
+          <td><span class="pill-tag pill-s1">S1</span></td>
+          <td>Critical</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Security</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: "' OR 1=1 --"</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter SQL injection payload into MOE school code<br>2. Submit form<br>3. Verify backend handles payload as literal string without SQL syntax error</td>
+          <td style="min-width:260px; font-size:12px;">1. Payload passed as query parameter safely<br>2. No 500 internal server error or unhandled database exception<br>3. Rejected gracefully as invalid or handled literally</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 10; OWASP A3</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name empty input triggers required validation and sets aria-invalid='true' (Universal Lớp 1)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Validation</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: ''</td>
+          <td style="min-width:260px; font-size:12px;">1. Leave School name empty<br>2. Fill other fields and click [Create school]<br>3. Check aria-invalid on #school-name</td>
+          <td style="min-width:260px; font-size:12px;">1. Error 'School name is required.' displayed<br>2. #school-name has aria-invalid='true'</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 1; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name all-whitespace input is treated as empty per ASM-15 and triggers required error (Universal Lớp 3)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Negative</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: '        ' (spaces only)</td>
+          <td style="min-width:260px; font-size:12px;">1. Type only spaces into School name<br>2. Fill other fields<br>3. Click [Create school]</td>
+          <td style="min-width:260px; font-size:12px;">1. System trims whitespace and treats name as empty<br>2. Displays 'School name is required.'<br>3. Submission blocked</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 3; ASM-15</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name leading and trailing whitespace is trimmed cleanly before persistence (Universal Lớp 4)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: '   Raffles Institution   '</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter School name padded with leading and trailing spaces<br>2. Submit valid school<br>3. Inspect name displayed in school table</td>
+          <td style="min-width:260px; font-size:12px;">1. Name trimmed to 'Raffles Institution'<br>2. Rendered in table without extra whitespace</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 4; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-004</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name preserves Singapore multicultural Unicode characters (Chinese, Malay, Tamil, Vietnamese) (Universal Lớp 9)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: '华中科技学院 Trường Singapore École'</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter multicultural Unicode school name<br>2. Submit valid school<br>3. Verify text rendering in table</td>
+          <td style="min-width:260px; font-size:12px;">1. UTF-8 Unicode characters preserved cleanly without mojibake or corruption</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 9; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-005</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name accepts valid punctuation symbols (hyphen, apostrophe, period like St. Joseph's) (Universal Lớp 8)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Functional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: "St. Joseph's Institution - Junior Section"</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter school name containing apostrophe, period, and hyphen<br>2. Submit valid school<br>3. Verify successful creation</td>
+          <td style="min-width:260px; font-size:12px;">1. Name accepted cleanly without validation rejection</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 2; FS-03 §3.1 F01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-006</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify School name boundary length BVA Max: 100 characters vs 101 characters (Universal Lớp 6)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>BVA</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">100 chars string 'A' * 100 vs 101 chars string 'A' * 101</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter 100 characters into School name and submit<br>2. Verify acceptance<br>3. Enter 101 characters and verify truncation or error</td>
+          <td style="min-width:260px; font-size:12px;">1. 100 characters accepted cleanly<br>2. 101st character blocked or rejected cleanly</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 6; TC-R3-F01-005</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-007</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify pasting 1000+ characters into School name does not freeze browser or break card layout (Universal Lớp 7 Stress Paste)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Stress</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">String of 1000 'SchoolNameLong' repetitions</td>
+          <td style="min-width:260px; font-size:12px;">1. Paste 1000 characters into School name input<br>2. Verify browser responsiveness, UI frame rate, and layout integrity</td>
+          <td style="min-width:260px; font-size:12px;">1. Browser remains responsive (0 freeze)<br>2. Layout remains contained within bounds without horizontal overflow</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 7; AGENTS.md Invariant 7</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NAM-008</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NAM</td>
+          <td style="font-weight:600; min-width:240px;">Verify XSS script payload injection in School name is sanitized and rendered safely as plain text (Universal Lớp 10)</td>
+          <td>School Name Matrix</td>
+          <td><span class="pill-tag pill-s1">S1</span></td>
+          <td>Critical</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Security</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">School Name: "<img src=x onerror=alert('xss-name')>"</td>
+          <td style="min-width:260px; font-size:12px;">1. Enter XSS payload into School name<br>2. Submit form<br>3. Inspect rendered name in toast and school table</td>
+          <td style="min-width:260px; font-size:12px;">1. String encoded as HTML entities<br>2. 0 modal dialogs executed<br>3. Rendered as literal text</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 10; OWASP A3</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-TYP-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-TYP</td>
+          <td style="font-weight:600; min-width:240px;">Verify School type select renders placeholder 'Select a school type' with empty value by default (Universal Nhóm 5)</td>
+          <td>School Type Select Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">N/A</td>
+          <td style="min-width:260px; font-size:12px;">1. Load /school-management/new<br>2. Inspect value and text of select #school-schoolType</td>
+          <td style="min-width:260px; font-size:12px;">1. Default selected option has text 'Select a school type'<br>2. Value is empty string ''</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 5; UI Spec</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-TYP-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-TYP</td>
+          <td style="font-weight:600; min-width:240px;">Verify School type dropdown renders all 5 valid Singapore School Types in exact specified order (Universal Nhóm 5)</td>
+          <td>School Type Select Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Expected options: ['Select a school type', 'Government', 'Government aided', 'Autonomous', 'Independent', 'Specialised']</td>
+          <td style="min-width:260px; font-size:12px;">1. Query all options from #school-schoolType<br>2. Compare labels and order with expected Singapore classifications</td>
+          <td style="min-width:260px; font-size:12px;">1. Exact 6 options present in exact specified order</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 5; WA-R3-10</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-TYP-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-TYP</td>
+          <td style="font-weight:600; min-width:240px;">Verify keyboard navigation: Arrow Up/Down and Enter keys select School Type option cleanly (Universal Nhóm 5)</td>
+          <td>School Type Select Matrix</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Accessibility</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Keyboard keys: Tab, ArrowDown, Enter</td>
+          <td style="min-width:260px; font-size:12px;">1. Focus #school-schoolType using keyboard<br>2. Press ArrowDown to cycle through options<br>3. Press Enter to select 'Independent'<br>4. Verify select value</td>
+          <td style="min-width:260px; font-size:12px;">1. Selection updates to 'Independent' without requiring mouse click</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 5; WCAG 2.1 AA</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-LVL-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LVL</td>
+          <td style="font-weight:600; min-width:240px;">Verify typing in Academic levels search input filters available levels dynamically in listbox (Universal Nhóm 5)</td>
+          <td>Academic Levels Multi-Select</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Filter query: 'SEC'</td>
+          <td style="min-width:260px; font-size:12px;">1. Focus #school-academicLevels input<br>2. Type 'SEC'<br>3. Inspect visible options in listbox</td>
+          <td style="min-width:260px; font-size:12px;">1. Listbox filters to Secondary options ('SEC-1', 'SEC-2', 'SEC-3', 'SEC-4')<br>2. Non-matching Primary options are hidden</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 5; UI Spec</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-LVL-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LVL</td>
+          <td style="font-weight:600; min-width:240px;">Verify clicking 'Load more' button inside Academic levels listbox loads additional level options (Universal Nhóm 5)</td>
+          <td>Academic Levels Multi-Select</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">N/A</td>
+          <td style="min-width:260px; font-size:12px;">1. Focus #school-academicLevels<br>2. Click [Load more] button at bottom of listbox<br>3. Inspect option count before and after click</td>
+          <td style="min-width:260px; font-size:12px;">1. Option count increases without closing listbox or reloading page</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Nhóm 5; UI Spec</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-LFC-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LFC</td>
+          <td style="font-weight:600; min-width:240px;">Verify modifying form inputs preserves uncommitted state across field blurs and tab switches (Rule 02 Mục C)</td>
+          <td>Form Lifecycle & State</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>UI</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin partially filled form</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'DIRTY-01', Name: 'Dirty Form School'</td>
+          <td style="min-width:260px; font-size:12px;">1. Type data into code and name<br>2. Tab to other controls and blur<br>3. Verify values are retained intact</td>
+          <td style="min-width:260px; font-size:12px;">1. Values remain intact without resetting or clearing</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Mục C; UI Spec</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-LFC-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LFC</td>
+          <td style="font-weight:600; min-width:240px;">Verify rapid double-click on 'Create school' dispatches only single creation request (Debounce & Double-click guard)</td>
+          <td>Form Lifecycle & State</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Concurrency</td>
+          <td style="min-width:180px; font-size:12px;">Valid school payload prepared</td>
+          <td style="min-width:160px; font-size:12px;">MOE Code: 'SCH-DBL-01', Name: 'Double Click Test School'</td>
+          <td style="min-width:260px; font-size:12px;">1. Rapidly click [Create school] 3 times in 200ms<br>2. Monitor network panel mutation requests<br>3. Check database record count</td>
+          <td style="min-width:260px; font-size:12px;">1. Button disables on first click (loading state)<br>2. Only 1 POST mutation dispatched<br>3. Exactly 1 record created in database (no 409 conflict on duplicate)</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Mục C; EF01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-LFC-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-LFC</td>
+          <td style="font-weight:600; min-width:240px;">Verify network error or backend 500 displays graceful error alert without wiping out filled form inputs (Rule 02 Mục C)</td>
+          <td>Form Lifecycle & State</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Negative</td>
+          <td style="min-width:180px; font-size:12px;">Mock network error 500 on creation endpoint</td>
+          <td style="min-width:160px; font-size:12px;">Valid school inputs</td>
+          <td style="min-width:260px; font-size:12px;">1. Mock backend API 500 error<br>2. Click [Create school]<br>3. Inspect UI feedback and form fields</td>
+          <td style="min-width:260px; font-size:12px;">1. Error alert displayed notifying user of failure<br>2. Form inputs remain intact so user does not lose entered data<br>3. User can retry submission</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Mục C; FS-03 EF01</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NFR-001</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NFR</td>
+          <td style="font-weight:600; min-width:240px;">Verify Invariant 7 UI Health: Zero uncaught JavaScript errors in browser console during full page lifecycle</td>
+          <td>UI Health & Invariant 7</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>NonFunctional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">N/A</td>
+          <td style="min-width:260px; font-size:12px;">1. Attach Playwright console listener<br>2. Interact with all form controls, trigger errors, and submit<br>3. Verify captured error count</td>
+          <td style="min-width:260px; font-size:12px;">1. console.error count equals 0<br>2. Zero unhandled promise rejections or React render crashes</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">AGENTS.md Invariant 7; Rule 02 Mục 9</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NFR-002</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NFR</td>
+          <td style="font-weight:600; min-width:240px;">Verify zero horizontal scrollbar (scrollWidth <= clientWidth) at desktop viewports (1280x720, 1920x1080)</td>
+          <td>UI Health & Invariant 7</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>NonFunctional</td>
+          <td style="min-width:180px; font-size:12px;">Viewport set to 1280x720 and 1920x1080</td>
+          <td style="min-width:160px; font-size:12px;">N/A</td>
+          <td style="min-width:260px; font-size:12px;">1. Set viewport to 1280x720 and 1920x1080<br>2. Execute document.documentElement.scrollWidth > window.innerWidth check</td>
+          <td style="min-width:260px; font-size:12px;">1. scrollWidth <= innerWidth<br>2. Zero horizontal layout overflow detected</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">AGENTS.md Invariant 7; Rule 02 Mục 9</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NFR-003</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NFR</td>
+          <td style="font-weight:600; min-width:240px;">Verify anti-i18n leakage: Zero raw translation keys (e.g. 'features.*', 'validation.*', '*.undefined') in rendered DOM</td>
+          <td>UI Health & Invariant 7</td>
+          <td><span class="pill-tag pill-s2">S2</span></td>
+          <td>High</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>NonFunctional</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new in English and Vietnamese</td>
+          <td style="min-width:160px; font-size:12px;">Regex patterns: features\.[a-zA-Z0-9_.]+, school\.[a-zA-Z0-9_.]+</td>
+          <td style="min-width:260px; font-size:12px;">1. Inspect all rendered text nodes on page<br>2. Search for raw translation key patterns</td>
+          <td style="min-width:260px; font-size:12px;">1. Zero raw i18n keys found<br>2. All visible labels and error alerts are human-readable text</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">Rule 02 Lớp 11; UI Spec</td>
+        </tr>
+        <tr data-pillar="TECH_UI">
+          <td class="tc-id">TC-FS03-SCH-NFR-004</td>
+          <td style="font-family:monospace; font-weight:600;">TS-FS03-SCH-NFR</td>
+          <td style="font-weight:600; min-width:240px;">Verify keyboard navigation and tab order through all interactive elements in logical sequence (WCAG 2.1 AA)</td>
+          <td>Accessibility & WCAG</td>
+          <td><span class="pill-tag pill-s3">S3</span></td>
+          <td>Medium</td>
+          <td><span class="pill-tag pill-pass">Passed</span></td>
+          <td>Accessibility</td>
+          <td style="min-width:180px; font-size:12px;">MOE HQ Admin on /school-management/new</td>
+          <td style="min-width:160px; font-size:12px;">Keyboard Tab key sequence</td>
+          <td style="min-width:260px; font-size:12px;">1. Press Tab key sequentially from top of document<br>2. Track focused element: Language select -> Cancel -> MOE school code -> School name -> School type -> School users -> Academic levels -> Create school</td>
+          <td style="min-width:260px; font-size:12px;">1. Focus moves in logical top-to-bottom sequence without skipping controls or getting trapped<br>2. Clear visible focus ring displayed on active element</td>
+          <td style="min-width:140px; font-size:12px; font-family:monospace;">WCAG 2.1 AA; Rule 02 Mục 9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let currentPillar = 'ALL';
+
+    function filterPillar(pillar) {
+      currentPillar = pillar;
+      document.querySelectorAll('.filter-pills .pill').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(pillar));
+      });
+      applyFilters();
+    }
+
+    function filterSearch() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#tcTable tbody tr');
+      rows.forEach(row => {
+        const rowPillar = row.getAttribute('data-pillar');
+        const text = row.innerText.toLowerCase();
+        const matchesPillar = (currentPillar === 'ALL' || rowPillar === currentPillar);
+        const matchesQuery = text.includes(q);
+        row.style.display = (matchesPillar && matchesQuery) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

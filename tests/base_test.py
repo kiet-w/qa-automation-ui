@@ -217,4 +217,20 @@ class BaseTest:
         from core.ui_health_helpers import assert_no_pii_in_url
         assert_no_pii_in_url(self.page)
 
+    def highlight_action(self, locator: Any, value: str = "", action_type: str = "input") -> bool:
+        """Highlights an input or action element and records step action evidence."""
+        from core.evidence_annotator import EvidenceAnnotator
+        return EvidenceAnnotator.highlight_action_input(self.page, locator, value=value, action_type=action_type)
+
+    def highlight_actual_result(self, locator: Optional[Any] = None, text: Optional[str] = None) -> bool:
+        """Highlights the Actual Result element in DOM and tags it for teardown screenshot."""
+        from core.evidence_annotator import EvidenceAnnotator
+        if hasattr(self, "request") and hasattr(self.request, "node"):
+            if locator is not None:
+                setattr(self.request.node, "_qa_actual_locator", locator)
+            if text:
+                setattr(self.request.node, "_qa_actual_text", text)
+        return EvidenceAnnotator.highlight_actual_result(self.page, locator, status="passed", actual_text=text)
+
+
 

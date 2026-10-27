@@ -1,0 +1,18 @@
+{
+  "test_data": {
+    "persona": {
+      "howard": {
+        "name": "TAN WEI MING",
+        "nric_masked": "*****321B",
+        "nric_unmasked": "S7654321B"
+      }
+    },
+    "system_messages": {
+      "MSG-0001": "Enter your",
+      "MSG-0805": "Enter a mobile number in the correct format, like 9123 4567",
+      "MSG-0806": "Enter an email address in the correct format, like name@example.com",
+      "MSG-0807": "Your details have been updated.",
+      "MSG-0808": "We could not update your details. Please try again."
+    }
+  }
+}
