@@ -362,15 +362,82 @@ Dưới đây là bảng đặc tả Test Case 20 cột chuẩn (Google Sheet fo
    - Nhặt selectors từ Phần 3 của file test case (trích từ BSK).
    - Viết các action methods tương tác (`open`, `fill`, `click`, `select`).
    - **TUYỆT ĐỐI KHÔNG CÓ LỆNH ASSERT TRONG PAGE OBJECT** (Invariant 1).
-2. **Tạo Bộ Dữ Liệu Fixtures (`data/fs08/fs08_data.json`)**:
-   - Lưu trữ toàn bộ dữ liệu mock, persona, boundary values độc lập.
+2. **Tạo Bộ Dữ Liệu Fixtures (`data/fs08/fs08_data.json` & `<module>_coverage_cases.json`)**:
+   - Lưu trữ toàn bộ dữ liệu mock, persona, boundary values và danh sách 12 lớp ma trận kiểm thử độc lập.
    - **CẤM TUYỆT ĐỐI HARDCODE DỮ LIỆU TRONG CODE TEST** (Invariant 2).
-3. **Tạo Test Suites Phân Tách (`tests/fs08/<component>/`)**:
-   - `test_atomic_<feature>.py`: Kiểm thử từng ô input, validation 12 lớp, độ dài file < 200 dòng (Invariant 9).
+3. **Tạo Test Suites Phân Tách Dùng Động Cơ Chung (FieldMatrixEngine)**:
+   - `test_atomic_<feature>.py`: **BẮT BUỘC** dùng `@pytest.mark.parametrize` nạp cases từ JSON và ủy quyền cho `FieldMatrixEngine` / `BaseTest.verify_field_case`. File test atomic chỉ giữ độ dài **~20 – 30 dòng** (thay vì viết 70 – 100 dòng lặp lại), đạt Invariant 9.
    - `test_integration_<feature>.py`: Kiểm thử giữa nhiều components, state transitions, HTTP 500 resilience, độ dài file < 250 dòng.
-   - Mọi hàm test phải bắt đầu bằng `test_tc_<scenario_id>_...` và truy vết 1-1 với AC ID (Invariant 3).
+   - Mọi hàm test hoặc tham số hóa phải đảm bảo ID có tiền tố `test_tc_<scenario_id>_...` hoặc `[TC-xxx]` để truy vết 1-1 với AC ID (Invariant 3) và khớp bộ lọc của script xuất báo cáo.
 
-### 7.3 Invariant 11: Tuyệt Đối Cấm AI Tự Tiện Thực Thi Code Test Automation
+---
+
+### 7.3 KIẾN TRÚC TỐI ƯU HÓA TOKEN & 5 CƠ CHẾ KHÓA CỨNG (5 HARD ARCHITECTURAL GATES)
+> [!IMPORTANT]
+> **QUY CHUẨN BẮT BUỘC CHO TOÀN BỘ KỸ SƯ QA & AI CODING**:
+> Để triệt tiêu hoàn toàn tình trạng ngốn token khi sinh test automation (~150k – 250k tokens/ticket), toàn bộ quy trình phải tuân thủ nghiêm ngặt 5 cơ chế khóa cứng sau:
+
+```mermaid
+flowchart LR
+    A["Gate 1: Spec Digest<br>(Chỉ đọc 3-5KB)"] --> B["Gate 2: FieldMatrixEngine<br>(Parametrize JSON)"]
+    B --> C["Gate 3: Tooling Ban<br>(Dùng script sẵn)"]
+    C --> D["Gate 4: Lean Baseline<br>(AGENTS.md ~3KB)"]
+    D --> E["Gate 5: Scope Slicing<br>(Tách phiên chat)"]
+    style A fill:#e3f2fd,stroke:#1565c0
+    style B fill:#e8f5e9,stroke:#2e7d32
+    style C fill:#fff3e0,stroke:#e65100
+    style D fill:#f3e5f5,stroke:#7b1fa2
+    style E fill:#fce4ec,stroke:#c2185b
+```
+
+#### 1. Gate 1: Khóa Cứng Nguồn Đọc Tài Liệu (Spec Ingestion Gate)
+* **Quy tắc**: **NGHIÊM CẤM AI đọc trực tiếp các file summary khổng lồ > 20 KB** (như `REQUIREMENTS_AND_BACKLOG_SUMMARY.md` 84 KB hay `MEETINGS_AND_DECISIONS_SUMMARY.md` 66 KB) gây tốn ~40.000 tokens input mỗi lần.
+* **Chuẩn thực thi**: Bắt buộc AI **chỉ đọc 1 file duy nhất**: `specs/digests/<module>_digest.md` (~3 – 5 KB) chứa cô đọng BR, AC, BSK locators và error catalog của phân hệ phụ trách.
+
+#### 2. Gate 2: Khóa Cứng Quy Chuẩn Code Sinh Ra (Golden Template Gate)
+* **Quy tắc**: **CẤM AI viết 20 – 50 hàm `def test_tc_...` lặp đi lặp lại** cùng cấu trúc `self.step`, `Exceptor`, `deepcopy`.
+* **Chuẩn thực thi**: Bắt buộc nạp danh sách test cases từ JSON qua `@pytest.mark.parametrize` kết hợp với [`core/field_matrix_engine.py`](file:///home/baudui/automation-ui/2_Code_Automation/core/field_matrix_engine.py) hoặc `self.verify_field_case()`.
+* **Golden Example Chuẩn Mẫu (File `test_atomic_mobile.py` chỉ đúng 23 dòng)**:
+```python
+"""UAT-007 Mobile Number validation matrix: TC-UAT007-10..29, R8-AC12, MSG-0001/0805."""
+import json
+from pathlib import Path
+import pytest
+from tests.base_test import BaseTest
+
+CASE_FILE = Path(__file__).resolve().parents[3] / "data/fs08/uat007_coverage_cases.json"
+CASES = [c["id"] for c in json.loads(CASE_FILE.read_text(encoding="utf-8")) if c["field"] == "phoneNumber"]
+
+@pytest.mark.p0
+@pytest.mark.atomic
+class TestAtomicMobile(BaseTest):
+    """Data-driven test suite for UAT-007 Mobile Number validation matrix (20 test cases)."""
+
+    @pytest.mark.parametrize("case_id", CASES, ids=CASES)
+    def test_tc_uat007_mobile_matrix(self, fs08_data, uat007_case_runner, case_id):
+        uat007_case_runner(self, fs08_data, case_id)
+```
+> 💡 *Hiệu quả*: Vẫn sinh ra đủ 20 test nodes độc lập (`[TC-UAT007-10]` đến `[TC-UAT007-29]`), khớp hoàn toàn regex của báo cáo Excel 20 cột, nhưng giảm hơn 80% output tokens khi AI sinh code.
+
+#### 3. Gate 3: Cấm Tuyệt Đối Viết Script Sinh Báo Cáo Thừa (Tooling Ban)
+* **Quy tắc**: **CẤM TUYỆT ĐỐI AI viết thêm bất kỳ script OpenPyXL nào (`generate_*_xlsx.py`)** để tạo file Excel 20 cột (tránh lãng phí ~8.000 tokens code script).
+* **Chuẩn thực thi**: Sử dụng 100% công cụ dùng chung có sẵn trong repository:
+```bash
+python3 2_Code_Automation/tools/generate_20col_xlsx.py <path_to_spec.md> -o <path_to_output.xlsx>
+```
+
+#### 4. Gate 4: Hạ Tải Vĩnh Viễn Ngữ Cảnh Nền (Lean System Baseline)
+* File hiến pháp [`AGENTS.md`](file:///home/baudui/automation-ui/AGENTS.md) được duy trì ở kích thước tinh gọn (~3.5 KB) chứa 12 Golden Invariants và Intent Router. Mọi chi tiết hướng dẫn mở rộng nằm tại `.agent/rules/` để chỉ nạp on-demand (lazy-load), tiết kiệm ~7.500 tokens ở tất cả các lượt tương tác.
+
+#### 5. Gate 5: Kỷ Luật Phân Tách Phiên Làm Việc (Session Scope Slicing)
+* **Quy trình chuẩn**:
+  - *Phiên 1 (Thiết kế Test Case)*: Đọc Spec Digest $\rightarrow$ Soạn thảo `TC_*.md` và file JSON cases $\rightarrow$ Chạy lệnh sinh Excel.
+  - *Ngắt phiên*: Sử dụng lệnh `/compact` hoặc mở phiên chat mới.
+  - *Phiên 2 (AI Coding)*: Chỉ nạp file `TC_*.md` / JSON cases vào phiên mới để AI sinh đúng các file test 20 dòng dựa trên `FieldMatrixEngine`. Cửa sổ ngữ cảnh luôn duy trì ở mức tối ưu (< 25.000 tokens).
+
+---
+
+### 7.4 Invariant 11: Tuyệt Đối Cấm AI Tự Tiện Thực Thi Code Test Automation
 * **Nguyên tắc**: AI **KHÔNG ĐƯỢC PHÉP TỰ Ý CHẠY TEST** (không chạy lệnh `pytest`, `python run_tests.py`, script thực thi...).
 * **Phân quyền**: Việc thực thi test do **USER TOÀN QUYỀN TỰ THỰC THI**. AI chỉ phân tích tài liệu và viết mã nguồn Python chuẩn mực.
 * **Bàn giao chuẩn hóa**: Sau khi viết code xong, AI bàn giao mã nguồn và cung cấp sẵn cú pháp câu lệnh để User tự chạy từ Terminal.
@@ -405,3 +472,7 @@ cd /home/baudui/Projects/automation-ui
 9. **Đặc Tả Luồng Tích Hợp UAT-005**: [`specs/component_specs/fs08/integration/singpass_child_authorization_flow.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/integration/singpass_child_authorization_flow.md)
 10. **Đặc Tả Danh Mục Mã Lỗi FS08**: [`specs/component_specs/fs08/README.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/README.md)
 11. **Test Case Single Source of Truth**: [`testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md`](file:///home/baudui/automation-ui/testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md)
+12. **Động Cơ Kiểm Thử Ma Trận Dùng Chung**: [`core/field_matrix_engine.py`](file:///home/baudui/automation-ui/2_Code_Automation/core/field_matrix_engine.py)
+13. **Lớp Kiểm Thử Cơ Sở BaseTest**: [`tests/base_test.py`](file:///home/baudui/automation-ui/2_Code_Automation/tests/base_test.py) (`verify_field_case` helper)
+14. **Script Xuất Báo Cáo Excel 20 Cột Chuẩn**: [`tools/generate_20col_xlsx.py`](file:///home/baudui/automation-ui/2_Code_Automation/tools/generate_20col_xlsx.py)
+15. **Bộ Test Chuẩn Mẫu Golden Example**: [`tests/fs08/fs08-uat007-contact-update/test_atomic_mobile.py`](file:///home/baudui/automation-ui/2_Code_Automation/tests/fs08/fs08-uat007-contact-update/test_atomic_mobile.py)
