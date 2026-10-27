@@ -1,1 +1,9 @@
-../requirements.txt
+pytest>=8.0.0
+pytest-playwright>=0.5.0
+pytest-html>=4.1.0
+playwright-stealth>=2.0.0
+pytest-xdist>=3.5.0
+pytest-json-report>=1.5.0
+Jinja2>=3.1.0
+Pillow>=10.0.0
+axe-core-python>=0.1.0

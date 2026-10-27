@@ -6,67 +6,58 @@ The architecture is designed for high reliability, zero flakiness, minimal boile
 
 ```text
 automation-ui/
-├── 1_Nghiep_Vu_va_Specs/       # 🗂️ Navigation view: copy, specs, testcases, test_specs, uat
-├── 2_Code_Automation/           # 🗂️ Navigation view: core, pages, components, data, tests, tools, runners
-├── 3_Bao_Cao_va_Ket_Qua/        # 🗂️ Navigation view: reporting, reports, docs, archive
-├── .agent/              # 📜 Intent router & modular rules
-│   ├── README.md                         # Precedence, path contract & maintenance checklist
+├── 1_Nghiep_Vu_va_Specs/       # 📋 Nhóm 1: Nghiệp vụ, FS Specs, Test Cases & UAT
+│   ├── copy/                   # ⛔ [READ-ONLY] Company codebase - Nghiêm cấm chỉnh sửa
+│   ├── specs/                  # Đặc tả hệ thống (component_specs, ui_bsk, md, validation_rules)
+│   ├── testcases/              # Kho Test Cases Single Source of Truth (TC_*.md, TC_*.xlsx)
+│   ├── test_specs/             # Lean Markdown Test Specs (4-tier architecture)
+│   └── uat/                    # Kịch bản UAT phân rã theo phân hệ (r01, r02, r08, master)
+├── 2_Code_Automation/          # ⚙️ Nhóm 2: Mã nguồn kiểm thử tự động (Playwright + Pytest)
+│   ├── components/             # Reusable UI widgets
+│   ├── core/                   # Evidence annotator, SketchVLM, custom hooks
+│   ├── data/                   # Parameterized datasets & fixtures JSON
+│   ├── pages/                  # Modular Page Objects Lego (< 200 dòng, Zero Assertions)
+│   ├── tests/                  # Pytest test suites (test_atomic_*.py, test_integration_*.py)
+│   ├── tools/                  # Recon BSK, break_it, environment scripts
+│   ├── conftest.py             # Fixtures & Pytest hooks
+│   ├── pytest.ini              # Pytest configuration
+│   ├── requirements.txt        # Python dependencies
+│   ├── run_tests.py            # Test execution orchestrator
+│   └── md_runner.py            # Markdown test runner
+├── 3_Bao_Cao_va_Ket_Qua/       # 📊 Nhóm 3: Báo cáo, Kết quả thực thi & Tài liệu kỹ thuật
+│   ├── archive/                # Historical deliverables
+│   ├── docs/                   # Framework docs, diagrams, defects
+│   ├── generate_enterprise_report.py
+│   ├── generate_report.py
+│   ├── reporting/              # Offline ExtentReports generator
+│   └── reports/                # Báo cáo kết quả UAT & technical test reports
+├── .agent/                     # 📜 Intent router & modular rules
+│   ├── README.md               # Precedence, path contract & maintenance checklist
 │   └── rules/
 │       ├── 01-two-stage-workflow.md         # Design TCs -> AI Coding & 5 Pillars
 │       ├── 02-field-test-matrix.md          # Ma trận 12 lớp & 8 nhóm controls
 │       ├── 03-failure-triage-adversarial.md # 9-Tier Failure & disciplined break-it
 │       └── 04-automation-coding-standards.md# POM, evidence & spec lookup
-├── copy/                # ⛔ [READ-ONLY] Company codebase - STRICTLY PROHIBITED FROM MODIFICATION
-├── specs/               # 📋 Single Source of Truth for Agile FS, Business Rules & Acceptance Criteria
-│   ├── component_specs/ # 🧩 ĐẶC TẢ THÀNH PHẦN: Validation Rules (atomic/), Functional Flow (integration/) & Error Catalog
-│   ├── ui_bsk/          # 🔍 Live DOM/BSK inventory cho Admin Portal :5173 & Parent Portal :5174
-│   └── md/              # 📄 Agile FS documents, BRs, ACs, Decisions log & meeting notes
-├── testcases/           # 🎯 Test Case Repository (Single Source of Truth cho AI Coding & QA)
-│   └── <fs_module>/<fs_module>-<component>/ (TC_*.md & TC_*.xlsx 20 cột kèm Steps Test)
-├── test_specs/          # 📝 Lean Markdown Test Specs (4-Tier Architecture: atomic, integration, uat, break_it)
-├── uat/                 # 🎯 UAT Framework & Kịch Bản Phân Rã Theo Phân Hệ (R-Segregated)
-│   ├── r01/             # UAT cho R1 (Lifecycle & CPF Settlement - Josh)
-│   ├── r02/             # UAT cho R2 (Top-Up Management - Josh)
-│   ├── r03/             # UAT cho R3 (School Admin & Fees - Kent & Chan)
-│   ├── r08/             # UAT cho R8 (Parent Portal & Online FAS - Howard)
-│   ├── r09/             # UAT cho R9 (Payment & Outstanding Fees - Gavin)
-│   ├── r10/             # UAT cho R10 (Family FAS Portal)
-│   └── master/          # Master UAT Plan & Full Backlog Workbook (uat-plan.md, uat-workbook.xlsx)
-├── pages/               # 📄 Modular Page Objects (< 250 lines Orchestrators + locators.py + components/)
-│   └── <fs_module>/
-│       ├── locators.py                 # Centralized CSS / XPath selectors (< 100 lines)
-│       ├── <page_name>_page.py         # Main Page Orchestrator & delegator (< 250 lines)
-│       └── components/                 # Sub-components / Steps (< 150 lines/file)
-├── components/          # 🧩 Reusable UI widgets shared across pages
-├── data/                # 💾 Parameterized test inputs & mock datasets (JSON, fixtures - NO HARDCODING)
-├── tests/               # 🧪 Test suites & functional verifications (Pytest, per-field sliced < 200 lines)
-│   └── <fs_module>/<component>/
-│       ├── test_atomic_<field>.py      # Atomic field tests (< 200 lines, DDT via JSON)
-│       └── test_integration_<flow>.py  # Multi-component & E2E flows (< 250 lines)
-├── reporting/           # 📊 Offline ExtentReports & Minimalist 1-page HTML report generator
-├── reports/             # 📂 Kết Quả Kiểm Thử & Báo Cáo Offline Theo Phân Hệ
-│   ├── uat/             # Báo cáo UAT cấp doanh nghiệp theo module (r01/, r02/, r08/...)
-│   │   └── r08/         # Master Dashboard & Single-Tab Master Excel Evidence của R8
-│   └── <fs_module>/     # Báo cáo kỹ thuật chi tiết theo từng ticket (HTML, JSON, Screenshots)
-├── tools/               # 🛠️ Reconnaissance (BSK), resilience ("break_it"), env & specs sync
-└── run_tests.py         # 🚀 Test execution orchestrator
+├── AGENTS.md                   # 📜 Master Constitution & Architecture Guidelines
+├── README.md                   # 📖 Main Project Documentation
+└── .gitignore                  # 🔒 Git ignore rules
 ```
 
-### 1.1 Three-Group Navigation & Canonical Path Contract
+### 1.1 Kiến Trúc 3 Nhóm Vật Lý Thống Nhất (Unified 3-Group Architecture)
 
 > [!IMPORTANT]
-> Ba thư mục đánh số là **lớp điều hướng cho File Manager**, không phải bản sao và không phải Python package. Nội dung bên trong là symlink tới các canonical paths ở repository root.
+> Cấu trúc repository được phân bổ trực tiếp và vật lý thành **3 nhóm thư mục lớn**, đảm bảo tính thẩm mỹ, trực quan và đồng bộ 100% giữa giao diện GitHub và File Manager trên máy cục bộ (Nautilus).
 
-| Navigation group | Canonical ownership | Quy tắc |
+| Thư mục nhóm | Phạm vi sở hữu vật lý | Mục đích & Quy tắc |
 | :--- | :--- | :--- |
-| `1_Nghiep_Vu_va_Specs/` | `copy/`, `specs/`, `testcases/`, `test_specs/`, `uat/` | Nghiệp vụ, thiết kế test và UAT. `copy/` vẫn read-only tuyệt đối. |
-| `2_Code_Automation/` | `core/`, `pages/`, `components/`, `data/`, `tests/`, `tools/` và runners | Code automation và công cụ. Imports và lệnh luôn dùng canonical paths. |
-| `3_Bao_Cao_va_Ket_Qua/` | `reporting/`, `reports/`, `docs/`, `archive/` | Report engine, runtime artifacts và tài liệu. |
+| `1_Nghiep_Vu_va_Specs/` | `copy/`, `specs/`, `testcases/`, `test_specs/`, `uat/` | Nghiệp vụ, đặc tả phân hệ, thiết kế test case và UAT. `copy/` vẫn read-only tuyệt đối. |
+| `2_Code_Automation/` | `components/`, `core/`, `data/`, `pages/`, `tests/`, `tools/`, runners & configs | Toàn bộ mã nguồn automation, POMs, fixtures, pytest config và công cụ thực thi. |
+| `3_Bao_Cao_va_Ket_Qua/` | `archive/`, `docs/`, `reporting/`, `reports/`, report generators | Toàn bộ báo cáo HTML/Excel, evidence runs, defect logs và tài liệu kỹ thuật. |
 
-- **Không xóa canonical root directory vì thấy nó “trùng” trong folder nhóm**: xóa root target sẽ làm toàn bộ shortcut bị hỏng và mất dữ liệu thật.
-- File `.hidden` chỉ ẩn canonical items trong Nautilus để giao diện gọn; nó không thay đổi ownership hay đường dẫn runtime.
-- Khi đọc/ghi bằng code, shell, pytest hoặc tài liệu kỹ thuật, luôn dùng `specs/...`, `tests/...`, `reports/...`; không dùng `1_Nghiep_Vu_va_Specs/specs/...` hoặc các navigation paths.
-- Ba navigation groups không được đưa vào `PYTHONPATH`, không được dùng làm import namespace và không chứa dữ liệu độc lập ngoài README/shortcut.
+- **Thư mục gốc (Root)**: Chỉ hiển thị đúng 3 thư mục nhóm lớn cùng `AGENTS.md`, `README.md` và `.gitignore`. Không để bất kỳ file hay thư mục rời rạc nào trôi nổi tại root.
+- **Thực thi lệnh kiểm thử**: Có thể chạy từ thư mục gốc hoặc chuyển vào `2_Code_Automation/`:
+  - Từ root: `.venv/bin/pytest 2_Code_Automation/tests/fs08/... -v`
+  - Từ nhóm 2: `cd 2_Code_Automation && ../.venv/bin/pytest tests/fs08/... -v`
 
 ---
 

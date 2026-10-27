@@ -11,17 +11,17 @@ Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **
 
 ---
 
-## 🗂️ Điều hướng theo 3 nhóm chính
+## 🗂️ Cấu trúc repository theo 3 nhóm chính
 
-Repository giữ các đường dẫn kỹ thuật ở root để không làm gãy Python imports, pytest discovery và các script hiện có. Để duyệt dự án dễ hơn trong file manager, toàn bộ tài sản được gom thành ba thư mục điều hướng; nội dung bên trong là shortcut tới source thật, không phải bản sao:
+Toàn bộ tài sản của dự án được phân bổ vật lý thành ba nhóm thư mục chính, đảm bảo sự trực quan, ngăn nắp trên cả GitHub và File Manager máy cục bộ:
 
 | Nhóm | Phạm vi | Thành phần chính |
 | :--- | :--- | :--- |
-| [`1_Nghiep_Vu_va_Specs/`](1_Nghiep_Vu_va_Specs/) | Nghiệp vụ và thiết kế kiểm thử | `copy`, `specs`, `testcases`, `test_specs`, `uat` |
-| [`2_Code_Automation/`](2_Code_Automation/) | Framework và automation code | `core`, `pages`, `components`, `data`, `tests`, `tools`, các runner |
-| [`3_Bao_Cao_va_Ket_Qua/`](3_Bao_Cao_va_Ket_Qua/) | Báo cáo, tài liệu và lịch sử | `reporting`, `reports`, `docs`, `archive`, report CLIs |
+| [`1_Nghiep_Vu_va_Specs/`](1_Nghiep_Vu_va_Specs/) | Nghiệp vụ, FS Specs và UAT | `copy` (read-only), `specs`, `testcases`, `test_specs`, `uat` |
+| [`2_Code_Automation/`](2_Code_Automation/) | Mã nguồn tự động hóa Playwright | `core`, `pages`, `components`, `data`, `tests`, `tools`, `conftest.py`, `pytest.ini`, `run_tests.py` |
+| [`3_Bao_Cao_va_Ket_Qua/`](3_Bao_Cao_va_Ket_Qua/) | Báo cáo, kết quả và tài liệu kỹ thuật | `reporting`, `reports`, `docs`, `archive`, các generator CLIs |
 
-Không chỉnh sửa `copy/`. Việc mở hoặc sửa file qua shortcut sẽ tác động trực tiếp lên file thật ở vị trí chuẩn.
+Tại thư mục gốc (Root), chỉ hiển thị đúng 3 thư mục nhóm lớn cùng `AGENTS.md`, `README.md` và `.gitignore`. Không chỉnh sửa `copy/`.
 
 ---
 
