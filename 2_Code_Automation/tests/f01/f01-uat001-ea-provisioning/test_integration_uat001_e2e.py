@@ -23,7 +23,14 @@ import pytest
 
 from tests.base_test import BaseTest
 from pages.f01.education_accounts_page import EducationAccountsPage
-from .e2e_phase2_helpers import (
+
+import sys
+from pathlib import Path
+_THIS_DIR = str(Path(__file__).parent)
+if _THIS_DIR not in sys.path:
+    sys.path.insert(0, _THIS_DIR)
+
+from e2e_phase2_helpers import (
     verify_eligible_student_active,
     verify_missing_parent_active,
     verify_over_age_deactive,
