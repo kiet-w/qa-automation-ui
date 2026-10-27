@@ -1,4 +1,4 @@
-# HƯỚNG DẪN THIẾT KẾ TEST CASE UAT PHÂN HỆ R08 DỰA TRÊN BỘ NGŨ NGUYÊN LIỆU (5 PILLARS) & QUY CHUẨN AGENTS.MD
+# HƯỚNG DẪN THIẾT KẾ TEST CASE UAT PHÂN HỆ R08 DỰA TRÊN BỘ NGŨ NGUYÊN LIỆU (5 PILLARS), KHO UI/BSK & QUY CHUẨN AGENTS.MD
 
 > **Tài liệu**: Quy chuẩn thiết kế Test Case UAT cấp Doanh Nghiệp (Enterprise UAT Test Design Guide)  
 > **Phân hệ tham chiếu mẫu**: `R08` / `FS08` — Cổng Phụ Huynh, Hồ Sơ & Nộp Đơn Trợ Cấp Online (Parent Portal & Online FAS)  
@@ -60,7 +60,8 @@ Toàn bộ phân hệ R08 bao gồm các kịch bản nghiệm thu người dùn
 
                                                 │
                                                 ▼
-                         [+ BSK Live DOM Inventory Reconnaissance]
+                         [+ BSK Live DOM Inventory Reconnaissance (Mục 3)]
+                         • Kho khảo sát sống: specs/ui_bsk/ (localhost-5174 & localhost-5173)
                          • Quét DOM sống: python3 tools/recon_bsk.py --url <URL>
                          • Nhặt chính xác: CSS Selectors, tag types, ARIA roles, input names.
                                                 │
@@ -131,7 +132,132 @@ stateDiagram-v2
 
 ---
 
-## 3. Quy Chuẩn Kết Quả 5 Tiêu Chí: PASS Ra Cái Gì? FAIL Ra Cái Gì?
+## 3. UI/BSK Live DOM Reconnaissance & Locator Inventory (Cầu Nối Trực Tiếp Từ Giao Diện Thật Đến Test Case & Code)
+
+> [!IMPORTANT]
+> **Quy định bất biến (Invariant 6 - ZERO ASSUMPTIONS - BSK Live DOM First)**:
+> Tuyệt đối không được tự suy diễn CSS selector, ARIA role hay ID của phần tử trên giao diện.
+> - **CẤM TUYỆT ĐỐI** mở mã nguồn sản phẩm trong `copy/` để nhặt class/id (Vi phạm Invariant 0: Strict Read-Only Boundary).
+> - **BẮT BUỘC** tra cứu kho tài liệu DOM đã được khảo sát trực tiếp tại [`specs/ui_bsk/`](file:///home/baudui/automation-ui/specs/ui_bsk/). Nếu màn hình có sự thay đổi hoặc chưa có, phải chạy công cụ trinh sát: `python3 tools/recon_bsk.py --url <URL>`.
+
+### 3.1 Khái Niệm & Vai Trò Của UI/BSK Trong Quy Trình Kiểm Thử
+* **UI/BSK (Browser Skill Kit / Live DOM Reconnaissance)**: Là kho lưu trữ bản đồ giao diện thực tế của toàn bộ hệ thống EduFAMS được trích xuất bằng việc mở trình duyệt Chromium thật, phân tích cây DOM sống, ghi nhận thuộc tính ARIA, các sự kiện chuyển hướng và các cuộc gọi API ngầm (network requests).
+* **Vị trí của UI/BSK trong quy trình 2 giai đoạn**:
+  ```text
+  [5 Pillars Nghiệp Vụ]  +  [Kho UI/BSK Live DOM]
+             │                         │
+             └────────────┬────────────┘
+                          ▼
+            [Test Case Spec TC_*.md] (Phần 3: BSK Locators)
+                          │
+                          ▼
+             [Page Object pages/*.py] (Zero Assertions - Invariant 1)
+  ```
+
+### 3.2 Cấu Trúc Lưu Trữ Kho UI/BSK (`specs/ui_bsk/`)
+Kho tài liệu BSK được phân tách thành 2 cổng dịch vụ chính:
+
+```text
+specs/ui_bsk/
+├── README.md                                  # Bản đồ tổng quan 26 màn hình & Topology mạng
+├── localhost-5173/                            # 🏢 Cổng Quản Trị Hệ Thống (Admin Portal)
+│   ├── 01_admin_login_aad.md                  # Đăng nhập Entra ID SSO (:5288)
+│   ├── 02_school_management.md                # Quản lý danh mục trường học & cán bộ
+│   ├── 03_student_enrolment_and_transfers.md  # Tuyển sinh, chuyển trường, chuyển lớp
+│   ├── 04_fee_catalogue_and_publishing.md     # Danh mục biểu phí, công bố công nợ
+│   └── 05_fas_applications_and_assessment.md  # Thẩm định đơn FAS & cấp phát trợ cấp
+└── localhost-5174/                            # 🏛️ Cổng Phụ Huynh / Công Dân (Citizen Portal)
+    ├── 01_parent_login_and_mockpass.md        # Màn hình Login, MockPass (:5156), Callback (UAT-005)
+    ├── 02_eservice_dashboard_home.md          # Trang chủ, Thẻ con cái, Số dư EA (UAT-006)
+    ├── 03_parent_profile_and_contact.md       # Hồ sơ phụ huynh, Modal cập nhật (UAT-007, UAT-Profile)
+    ├── 04_transaction_history.md              # Sổ cái biến động số dư, Bộ lọc thời gian
+    ├── 05_billing_and_payments.md             # Bảng kê công nợ học phí chưa thanh toán
+    ├── 06_payment_checkout_simulator.md       # Giả lập thanh toán ngân hàng Sandbox (:5176)
+    └── fas-application/                       # Bộ form nộp đơn FAS trực tuyến 4 bước (UAT-028)
+```
+
+---
+
+### 3.3 Bảng Tra Cứu Locators Sống Đã Xác Thực (BSK Verified) Cho UAT-005
+
+Dưới đây là bảng trích xuất phần tử sống từ [`specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md`](file:///home/baudui/automation-ui/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md) và [`specs/ui_bsk/localhost-5174/02_eservice_dashboard_home.md`](file:///home/baudui/automation-ui/specs/ui_bsk/localhost-5174/02_eservice_dashboard_home.md) được dùng trực tiếp cho kịch bản `UAT-005`:
+
+#### 1. Màn Hình Đăng Nhập Phụ Huynh (`/parent/login`)
+| Tên Phần Tử (Element) | Thẻ HTML & ARIA Role | Selector Playwright Chuẩn BSK | Trạng Thái DOM | Mục Đích Sử Dụng |
+| :--- | :--- | :--- | :--- | :--- |
+| **Login Container** | `<section aria-labelledby>` | `section[aria-labelledby="parent-login-title"]` | Hiển thị | Card bao bọc form đăng nhập |
+| **Heading Title** | `<span> / <h2>` | `#parent-login-title` | Hiển thị | Text: `"Parent portal login"` |
+| **Sign in CTA** | `<button>` | `button:has-text("Sign in with Singpass")` | 🟢 Enabled | Bấm kích hoạt OIDC sang MockPass |
+
+#### 2. Màn Hình Giả Lập Singpass MockPass (`http://localhost:5156/singpass/login`)
+| Tên Phần Tử (Element) | Thẻ HTML & ARIA Role | Selector Playwright Chuẩn BSK | Giá Trị / Thao Tác | Mục Đích Sử Dụng |
+| :--- | :--- | :--- | :--- | :--- |
+| **Persona Select** | `<select id="persona-select">` | `#persona-select` | `select_option(...)` | Chọn nhanh persona (`LIM WEI MINH`, `PHAM VAN DUC`) |
+| **NRIC Input** | `<input type="text">` | `#nric, input[name="nric"]` | Giá trị NRIC | Tự điền theo Persona hoặc gõ NRIC thủ công |
+| **Submit MockPass** | `<button type="submit">` | `button:has-text("Log in with Singpass")` | Click | Gửi mã xác thực sang backend callback |
+
+#### 3. Màn Hình Callback Phụ Huynh (`/parent/callback`)
+| Tên Phần Tử (Element) | Thẻ HTML & ARIA Role | Selector Playwright Chuẩn BSK | Hành Vi Kích Hoạt | Mục Đích Sử Dụng |
+| :--- | :--- | :--- | :--- | :--- |
+| **Callback Title** | `<h1>` | `#parent-callback-title` | Pending login | Text: `"Completing sign-in"` |
+| **Callback Spinner** | `<svg class="spinner">` | `section[aria-labelledby="parent-callback-title"] svg` | Đang tải | Báo hiệu đang trao đổi mã token |
+| **Error Alert** | `[role="alert"]` | `[role="alert"]` | Xuất hiện khi lỗi | Báo lỗi đăng nhập nếu code hết hạn (`MSG-0802`) |
+
+#### 4. Trang Chủ Dịch Vụ Công Dân (`http://localhost:5174/`)
+| Tên Phần Tử (Element) | Thẻ HTML & ARIA Role | Selector Playwright Chuẩn BSK | Thuộc Tính Cần Kiểm Tra | Mục Đích Kiểm Thử UAT-005 |
+| :--- | :--- | :--- | :--- | :--- |
+| **Portal Header** | `<h1> / <h2>` | `h1:has-text("EduSave E-Service Portal")` | Visible | Xác nhận đăng nhập thành công vào Home |
+| **Child Cards List** | `<article>` | `article.child-card, div[data-testid^="child-card-"]` | Count = 3 | Đếm số lượng con của phụ huynh |
+| **Student Name** | `<h3> / .student-name` | `article.child-card h3` | Text con cụ thể | Xác nhận đúng tên con (`Tan Wei Ming`, `Lucas Lim`...) |
+| **Masked NRIC** | `<span>` | `article.child-card span:has-text("*****")` | Chứa `*****` | Xác nhận NRIC con được che giấu an toàn |
+| **Log out Button** | `<button>` | `header button:has-text("Log out")` | Click | Kích hoạt teardown session và dọn storage |
+| **Error Boundary Panel**| `[role="region"]` | `div:has-text("Unable to load data")` | Khi bị tấn công IDOR | Container bảo vệ an toàn khi gõ sai URL con khác |
+
+---
+
+### 3.4 Quy Trình Chuyển Hóa UI/BSK Sang Mã Nguồn Automation (Từ Spec Đến Code)
+
+Khi AI Coding nhận lệnh tạo mã nguồn automation (Giai đoạn 2), toàn bộ selectors từ kho BSK được chuyển hóa trực tiếp vào Page Object theo nguyên tắc **Lego Modular POM** ([Invariant 9](file:///home/baudui/automation-ui/AGENTS.md#2-the-12-golden-invariants-master-constitution)):
+
+```python
+# File: pages/fs08/singpass_login_page.py (< 200 dòng, Zero Assertions - Invariant 1)
+from pages.base_page import BasePage
+
+class SingpassLoginPage(BasePage):
+    # 1. Kế thừa trực tiếp selectors từ kho specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md
+    LOGIN_HEADING = "#parent-login-title"
+    SIGN_IN_SINGPASS_BTN = "button:has-text('Sign in with Singpass')"
+    
+    # MockPass selectors (:5156)
+    PERSONA_SELECT = "#persona-select"
+    NRIC_INPUT = "#nric, input[name='nric']"
+    MOCKPASS_SUBMIT_BTN = "button:has-text('Log in with Singpass')"
+
+    # 2. Các Action Methods thuần túy (TUYỆT ĐỐI KHÔNG CÓ LỆNH ASSERT)
+    def navigate_to_login(self):
+        self.page.goto("/parent/login")
+        self.page.wait_for_selector(self.LOGIN_HEADING)
+
+    def click_sign_in_singpass(self):
+        self.page.click(self.SIGN_IN_SINGPASS_BTN)
+        self.page.wait_for_url("**/singpass/login**")
+
+    def login_with_persona(self, persona_label: str):
+        self.page.select_option(self.PERSONA_SELECT, label=persona_label)
+        self.page.click(self.MOCKPASS_SUBMIT_BTN)
+```
+
+> [!TIP]
+> **Quy trình xử lý khi UI thay đổi (Stale Recon Workflow)**:
+> Nếu Dev cập nhật giao diện khiến selector bị đổi:
+> 1. Không tự đoán mò sửa code.
+> 2. Chạy lệnh cập nhật kho recon:  
+>    `python3 tools/recon_bsk.py --url http://localhost:5174/parent/login --output specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md`
+> 3. Cập nhật lại selector trong Page Object từ file BSK mới.
+
+---
+
+## 4. Quy Chuẩn Kết Quả 5 Tiêu Chí: PASS Ra Cái Gì? FAIL Ra Cái Gì?
 
 Để tránh việc viết Expected Result chung chung ("Hệ thống hoạt động tốt"), dưới đây là bảng phân định chi tiết kết quả đầu ra khi kiểm thử **ĐẠT (PASS)** và **KHÔNG ĐẠT (FAIL)** cho từng tiêu chí trong Bộ Ngũ Nguyên Liệu:
 
@@ -155,7 +281,7 @@ flowchart TD
     PASS_FAIL -->|FAIL| RES_FAIL["❌ KẾT QUẢ FAIL (DEFECT)<br>• Viền đỏ border-red-500<br>• aria-invalid='true'<br>• Mã lỗi chuẩn MSG-xxxx<br>• Modal giữ nguyên không đóng<br>• Không mất dữ liệu đã nhập<br>• Phân loại lỗi theo 9 Tầng Triage"]
 ```
 
-### 3.1 Bảng So Sánh Chi Tiết Pass / Fail Theo Từng Tiêu Chí
+### 4.1 Bảng So Sánh Chi Tiết Pass / Fail Theo Từng Tiêu Chí
 
 | Tiêu Chí (Pillar) | Khi Kiểm Thử PASS Phải Sinh Ra Cái Gì? | Khi Kiểm Thử FAIL / Vi Phạm Phải Sinh Ra Cái Gì? |
 | :--- | :--- | :--- |
@@ -167,11 +293,11 @@ flowchart TD
 
 ---
 
-## 4. Quy Cách Viết Expected Result & Actual Result Chuẩn Kèm Bằng Chứng Highlight
+## 5. Quy Cách Viết Expected Result & Actual Result Chuẩn Kèm Bằng Chứng Highlight
 
 Theo quy chuẩn tại Invariant 8 và Invariant 10 của [`AGENTS.md`](file:///home/baudui/automation-ui/AGENTS.md), mọi ca kiểm thử khi ghi nhận kết quả phải tuân thủ nghiêm ngặt định dạng định lượng và liên kết bằng chứng hình ảnh.
 
-### 4.1 Cấu Trúc Soạn Thảo Chuẩn
+### 5.1 Cấu Trúc Soạn Thảo Chuẩn
 
 * **Expected Result (Kết Quả Kỳ Vọng)**:
   - Phải mô tả chính xác 3 yếu tố:
@@ -185,7 +311,7 @@ Theo quy chuẩn tại Invariant 8 và Invariant 10 của [`AGENTS.md`](file:///
     - Nếu **PASS**: `As expected. Header renders 'EduSave E-Service Portal', exactly 3 children displayed (Tan Wei Ming, Lucas Lim, Nathan Lim). Session storage verified. 📷 Actual Result (+3 steps)` (Viền xanh lá highlight vùng kết quả).
     - If **FAIL (Defect)**: `Defect DEF-08-01: System threw uncaught TypeError and displayed blank screen instead of MSG-0808. Form data wiped out. 📷 Actual Result (+2 steps)` (Viền đỏ highlight vùng lỗi).
 
-### 4.2 Bảng Triage Phân Loại Lỗi (Failure Triage Matrix 9 Tầng)
+### 5.2 Bảng Triage Phân Loại Lỗi (Failure Triage Matrix 9 Tầng)
 Khi kiểm thử không đạt (Fail), bắt buộc phân loại theo 9 tầng tiêu chuẩn tại [`.agent/rules/03-failure-triage-adversarial.md`](file:///.agent/rules/03-failure-triage-adversarial.md):
 
 | Tầng Lỗi | Loại Khiếm Khuyết | Biểu Hiện Thực Tế Của Lỗi | Hành Động Xử Lý |
@@ -202,7 +328,7 @@ Khi kiểm thử không đạt (Fail), bắt buộc phân loại theo 9 tầng t
 
 ---
 
-## 5. Ma Trận Test Case 20 Cột Chuẩn Mẫu Cho Kịch Bản UAT-005
+## 6. Ma Trận Test Case 20 Cột Chuẩn Mẫu Cho Kịch Bản UAT-005
 
 Dưới đây là bảng đặc tả Test Case 20 cột chuẩn (Google Sheet format kèm cột `Steps Test` và `Test Steps`) được trích xuất từ Single Source of Truth [`testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md`](file:///home/baudui/automation-ui/testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md):
 
@@ -219,21 +345,21 @@ Dưới đây là bảng đặc tả Test Case 20 cột chuẩn (Google Sheet fo
 
 ---
 
-## 6. Hướng Dẫn Thực Hiện Tuân Thủ 100% AGENTS.MD (Quy Trình 2 Giai Đoạn & Invariant 11)
+## 7. Hướng Dẫn Thực Hiện Tuân Thủ 100% AGENTS.MD (Quy Trình 2 Giai Đoạn & Invariant 11)
 
 > [!CAUTION]
 > **CẢNH BÁO BẤT BIẾN TUÂN THỦ DỰ ÁN**:
 > Bất kỳ hành động vi phạm các Invariant dưới đây đều khiến toàn bộ kết quả kiểm thử và mã nguồn bị TỪ CHỐI nghiệm thu.
 
-### 6.1 Giai Đoạn 1: Thiết Kế Test Case (QA / BA)
+### 7.1 Giai Đoạn 1: Thiết Kế Test Case (QA / BA)
 1. **Thu thập 5 Trụ Cột**: Đọc kỹ FSD tại [`specs/md/FS document/`](file:///home/baudui/automation-ui/specs/md/FS%20document/), các quyết định tại `MEETINGS_AND_DECISIONS_SUMMARY.md`, đặc tả thành phần tại [`specs/component_specs/`](file:///home/baudui/automation-ui/specs/component_specs/).
-2. **Recon Live DOM**: Chạy `python3 tools/recon_bsk.py --url <URL>` để lấy selectors sống, lưu kết quả vào `specs/ui_bsk/`. Tuyệt đối không mở source code trong `copy/` (Invariant 0 & Invariant 6).
+2. **Recon Live DOM**: Tra cứu kho [`specs/ui_bsk/`](file:///home/baudui/automation-ui/specs/ui_bsk/) hoặc chạy `python3 tools/recon_bsk.py --url <URL>` để lấy selectors sống. Tuyệt đối không mở source code trong `copy/` (Invariant 0 & Invariant 6).
 3. **Soạn thảo Test Case**: Viết file `TC_<MODULE>_<FEATURE>.md` chứa đủ 5 phần (Phần 1: Tổng quan, Phần 2: Bảng 20 cột, Phần 3: BSK Locators, Phần 4: JSON Fixtures, Phần 5: Traceability).
 4. **Xuất Excel Chuẩn 20 Cột**: Xuất ra file `TC_<MODULE>_<FEATURE>.xlsx` với **ĐÚNG 1 TAB DUY NHẤT (Single-Tab Mandate)**, có cột `Steps Test` và `Test Steps` theo chuẩn Google Sheet.
 
-### 6.2 Giai Đoạn 2: AI Coding Automation (Kế Thừa 100% Từ Test Case)
+### 7.2 Giai Đoạn 2: AI Coding Automation (Kế Thừa 100% Từ Test Case)
 1. **Tạo Page Objects (`pages/fs08/<component>_page.py`)**:
-   - Nhặt selectors từ Phần 3 của file test case.
+   - Nhặt selectors từ Phần 3 của file test case (trích từ BSK).
    - Viết các action methods tương tác (`open`, `fill`, `click`, `select`).
    - **TUYỆT ĐỐI KHÔNG CÓ LỆNH ASSERT TRONG PAGE OBJECT** (Invariant 1).
 2. **Tạo Bộ Dữ Liệu Fixtures (`data/fs08/fs08_data.json`)**:
@@ -244,7 +370,7 @@ Dưới đây là bảng đặc tả Test Case 20 cột chuẩn (Google Sheet fo
    - `test_integration_<feature>.py`: Kiểm thử giữa nhiều components, state transitions, HTTP 500 resilience, độ dài file < 250 dòng.
    - Mọi hàm test phải bắt đầu bằng `test_tc_<scenario_id>_...` và truy vết 1-1 với AC ID (Invariant 3).
 
-### 6.3 Invariant 11: Tuyệt Đối Cấm AI Tự Tiện Thực Thi Code Test Automation
+### 7.3 Invariant 11: Tuyệt Đối Cấm AI Tự Tiện Thực Thi Code Test Automation
 * **Nguyên tắc**: AI **KHÔNG ĐƯỢC PHÉP TỰ Ý CHẠY TEST** (không chạy lệnh `pytest`, `python run_tests.py`, script thực thi...).
 * **Phân quyền**: Việc thực thi test do **USER TOÀN QUYỀN TỰ THỰC THI**. AI chỉ phân tích tài liệu và viết mã nguồn Python chuẩn mực.
 * **Bàn giao chuẩn hóa**: Sau khi viết code xong, AI bàn giao mã nguồn và cung cấp sẵn cú pháp câu lệnh để User tự chạy từ Terminal.
@@ -266,13 +392,16 @@ cd /home/baudui/Projects/automation-ui
 
 ---
 
-## 7. Tổng Kết Các File Cần Tham Chiếu Khi Thực Hiện
+## 8. Tổng Kết Các File Cần Tham Chiếu Khi Thực Hiện
 
 1. **Bộ Nguyên Tắc Tối Cao**: [`AGENTS.md`](file:///home/baudui/automation-ui/AGENTS.md)
 2. **Quy Trình 2 Giai Đoạn**: [`.agent/rules/01-two-stage-workflow.md`](file:///.agent/rules/01-two-stage-workflow.md)
-3. **Ma Trận Kiểm Thử 12 Lớp Ô Nhập**: [`.agent/rules/02-field-test-matrix.md`](file:///.agent/rules/02-field-test-matrix.md)
-4. **Phân Loại Thất Bại & Test Phá**: [`.agent/rules/03-failure-triage-adversarial.md`](file:///.agent/rules/03-failure-triage-adversarial.md)
-5. **Tiêu Chuẩn Viết Code Automation**: [`.agent/rules/04-automation-coding-standards.md`](file:///.agent/rules/04-automation-coding-standards.md)
-6. **Đặc Tả Luồng Tích Hợp UAT-005**: [`specs/component_specs/fs08/integration/singpass_child_authorization_flow.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/integration/singpass_child_authorization_flow.md)
-7. **Đặc Tả Danh Mục Mã Lỗi FS08**: [`specs/component_specs/fs08/README.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/README.md)
-8. **Test Case Single Source of Truth**: [`testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md`](file:///home/baudui/automation-ui/testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md)
+3. **Kho BSK Locators Sống Của Hệ Thống**: [`specs/ui_bsk/README.md`](file:///home/baudui/automation-ui/specs/ui_bsk/README.md)
+4. **BSK Parent Login & MockPass**: [`specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md`](file:///home/baudui/automation-ui/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md)
+5. **BSK E-Service Dashboard Home**: [`specs/ui_bsk/localhost-5174/02_eservice_dashboard_home.md`](file:///home/baudui/automation-ui/specs/ui_bsk/localhost-5174/02_eservice_dashboard_home.md)
+6. **Ma Trận Kiểm Thử 12 Lớp Ô Nhập**: [`.agent/rules/02-field-test-matrix.md`](file:///.agent/rules/02-field-test-matrix.md)
+7. **Phân Loại Thất Bại & Test Phá**: [`.agent/rules/03-failure-triage-adversarial.md`](file:///.agent/rules/03-failure-triage-adversarial.md)
+8. **Tiêu Chuẩn Viết Code Automation**: [`.agent/rules/04-automation-coding-standards.md`](file:///.agent/rules/04-automation-coding-standards.md)
+9. **Đặc Tả Luồng Tích Hợp UAT-005**: [`specs/component_specs/fs08/integration/singpass_child_authorization_flow.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/integration/singpass_child_authorization_flow.md)
+10. **Đặc Tả Danh Mục Mã Lỗi FS08**: [`specs/component_specs/fs08/README.md`](file:///home/baudui/automation-ui/specs/component_specs/fs08/README.md)
+11. **Test Case Single Source of Truth**: [`testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md`](file:///home/baudui/automation-ui/testcases/fs08/fs08-parent-child-auth/TC_FS08_UAT005_Singpass_Child_Auth.md)
