@@ -1,0 +1,97 @@
+{
+  "screen_id": "FS03-ADM-AUTH",
+  "portal": "localhost:5173",
+  "simulator": "localhost:5288",
+  "routes": {
+    "login": "http://localhost:5173/login",
+    "callback": "http://localhost:5173/login/microsoft/callback",
+    "entra_authorize": "http://localhost:5288/microsoft-provider/oauth2/v2.0/authorize"
+  },
+  "sources": {
+    "ui_bsk": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+    "frontend_login": "copy/edufams-frontend-develop/apps/admin-portal/src/features/auth/pages/LoginPage.tsx",
+    "frontend_callback": "copy/edufams-frontend-develop/apps/admin-portal/src/features/auth/pages/MicrosoftCallbackPage.tsx",
+    "frontend_resource": "copy/edufams-frontend-develop/apps/admin-portal/src/features/auth/resource.ts",
+    "backend_handler": "copy/edufams-backend-develop/IAMService/IAMService.Application/Feature/v1/Auth/Admin/MicrosoftLogin/AdminMicrosoftLoginHandler.cs",
+    "backend_constants": "copy/edufams-backend-develop/IAMService/IAMService.Helper/Constant/MessageConstants.cs"
+  },
+  "locators": {
+    "username_input": {
+      "css": "input[autocomplete='username']",
+      "type": "text",
+      "required": true
+    },
+    "password_input": {
+      "css": "input[autocomplete='current-password']",
+      "type": "password",
+      "required": true
+    },
+    "submit_button": {
+      "css": "button[type='submit']:has-text('Sign in')",
+      "type": "submit"
+    },
+    "microsoft_button": {
+      "css": "button:has-text('Sign in with Microsoft')",
+      "type": "button"
+    },
+    "toggle_password_button": {
+      "css": "button[aria-label*='password' i]",
+      "type": "button"
+    },
+    "language_select": {
+      "css": "select[aria-label='Language']",
+      "type": "select"
+    },
+    "alert_error": {
+      "css": "[role='alert']",
+      "tone": "error"
+    },
+    "loading_spinner": {
+      "css": "[role='status']",
+      "component": "Spinner"
+    },
+    "simulator_tile_moehq": {
+      "css": ".account-tile:has-text('admin@IAM.edu.vn'), text='admin@IAM.edu.vn'"
+    },
+    "simulator_tile_school": {
+      "css": ".account-tile:has-text('staff1@IAM.edu.vn'), text='staff1@IAM.edu.vn'"
+    },
+    "simulator_tile_parent": {
+      "css": ".account-tile:has-text('head1@IAM.edu.vn'), text='head1@IAM.edu.vn'"
+    },
+    "simulator_continue": {
+      "css": "button:has-text('Continue')",
+      "type": "button"
+    },
+    "simulator_use_another": {
+      "css": "input[placeholder*='name@example.com']",
+      "type": "text"
+    }
+  },
+  "expected_strings": {
+    "en": {
+      "loginTitle": "Login",
+      "loginDescription": "Enter your account details",
+      "usernameRequired": "Username is required.",
+      "passwordRequired": "Password is required.",
+      "loginFailed": "Unable to sign in",
+      "schoolAssignmentRequired": "School assignment required",
+      "schoolAssignmentDescription": "Your account is active, but it has not been assigned to a school yet. Ask an MOE HQ administrator to assign your school before continuing.",
+      "accessDenied": "Access restricted",
+      "adminPortalAccessDenied": "Access denied. Admin portal requires administrative privileges.",
+      "oauthInvalidState": "The Microsoft authorization state is invalid.",
+      "oauthSessionExpired": "The Microsoft sign-in session has expired. Please try again.",
+      "oauthInvalidResponse": "Microsoft did not return a valid authorization response."
+    },
+    "vi": {
+      "loginTitle": "Đăng nhập",
+      "loginDescription": "Nhập thông tin tài khoản",
+      "usernameRequired": "Tên đăng nhập là bắt buộc.",
+      "passwordRequired": "Mật khẩu là bắt buộc.",
+      "loginFailed": "Không thể đăng nhập",
+      "schoolAssignmentRequired": "Chưa được phân công trường",
+      "accessDenied": "Khu vực bị giới hạn",
+      "adminPortalAccessDenied": "Truy cập bị từ chối. Cổng quản trị yêu cầu quyền quản trị viên."
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "environments": {
+    "base_url": "http://localhost:5173",
+    "directory_url": "http://localhost:5173/school-management",
+    "create_url": "http://localhost:5173/school-management/new",
+    "detail_url_prefix": "http://localhost:5173/school-management/"
+  },
+  "personas": {
+    "moehq": {
+      "user_id": "01A17DDF-FF29-7CE9-8CBA-395DA84F5DA9",
+      "code": "USR-00001",
+      "username": "moehq",
+      "full_name": "System Administrator",
+      "first_name": "System",
+      "last_name": "Admin",
+      "roles": ["MOEHQ"],
+      "school_id": null
+    },
+    "school": {
+      "user_id": "01A17DDF-FF29-7CE9-8CBA-395DA84F5DB0",
+      "code": "USR-00002",
+      "username": "staff1",
+      "full_name": "Thi H Bui",
+      "first_name": "Thi H",
+      "last_name": "Bui",
+      "roles": ["SCHOOL"],
+      "school_id": "SCH-001"
+    }
+  },
+  "expected_headers": [
+    "MOE school code",
+    "School name",
+    "School type",
+    "Active classes",
+    "Active students",
+    "Actions"
+  ],
+  "sample_schools": {
+    "active_with_students": {
+      "id": "SCH-001",
+      "code": "RPS-0201",
+      "name": "Raffles Primary School",
+      "type": "GOVERNMENT",
+      "active_classes": 12,
+      "active_students": 360,
+      "status": "ACTIVE"
+    },
+    "eligible_deactivate": {
+      "id": "SCH-002",
+      "code": "MPS-0101",
+      "name": "Marina Primary School",
+      "type": "GOVERNMENT",
+      "active_classes": 0,
+      "active_students": 0,
+      "status": "ACTIVE"
+    },
+    "inactive_school": {
+      "id": "SCH-003",
+      "code": "TPS-0301",
+      "name": "Tampines Primary School",
+      "type": "INDEPENDENT",
+      "active_classes": 0,
+      "active_students": 0,
+      "status": "INACTIVE"
+    }
+  },
+  "new_school_valid": {
+    "code": "SCH-9901",
+    "name": "Singapore Innovate Academy",
+    "type": "GOVERNMENT",
+    "academic_level": "Primary 1"
+  },
+  "validation_data": {
+    "invalid_short_name": "AB",
+    "valid_100_name": "Academy of Advanced Science and Technology Singapore Comprehensive Campus Excellence Institution 100",
+    "duplicate_code": "RPS-0201",
+    "inline_edit_name": "Raffles Primary School Updated",
+    "inline_edit_type": "GOVERMENT_AIDED"
+  },
+  "search_filter_data": {
+    "exact_code": "RPS-0201",
+    "partial_name": "Primary",
+    "filter_type": "GOVERNMENT"
+  },
+  "error_messages": {
+    "summary_heading": "Please correct the errors below.",
+    "moe_school_code_required": "MOE school code is required.",
+    "school_name_required": "School name is required.",
+    "school_type_required": "Select a school type.",
+    "academic_levels_required": "Select at least one academic level.",
+    "duplicate_code_msg": "School with MOE code 'RPS-0201' already exists.",
+    "name_min_length_msg": "School name must be at least 3 characters.",
+    "cannot_deactivate_students": "Cannot deactivate school with active students"
+  }
+}

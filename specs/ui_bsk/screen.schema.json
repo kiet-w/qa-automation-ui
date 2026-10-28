@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ui_bsk screen contract",
+  "description": "Hợp đồng dữ liệu cho một màn hình. locators lấy từ recon DOM; expected chỉ lấy từ tài liệu nghiệp vụ; app khác tài liệu thì ghi vào discrepancies.",
+  "type": "object",
+  "required": ["screen_id", "route", "locale", "sources", "locators", "expected", "stale_do_not_use", "spec_gaps", "discrepancies"],
+  "properties": {
+    "screen_id": {"type": "string", "pattern": "^[A-Z0-9]+(-[A-Z0-9]+)+$"},
+    "route": {"type": "string", "pattern": "^/"},
+    "locale": {"enum": ["en", "vi"]},
+    "sources": {
+      "type": "object",
+      "required": ["locators", "expected"],
+      "properties": {
+        "locators": {"type": "string", "minLength": 1},
+        "expected": {"type": ["string", "null"]},
+        "rule": {"type": "string"}
+      }
+    },
+    "locators": {
+      "type": "object",
+      "additionalProperties": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/locator"}]}
+    },
+    "expected": {"type": ["object", "null"], "description": "null nếu chưa có nguồn nghiệp vụ. Mỗi nhóm cấp 1 phải có khóa source (kiểm tra bằng script)."},
+    "stale_do_not_use": {
+      "type": "array",
+      "items": {"type": "object", "required": ["value", "why"], "properties": {"value": {"type": "string"}, "why": {"type": "string"}}}
+    },
+    "spec_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "question"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^G[0-9]+$"},
+          "question": {"type": "string"},
+          "affects": {"type": "array", "items": {"type": "string"}},
+          "status": {"type": "string"}
+        }
+      }
+    },
+    "discrepancies": {
+      "type": "array",
+      "description": "Tài liệu nghiệp vụ nói một đằng, app thật hiện một nẻo. Chờ BA quyết định, không tự sửa expected.",
+      "items": {
+        "type": "object",
+        "required": ["id", "spec", "app"],
+        "properties": {
+          "id": {"type": "string"},
+          "field": {"type": "string"},
+          "spec": {},
+          "app": {},
+          "status": {"type": "string"},
+          "affects": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "probes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "empty_submit": {
+          "type": "object",
+          "required": ["submit", "summary", "summary_text", "fields"],
+          "properties": {
+            "submit": {"type": "string", "description": "key locator của nút gửi"},
+            "summary": {"type": "string", "description": "key locator của khung tóm tắt lỗi"},
+            "summary_text": {"type": "string", "description": "đường dẫn tới chuỗi heading trong expected, vd form_summary_heading.text"},
+            "fields": {"type": "object", "additionalProperties": {"type": "string"}, "description": "key locator ô nhập -> đường dẫn tới chuỗi lỗi trong expected"},
+            "inline_error": {"type": "string", "description": "mẫu id thông báo lỗi, mặc định #{id}-error"}
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "locator": {
+      "type": "object",
+      "required": ["source"],
+      "anyOf": [{"required": ["css"]}, {"required": ["role"]}],
+      "properties": {
+        "css": {"type": "string"},
+        "role": {"type": "string"},
+        "name": {"type": "string"},
+        "label": {"type": "string"},
+        "type": {"type": "string"},
+        "appears": {"enum": ["on_load", "after_invalid_submit", "conditional"], "description": "mặc định on_load; chỉ on_load mới bị đếm khi mở trang"},
+        "source": {"type": "string"}
+      }
+    }
+  }
+}

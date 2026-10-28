@@ -13,6 +13,7 @@ reports/*
 *.key
 **/archive/
 archive/
+_legacy_archive/
 test-results/
 **/copy/
 copy/

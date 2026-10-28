@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "root_note": "Đặt file này tại 1_Nghiep_Vu_va_Specs/specs/ui_bsk/index.json. Mọi đường dẫn md/json bên dưới tính từ thư mục chứa index.",
+  "status_values": ["pending", "converted", "verified"],
+  "status_note": "pending: chưa có JSON. converted: đã có JSON, chưa qua kiểm tra live. verified: đã qua verify_screens.py trên app thật, không còn ERROR.",
+  "shared": {
+    "id": "00_form_and_transaction_patterns",
+    "md": "00_form_and_transaction_patterns.md",
+    "json": "_patterns.json",
+    "status": "converted",
+    "note": "Pattern dùng chung (khung tóm tắt lỗi, id thông báo lỗi #<id>-error, toast, modal xác nhận). Chuyển đổi trước để các màn hình tham chiếu, không lặp lại."
+  },
+  "modules": [
+    {
+      "id": "01_admin_login_and_sso", "md": "localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "base_url": "http://localhost:5173", "auth": "none", "batch": 0, "expected_source": null, "screens": [],
+      "note": "Màn hình đăng nhập: không dùng storage_state. Chuyển đổi sớm vì tạo trạng thái đăng nhập admin cho các lô sau."
+    },
+    {
+      "id": "02_admin_dashboard_shell", "md": "localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 0, "expected_source": null, "screens": []
+    },
+    {
+      "id": "03_school_management", "md": "localhost-5173/academic-and-users/03_school_management.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 1,
+      "expected_source": "specs/validation_rules/md/R3_Validation_Rules.md (đã xác nhận Page 2 - Create a School; Directory và Detail cần xác định thêm)",
+      "screens": [
+        {"screen_id": "FS03-SCH-DIRECTORY", "route": "/school-management", "json": "localhost-5173/academic-and-users/03_school_directory.json", "status": "pending"},
+        {"screen_id": "FS03-SCH-CREATE", "route": "/school-management/new", "json": "localhost-5173/academic-and-users/03_school_create.json", "status": "verified"},
+        {"screen_id": "FS03-SCH-DETAIL", "route": "/school-management/:schoolId", "json": "localhost-5173/academic-and-users/03_school_detail.json", "status": "pending"}
+      ]
+    },
+    {
+      "id": "04_school_user_management", "md": "localhost-5173/academic-and-users/04_school_user_management.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 2, "expected_source": null, "screens": [],
+      "note": "Agent báo 3 màn hình: User directory, Single user form, Bulk CSV."
+    },
+    {
+      "id": "05_academic_years_and_levels", "md": "localhost-5173/academic-and-users/05_academic_years_and_levels.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 2, "expected_source": null, "screens": []
+    },
+    {
+      "id": "06_class_management", "md": "localhost-5173/academic-and-users/06_class_management.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 2, "expected_source": null, "screens": [],
+      "note": "Làm đầu lô 2: các file test_cls_* ở fs03 có nhiều ca dummy nhất."
+    },
+    {
+      "id": "07_student_management_and_enrollment", "md": "localhost-5173/academic-and-users/07_student_management_and_enrollment.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 2, "expected_source": null, "screens": []
+    },
+    {
+      "id": "08_school_config", "md": "localhost-5173/academic-and-users/08_school_config.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 2, "expected_source": null, "screens": []
+    },
+    {
+      "id": "01_education_accounts", "md": "localhost-5173/finance-and-fas/01_education_accounts.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "02_top_up_management", "md": "localhost-5173/finance-and-fas/02_top_up_management.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "03_fee_management_and_rate_rules", "md": "localhost-5173/finance-and-fas/03_fee_management_and_rate_rules.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": [],
+      "note": "Chuỗi lỗi hiện có lấy từ source frontend, chưa từ tài liệu nghiệp vụ: ghi vào discrepancies/spec_gaps nếu không tìm được nguồn nghiệp vụ."
+    },
+    {
+      "id": "04_fee_batches", "md": "localhost-5173/finance-and-fas/04_fee_batches.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "05_moe_fas_schemes", "md": "localhost-5173/finance-and-fas/05_moe_fas_schemes.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "06_sbfas_schemes", "md": "localhost-5173/finance-and-fas/06_sbfas_schemes.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "07_fas_application_management", "md": "localhost-5173/finance-and-fas/07_fas_application_management.md",
+      "base_url": "http://localhost:5173", "auth": "admin", "batch": 3, "expected_source": null, "screens": []
+    },
+    {
+      "id": "01_parent_login_and_mockpass", "md": "localhost-5174/01_parent_login_and_mockpass.md",
+      "base_url": "http://localhost:5174", "auth": "none", "batch": 4, "expected_source": null, "screens": [],
+      "note": "Màn hình đăng nhập phụ huynh: tạo trạng thái đăng nhập parent cho lô 4 và 5."
+    },
+    {
+      "id": "02_eservice_dashboard_home", "md": "localhost-5174/02_eservice_dashboard_home.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 4, "expected_source": null, "screens": []
+    },
+    {
+      "id": "03_parent_profile_and_contact", "md": "localhost-5174/03_parent_profile_and_contact.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 4, "expected_source": null, "screens": []
+    },
+    {
+      "id": "04_transaction_history", "md": "localhost-5174/04_transaction_history.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 4, "expected_source": null, "screens": []
+    },
+    {
+      "id": "05_billing_and_payments", "md": "localhost-5174/05_billing_and_payments.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 4, "expected_source": null, "screens": []
+    },
+    {
+      "id": "06_payment_checkout_simulator", "md": "localhost-5174/06_payment_checkout_simulator.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 4, "expected_source": null, "screens": []
+    },
+    {
+      "id": "01_fas_landing_and_prerequisites", "md": "localhost-5174/fas-application/01_fas_landing_and_prerequisites.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 5, "expected_source": null, "screens": []
+    },
+    {
+      "id": "02_step1_student_selection", "md": "localhost-5174/fas-application/02_step1_student_selection.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 5, "expected_source": null, "screens": []
+    },
+    {
+      "id": "03_step2_household_and_income", "md": "localhost-5174/fas-application/03_step2_household_and_income.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 5, "expected_source": null, "screens": []
+    },
+    {
+      "id": "04_step3_documents_and_declaration", "md": "localhost-5174/fas-application/04_step3_documents_and_declaration.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 5, "expected_source": null, "screens": []
+    },
+    {
+      "id": "05_step4_review_and_submission", "md": "localhost-5174/fas-application/05_step4_review_and_submission.md",
+      "base_url": "http://localhost:5174", "auth": "parent", "batch": 5, "expected_source": null, "screens": []
+    }
+  ]
+}

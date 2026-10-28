@@ -1,0 +1,104 @@
+{
+  "id": "00_form_and_transaction_patterns",
+  "version": 1,
+  "sources": {
+    "doc": "specs/ui_bsk/00_form_and_transaction_patterns.md (tài liệu kiến trúc của đội, không phải spec nghiệp vụ; nhiều ví dụ trong đó là minh họa)",
+    "live": "tools/verify_screens.py chạy trên FS03-SCH-CREATE (localhost:5173)",
+    "rule": "Chỉ mẫu đã thấy trên app thật mới có evidence=live. Mẫu chỉ có trong md ghi evidence=doc_only và code test chưa được dựa vào. Chuỗi hiển thị (expected) không nằm ở đây: mỗi màn hình tự khai báo từ tài liệu nghiệp vụ."
+  },
+  "evidence_values": {
+    "live": "đã đối chiếu trên app thật, ghi rõ màn hình trong verified_on",
+    "doc_only": "chỉ có trong md, chưa kiểm chứng; đừng viết assert cứng dựa vào mẫu này",
+    "conflict": "md mâu thuẫn với app thật hoặc với tài liệu nghiệp vụ"
+  },
+  "locator_templates": {
+    "field_inline_error": {
+      "css": "#{id}-error",
+      "evidence": "live",
+      "verified_on": ["FS03-SCH-CREATE"],
+      "note": "{id} là id ô nhập (school-name -> #school-name-error). Đã kiểm 4 ô: mã trường, tên trường, loại hình, cấp học."
+    },
+    "form_error_summary": {
+      "css": "section[role='alert']",
+      "heading_css": "section[role='alert'] h2",
+      "items_css": "section[role='alert'] ul",
+      "evidence": "live",
+      "verified_on": ["FS03-SCH-CREATE"],
+      "note": "Chỉ cấu trúc DOM đã kiểm. Chuỗi heading thuộc từng màn hình (xem spec_gaps P1)."
+    },
+    "field_hint": {"css": "#{id}-hint", "evidence": "doc_only"},
+    "summary_link_to_field": {"css": "section[role='alert'] a[href='#{id}']", "evidence": "doc_only"},
+    "toast_item": {
+      "css": "ol[aria-label='Notifications'] li",
+      "evidence": "doc_only",
+      "note": "File test case TC-020/071 dùng [role='status'] cho toast thành công. Chưa biết cái nào đúng (P2)."
+    },
+    "confirm_modal": {
+      "css": "[role='alertdialog']",
+      "evidence": "conflict",
+      "note": "md ghi alertdialog, TC-060 và danh sách locator trong file test case dùng [role='dialog']. Cần kiểm trên modal Deactivate (P3)."
+    }
+  },
+  "behaviors": {
+    "invalid_submit_marks_field": {
+      "rule": "Sau khi gửi form không hợp lệ, ô lỗi có aria-invalid='true'",
+      "evidence": "live",
+      "verified_on": ["FS03-SCH-CREATE"]
+    },
+    "invalid_submit_shows_summary": {
+      "rule": "Gửi form không hợp lệ hiện khung tóm tắt lỗi section[role='alert'] kèm heading h2",
+      "evidence": "live",
+      "verified_on": ["FS03-SCH-CREATE"]
+    },
+    "field_describedby_error": {
+      "rule": "aria-describedby của ô lỗi trỏ tới {id}-error",
+      "evidence": "doc_only"
+    },
+    "inline_error_has_role_alert": {
+      "rule": "Mỗi thông báo lỗi từng ô có role='alert'",
+      "evidence": "doc_only"
+    },
+    "summary_link_focuses_field": {
+      "rule": "Bấm link trong khung tóm tắt lỗi cuộn tới và focus vào ô lỗi",
+      "evidence": "doc_only"
+    },
+    "submit_disabled_while_busy": {
+      "rule": "Nút gửi disabled hoặc aria-busy khi đang gửi",
+      "evidence": "doc_only"
+    },
+    "server_error_alert_with_retry": {
+      "rule": "Lỗi 500 hiện Alert tone=error kèm nút thử lại, form giữ nguyên dữ liệu",
+      "evidence": "doc_only",
+      "note": "Phân tích source Fee Management cho thấy banner 'Action failed' khi gửi lỗi và nút 'Try again' khi tải dữ liệu lỗi. Tên nút và vị trí chưa thống nhất (P4)."
+    }
+  },
+  "stale_do_not_use": [
+    {"value": "There is a problem with your submission", "why": "Ví dụ trong md §1.2. App thật và R3 dùng 'Please correct the errors below.'"},
+    {"value": "School name is required and must not exceed 100 characters.", "why": "Ví dụ trong md §1.1. R3: 'School name is required.' và giới hạn 150 ký tự với thông báo riêng 'School name cannot exceed 150 characters.'"},
+    {"value": "School code must start with SCH followed by 4 digits", "why": "Ví dụ trong md §1.2. R3: mã trường 3-20 ký tự chữ, số, gạch nối, không có tiền tố bắt buộc"},
+    {"value": "Enter a valid official email address", "why": "Form Create School không có ô email. Ví dụ minh họa, không dùng làm expected (cũng áp dụng cho test mẫu TC-SCH-004 trong md §4.3)"},
+    {"value": "#school-code", "why": "Ví dụ trong md §1.2. Id thật là #school-moeSchoolCode"},
+    {"value": "features.billingPayment.split.educationAccountAmountError", "why": "Đây là khóa i18n thô. Chuỗi hiển thị phải là câu hoàn chỉnh. Khóa thô hiện trên UI là bug (TC-037), không phải expected. Cần chuỗi thật từ tài liệu nghiệp vụ"}
+  ],
+  "spec_gaps": [
+    {"id": "P1", "question": "Chuỗi tóm tắt lỗi 'Please correct the errors below.' dùng chung cho mọi form hay riêng Create School? (resource.ts:77 validationSummary gợi ý dùng chung, nhưng mới chỉ kiểm một màn hình)", "affects": ["mọi form"]},
+    {"id": "P2", "question": "Toast: ol[aria-label='Notifications'] li hay [role='status']? Có thể cả hai (container và nội dung)."},
+    {"id": "P3", "question": "Modal xác nhận có role alertdialog hay dialog?", "affects": ["TC-016", "TC-018", "TC-060", "TC-061"]},
+    {"id": "P4", "question": "Nút thử lại là 'Retry' hay 'Try again', và xuất hiện ở lỗi gửi form hay chỉ ở lỗi tải dữ liệu?", "affects": ["TC-057", "TC-059", "TC-070"]},
+    {"id": "P5", "question": "Thông báo lỗi từng ô có role='alert' không? (md có, chưa kiểm; ảnh hưởng cách bắt lỗi và trợ năng)", "affects": ["TC-060", "TC-068"]},
+    {"id": "P6", "question": "Sau gửi form lỗi, focus có tự chuyển vào ô lỗi đầu tiên không, và link trong khung tóm tắt có focus ô tương ứng không?", "affects": ["TC-069"]}
+  ],
+  "moved_to_screens": [
+    {
+      "content": "Luồng thanh toán 3 bước, quy tắc phương thức EducationAccount / OnlineGateway / Both, ràng buộc eaAmount (0.01 <= eaAmount <= min(số dư, tổng phí))",
+      "target": "05_billing_and_payments",
+      "why": "Thuộc một màn hình, không phải pattern dùng chung. Ngưỡng và chuỗi lỗi cần nguồn nghiệp vụ (md chỉ có khóa i18n thô)."
+    },
+    {
+      "content": "InvoiceDisclosure: accordion hóa đơn, aria-expanded, td#invoice-details-{id}, alert lỗi cục bộ kèm nút thử lại",
+      "target": "04_transaction_history",
+      "why": "Hành vi của một màn hình. Giữ lại selector làm đầu vào recon, chưa kiểm chứng."
+    }
+  ],
+  "not_data": "Mục §4 của md (FormHelper, TransactionHelper, Exceptor) là hướng dẫn viết code. Giữ ở md hoặc AGENTS.md, không đưa vào JSON."
+}

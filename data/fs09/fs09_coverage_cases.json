@@ -1,0 +1,86 @@
+[
+  {
+    "id": "TC-R9-ATM-04",
+    "field": "splitAmount",
+    "title": "Split EA input formats to 2 decimal places",
+    "source": "F9.3; SCR-04; Invariant 8 BVA",
+    "input": "50",
+    "kind": "format",
+    "expected_formatted": "50.00"
+  },
+  {
+    "id": "TC-R9-ATM-05",
+    "field": "splitAmount",
+    "title": "Split EA input minimum boundary $0.01 SGD accepted",
+    "source": "F9.3; SCR-04; Invariant 8 BVA",
+    "input": "0.01",
+    "kind": "valid"
+  },
+  {
+    "id": "TC-R9-ATM-06",
+    "field": "splitAmount",
+    "title": "Split EA input zero rejected",
+    "source": "F9.3; SCR-04; Invariant 8 BVA; SPLIT_AMOUNT_INVALID",
+    "input": "0.00",
+    "kind": "invalid",
+    "message": "The two amounts must be more than zero and add up to the total."
+  },
+  {
+    "id": "TC-R9-ATM-06b",
+    "field": "splitAmount",
+    "title": "Split EA input negative value rejected",
+    "source": "F9.3; SCR-04; Invariant 8 BVA; SPLIT_AMOUNT_INVALID",
+    "input": "-5.00",
+    "kind": "invalid",
+    "message": "The two amounts must be more than zero and add up to the total."
+  },
+  {
+    "id": "TC-R9-ATM-07",
+    "field": "splitAmount",
+    "title": "Split EA input upper boundary (total - 0.01) accepted",
+    "source": "F9.3; SCR-04; Invariant 8 BVA",
+    "input": "49.99",
+    "kind": "valid"
+  },
+  {
+    "id": "TC-R9-ATM-08",
+    "field": "splitAmount",
+    "title": "Split EA input non-numeric alpha rejected",
+    "source": "F9.3; SCR-04; Invariant 8 Security",
+    "input": "abc",
+    "kind": "invalid_or_blocked"
+  },
+  {
+    "id": "TC-R9-ATM-08b",
+    "field": "splitAmount",
+    "title": "Split EA input special symbol rejected",
+    "source": "F9.3; SCR-04; Invariant 8 Security",
+    "input": "$$50",
+    "kind": "invalid_or_blocked"
+  },
+  {
+    "id": "TC-R9-ATM-09",
+    "field": "splitAmount",
+    "title": "Split EA input exceeding balance triggers aria-invalid without i18n leaks",
+    "source": "BR-F9-11; AC-19; SCR-04; Invariant 7 UI Health",
+    "input": "999.00",
+    "kind": "invalid",
+    "message": "The two amounts must be more than zero and add up to the total."
+  },
+  {
+    "id": "TC-R9-ATM-16",
+    "field": "splitAmount",
+    "title": "Split EA input XSS vector remains inert",
+    "source": "Invariant 8 Security",
+    "input": "<script>alert('XSS')</script>",
+    "kind": "safe_text"
+  },
+  {
+    "id": "TC-R9-ATM-16b",
+    "field": "splitAmount",
+    "title": "Split EA input SQLi vector rejected",
+    "source": "Invariant 8 Security",
+    "input": "' OR 1=1 --",
+    "kind": "invalid_or_blocked"
+  }
+]

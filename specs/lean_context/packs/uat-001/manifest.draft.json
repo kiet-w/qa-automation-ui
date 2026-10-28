@@ -1,0 +1,183 @@
+{
+  "scope": "UAT-001",
+  "stage": "design",
+  "review": {
+    "status": "draft",
+    "evidence": ""
+  },
+  "entries": [],
+  "candidates": [
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "sha256": "4ed207ed40041b905db44777dea649c5e8fb01c65617f109765b0bd1c20a2b48",
+      "start": 2,
+      "end": 9,
+      "heading": "(THE COMPREHENSIVE 5-PILLARS TEST DESIGN & TOKEN-OPTIMIZED AUTOMATION FRAMEWORK)",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "sha256": "4ed207ed40041b905db44777dea649c5e8fb01c65617f109765b0bd1c20a2b48",
+      "start": 14,
+      "end": 27,
+      "heading": "1.1 Bảng Ma Trận Phân Hệ UAT Toàn Hệ Thống",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "sha256": "4ed207ed40041b905db44777dea649c5e8fb01c65617f109765b0bd1c20a2b48",
+      "start": 58,
+      "end": 71,
+      "heading": "🔹 Phân Hệ R01: Vòng Đời Tài Khoản Học Vụ & Quyết Toán CPF (`UAT-001` → `UAT-004`)",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/Documentation/Sprint 1 Review Transcript.md",
+      "sha256": "422e7a4aef8e16d059c31dac41a4c6106390d63293c933dba25ff5b5629fabd4",
+      "start": 75,
+      "end": 107,
+      "heading": "2.4 School creation",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 1,
+      "end": 11,
+      "heading": "Test Specification: UAT-001 — Complete Education Account Provisioning, Idempotency & Full Coverage",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 12,
+      "end": 13,
+      "heading": "Section 1: The 5 Core Pillars of Test Design",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 14,
+      "end": 20,
+      "heading": "1.1 Business Rules (BR) — From FS-01 v1.2",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 21,
+      "end": 31,
+      "heading": "1.2 Acceptance Criteria (AC) — From FS-01 v1.2 & component_specs/f01",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 32,
+      "end": 45,
+      "heading": "1.3 Validation Rules — From component_specs/f01/atomic/",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 46,
+      "end": 56,
+      "heading": "1.4 Functional Flow & State Machine",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 57,
+      "end": 68,
+      "heading": "1.5 Error Handling & Visual Feedback",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 69,
+      "end": 81,
+      "heading": "Section 2: Test Suite Allocation Overview",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 82,
+      "end": 120,
+      "heading": "Section 3: Master Test Case Matrix (20-Column AvePoint Format)",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 121,
+      "end": 143,
+      "heading": "Section 4: Live DOM Locators Extracted via BSK (Browser-Skill Reconnaissance)",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 144,
+      "end": 179,
+      "heading": "Section 5: Coverage Matrix — BR/AC/AF/EF → TC ID Mapping",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 180,
+      "end": 190,
+      "heading": "Summary",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/test_specs/README.md",
+      "sha256": "3fb01e372cbcf283d14a48c8087fef7ee52e368453832102f9452270cb96febf",
+      "start": 40,
+      "end": 51,
+      "heading": "A. Dạng Danh Sách Tự Nhiên (Natural Steps - Phù hợp UAT & Happy Path)",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/test_specs/uat/uat_trainer_flow.md",
+      "sha256": "6508b1a5a119a76c3f47e9bd1c3a04200c484d823ac969f43c1efe9024c1e497",
+      "start": 3,
+      "end": 8,
+      "heading": "Scenario: UAT-01 Trainer Full Onboarding Flow @uat @journey",
+      "roles": [],
+      "reason": ""
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/uat/README.md",
+      "sha256": "d8b17835d1bde571f03dc8158ac62101aeef55f8eba987df0d4a02dc2b99a0ce",
+      "start": 10,
+      "end": 25,
+      "heading": "1. Cấu Trúc Phân Tầng UAT Theo Phân Hệ Nghiệp Vụ (R-Segregated)",
+      "roles": [],
+      "reason": ""
+    }
+  ],
+  "note": "Candidates only. Select full conditions/dependencies into entries, declare roles/reasons. Search shared BR/AC/UI too; matches are not a complete inventory."
+}

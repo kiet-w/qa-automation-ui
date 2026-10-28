@@ -1,0 +1,123 @@
+{
+  "screen_id": "FS03-SCH-CREATE",
+  "route": "/school-management/new",
+  "locale": "en",
+  "sources": {
+    "locators": "specs/ui_bsk/localhost-5173/academic-and-users/03_school_management.md §1.2 (recon DOM)",
+    "expected": "specs/validation_rules/md/R3_Validation_Rules.md, Page 2 - Create a School",
+    "rule": "Locators chỉ lấy từ recon DOM. Expected chỉ lấy từ R3. Giá trị không có nguồn thì để null và ghi vào spec_gaps, không tự điền."
+  },
+  "locators": {
+    "moe_school_code": {"css": "#school-moeSchoolCode", "label": "MOE school code", "type": "text", "source": "§1.2"},
+    "school_name": {"css": "#school-name", "label": "School name", "type": "text", "source": "§1.2"},
+    "school_type": {"css": "#school-schoolType", "label": "School type", "type": "select", "source": "§1.2"},
+    "school_users": {"css": "#school-schoolUsers", "label": "School users", "type": "multiselect", "source": "§1.2"},
+    "academic_levels": {"css": "#school-academicLevels", "label": "Academic levels", "type": "multiselect", "source": "§1.2"},
+    "cancel_button": {"css": "button:has-text('Cancel')", "source": "§1.2"},
+    "create_button": {"css": "button[type='submit']:has-text('Create school')", "source": "§1.2"},
+    "load_more_button": {"css": "button:has-text('Load more')", "appears": "conditional", "source": "§1.2"},
+    "error_summary": {
+      "css": "section[role='alert']",
+      "heading_css": "section[role='alert'] h2",
+      "items_css": "section[role='alert'] ul",
+      "appears": "after_invalid_submit",
+      "source": "§1.2; FormErrorSummary.tsx; resource.ts:77"
+    }
+  },
+  "expected": {
+    "form_summary_heading": {
+      "text": "Please correct the errors below.",
+      "source": "R3 Form summary; §1.2 (resource.ts:77 validationSummary)"
+    },
+    "moe_school_code": {
+      "required": true,
+      "trim": true,
+      "min_length": 3,
+      "max_length": 20,
+      "allowed_chars": "alphanumeric and hyphen",
+      "unique": true,
+      "errors": {
+        "required": "MOE school code is required.",
+        "length": "MOE school code must be between 3 and 20 characters.",
+        "pattern": "MOE school code must contain only alphanumeric characters and hyphens.",
+        "duplicate": "School with MOE code '{code}' already exists."
+      },
+      "source": "R3 Page 2 - MOE school code"
+    },
+    "school_name": {
+      "required": true,
+      "trim": true,
+      "min_length": null,
+      "max_length": 150,
+      "errors": {
+        "required": "School name is required.",
+        "too_long": "School name cannot exceed 150 characters."
+      },
+      "source": "R3 Page 2 - School name"
+    },
+    "school_type": {
+      "required": true,
+      "values": ["GOVERNMENT", "GOVERMENT_AIDED", "INDEPENDENT", "SPECIALISED"],
+      "ui_labels": null,
+      "values_note": "Spec §2.2 & R3 Page 2 quy định 4 loại. Chênh lệch với Live DOM (5 loại, thêm AUTONOMOUS, có chữ N) được ghi nhận trong mục discrepancies để BA xác nhận.",
+      "errors": {"required": "Select a school type."},
+      "source": "R3 Page 2; Spec §2.2"
+    },
+    "academic_levels": {
+      "required": true,
+      "min_selected": 1,
+      "only_status": "ACTIVE",
+      "errors": {"required": "Select at least one academic level."},
+      "source": "R3 Page 2 - Academic levels; §2.2 rule 3"
+    },
+    "school_users": {
+      "required": false,
+      "source": "§1.2"
+    },
+    "success": {
+      "toast_title": "School created",
+      "toast_message": "School created successfully.",
+      "source": "R3 Page 2 - Toast"
+    }
+  },
+  "probes": {
+    "empty_submit": {
+      "submit": "create_button",
+      "summary": "error_summary",
+      "summary_text": "form_summary_heading.text",
+      "fields": {
+        "moe_school_code": "moe_school_code.errors.required",
+        "school_name": "school_name.errors.required",
+        "school_type": "school_type.errors.required",
+        "academic_levels": "academic_levels.errors.required"
+      }
+    }
+  },
+  "stale_do_not_use": [
+    {"value": "Check the following", "why": "§1.2 ghi rõ đã xoá. Vẫn còn trong TC_5173_14 (TC-024, locator khung tóm tắt lỗi) và test_matrix.json"},
+    {"value": "School code is required / Required", "why": "§4.2 và TC-025 lỗi thời. R3: 'MOE school code is required.'"},
+    {"value": "School code already exists", "why": "§4.2 và TC-023 lỗi thời. R3: \"School with MOE code '{code}' already exists.\""},
+    {"value": "#school-moeSchoolCode ~ [class*='error'], p", "why": "§4.2: selector quá lỏng, khớp nhiều phần tử"}
+  ],
+  "spec_gaps": [
+    {"id": "G1", "question": "Thứ tự ưu tiên khi vi phạm nhiều rule cùng lúc (vd 25 ký tự có ký tự cấm): hiện lỗi độ dài hay lỗi ký tự?", "affects": ["TC-035"]},
+    {"id": "G2", "question": "'alphanumeric' chỉ ASCII hay cho phép chữ có dấu/Unicode?", "affects": ["TC-034", "TC-035"]},
+    {"id": "G3", "question": "Ô nhập có thuộc tính maxlength chặn gõ, hay cho gõ rồi báo lỗi?", "affects": ["TC-036", "TC-042", "TC-067"]},
+    {"id": "G4", "question": "Lỗi trùng mã hiển thị dưới ô input hay ở banner? Có phân biệt hoa/thường không?", "affects": ["TC-023"]},
+    {"id": "G5", "question": "Chênh lệch loại hình trường (Spec 4 loại vs App 5 loại): Cần BA/PO phê duyệt chính thức xem có bổ sung AUTONOMOUS và chấp nhận enum GOVERNMENT_AIDED (có N) hay không.", "affects": ["TC-044", "TC-046", "TC-007"]},
+    {"id": "G6", "question": "Toast thành công có role nào, và có chuyển hướng về /school-management không? (hiện chỉ có ở TC-020, chưa có trong spec)", "affects": ["TC-020", "TC-071"]},
+    {"id": "G7", "question": "Cách gắn thông báo lỗi với từng ô: Live DOM dùng #{id}-error và aria-describedby. Cần spec chuẩn hóa tài liệu.", "status": "VERIFIED_DOM", "affects": ["TC-025", "TC-026", "TC-027", "TC-068"]},
+    {"id": "G8", "question": "Text thông báo khi server trả 400/500 hoặc mất mạng khi tạo trường.", "affects": ["TC-045", "TC-057", "TC-058"]},
+    {"id": "G9", "question": "School User truy cập route quản lý trường: trả 403 hay chuyển hướng, và về đâu?", "affects": ["TC-055"]}
+  ],
+  "discrepancies": [
+    {
+      "id": "DISC-01",
+      "field": "school_type",
+      "spec": "4 loại: GOVERNMENT, GOVERMENT_AIDED (thiếu N), INDEPENDENT, SPECIALISED (nguồn: §2.2 & R3 Page 2)",
+      "app": "5 options: Select a school type, Government (GOVERNMENT), Government aided (GOVERNMENT_AIDED - có N), Autonomous (AUTONOMOUS), Independent (INDEPENDENT), Specialised (SPECIALISED)",
+      "status": "open",
+      "affects": ["TC-044", "TC-046", "TC-007"]
+    }
+  ]
+}

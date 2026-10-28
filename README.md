@@ -1,581 +1,93 @@
-# Enterprise QA Automation UI Framework
+# Automation UI — Playwright & Pytest Framework
 
-Enterprise-grade UI Test Automation Framework engineered on **Python 3.10+**, **Playwright (Sync API)**, and **Pytest**. Designed around the **Page Object Model (POM)** with **Component Composition**, **Multi-Project Isolation**, an automated **Dual-Gate Error Supervision Engine**, an **AST Architectural Invariant Guard**, and a **100% Offline Standalone ExtentReports HTML Engine**.
-
-> 📌 **Key Architectural References:**
-> - **AI Test Generation Guidelines:** [`docs/framework/AI_CODING_GUIDELINES.md`](docs/framework/AI_CODING_GUIDELINES.md)
-> - **SketchVLM Visual Overlays & Video Annotation Engine:** [`docs/framework/adr/0007-sketchvlm-visual-overlays-and-video-annotation-engine.md`](docs/framework/adr/0007-sketchvlm-visual-overlays-and-video-annotation-engine.md)
-> - **20-Column QA Test Case Ingestion Standard:** [`docs/framework/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md`](docs/framework/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)
-> - **Multi-Project & Multi-Website Architecture:** [`docs/framework/adr/0006-multi-website-project-automation-architecture.md`](docs/framework/adr/0006-multi-website-project-automation-architecture.md)
-> - **Core Developer Invariants & Directives:** [`AGENTS.md`](AGENTS.md)
+Dự án kiểm thử tự động giao diện tinh gọn, hiệu năng cao xây dựng trên nền tảng **Python 3.10+**, **Playwright (Sync API)** và **Pytest**.
+Framework tuân theo mô hình **Page Object Model (POM)** chuẩn mực, phân tách rõ ràng giữa Hành động UI, Dữ liệu kiểm thử và Xác minh nghiệp vụ (Assertions).
 
 ---
 
-## 🗂️ Cấu trúc repository theo 3 nhóm chính
+## 1. Cấu Trúc Dự Án (Flat & Standard Layout)
 
-Toàn bộ tài sản của dự án được phân bổ vật lý thành ba nhóm thư mục chính, đảm bảo sự trực quan, ngăn nắp trên cả GitHub và File Manager máy cục bộ:
-
-| Nhóm | Phạm vi | Thành phần chính |
-| :--- | :--- | :--- |
-| [`1_Nghiep_Vu_va_Specs/`](1_Nghiep_Vu_va_Specs/) | Nghiệp vụ, FS Specs và UAT | `copy` (read-only), `specs`, `testcases`, `test_specs`, `uat` |
-| [`2_Code_Automation/`](2_Code_Automation/) | Mã nguồn tự động hóa Playwright | `core`, `pages`, `components`, `data`, `tests`, `tools`, `conftest.py`, `pytest.ini`, `run_tests.py` |
-| [`3_Bao_Cao_va_Ket_Qua/`](3_Bao_Cao_va_Ket_Qua/) | Báo cáo, kết quả và tài liệu kỹ thuật | `reporting`, `reports`, `docs`, `archive`, các generator CLIs |
-
-Tại thư mục gốc (Root), chỉ hiển thị đúng 3 thư mục nhóm lớn cùng `AGENTS.md`, `README.md` và `.gitignore`. Không chỉnh sửa `copy/`.
-
----
-
-## 📑 Table of Contents
-
-1. [Key Framework Capabilities](#-key-framework-capabilities)
-2. [Architectural Overview & Core Seams](#-architectural-overview--core-seams)
-   - [Dual-Gate Error Supervision Engine](#1-dual-gate-error-supervision-engine)
-   - [100% Offline ExtentReports HTML Engine](#2-100-offline-extentreports-html-engine)
-   - [Multi-Browser & Anti-Bot Stealth Engine](#3-multi-browser--anti-bot-stealth-engine)
-   - [Multi-Project & Multi-Website Isolation](#4-multi-project--multi-website-isolation)
-   - [AST Architecture Invariant Guard](#5-ast-architecture-invariant-guard)
-3. [Phase 1: Pre-Automation Reconnaissance (`bsk` Recon & Active Probe)](#-phase-1-pre-automation-reconnaissance-bsk-recon--active-probe)
-   - [Passive Reconnaissance (`tools/recon.sh`)](#1-passive-reconnaissance-toolsreconsh)
-   - [Active Probe & Audit Findings (`tools/templates/`)](#2-active-probe--audit-findings-toolstemplates)
-4. [Standard 20-Column QA Matrix to Pytest Mapping](#-standard-20-column-qa-matrix-to-pytest-mapping)
-5. [Project Directory Structure](#-project-directory-structure)
-6. [Installation & Setup](#-installation--setup)
-7. [Test Execution Guide](#-test-execution-guide)
-   - [Ticket Concurrency Locking & History Retention](#1-ticket-concurrency-locking--history-retention)
-   - [Run Specific Ticket / User Story](#2-run-specific-ticket--user-story)
-   - [Run Parallel Tests (pytest-xdist)](#3-run-parallel-tests-pytest-xdist)
-   - [Cross-Browser Selection & Custom Executables](#4-cross-browser-selection--custom-executables)
-   - [Run Internal Framework Unit Tests](#5-run-internal-framework-unit-tests)
-   - [Regenerate HTML Report Without Rerunning Tests](#6-regenerate-html-report-without-rerunning-tests)
-8. [AI Coding Assistants Quickstart](#-ai-coding-assistants-quickstart)
-
----
-
-## 🌟 Key Framework Capabilities
-
-- **Lean Markdown-First Test Engine (`md_runner.py`) & 4-Tier Architecture**: Execute UI tests written purely in Markdown tables without boilerplate Python code. Supports 4 distinct tiers:
-  1. ⚡ **UI Unit Tests (`test_specs/atomic/`)**: Đơn Component (kiểm tra độc lập 1 ô input, 1 button, 1 dropdown, validate rỗng/biên/regex - `@smoke`, `@p0`, `@atomic`).
-  2. 🔗 **UI Integration Tests (`test_specs/integration/`)**: Tương tác Component (1 Component ➔ 1 Component khác, 1 Component ➔ Nhiều Component, hoặc Form 🔁 API mock 200/400/500 - `@integration`, `@api`).
-  3. 🚀 **UAT Journeys (`test_specs/uat/`)**: Hành trình người dùng E2E đa màn hình, giữ session liên tục (`@uat`, `@journey`).
-  4. 💥 **Break_It (`test_specs/break_it/`)**: Thử thách độ bền, phá có kỷ luật (gỡ client constraints, double-click concurrency, hostile XSS, HTTP 500 chaos mocking - `@break_it`).
-  Includes `tools/recon_bsk.py` to extract 100% verified DOM locators in 1 second via live browser scan.
-- **Single-Page Minimalist Clean Report (`bao_cao_tinh_gon.html`)**: Instant 1-page executive dashboard featuring 5 large KPI metrics, a 4-tier hierarchy (`SUITE ➔ SCENARIO ➔ CASE ➔ STEP`), distinct cyan `[⚡ ATOMIC]`, amber `[🔗 INTEGRATION]`, purple `[🚀 UAT JOURNEY]`, and red `[💥 BREAK_IT]` badges, and 1-click jump to failing steps with expected vs. actual side-by-side comparison.
-- **SketchVLM-Inspired Real-Time Video Overlays & Defect Annotation Engine**: Playwright WebM videos record live Step HUD status banners (`[STEP X]`), action spotlights (`👆 CLICK`, `✏️ TYPE`), and hand-drawn SVG sketch ellipses + directional arrows pinpointing defects on test failures with zero token cost. Includes `tools/sketch_vlm_oracle.py` for Gemini VLM screenshot triage.
-- **Evidence-First Reconnaissance (Phase 1 via `bsk`)**: Extract real DOM, Accessibility trees, console errors, and network 4xx/5xx failures before writing code, preventing guessed locators and brittle selectors.
-- **Decoupled Business vs. Infrastructure Errors (Dual-Gate)**: Centrally classifies technical exceptions (Timeout, Browser crash, Stale DOM, Network drop, Unhandled dialog, Missing file) in `core/catalog.py` vs genuine business assertion failures (`core/exceptor.py`).
-- **Ticket Concurrency Lock & Permanent History**: Enforces ticket-scoped concurrency control (`fcntl.flock`) preventing execution collisions. Automatically archives standalone HTML reports in `reports/<ticket>/history/<RUN_ID>.html` and raw video recordings in `reports/<ticket>/test-results/<RUN_ID>/`.
-- **100% Offline Standalone HTML Report (Zero External CDN)**: Full HD (1080p) WebM videos, screenshot evidence, Pure SVG charts (Donut, Bar Timeline, Pipeline, Diagram, Trend), CSS, and JS are embedded directly as Base64 Data URIs into a single self-contained HTML file. No dependencies on Chart.js, Tailwind CDN, or Google Fonts.
-- **Two-Way Diagram-to-Video Synchronization**: Clicking any step in the interactive SVG execution pipeline diagram automatically scrolls to the embedded video player, seeks to the exact step timestamp, and begins playback.
-- **Native Browser Dialog Protection**: Automatic one-time listener (`handle_next_dialog()`) handles `alert()`, `confirm()`, and `prompt()` without locking the browser or triggering accidental dismissals.
-- **Multi-Browser & Anti-Bot Stealth**: Zero hardcoded browser binaries. Supports Chromium, Google Chrome, Microsoft Edge, Brave Browser, Firefox, and WebKit via `--target-browser` with automatic Brave auto-detection and Playwright Stealth integration.
-- **AST Architecture Invariant Guard**: Automated AST static analysis tests (`tests/unit/test_architecture_invariants.py`) strictly enforce zero `assert` in Page Objects, zero `time.sleep()`, zero external CDN in reports, and zero leftover debug prints.
-- **Multi-Project / Multi-Website Reusability**: Easily scale to automate multiple websites simultaneously by compartmentalizing suites into `tests/<project>/`, `pages/<project>/`, `data/<project>/`, and `reports/<project>/`.
-
----
-
-## 🏗 Architectural Overview & Core Seams
-
-```text
-       ┌────────────────────────────────────────────────────────┐
-       │             User Story Requirements / FSD              │
-       └───────────────────────────┬────────────────────────────┘
-                                   │  1. Map Test Intent (19-Column Matrix)
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │          Traceability & AI Coding Guidelines           │
-       │     [Exceptor / Pytest Strict XFAIL / Data Fixture]    │
-       └───────────────────────────┬────────────────────────────┘
-                                   │  2. Direct Method Execution
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           TEST CASE EXECUTION                           │
-│                                                                         │
-│   ┌───────────────────────────┐         ┌───────────────────────────┐   │
-│   │    Playwright Actions     │         │     Page Object State     │   │
-│   │ (click, fill, dialog, ...)│         │ (Snapshot: errors, success│   │
-│   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
-│                 │                                     │                 │
-│                 ▼                                     ▼                 │
-│   ┌───────────────────────────┐         ┌───────────────────────────┐   │
-│   │   Hook Error Classifier   │         │         Exceptor          │   │
-│   │ (Catches technical infra) │         │(Adjudicates business rule)│   │
-│   └─────────────┬─────────────┘         └─────────────┬─────────────┘   │
-└─────────────────┼─────────────────────────────────────┼─────────────────┘
-                  │                                     │
-                  ▼                                     ▼
-     ┌────────────────────────┐            ┌────────────────────────┐
-     │  InfrastructureError   │            │ BusinessAssertionError │
-     │ [TIMEOUT, CRASH, NET]  │            │  [BUG / REJECTION OK]  │
-     └────────────────────────┘            └────────────────────────┘
 ```
-
-### 1. Dual-Gate Error Supervision Engine
-- **`Exceptor` ([`core/exceptor.py`](core/exceptor.py))**: Sole business assertion authority. Operates on static UI snapshots (`{"success_visible": bool, "visible_errors": Dict[str, str]}`). Never calls Playwright directly.
-  - `expect_success(snapshot, context, step)`
-  - `expect_rejection(snapshot, field, message_contains, context, step)`
-  - `expect_bug_if_accepted(snapshot, context)` (Validation bypass defect)
-  - `expect_bug_if_rejected(snapshot, field, context)` (Valid input rejected defect)
-- **`Catalog` ([`core/catalog.py`](core/catalog.py))**: Classifies runtime exceptions into 8 standardized technical categories:
-  - `TIMEOUT`: Selector timeout or element not ready.
-  - `BROWSER_CRASH`: Target closed or process terminated.
-  - `STALE_ELEMENT`: DOM re-rendered; reference detached.
-  - `NETWORK`: Connection refused or DNS lookup failure.
-  - `JS_RUNTIME_ERROR`: Uncaught JavaScript exception or console error.
-  - `DIALOG_UNHANDLED`: Unhandled native alert/confirm dialog.
-  - `FILE_NOT_FOUND`: Fixture file or upload path missing.
-  - `NAVIGATION_ERROR`: Navigation rejected or URL unreachable.
-
-### 2. 100% Offline ExtentReports HTML Engine
-- **Pure SVG Math Charts ([`reporting/charts/`](reporting/charts/))**:
-  - `donut.py`: SVG Donut chart displaying Pass/Fail/Skipped rates.
-  - `bar.py`: SVG Step Duration Timeline bar chart.
-  - `pipeline.py`: Interactive Step Pipeline with 2-way video seek sync.
-  - `diagram.py`: Architecture topology diagrams.
-  - `trend.py`: Historical multi-run pass rate and duration trend lines.
-- **Base64 Media Embedding**: Embedded Full HD (1080p) WebM videos and PNG screenshot evidence.
-- **Bilingual Interface**: Client-side instant toggle between English (`EN`) and Vietnamese (`VI`).
-
-### 3. Multi-Browser & Anti-Bot Stealth Engine
-Configured via `core/pytest_plugins/browser_engine.py`:
-- Supported engines: `chromium`, `chrome`, `edge`, `brave`, `firefox`, `webkit`.
-- Linux, macOS, and Windows Brave binary auto-detection.
-- Playwright Stealth evasion patches for Chromium-family browsers.
-- Automatically enforces `headless=True` during parallel multi-worker execution unless `--headed` is explicitly requested.
-
-### 4. Multi-Project & Multi-Website Isolation
-- Each website or user story has an isolated directory structure:
-  - Tests: `tests/<project>/`
-  - Page Objects: `pages/<project>/`
-  - Test Data: `data/<project>/`
-  - Reports: `reports/<project>/`
-- Generates a unique session `run_id` (e.g. `RUN-20261014-DBAB91`).
-- Preserves historical runs in `reports/<project>/history/<run_id>.html` without wiping previous artifacts.
-
-### 5. AST Architecture Invariant Guard
-File: [`tests/unit/test_architecture_invariants.py`](tests/unit/test_architecture_invariants.py)
-- **Invariant 1**: Zero assertions in Page Objects and Components.
-- **Invariant 2**: Zero raw `time.sleep()` in all execution paths.
-- **Invariant 7**: Zero external CDN URLs in offline reporting assets.
-- **Hygiene**: Zero leftover debug `print()` statements in page objects & components.
-
----
-
-## 🔍 Phase 1: Pre-Automation Reconnaissance (`bsk` Recon & Active Probe)
-
-Before writing a single line of Playwright code or assuming UI locators, the framework employs **browser-skill (`bsk`)** to conduct evidence-first reconnaissance against the real target screen.
-
-```mermaid
-flowchart TD
-    A["1. Target Screen / Requirement"] --> B["2. Reconnaissance (Passive or Active Probe)"]
-    B --> C["3. Capture 5 Artifacts (DOM, a11y, screenshot, console, network)"]
-    C --> D["4. QA Gate: Audit Findings vs Spec"]
-    D -- "Verified & Accepted" --> E["5. Construct Page Object (pages/) & Test Cases (tests/)"]
-    D -- "Rejected / Environment Flaw" --> F["Close Finding / Report to Dev"]
-```
-
-### 1. Passive Reconnaissance (`tools/recon.sh`)
-Automatically launches a dedicated session against the target URL and exports **5 comprehensive diagnostic artifacts**:
-- `accessibility_snapshot.txt`: Indented semantic accessibility tree with interactive element references (`@eN`).
-- `page_dom.html`: Full rendered HTML DOM for resilient locator extraction (`data-test`, `id`, `name`).
-- `initial_screen.png`: Stitched full-page visual capture (with automatic viewport fallback if background compositor limits scrolling).
-- `network_logs.txt`: Buffered network requests capturing hidden HTTP 4xx/5xx responses and third-party script assets.
-- `console_logs.txt`: Console exceptions, CSP violations, CORS policy blocks, and deprecation warnings.
-
-**Usage:**
-```bash
-./tools/recon.sh <TARGET_URL> <BROWSER_ID>
-```
-
-**Safe Local Server Pattern (Isolated `mktemp -d`):**
-```bash
-TMP=$(mktemp -d); cp curricula_trainer_account.html "$TMP"/
-python3 -m http.server 8899 --bind 127.0.0.1 --directory "$TMP" &
-SERVER_PID=$!; trap 'kill $SERVER_PID 2>/dev/null; rm -rf "$TMP"' EXIT
-./tools/recon.sh "http://127.0.0.1:8899/curricula_trainer_account.html" <BROWSER_ID>
-```
-
-### 2. Active Probe & Audit Findings (`tools/templates/`)
-When screens are located behind authentication gates, multi-step forms, or dynamic single-page application (SPA) states:
-- **Active Probe Prompt** ([`tools/templates/active_probe_prompt.txt`](tools/templates/active_probe_prompt.txt)): Guides the AI agent under strict safety rules:
-  - Disposable, low-privilege test accounts only (credentials read via environment variables `QA_USER` / `QA_PASS`).
-  - Zero irreversible or destructive actions (strictly forbids account deletion, payments, or altering master records).
-  - Read-only JavaScript evaluation (`evaluate`).
-  - Clear separation between **Facts ("Quan sát")** and **Hypotheses ("Giả thuyết")**.
-- **Audit Findings Matrix** ([`tools/templates/audit_findings.md`](tools/templates/audit_findings.md)): Standardized finding log tracking evidence paths and review statuses (`Chưa xác minh` -> `QA đã tái hiện` / `Loại`).
-
----
-
-## 📊 Standard 20-Column QA Matrix to Pytest Mapping
-
-Based on **[ADR-0005](docs/adr/0005-testcase-matrix-ingestion-and-ai-generation-spec.md)**, any test case from Google Sheets or Excel maps 1:1 into Python code:
-
-| # | Column Name | Code Mapping & Usage |
-|---|---|---|
-| 1 | **ID** (`TC-001`) | Prefix in test function: `def test_tc_001_<slug>(self):` & `json_metadata["tc_id"] = "TC-001"`. |
-| 2 | **Scenario ID** (`TS-001`) | Test suite file name: `tests/<traceability>/test_ts01_<suite_slug>.py`. |
-| 3 | **Title** | Suffix of test function and header in docstring. |
-| 4 | **Test Suite** | Logical module/feature grouping. Each suite maps to 1 independent test file. |
-| 5 | **Page** | Target Page Object in `pages/`. Create/update `pages/<page>.py` before writing test. |
-| 6 | **Severity** (`P0`, `P1`, ...) | Pytest Marker: `@pytest.mark.p0`, `@pytest.mark.p1`. |
-| 7 | **Priority** (`High`, `Medium`) | Pytest Marker: `@pytest.mark.priority_high`, docstring & `json_metadata["priority"]`. |
-| 8 | **Execution Status** (`Passed`, `Failed`) | Determines if `@pytest.mark.xfail` is required. |
-| 9 | **Test Type** (`Functional`, `UI`, `Regression`) | Pytest Marker: `@pytest.mark.functional`, `@pytest.mark.regression`, `@pytest.mark.ui`. |
-| 10 | **Environment** | Documented in docstring & `json_metadata["target_env"]`. |
-| 11 | **Preconditions** | Executed in initial step `with self.step("Step 0: Setup"):` or docstring. |
-| 12 | **Test Data** | Extracted into `data/<traceability>_data.json`; load via fixture with `copy.deepcopy()`. |
-| 13 | **Steps Test** | Specific test step index or step description phase (`Step 1`, `Step 2`...). |
-| 14 | **Test Steps** | Detailed actions 1:1 mapped to `with self.step("Step X: <action>"):` with `self.step.set_actual(...)`. |
-| 15 | **Expected Result** | Final verification logic using `Exceptor` or standard assertions. |
-| 16 | **Actual Result** | Stored in reason string of `@pytest.mark.xfail` when Defect ID is present. |
-| 17 | **Assumption Ref** | Documented in docstring and `json_metadata["assumptions"]`. |
-| 18 | **Defect ID** (`BUG-012`) | Decorator `@pytest.mark.xfail(strict=True, reason="<Defect_ID>: <Actual_Result>")`. |
-| 19 | **Traceability** (`US-05`, `BR-03`) | Subdirectory path `tests/<traceability>/` and `json_metadata["story"]`. |
-| 20 | **Note** | Documented in docstring comments. |
-
----
-
-## 📂 Project Directory Structure
-
-> Bản đồ đầy đủ và quy tắc đặt file: [`docs/framework/REPOSITORY_STRUCTURE.md`](docs/framework/REPOSITORY_STRUCTURE.md).
-
-```text
 automation-ui/
-├── core/                                    # 🛡️ Dual-Gate Error Supervision Layer
-│   ├── catalog.py                           # Error Catalog (8 technical classification rules)
-│   ├── exceptions.py                        # BusinessAssertionError vs InfrastructureError
-│   ├── exceptor.py                          # Sole business assertion gate
-│   ├── interceptor.py                       # Playwright interaction supervisor
-│   └── pytest_plugins/                      # Modular Pytest Plugin Subsystem
-│       ├── browser_engine.py                # Multi-browser & stealth setup
-│       ├── ticket_isolation.py              # Run ID & artifact isolation
-│       └── step_and_video_hook.py           # StepTracker & error classification hook
-│
-├── pages/                                   # 📄 Page Object Model Layer (NO ASSERTIONS)
-│   ├── base_page.py                         # Shared web actions: navigate, dialog, download, fixture path
-│   ├── curricula_trainer_page.py            # Curricula form locators & get_state_snapshot
-│   ├── bing_home_page.py                    # Bing search landing page
-│   ├── bing_results_page.py                 # Bing search results page
-│   └── youtube_page.py                      # Target website interaction object
-│
-├── components/                              # 🧩 Modular Reusable UI Components
-│   └── search_box.py                        # Search bar with human typing cadence emulation
-│
-├── data/                                    # 🗄️ Test Data Fixtures (Zero Hardcoding)
-│   ├── search_data.json                     # Search keywords and parallel scenarios
-│   ├── curricula_trainer_data.json          # Pre-built trainer profiles (valid SG resident, edge cases)
-│   └── fixtures/                            # Upload files for document testing (valid, oversized, invalid)
-│
-├── tests/                                   # 🧪 Test Suites & Verification Logic
-│   ├── base_test.py                         # Base test class: lazy page getters, json loaders, fixture files
-│   ├── unit/                                # Internal Framework Unit Tests (42 tests)
-│   ├── fs08/                                # Phân hệ FS-08 (Parent Portal: Singpass, Education Account, Profile)
-│   │   └── fs08-parent-profile/             # Cấu trúc Cha/Con: Component Parent Profile (24 Tests)
-│   │       ├── test_atomic_parent_profile_components.py # Đơn Component (Atomic UI Unit Tests)
-│   │       └── test_parent_profile_form.py  # Giữa Nhiều Component (Form & Modal Interaction Tests)
-│   ├── us01_bing_search/                    # User Story 1: E2E Bing to YouTube Navigation
-│   └── us04_curricula_trainer/              # User Story 4: Curricula Trainer Account (68 Tests, 7 Suites)
-│
-├── tools/                                   # 🔍 Reconnaissance, Environment & Resilience Tools
-│   ├── env/                                 # 🌐 Environment & microservices management (backend, proxy, seed)
-│   ├── examples/                            # 🧪 Framework usage examples
-│   ├── specs_sync/                          # 🔄 Specifications sync & markdown converters (Google Drive)
-│   └── recon_and_resilience/                # 🛡️ Reconnaissance & Adversarial Toolkit ("Phá Có Kỷ Luật")
-│       ├── recon.sh                         # Passive recon script (DOM, a11y, network, console, screenshot)
-│       ├── locators/                        # BSK live-DOM inventories by portal/module
-│       ├── break_it/                        # Adversarial test generator & coverage auditor
-│       └── templates/                       # Active probe prompt & audit findings templates
-│
-├── specs/                                   # 📋 External Business Specifications & Requirements (from BA/Drive)
-│   ├── raw/                                 # Raw client assets (.docx, .xlsx, .xlsm)
-│   ├── md/                                  # High-fidelity parsed markdown specs (FSD, AC, Defect Log)
-│   ├── component_specs/                     # Atomic validation, integration flow & error catalog
-│   └── validation_rules/                    # Validation rules by business module
-│
-├── testcases/                               # 🎯 Test-case source of truth by module/ticket
-├── test_specs/                              # 📝 Lean Markdown specs by test tier
-├── uat/                                     # ✅ UAT assets segregated by r<xx>
-│   ├── master/                              # Master UAT plan and workbook
-│   └── r<xx>/                               # Module-specific UAT assets
-│
-├── copy/                                    # 🏢 Target Company Application Under Test (STRICTLY READ-ONLY)
-│   ├── edufams-backend/                     # Backend microservices (.NET)
-│   └── edugovernment-frontend/              # Frontend web application (React / Vite)
-│
-├── reporting/                               # 📊 100% Offline ExtentReports HTML Engine
-│   ├── core/                                # Generator, parser, document assembler, dashboard & test views
-│   ├── charts/                              # Pure mathematical SVG charts (donut, bar, pipeline, diagram, trend)
-│   └── assets/                              # Inlined report.css and report.js (video sync, bilingual toggle)
-│
-├── reports/                                 # 📈 Test Execution Results & Audit Findings
-│   ├── history/                             # Archived monolithic HTML reports by RUN_ID
-│   ├── test-results/                        # Raw video recordings & trace assets by RUN_ID
-│   ├── defects/evidence/                    # Defect screenshots and optimized copies
-│   ├── recon/                               # Passive reconnaissance artifacts
-│   └── execution_report.html                # Latest active run report
-│
-├── docs/                                    # 📚 Documentation & Specifications
-│   ├── framework/                           # Framework technical documentation
-│   │   ├── context/                         # Architecture handbooks, codebase context, & glossary
-│   │   ├── adr/                             # Architecture Decision Records (ADR-0004 to ADR-0006)
-│   │   ├── AI_CODING_GUIDELINES.md          # Canonical templates & anti-patterns for AI assistants
-│   │   └── INSTRUCTIONS_FOR_EVALUATION.md   # Evaluation guide & grading roadmap
-│   ├── test-specs/                          # Module-specific test case documentation
-│   ├── defects/                             # Defect logs and handoff documents
-│   ├── manual/                              # Manual execution guides and assets
-│   └── diagrams/                            # Architecture and workflow diagrams
-│
-├── archive/                                 # 📦 Historical Deliverables & Archives (Edu_Project_S2_Oct22.zip)
-├── conftest.py                              # Master Pytest entrypoint (delegates to core plugins)
-├── pytest.ini                               # Pytest configuration, markers, and default CLI flags
-├── requirements.txt                         # Python dependencies
-├── generate_report.py                       # Standalone CLI entrypoint for report generator
-├── generate_enterprise_report.py            # Enterprise report CLI entrypoint
-├── md_runner.py                             # Markdown-first runner CLI entrypoint
-├── [agile] fs -> specs                      # Backward-compatible specification alias
-├── locator-bsk -> specs/ui_bsk              # Backward-compatible UI/BSK inventory alias
-├── evidence -> reports/defects/evidence
-└── run_tests.py                             # 3-Phase orchestrator (Concurrency Lock -> Pytest -> HTML Report)
+├── pages/             # Page Object Models: Thao tác UI, đọc DOM (KHÔNG assert)
+├── components/        # UI Components tái sử dụng (Header, Sidebar, Modals...)
+├── core/              # Hạ tầng chạy test: Browser engine, plugins, error catalog, sanitizer
+├── data/              # Dữ liệu test (JSON, fixtures), test data tách biệt với code logic
+├── specs/             # Đặc tả màn hình, UI BSK JSONs (SSOT cho locators & error messages)
+├── tests/             # Bộ kiểm thử Pytest (BR, AC, Validation, Function Flow)
+├── reports/           # Kết quả thực thi: report.html, report.json, screenshots khi fail
+├── _legacy_archive/   # Lưu trữ tài liệu, scripts sinh code cũ để tra cứu khi cần
+├── pytest.ini         # Cấu hình Pytest tập trung tại root
+├── conftest.py        # Master fixtures & plugin delegation
+├── requirements.txt   # Các thư viện phụ thuộc
+└── AGENTS.md          # Bộ quy chuẩn vàng cho AI và Developers
 ```
 
 ---
 
-## 🚀 Installation & Setup
+## 2. Bốn Nguyên Tắc Vàng (Core Pillars)
 
-### 1. Prerequisites
-- Python 3.10 or higher
-- Git
+1. **Page Object Model (POM) Chuẩn:**
+   - `pages/` và `components/` chỉ thực hiện hành động trên UI (`click`, `fill`, `navigate`) và trả về dữ liệu/trạng thái.
+   - **Tuyệt đối không viết `assert` trong `pages/` hay `components/`.** Mọi assertions thuộc về file test trong `tests/`.
 
-### 2. Virtual Environment & Dependencies
+2. **Dữ Liệu & Locators Chuẩn Xác (Zero Guesswork):**
+   - Dữ liệu test nằm trong `data/**/*.json` hoặc Pytest fixtures. Sử dụng `copy.deepcopy` trước khi chỉnh sửa.
+   - Selectors và chuỗi thông báo lỗi đối soát trực tiếp từ `specs/ui_bsk/` hoặc DOM thực tế. Tuyệt đối không tự suy diễn.
+
+3. **Tập Trung 4 Thành Phần Cốt Lõi (In-Scope Coverage):**
+   - **BR (Business Rules):** Logic nghiệp vụ, điều kiện dữ liệu và ràng buộc tính toán.
+   - **AC (Acceptance Criteria):** Tiêu chí nghiệm thu của user story.
+   - **Validation:** Bắt buộc kiểm tra 3 trạng thái: đúng câu thông báo lỗi, kích hoạt `aria-invalid="true"`/viền đỏ, và tự xóa lỗi khi nhập đúng.
+   - **Function Flow:** Luồng thao tác chính (Happy path, Submit, Cancel, Back).
+
+4. **Pytest First & Báo Cáo Tinh Gọn:**
+   - Chạy test trực tiếp qua lệnh `pytest` tiêu chuẩn.
+   - Tự động chụp ảnh màn hình và lưu trace **chỉ khi test FAIL** (`--screenshot=only-on-failure`), tiết kiệm tài nguyên và ổ cứng.
+   - Xuất báo cáo trực quan 1 file HTML duy nhất tại `reports/report.html`.
+
+---
+
+## 3. Cài Đặt & Chạy Test
+
+### Cài đặt môi trường
+
 ```bash
-# Clone the repository
-git clone https://github.com/kiet-w/qa-automation-ui.git
-cd qa-automation-ui
-
-# Create virtual environment
+# Tạo và kích hoạt môi trường ảo Python
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
+# Cài đặt các thư viện cần thiết
 pip install -r requirements.txt
 
-# Install Playwright browser binaries
-playwright install chromium firefox webkit
+# Cài đặt trình duyệt Playwright
+playwright install chromium
+```
+
+### Lệnh chạy kiểm thử thường dùng
+
+```bash
+# 1. Chạy kiểm tra thu thập test (Verify cú pháp & import không lỗi)
+pytest tests --collect-only -q
+
+# 2. Chạy 1 file test cụ thể
+pytest tests/unit/test_catalog.py -v
+
+# 3. Chạy toàn bộ test thuộc một module (chạy song song 3 workers)
+pytest tests/fs03/ -n 3 -v
+
+# 4. Chạy test và mở trình duyệt trực quan để debug (Headed mode)
+pytest tests/fs08/fs08-parent-login/ --headed -v
+
+# 5. Xuất báo cáo HTML độc lập
+pytest tests/unit/ --html=reports/report.html --self-contained-html
 ```
 
 ---
 
-## 🏃 Test Execution Guide
+## 4. Báo Cáo & Debug
 
-### 1. Ticket Concurrency Locking & History Retention
-`run_tests.py` enforces ticket-level concurrency control via file locks (`fcntl.flock`). If two processes attempt to execute the same ticket suite simultaneously, the second run is rejected with a clear `[LOCKED ERROR]` to prevent test data collision and report corruption.
-
-Every test run archives:
-- **Monolithic Standalone HTML Report**: `reports/<ticket>/history/<RUN_ID>.html` (fully offline, base64 WebM/PNG).
-- **Raw HD Video Recordings**: `reports/<ticket>/test-results/<RUN_ID>/` (permanent video artifacts per test step).
-- **Active Pointer**: `reports/<ticket>/execution_report.html` always points to the latest execution.
-
-### 2. Run Specific Ticket / User Story
-The orchestrator automatically runs Pytest, extracts the JSON report, generates the offline ExtentReports HTML file, and prints an ANSI terminal summary:
-
-```bash
-# Run Curricula Trainer Account test suite
-python3 run_tests.py --ticket us04_curricula_trainer
-
-# Run Bing Search E2E test suite
-python3 run_tests.py --ticket us01_bing_search
-
-# Run directly via Pytest
-pytest tests/us04_curricula_trainer/test_ts06_save_action.py -v
-```
-
-### 3. Run Parallel Tests (`pytest-xdist`)
-Parallel multi-core execution automatically switches to headless mode and isolates artifacts:
-
-```bash
-# Run with 4 parallel worker processes
-python3 run_tests.py --ticket us04_curricula_trainer -n 4
-
-# Run with auto CPU detection
-pytest tests/us04_curricula_trainer/ -n auto
-```
-
-### 4. Cross-Browser Selection & Custom Executables
-```bash
-# Run on Chromium (default)
-python3 run_tests.py --ticket us04_curricula_trainer --target-browser=chromium
-
-# Run on Microsoft Edge / Google Chrome
-python3 run_tests.py --ticket us04_curricula_trainer --target-browser=edge
-python3 run_tests.py --ticket us04_curricula_trainer --target-browser=chrome
-
-# Run on Brave Browser (auto-detected across Linux/macOS/Windows)
-python3 run_tests.py --ticket us04_curricula_trainer --target-browser=brave
-
-# Run with a custom binary path
-python3 run_tests.py --target-browser=brave --browser-path=/usr/bin/brave-browser
-```
-
-### 5. Run Internal Framework Unit Tests
-Verify framework reliability, AST invariant guards, and dual-gate error classification:
-
-```bash
-# Run unit tests via run_tests.py
-python3 run_tests.py --ticket unit
-
-# Or run directly via pytest
-pytest tests/unit/ -v
-```
-
-### 6. Regenerate HTML Report Without Rerunning Tests
-```bash
-# Regenerate report with specified output
-python3 generate_report.py reports/us04_curricula_trainer/report.json reports/custom_report.html
-
-# Regenerate with Base64 embedded media
-python3 generate_report.py reports/us04_curricula_trainer/report.json reports/custom_report.html --embed-media
-```
-
----
-
-## 🤖 Hướng Dẫn Kêu AI Coding Tạo Automation Test (AI Test Generation Playbook)
-
-Phần này hướng dẫn chi tiết cách bạn nạp dữ liệu từ bảng test case Google Sheets (19 cột) vào các công cụ AI (như **Cursor**, **Claude 3.7 Sonnet**, **ChatGPT / GPT-4o**, **GitHub Copilot**, **Antigravity**) để AI tự động code các test suite chuẩn 100%, không bị ảo giác locator và tương thích hoàn toàn với framework.
-
-### 1. Quy Trình 4 Bước Thực Hiện
-
-```text
-┌─────────────────────────┐       ┌─────────────────────────┐       ┌─────────────────────────┐
-│ Bước 1: Chuẩn Bị        │       │ Bước 2: Nạp Prompt      │       │ Bước 3: AI Sinh Code    │
-│ - Bảng test case 19 cột │ ────▶ │ - Dán Master Prompt     │ ────▶ │ - Cập nhật Page Object  │
-│ - docs/AI_CODING_...    │       │ - Đính kèm dữ liệu TCs  │       │ - Trích xuất data JSON  │
-│ - AGENTS.md             │       │                         │       │ - Viết tests/<ticket>/  │
-└─────────────────────────┘       └─────────────────────────┘       └────────────┬────────────┘
-                                                                                 │
-                                                                                 ▼
-                                                                    ┌─────────────────────────┐
-                                                                    │ Bước 4: Chạy & Nhận Báo │
-                                                                    │ python3 run_tests.py    │
-                                                                    │  --ticket <tên_dự_án>   │
-                                                                    └─────────────────────────┘
-```
-
----
-
-### 2. Mẫu Prompt Chuẩn Sẵn Sàng Copy-Paste (Master Prompt Template)
-
-Khi giao việc cho AI trong Cursor Composer / Chat, Claude hoặc Copilot, hãy copy nguyên văn đoạn prompt dưới đây:
-
-```markdown
-Bạn là Chuyên gia QA Automation phụ trách phát triển test tự động trên repository này.
-
-ĐÂY LÀ DỰ ÁN UI AUTOMATION TESTING CHUYÊN NGHIỆP:
-⚠️ NGUYÊN TẮC BẤT DI BẤT DỊCH: TUYỆT ĐỐI KHÔNG ĐƯỢC PHÉP ASSUMPTION (ZERO ASSUMPTIONS).
-Bạn KHÔNG ĐƯỢC PHÉP tự ý suy đoán bất kỳ giá trị nào: selector, câu thông báo lỗi, mã lỗi (MSG-xxxx), trạng thái nút bấm, vòng đời dữ liệu, hay công thức tính toán. Bạn CHỈ ĐƯỢC PHÉP NHẬN THÔNG TIN từ các file đặc tả chính thức tại `specs/md/` hoặc từ User.
-
-HÃY ĐỌC KỸ VÀ TUÂN THỦ TUYỆT ĐỐI CÁC TÀI LIỆU QUY CHUẨN SAU:
-1. `AGENTS.md` — Toàn bộ các Bất biến kiến trúc bắt buộc (Invariant 0: Cấm sửa `copy/`, Invariant 1: Cấm assert trong POM, Invariant 2: Cấm time.sleep, Invariant 6: ZERO ASSUMPTIONS, Invariant 7: 9-Tier Failure Criteria).
-2. `docs/framework/AI_CODING_GUIDELINES.md` — Quy tắc ánh xạ 19 cột từ QA Matrix sang Pytest và 7 cấm kỵ (anti-patterns).
-3. `specs/md/` (Single Source of Truth) — Nguồn sự thật duy nhất cho mọi quy tắc nghiệp vụ:
-   - Business Rules cốt lõi: `specs/md/FS_SPECIFICATIONS_SUMMARY.md` và `specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md`
-   - Acceptance Criteria đầy đủ: `specs/md/EAFAMS_SPLIT_PAYMENT_AND_AI_FAS_TEST_CASES_AND_AC.md` và `specs/md/Test Cases/`
-   - 31 Quyết định nghiệp vụ Client: `specs/md/MEETINGS_AND_DECISIONS_SUMMARY.md`
-   - Functional Specs: `specs/md/FS document/` (FS-01 đến FS-10)
-
-NHIỆM VỤ CỦA BẠN:
-Tự động sinh mã kiểm thử tự động cho User Story / Ticket: `{TÊN_TICKET_HOẶC_DỰ_ÁN}` dựa trên danh sách Test Case dưới đây:
-
-{DÁN CÁC DÒNG TEST CASE TỪ GOOGLE SHEET VÀO ĐÂY}
-
-YÊU CẦU THỰC HIỆN CHI TIẾT:
-1. Tầng Page Object:
-   - Kiểm tra xem các trang trong cột `Page` đã có trong `pages/` chưa. Nếu chưa, hãy tạo `pages/{TÊN_DỰ_ÁN}/{tên_trang}_page.py` kế thừa `BasePage` với đầy đủ locators và action methods.
-   - TUYỆT ĐỐI KHÔNG viết lệnh assert trong Page Object.
-   - Sử dụng `self.handle_next_dialog()` nếu có thao tác mở native confirm/alert dialog (Cancel button).
-2. Tầng Test Data:
-   - Trích xuất dữ liệu từ cột `Test Data` vào file JSON: `data/{TÊN_DỰ_ÁN}/{TÊN_DỰ_ÁN}_data.json`.
-   - Trong test chỉ gọi `copy.deepcopy(data[...])`, tuyệt đối không hardcode giá trị vào thân hàm test.
-3. Tầng Test Suite:
-   - Tạo các file test theo từng `Test Suite`: `tests/{TÊN_DỰ_ÁN}/test_ts{scenario_id}_{suite_name}.py`.
-   - Tất cả các class test đều phải kế thừa từ `BaseTest` (từ `tests.base_test`).
-   - Đặt tên hàm: `def test_tc_{id}_{title_slug}(self, ...):`.
-   - Bọc 1:1 mỗi hành động trong `Test Steps` thành `with self.step("Step X: ..."):` kèm `self.step.set_actual(...)`.
-   - Nếu test case có `Defect ID` (hoặc `Execution Status = Failed`), bắt buộc gắn decorator:
-     `@pytest.mark.xfail(strict=True, reason="{Defect_ID}: {Actual_Result}")`.
-   - Gắn markers phân loại: `@pytest.mark.{p0|p1|p2}`, `@pytest.mark.{functional|regression|ui}`.
-4. Báo cáo sau khi hoàn thành:
-   - Cung cấp lệnh chạy test: `python3 run_tests.py --ticket {TÊN_DỰ_ÁN}`.
-```
-
----
-
-### 3. Ví Dụ Minh Họa: Từ Bảng Google Sheet Ra Code Tự Động
-
-**Dữ liệu đầu vào từ 1 hàng trong Google Sheet:**
-- **ID:** `TC-001` | **Scenario ID:** `TS-001` | **Title:** `Verify user can log in with valid credentials`
-- **Test Suite:** `Login` | **Page:** `Login Page` | **Severity:** `P0` | **Priority:** `High`
-- **Test Data:** `Email: user01@test.com; Password: Secret@123`
-- **Test Steps:** `1. Open login page \n 2. Enter email and password \n 3. Click [Login]`
-- **Expected Result:** `User is redirected to Dashboard; welcome message is shown`
-- **Traceability:** `US-01`
-
-**Code do AI sinh ra chuẩn 100%:**
-```python
-import copy
-import pytest
-from tests.base_test import BaseTest
-from pages.us01.login_page import LoginPage
-
-
-@pytest.fixture(scope="class")
-def login_data():
-    bt = BaseTest()
-    return bt.load_json_data("data/us01/us01_data.json")
-
-
-class TestTS01Login(BaseTest):
-    """TS-01: Login Test Suite verifying authentication workflows."""
-
-    @pytest.mark.p0
-    @pytest.mark.priority_high
-    @pytest.mark.functional
-    @pytest.mark.ui
-    def test_tc_001_verify_user_can_log_in_with_valid_credentials(self, login_data):
-        """
-        TC-001 — Verify user can log in with valid credentials
-        Scenario ID: TS-001 | Test Suite: Login | Page: Login Page
-        Severity: P0 | Priority: High | Traceability: US-01
-        Test Data: login_data["valid_user"]
-        Expected: User is redirected to Dashboard; welcome message is shown.
-        """
-        data = copy.deepcopy(login_data["valid_user"])
-
-        with self.step("Step 1: Open login page"):
-            login = self.get_page(LoginPage)
-            login.open()
-            self.step.set_actual("Navigated to login page.")
-
-        with self.step("Step 2: Enter email and password"):
-            login.enter_credentials(data["email"], data["password"])
-            self.step.set_actual("Credentials entered into input fields.")
-
-        with self.step("Step 3: Click [Login] and verify redirect to Dashboard"):
-            login.click_login()
-            assert "/dashboard" in self.page.url, "User must be redirected to /dashboard"
-            self.step.set_actual("Redirected to Dashboard with welcome message displayed.")
-```
-
----
-
-### 4. Kiểm Tra & Chạy Test Ngay Sau Khi AI Code Xong
-
-```bash
-# 1. Chạy suite kiểm thử vừa sinh ra và xem báo cáo HTML kèm video 1080p
-python3 run_tests.py --ticket {TÊN_DỰ_ÁN}
-
-# 2. Chạy nhanh song song đa luồng (multi-core)
-python3 run_tests.py --ticket {TÊN_DỰ_ÁN} -n auto
-
-# 3. Mở báo cáo trên trình duyệt
-xdg-open reports/{TÊN_DỰ_ÁN}/execution_report.html   # Linux
-# hoặc open reports/{TÊN_DỰ_ÁN}/execution_report.html  # macOS
-```
+- Sau mỗi lượt chạy, báo cáo tổng hợp được cập nhật tự động tại:
+  - **HTML Report:** `reports/report.html` (Mở trực tiếp trên bất kỳ trình duyệt nào)
+  - **JSON Report:** `reports/report.json`
+- Khi test gặp lỗi (FAIL), Playwright tự động chụp ảnh màn hình lưu vào `reports/test-results/` để bạn đối soát ngay lập tức.

@@ -1,0 +1,62 @@
+{
+  "title": "Tên phạm vi — thay bằng dữ liệu có nguồn",
+  "sources": [
+    {
+      "id": "SOURCE-ID",
+      "pillar": "BR / AC / Validation / Flow / Error",
+      "path": "đường dẫn nguồn từ root",
+      "section": "tiêu đề hoặc dòng"
+    }
+  ],
+  "locators": [
+    {
+      "name": "control",
+      "selector": "selector từ recon",
+      "source": "đường dẫn và thời điểm recon"
+    }
+  ],
+  "fixtures": {
+    "fixture_reference": "đường dẫn dữ liệu fixture"
+  },
+  "coverage": [
+    {
+      "subject": "field hoặc BR/AC",
+      "layer": "lớp kiểm thử",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-EXAMPLE-01"
+      ]
+    },
+    {
+      "subject": "field",
+      "layer": "lớp không áp dụng",
+      "status": "N/A",
+      "reason": "lý do có nguồn"
+    }
+  ],
+  "cases": [
+    {
+      "ID": "TC-EXAMPLE-01",
+      "Scenario ID": "TS-EXAMPLE-01",
+      "Title": "Tên kịch bản",
+      "Test Suite": "Tên suite",
+      "Page": "Tên màn hình",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Atomic",
+      "Environment": "Môi trường",
+      "Preconditions": "Điều kiện",
+      "Test Data": "Tham chiếu fixture",
+      "Steps Test": "Số bước",
+      "Test Steps": "Các bước",
+      "Expected Result": "Kết quả đo được và oracle",
+      "Actual Result": "",
+      "Assumption Ref": "",
+      "Defect ID": "",
+      "Traceability": "BR / AC / source ID",
+      "Note": "Evidence dự kiến",
+      "Pillar": "BR"
+    }
+  ]
+}

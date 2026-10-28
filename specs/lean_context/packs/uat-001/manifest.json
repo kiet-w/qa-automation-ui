@@ -1,0 +1,137 @@
+{
+  "scope": "UAT-001",
+  "stage": "design",
+  "review": {
+    "status": "draft",
+    "evidence": ""
+  },
+  "entries": [
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/FS document/FS-01_Education_Account_Lifecycle.md",
+      "sha256": "de2f03d95c18f1294007ac6299c960f62a7ca9f7d266174a255d9112e78f5da9",
+      "start": 1,
+      "end": 17,
+      "roles": [
+        "Dependency"
+      ],
+      "reason": "Final version and decision classification header"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/FS document/FS-01_Education_Account_Lifecycle.md",
+      "sha256": "de2f03d95c18f1294007ac6299c960f62a7ca9f7d266174a255d9112e78f5da9",
+      "start": 20,
+      "end": 278,
+      "roles": [
+        "BR",
+        "AC",
+        "Flow",
+        "Error"
+      ],
+      "reason": "Final F01 automatic creation section; includes exception flows and acceptance criteria"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/FS document/FS-01_Education_Account_Lifecycle.md",
+      "sha256": "de2f03d95c18f1294007ac6299c960f62a7ca9f7d266174a255d9112e78f5da9",
+      "start": 483,
+      "end": 654,
+      "roles": [
+        "Validation",
+        "Dependency"
+      ],
+      "reason": "Shared business data, cross-function boundaries and delivery limitations of final section"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/README.md",
+      "sha256": "2000d04bb9fd742f68db02409b000e37798957f0ecbfe990a39d0ba6b30c7c04",
+      "start": 1,
+      "end": 46,
+      "roles": [
+        "Dependency"
+      ],
+      "reason": "Component map and referenced F02 dependencies; review applicability"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/atomic/ea_account_table_pagination.md",
+      "sha256": "7bbd3cf0e5ca43b4e7be1f665003d6019b231dab9601b70117bdd2293f8aabbd",
+      "start": 1,
+      "end": 188,
+      "roles": [
+        "Validation"
+      ],
+      "reason": "Existing F01 control specification; retain complete conditions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/atomic/ea_lifecycle_drawer.md",
+      "sha256": "0cdcc9f70f234f910c31b2f467bf603b0a65f287fc11a1d75d4401a3aa5f61dc",
+      "start": 1,
+      "end": 151,
+      "roles": [
+        "Validation"
+      ],
+      "reason": "Existing F01 control specification; retain complete conditions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/atomic/student_citizen_search_filter.md",
+      "sha256": "ae8d2735243459fe6917429fc86d9ec75575adda395e669447885be91c9e46ea",
+      "start": 1,
+      "end": 132,
+      "roles": [
+        "Validation"
+      ],
+      "reason": "Existing F01 control specification; retain complete conditions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/atomic/sync_job_status_card.md",
+      "sha256": "cdeb41ad580dda29d7f16909cb4c818afd64720d6280305c0dc127dabcb8f794",
+      "start": 1,
+      "end": 132,
+      "roles": [
+        "Validation"
+      ],
+      "reason": "Existing F01 control specification; retain complete conditions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/f01/integration/account_lifecycle_creation_flow.md",
+      "sha256": "eb2da6bc57a1869115a574b63c7e9ce3b5bfae14aa6cf03dc165c77062d09366",
+      "start": 1,
+      "end": 115,
+      "roles": [
+        "Flow",
+        "Error"
+      ],
+      "reason": "Creation flow, dependencies, state machine and exception handling"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/finance-and-fas/01_education_accounts.md",
+      "sha256": "c399b6ca51cc3e8a6ceb22d167c59962ae298b78308270e1550a6e968ca53de6",
+      "start": 1,
+      "end": 127,
+      "roles": [
+        "UI"
+      ],
+      "reason": "Recorded locator inventory and flow; excludes illustrative Python snippet; verify freshness against target build"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/finance-and-fas/01_education_accounts.md",
+      "sha256": "c399b6ca51cc3e8a6ceb22d167c59962ae298b78308270e1550a6e968ca53de6",
+      "start": 256,
+      "end": 275,
+      "roles": [
+        "UI",
+        "Error"
+      ],
+      "reason": "Recorded UI pass/fail oracles and feedback"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/testcases/f01/f01-education-accounts/TC_F01_UAT001_EA_Provisioning.md",
+      "sha256": "0ab562e3493fd44dcc1e7f4c7430457788632b88b400fce90cd23194e9719d5f",
+      "start": 1,
+      "end": 190,
+      "roles": [
+        "Testcase"
+      ],
+      "reason": "Existing testcase and coverage to reuse; not approved or migrated by this tooling task"
+    }
+  ],
+  "note": "Initial reusable source selection, not an approved testcase/coverage review. Verify dependencies and current DOM before testcase design. Original files remain authoritative."
+}
