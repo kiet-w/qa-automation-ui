@@ -1,0 +1,53 @@
+{
+  "module": "step_07_fas_assessment",
+  "name": "Thẩm định & Phê duyệt Đơn Trợ cấp SBFAS (UAT-SCH-03, UAT-SCH-03-N1 & UAT-035)",
+  "base_url": "https://admin.20-255-158-192.sslip.io",
+  "auth": {
+    "school_email": "staff1@IAM.edu.vn",
+    "school_name": "Rosyth Primary School",
+    "role": "School User / School Reviewer"
+  },
+  "hq_auth": {
+    "email": "admin@IAM.edu.vn",
+    "role": "MOE HQ Observer / Admin"
+  },
+  "target_application": {
+    "application_code": "APP-01004",
+    "beneficiary": "Ethan Rahman",
+    "second_beneficiary": "Leo Rahman",
+    "expected_status": "Pending School Review",
+    "income_verification": "Verified",
+    "household_financials": {
+      "ghi": "$4,400",
+      "pci": "$1,100",
+      "household_size": "4",
+      "rule_engine_result": "Evaluating at school level."
+    },
+    "ml_advisory": {
+      "recommended_tier": "SBFAS Tier 1",
+      "is_advisory": true
+    }
+  },
+  "approval_scenario": {
+    "tier": "Tier 1",
+    "comment": "Eligible",
+    "fee_waiver": "100%",
+    "expected_toast": "Subsidy applied to the student's EA fees",
+    "expected_status": "Approved"
+  },
+  "rejection_scenario": {
+    "target_application_code": "APP-01005",
+    "target_student": "Liam Pham",
+    "reason": "Income above limit",
+    "valid_remarks": "Income above the Tier 1 limit.",
+    "invalid_boundary_remarks": "Income high 12",
+    "exact_boundary_remarks": "Income high 123",
+    "expected_toast": "Application rejected. Parent notified by email",
+    "expected_status": "Rejected"
+  },
+  "boundary_security": {
+    "own_school": "Rosyth Primary School",
+    "forbidden_school": "Changkat Primary School",
+    "hq_endpoint": "/moe-hq/fas-applications"
+  }
+}

@@ -1,0 +1,346 @@
+{
+  "title": "Cổng Dịch vụ Phụ huynh EduSave — Đăng nhập & Singpass MockPass (:5174 / :5288) — Đặc tả Kiểm thử 5 Trụ Cột",
+  "sources": [
+    {
+      "id": "BR-CORE",
+      "pillar": "BR",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md",
+      "section": "Quy tắc nghiệp vụ cốt lõi"
+    },
+    {
+      "id": "AC-CORE",
+      "pillar": "AC",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md",
+      "section": "Tiêu chí nghiệm thu chức năng"
+    },
+    {
+      "id": "VAL-12",
+      "pillar": "Validation",
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "section": "Ma trận kiểm thử hợp lệ ô nhập liệu"
+    },
+    {
+      "id": "FLOW-CORE",
+      "pillar": "Flow",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md",
+      "section": "Luồng tương tác và chuyển đổi trạng thái"
+    },
+    {
+      "id": "ERR-CORE",
+      "pillar": "Error",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/01_parent_login_and_mockpass.md",
+      "section": "Xử lý ngoại lệ và cảnh báo lỗi"
+    }
+  ],
+  "locators": [
+    {
+      "name": "Nút Đăng nhập Singpass MockPass",
+      "selector": "button:has-text('Singpass'), button:has-text('MockPass')",
+      "source": "Giữa khung đăng nhập"
+    },
+    {
+      "name": "Danh sách tài khoản mẫu",
+      "selector": "select, .persona-list",
+      "source": "Màn hình xác thực MockPass"
+    },
+    {
+      "name": "Nút Xác nhận Đăng nhập",
+      "selector": "button:has-text('Login'), button:has-text('Submit')",
+      "source": "Màn hình MockPass"
+    },
+    {
+      "name": "Nút Hủy bỏ",
+      "selector": "button:has-text('Cancel'), a:has-text('Cancel')",
+      "source": "Màn hình MockPass"
+    },
+    {
+      "name": "Thông báo lỗi",
+      "selector": "[role='alert'], .alert-danger",
+      "source": "Đầu khung đăng nhập"
+    }
+  ],
+  "fixtures": {
+    "fixture_reference": "01_parent_login_and_mockpass_data.json",
+    "design_status": "Not Run",
+    "result_fields": "Actual Result và Defect ID để trống phục vụ kiểm thử thực tế"
+  },
+  "coverage": [
+    {
+      "subject": "Quy tắc nghiệp vụ cốt lõi và phân quyền",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-AUTH-01",
+        "TC-AUTH-02"
+      ]
+    },
+    {
+      "subject": "Tiêu chí nghiệm thu chức năng chính",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-AUTH-03",
+        "TC-AUTH-04"
+      ]
+    },
+    {
+      "subject": "Kiểm tra tính hợp lệ dữ liệu ô nhập (Validation)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-AUTH-05",
+        "TC-AUTH-06"
+      ]
+    },
+    {
+      "subject": "Luồng tương tác và chuyển trạng thái (Flow)",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-AUTH-07",
+        "TC-AUTH-08"
+      ]
+    },
+    {
+      "subject": "Xử lý lỗi và phản hồi cảnh báo (Error)",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-AUTH-09",
+        "TC-AUTH-10"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "ID": "TC-AUTH-01",
+      "Scenario ID": "TS-AUTH-BR",
+      "Title": "Quyền truy cập dịch vụ công dân: Phụ huynh có con liên kết mới vào được cổng EduSave",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Tài khoản Singpass Phụ huynh hợp lệ",
+      "Test Data": "Tài khoản: S1234567A",
+      "Steps Test": "3",
+      "Test Steps": "1. Mở trang Đăng nhập Cổng Phụ huynh.\n2. Chọn Đăng nhập với Singpass MockPass.\n3. Chọn tài khoản phụ huynh hợp lệ.",
+      "Expected Result": "Đăng nhập thành công vào Cổng phụ huynh; hiển thị thông tin các con liên kết và số dư quỹ EduSave.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-AUTH-01; CITIZEN-SCOPE",
+      "Defect ID": "",
+      "Traceability": "BR-AUTH-01; CITIZEN-SCOPE",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-02",
+      "Scenario ID": "TS-AUTH-BR",
+      "Title": "Kiểm soát an toàn phiên làm việc: Hết hạn phiên tự động bảo vệ dữ liệu phụ huynh",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phiên làm việc phụ huynh đang mở",
+      "Test Data": "Thời gian chờ không thao tác",
+      "Steps Test": "3",
+      "Test Steps": "1. Đăng nhập vào Cổng phụ huynh.\n2. Để yên không thao tác trên màn hình vượt quá thời gian quy định.\n3. Nhấp vào một chức năng bất kỳ.",
+      "Expected Result": "Hệ thống tự động kết thúc phiên làm việc an toàn và chuyển hướng về màn hình Đăng nhập.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-AUTH-SESSION; SECURITY-IDLE",
+      "Defect ID": "",
+      "Traceability": "BR-AUTH-SESSION; SECURITY-IDLE",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-03",
+      "Scenario ID": "TS-AUTH-AC",
+      "Title": "Hiển thị giao diện Đăng nhập đầy đủ logo, tiêu đề và nút Đăng nhập Singpass MockPass",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Trình duyệt ở phiên mới",
+      "Test Data": "Nút Singpass MockPass",
+      "Steps Test": "2",
+      "Test Steps": "1. Mở trình duyệt và truy cập trang Đăng nhập Phụ huynh.\n2. Quan sát khung hiển thị và tiêu đề trang.",
+      "Expected Result": "Tiêu đề 'Đăng nhập Cổng phụ huynh' hiển thị rõ ràng; nút Đăng nhập Singpass MockPass sẵn sàng thao tác.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-AUTH-01; DOM-LOGIN",
+      "Defect ID": "",
+      "Traceability": "AC-AUTH-01; DOM-LOGIN",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-04",
+      "Scenario ID": "TS-AUTH-AC",
+      "Title": "Đăng nhập thành công với tài khoản mẫu Singpass chuyển hướng ngay vào Trang chủ",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Trang MockPass đang mở",
+      "Test Data": "Tài khoản mẫu: Tan Ah Teck (S1234567A)",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhấp nút Đăng nhập với Singpass MockPass.\n2. Chọn tài khoản phụ huynh Tan Ah Teck.\n3. Nhấn Xác nhận đăng nhập.",
+      "Expected Result": "Đăng nhập thành công; chuyển hướng mượt mà vào Trang chủ Cổng dịch vụ công dân EduSave.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-AUTH-SUCCESS; REDIRECT-HOME",
+      "Defect ID": "",
+      "Traceability": "AC-AUTH-SUCCESS; REDIRECT-HOME",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-05",
+      "Scenario ID": "TS-AUTH-VAL",
+      "Title": "Bỏ trống ô chọn tài khoản trên cổng MockPass: Hiển thị cảnh báo yêu cầu chọn tài khoản",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Trang xác thực MockPass",
+      "Test Data": "Không chọn tài khoản nào",
+      "Steps Test": "2",
+      "Test Steps": "1. Mở màn hình đăng nhập MockPass.\n2. Không chọn tài khoản nào và nhấn Xác nhận.",
+      "Expected Result": "Hệ thống chặn lại và hiển thị cảnh báo: 'Vui lòng chọn một tài khoản phụ huynh để tiếp tục'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 1; MANDATORY",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 1; MANDATORY",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-06",
+      "Scenario ID": "TS-AUTH-VAL",
+      "Title": "Kiểm tra cấu trúc mã định danh Singpass NRIC hợp lệ khi nhập liệu",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Biểu mẫu nhập NRIC thủ công",
+      "Test Data": "NRIC sai định dạng: 'ABC123'",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhập mã NRIC sai định dạng vào ô kiểm thử.\n2. Nhấn nút Đăng nhập.",
+      "Expected Result": "Ô nhập hiển thị viền đỏ cảnh báo: 'Mã NRIC không hợp lệ (phải bắt đầu bằng chữ cái và đúng 9 ký tự)'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 4; NRIC-FORMAT",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 4; NRIC-FORMAT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-07",
+      "Scenario ID": "TS-AUTH-FLOW",
+      "Title": "Quy trình đăng nhập Singpass MockPass hoàn chỉnh từ đầu đến cuối",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Tài khoản mẫu hợp lệ",
+      "Test Data": "Tan Ah Teck",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhấp nút Singpass MockPass.\n2. Chọn danh tính phụ huynh.\n3. Nhấn Đăng nhập và kiểm tra Trang chủ.",
+      "Expected Result": "Quy trình diễn ra liên tục, thuận tiện; Trang chủ mở ra với đầy đủ thông tin cá nhân của phụ huynh.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-AUTH-LOGIN; HAPPY-PATH",
+      "Defect ID": "",
+      "Traceability": "FLOW-AUTH-LOGIN; HAPPY-PATH",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-08",
+      "Scenario ID": "TS-AUTH-FLOW",
+      "Title": "Hủy bỏ thao tác đăng nhập tại trang MockPass và quay lại màn hình chính",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Trang MockPass đang mở",
+      "Test Data": "Nút Hủy bỏ (Cancel)",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhấn nút Đăng nhập Singpass.\n2. Tại màn hình MockPass, nhấn nút Hủy bỏ (Cancel).\n3. Quan sát màn hình trả về.",
+      "Expected Result": "Tiến trình dừng an toàn; người dùng được đưa trở lại trang Đăng nhập ban đầu mà không phát sinh lỗi.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-AUTH-CANCEL; SAFE-RETURN",
+      "Defect ID": "",
+      "Traceability": "FLOW-AUTH-CANCEL; SAFE-RETURN",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-09",
+      "Scenario ID": "TS-AUTH-ERR",
+      "Title": "Xử lý khi dịch vụ xác thực công dân gián đoạn: Hiển thị thông báo thân thiện",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Cổng xác thực gặp sự cố mạng",
+      "Test Data": "Thao tác đăng nhập",
+      "Steps Test": "2",
+      "Test Steps": "1. Thử đăng nhập khi cổng xác thực gián đoạn.\n2. Quan sát phản hồi trên giao diện.",
+      "Expected Result": "Màn hình không bị vỡ hoặc treo; xuất hiện thông báo: 'Dịch vụ xác thực tạm thời gián đoạn, vui lòng thử lại sau'.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-AUTH-SERVICE-FAIL; GRACEFUL",
+      "Defect ID": "",
+      "Traceability": "ERR-AUTH-SERVICE-FAIL; GRACEFUL",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-AUTH-10",
+      "Scenario ID": "TS-AUTH-ERR",
+      "Title": "Khóa nút Đăng nhập khi nhấp liên tiếp tránh gửi nhiều yêu cầu trùng lặp",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Đăng nhập Cổng Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Nút Đăng nhập MockPass",
+      "Test Data": "Nhấp chuột liên tiếp 2 lần",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhấp nhanh liên tiếp vào nút Đăng nhập.\n2. Quan sát phản hồi nút bấm.",
+      "Expected Result": "Nút bấm lập tức chuyển trạng thái 'Đang xử lý...' và tạm khóa để ngăn việc gửi nhiều yêu cầu cùng lúc.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-AUTH-DEBOUNCE; RATE-LIMIT",
+      "Defect ID": "",
+      "Traceability": "ERR-AUTH-DEBOUNCE; RATE-LIMIT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    }
+  ]
+}

@@ -8,24 +8,24 @@ Strictly locator constants. Complies with Invariant 1 and modularity limits (<10
 class BulkCsvLocators:
     """BSK-verified locators for Bulk CSV mode on /school-user-management/new (DOM §1.2)."""
 
-    BULK_TAB = "button[role='tab']:has-text('Bulk CSV'), button:has-text('Bulk CSV')"
-    FILE_INPUT = "input[type='file'][accept*='.csv'], #school-users-csv"
-    IMPORT_BUTTON = "button:has-text('Upload CSV'), button:has-text('Import')"
-    TEMPLATE_BUTTON = "button:has-text('Download template'), button:has-text('Get Template')"
-    RESET_BUTTON = "button:has-text('Reset')"
+    BULK_TAB = "[role='tab']:has-text('Bulk CSV')"
+    FILE_INPUT = "#school-users-csv"
+    IMPORT_BUTTON = "button:has-text('Import')"
+    TEMPLATE_BUTTON = "button:has-text('Get Template')"
+    RESET_BUTTON = "[role='tabpanel'] button:has-text('Reset')"
     # Feedback surfaces: inline alert, toast, aria-live result region (DOM §4.1/§4.2).
-    FEEDBACK = "[role='alert'], [role='status'], div[aria-live='polite']"
-    RESULT_REGION = "div[aria-live='polite'], table[class*='preview'], [role='dialog'] table"
+    FEEDBACK = "[role='alert'], [role='status'], [aria-live='polite']"
+    RESULT_REGION = "[aria-live='polite'], [role='dialog'] table"
 
 
 class SchoolUserDetailLocators:
     """BSK-verified locators for /school-user-management/:id (DOM §1.3)."""
 
-    PAGE_HEADING = "h1"
-    BACK_TO_LIST = "button:has-text('Back to school users'), button:has-text('Back to list')"
-    ACCOUNT_CARD = "section:has(h2:has-text('User account'))"
-    PROFILE_CARD = "section:has(h2:has-text('Profile'))"
-    SCHOOL_CARD = "section:has(h2:has-text('School'))"
+    PAGE_HEADING = "#school-user-detail-heading"
+    BACK_TO_LIST = "button:has-text('Back to list')"
+    ACCOUNT_CARD = "article:has(h2:has-text('Account'))"
+    PROFILE_CARD = "article:has(h2:has-text('Profile'))"
+    SCHOOL_CARD = "article:has(h2:has-text('School'))"
     SCHOOL_COMBOBOX = "#school-user-school"
     ASSIGN_BUTTON = "button:has-text('Assign school')"
     # Security audit helpers (TC-FS03-SUM-010 / SUM-067).
@@ -36,8 +36,8 @@ class SchoolUserDetailLocators:
 class SchoolUserListLocators:
     """Extra list-screen locators not covered by SchoolUserManagementPage (DOM §1.1)."""
 
-    HEADING = "h1:has-text('School user management')"
-    ROWS = "table tbody tr"
-    ROW_DETAIL = "button[aria-label='Detail'], tbody tr a[href*='school-user-management/']"
-    EMPTY_STATE = "tbody tr:has-text('No school users'), [role='status']:has-text('No school users')"
+    HEADING = "#school-user-management-heading"
+    ROWS = "table:has(caption:has-text('School users')) tbody tr"
+    ROW_DETAIL = "button[aria-label='Detail']"
+    EMPTY_STATE = "table:has(caption:has-text('School users')) tbody tr:has-text('No school users')"
     ALERT = "[role='alert']"

@@ -1,0 +1,31 @@
+{
+  "base_url": "https://admin.20-255-158-192.sslip.io",
+  "eservice_url": "https://eservice.20-255-158-192.sslip.io",
+  "auth": {
+    "admin_email": "admin@IAM.edu.vn",
+    "school_staff_email": "staff1@IAM.edu.vn"
+  },
+  "school": {
+    "code": "RPS-0201",
+    "name": "Rosyth Primary School"
+  },
+  "student": {
+    "name": "Liam Pham",
+    "code": "STU-00001",
+    "nric": "S4744854C",
+    "stage": "Primary 1",
+    "category": "Singapore citizen",
+    "expected_amount": "100.00",
+    "currency": "SGD"
+  },
+  "parent": {
+    "name": "Pham Van Duc",
+    "nric": "S7654321B"
+  },
+  "batch_form": {
+    "title_prefix": "Rosyth P1 Tuition Batch",
+    "period_start": "2026-11-15",
+    "period_end": "2026-12-15",
+    "due_date": "2026-12-31"
+  }
+}

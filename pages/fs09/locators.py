@@ -46,9 +46,9 @@ class BillingPaymentLocators:
     )
     ROW_CHECKBOX = "input[type='checkbox']"
     SELECTED_COUNTER = "span[class*='selectionSummary']"
-    STEP1_CONTINUE_BTN = "button:has-text('Continue')"
-    EMPTY_CHARGES_NOTICE = "div[class*='emptyState'][role='status'], td[class*='emptyCell'], td:has-text('No outstanding charges')"
-    CHARGES_LOADING = "div[role='status']:has-text('Loading charges')"
+    STEP1_CONTINUE_BTN = "button:has-text('Continue'), button:has-text('Tiếp tục')"
+    EMPTY_CHARGES_NOTICE = "div[class*='emptyState'][role='status'], td[class*='emptyCell'], td:has-text('No outstanding charges'), td:has-text('Không có khoản phí')"
+    CHARGES_LOADING = "div[role='status']:has-text('Loading charges'), div[role='status']:has-text('Đang tải')"
 
     # Step 2: Payment Method Radio Options & Split Input
     METHOD_RADIO_GROUP = "fieldset, div[class*='method']"
@@ -58,15 +58,18 @@ class BillingPaymentLocators:
     FUNDING_BREAKDOWN = "div[class*='fundingBreakdown'], div[class*='splitBreakdown']"
     SPLIT_EA_INPUT = "input[inputmode='decimal'], [class*='splitAmountField'] input, input[type='number']"
     SPLIT_ERROR_ALERT = "[class*='splitBreakdown'] [role='alert'], [class*='splitAmountField'] [role='alert'], [class*='method'] div[role='alert']"
-    STEP2_BACK_BTN = "div[class*='method'] button:has-text('Back'), [class*='reviewActions'] button:has-text('Back')"
-    STEP2_CONTINUE_BTN = "div[class*='method'] button:has-text('Continue'), [class*='reviewActions'] button:has-text('Continue')"
+    STEP2_BACK_BTN = "div[class*='method'] button:has-text('Back'), [class*='reviewActions'] button:has-text('Back'), button:has-text('Back'), button:has-text('Quay lại')"
+    STEP2_CONTINUE_BTN = "div[class*='method'] button:has-text('Continue'), [class*='reviewActions'] button:has-text('Continue'), button:has-text('Continue'), button:has-text('Tiếp tục')"
 
     # Step 3: Payment Review & Confirmation
     REVIEW_TABLE = "table[class*='reviewTable'], [class*='reviewTable'] table, table"
-    STEP3_BACK_BTN = "[class*='reviewActions'] button:has-text('Back')"
+    STEP3_BACK_BTN = "[class*='reviewActions'] button:has-text('Back'), button:has-text('Back'), button:has-text('Quay lại')"
     CONFIRM_PAY_BTN = (
         "button:has-text('Authorize & pay'), "
         "button:has-text('Authorize and pay'), "
+        "button:has-text('Ủy quyền và thanh toán'), "
+        "button:has-text('Confirm payment'), "
+        "button:has-text('Xác nhận thanh toán'), "
         "button:has-text('Pay'), "
         "button:has-text('Confirm')"
     )

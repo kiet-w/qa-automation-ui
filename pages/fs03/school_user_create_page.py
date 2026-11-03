@@ -23,13 +23,13 @@ class SchoolUserCreatePage(BasePage):
         self.moe_school_code_input: Locator = self.page.locator("#school-user-moe-school-code")
 
         # Action Buttons
-        self.create_button: Locator = self.page.locator("button:has-text('Create')")
-        self.reset_button: Locator = self.page.locator("button:has-text('Reset')")
+        self.create_button: Locator = self.page.get_by_role("button", name="Create", exact=True)
+        self.reset_button: Locator = self.page.get_by_role("button", name="Reset", exact=True)
         self.back_to_list_button: Locator = self.page.locator("button:has-text('Back to list')")
 
         # Tab Navigation
-        self.single_tab: Locator = self.page.locator("button[role='tab']:has-text('Single')")
-        self.bulk_tab: Locator = self.page.locator("button[role='tab']:has-text('Bulk CSV')")
+        self.single_tab: Locator = self.page.get_by_role("tab", name="Single")
+        self.bulk_tab: Locator = self.page.get_by_role("tab", name="Bulk CSV")
 
         # Bulk CSV Controls
         self.get_template_button: Locator = self.page.locator("button:has-text('Get Template')")
@@ -40,9 +40,11 @@ class SchoolUserCreatePage(BasePage):
         self.alerts: Locator = self.page.locator("[role='alert']")
         self.toasts: Locator = self.page.locator("[role='status']")
         self.result_card: Locator = self.page.locator("div[aria-live='polite']")
+        self.import_result_heading: Locator = self.page.get_by_role("heading", name="Import result")
+        self.import_result_table: Locator = self.page.get_by_role("table", name="Bulk school user import result")
 
         # Structure & Headings
-        self.page_heading: Locator = self.page.locator("h1, h2:has-text('Create school user')")
+        self.page_heading: Locator = self.page.locator("#school-user-create-heading")
         self.portal_logo: Locator = self.page.locator("text=EduFAMS Admin Portal")
 
     # --- Navigation Methods ---

@@ -13,6 +13,7 @@ class SchoolDetailPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
+        self.page_heading: Locator = page.locator(L.PAGE_HEADING)
         self.back_link: Locator = page.locator(L.BACK_LINK)
         self.status_badge: Locator = page.locator(L.STATUS_BADGE)
         self.overview_section: Locator = page.locator(L.OVERVIEW_SECTION)

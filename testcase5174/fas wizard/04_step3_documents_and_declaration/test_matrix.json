@@ -1,0 +1,346 @@
+{
+  "title": "Cổng Dịch vụ Phụ huynh EduSave — Hỗ trợ Tài chính FAS: Bước 3 - Đính kèm Tài liệu Minh chứng & Cam đoan (:5174) — Đặc tả Kiểm thử 5 Trụ Cột",
+  "sources": [
+    {
+      "id": "BR-CORE",
+      "pillar": "BR",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/04_step3_documents_and_declaration.md",
+      "section": "Quy tắc nghiệp vụ cốt lõi"
+    },
+    {
+      "id": "AC-CORE",
+      "pillar": "AC",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/04_step3_documents_and_declaration.md",
+      "section": "Tiêu chí nghiệm thu chức năng"
+    },
+    {
+      "id": "VAL-12",
+      "pillar": "Validation",
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "section": "Ma trận kiểm thử hợp lệ ô nhập liệu"
+    },
+    {
+      "id": "FLOW-CORE",
+      "pillar": "Flow",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/04_step3_documents_and_declaration.md",
+      "section": "Luồng tương tác và chuyển đổi trạng thái"
+    },
+    {
+      "id": "ERR-CORE",
+      "pillar": "Error",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/04_step3_documents_and_declaration.md",
+      "section": "Xử lý ngoại lệ và cảnh báo lỗi"
+    }
+  ],
+  "locators": [
+    {
+      "name": "Vùng kéo thả tải tệp",
+      "selector": ".dropzone, input[type='file']",
+      "source": "Khu vực tải tệp tài liệu"
+    },
+    {
+      "name": "Danh sách tệp đã tải lên",
+      "selector": ".file-list, [data-testid='file-list']",
+      "source": "Dưới vùng tải tệp"
+    },
+    {
+      "name": "Nút Xem trước tệp",
+      "selector": "button:has-text('Preview'), a:has-text('Xem')",
+      "source": "Trên từng dòng tệp"
+    },
+    {
+      "name": "Nút Xóa tệp",
+      "selector": "button:has-text('Delete'), button[aria-label*='delete' i]",
+      "source": "Trên từng dòng tệp"
+    },
+    {
+      "name": "Ô tích cam kết trung thực",
+      "selector": "input[type='checkbox'][name*='declaration' i]",
+      "source": "Cuối Bước 3"
+    }
+  ],
+  "fixtures": {
+    "fixture_reference": "04_step3_documents_and_declaration_data.json",
+    "design_status": "Not Run",
+    "result_fields": "Actual Result và Defect ID để trống phục vụ kiểm thử thực tế"
+  },
+  "coverage": [
+    {
+      "subject": "Quy tắc nghiệp vụ cốt lõi và phân quyền",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS04-01",
+        "TC-FAS04-02"
+      ]
+    },
+    {
+      "subject": "Tiêu chí nghiệm thu chức năng chính",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS04-03",
+        "TC-FAS04-04"
+      ]
+    },
+    {
+      "subject": "Kiểm tra tính hợp lệ dữ liệu ô nhập (Validation)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS04-05",
+        "TC-FAS04-06"
+      ]
+    },
+    {
+      "subject": "Luồng tương tác và chuyển trạng thái (Flow)",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS04-07",
+        "TC-FAS04-08"
+      ]
+    },
+    {
+      "subject": "Xử lý lỗi và phản hồi cảnh báo (Error)",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS04-09",
+        "TC-FAS04-10"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "ID": "TC-FAS04-01",
+      "Scenario ID": "TS-FAS04-BR",
+      "Title": "Bắt buộc chứng từ thu nhập: Phụ huynh phải đính kèm minh chứng cho thành viên có thu nhập",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Thành viên gia đình có khai báo thu nhập",
+      "Test Data": "Khu vực tải tài liệu minh chứng",
+      "Steps Test": "2",
+      "Test Steps": "1. Mở Bước 3 của hồ sơ FAS.\n2. Kiểm tra danh sách các tài liệu bắt buộc phải nộp.",
+      "Expected Result": "Hệ thống đánh dấu rõ các tệp bắt buộc (bảng lương, sao kê ngân hàng) tương ứng với từng thành viên có đi làm.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-FAS04-MANDATORY-DOCS; PROOF-OF-INCOME",
+      "Defect ID": "",
+      "Traceability": "BR-FAS04-MANDATORY-DOCS; PROOF-OF-INCOME",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-02",
+      "Scenario ID": "TS-FAS04-BR",
+      "Title": "Tính pháp lý cam kết: Phụ huynh cam đoan chịu trách nhiệm pháp lý về tính xác thực của tài liệu",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Mục Cam kết tính trung thực",
+      "Test Data": "Ô cam kết pháp lý",
+      "Steps Test": "2",
+      "Test Steps": "1. Đọc nội dung điều khoản cam kết.\n2. Quan sát điều kiện ràng buộc pháp lý.",
+      "Expected Result": "Nội dung khẳng định việc khai gian dối hoặc làm giả giấy tờ sẽ bị hủy bỏ hỗ trợ và xử lý theo pháp luật.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-FAS04-LEGAL-DECLARATION; COMPLIANCE",
+      "Defect ID": "",
+      "Traceability": "BR-FAS04-LEGAL-DECLARATION; COMPLIANCE",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-03",
+      "Scenario ID": "TS-FAS04-AC",
+      "Title": "Khu vực tải tệp hỗ trợ kéo thả hoặc chọn tệp từ máy tính, hiển thị hướng dẫn rõ ràng",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Màn hình Bước 3",
+      "Test Data": "Vùng tải tệp (Dropzone)",
+      "Steps Test": "2",
+      "Test Steps": "1. Kiểm tra khu vực tải tệp trên giao diện.\n2. Quan sát các định dạng được chấp nhận.",
+      "Expected Result": "Vùng tải tệp hiển thị trực quan; ghi rõ chấp nhận định dạng PDF, PNG, JPG với dung lượng tối đa 5MB mỗi tệp.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-FAS04-DROPZONE; DOM-STEP3",
+      "Defect ID": "",
+      "Traceability": "AC-FAS04-DROPZONE; DOM-STEP3",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-04",
+      "Scenario ID": "TS-FAS04-AC",
+      "Title": "Tải tệp thành công hiển thị tên tệp, dung lượng, nút Xem trước và biểu tượng Thùng rác để xóa",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đã chọn 1 tệp bảng lương hợp lệ",
+      "Test Data": "Tệp: bang_luong_thang_10.pdf (1.2MB)",
+      "Steps Test": "2",
+      "Test Steps": "1. Tải lên tệp bảng lương hợp lệ.\n2. Quan sát dòng tệp vừa được thêm.",
+      "Expected Result": "Tên tệp hiển thị kèm dung lượng 1.2MB; nút 'Xem trước' và nút 'Xóa tệp' sẵn sàng hoạt động.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-FAS04-FILE-ITEM; FILE-MANAGEMENT",
+      "Defect ID": "",
+      "Traceability": "AC-FAS04-FILE-ITEM; FILE-MANAGEMENT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-05",
+      "Scenario ID": "TS-FAS04-VAL",
+      "Title": "Chặn tải lên tệp không đúng định dạng (chỉ chấp nhận PDF, PNG, JPG; chặn file exe, zip)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Vùng tải tệp",
+      "Test Data": "Tệp không đúng định dạng: 'tai_lieu.zip'",
+      "Steps Test": "2",
+      "Test Steps": "1. Thử kéo thả tệp .zip hoặc .exe vào vùng tải.\n2. Quan sát thông báo của hệ thống.",
+      "Expected Result": "Hệ thống từ chối nhận tệp và hiển thị cảnh báo: 'Định dạng tệp không hợp lệ. Vui lòng chỉ tải tệp PDF, PNG hoặc JPG'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 4; MIME-TYPE-CHECK",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 4; MIME-TYPE-CHECK",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-06",
+      "Scenario ID": "TS-FAS04-VAL",
+      "Title": "Báo lỗi ngăn chặn khi dung lượng tệp vượt quá mức trần tối đa 5MB quy định",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Vùng tải tệp",
+      "Test Data": "Tệp ảnh dung lượng lớn: 'anh_sao_ke.png' (8MB)",
+      "Steps Test": "2",
+      "Test Steps": "1. Tải lên tệp có dung lượng 8MB.\n2. Quan sát phản hồi của hệ thống.",
+      "Expected Result": "Hệ thống chặn tải lên và cảnh báo: 'Dung lượng tệp vượt quá giới hạn tối đa cho phép (5MB). Vui lòng giảm kích thước tệp'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 2; FILE-SIZE-BVA",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 2; FILE-SIZE-BVA",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-07",
+      "Scenario ID": "TS-FAS04-FLOW",
+      "Title": "Tải lên đầy đủ tài liệu, tích chọn cam kết tính trung thực và nhấn Tiếp tục sang Bước 4",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Tất cả tài liệu yêu cầu đã tải xong",
+      "Test Data": "Tích cam kết và nhấn 'Tiếp tục'",
+      "Steps Test": "3",
+      "Test Steps": "1. Tải đầy đủ minh chứng thu nhập.\n2. Tích vào ô cam kết trung thực.\n3. Nhấn nút Tiếp tục.",
+      "Expected Result": "Hệ thống lưu trữ các tệp đính kèm an toàn và chuyển tiếp thẳng vào Bước 4: Rà soát & Nộp đơn.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-FAS04-UPLOAD-PROCEED; WIZARD-NAV",
+      "Defect ID": "",
+      "Traceability": "FLOW-FAS04-UPLOAD-PROCEED; WIZARD-NAV",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-08",
+      "Scenario ID": "TS-FAS04-FLOW",
+      "Title": "Xóa một tệp đính kèm tải nhầm và tải lên tệp mới thay thế",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đã có 1 tệp đính kèm",
+      "Test Data": "Thao tác Xóa và Tải lại",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhấn biểu tượng thùng rác để xóa tệp nhầm.\n2. Chọn tệp mới đúng từ máy tính để tải lên.",
+      "Expected Result": "Tệp cũ được gỡ bỏ ngay lập tức; tệp mới tải lên thành công và hiển thị ngay ngắn trên danh sách.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-FAS04-REPLACE-FILE; REPLACEMENT",
+      "Defect ID": "",
+      "Traceability": "FLOW-FAS04-REPLACE-FILE; REPLACEMENT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-09",
+      "Scenario ID": "TS-FAS04-ERR",
+      "Title": "Cảnh báo khi nhấn Tiếp tục mà chưa đính kèm đủ chứng từ thu nhập bắt buộc",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Chưa tải minh chứng thu nhập của Cha",
+      "Test Data": "Nút 'Tiếp tục'",
+      "Steps Test": "2",
+      "Test Steps": "1. Bỏ qua không tải minh chứng thu nhập.\n2. Nhấn nút Tiếp tục.",
+      "Expected Result": "Hệ thống chặn lại và cảnh báo màu đỏ: 'Vui lòng đính kèm chứng từ minh chứng thu nhập cho thành viên có đi làm'.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-FAS04-MISSING-DOCS; REQUIREMENT",
+      "Defect ID": "",
+      "Traceability": "ERR-FAS04-MISSING-DOCS; REQUIREMENT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS04-10",
+      "Scenario ID": "TS-FAS04-ERR",
+      "Title": "Xử lý sự cố mạng bị ngắt quãng trong quá trình tải tệp lên máy chủ: Cho phép tải lại",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 3: Đính kèm Tài liệu",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Mạng chập chờn khi tệp đang tải",
+      "Test Data": "Tiến trình tải tệp",
+      "Steps Test": "2",
+      "Test Steps": "1. Mô phỏng rớt mạng khi thanh phần trăm đang chạy.\n2. Quan sát thông báo lỗi.",
+      "Expected Result": "Hệ thống thông báo 'Tải tệp không thành công do sự cố mạng' kèm nút 'Thử lại' để phụ huynh bấm tải lại nhanh chóng.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-FAS04-UPLOAD-INTERRUPT; RETRY",
+      "Defect ID": "",
+      "Traceability": "ERR-FAS04-UPLOAD-INTERRUPT; RETRY",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    }
+  ]
+}

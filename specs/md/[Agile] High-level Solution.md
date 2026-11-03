@@ -1,21 +1,19 @@
-# Thẻ 1
-
 ![][image1]
 
-## **![][image2]**
+## ![][image2]
 
-## **I. TỔNG THỂ HỆ THỐNG (SYSTEM OVERVIEW)**
+## I. TỔNG THỂ HỆ THỐNG (SYSTEM OVERVIEW)
 
 Hệ thống **Education Account & FAS (MOE Singapore)** bao gồm 2 phân hệ chính hợp nhất:
 
 1. **Admin Portal (F1 – F7):** Phân hệ dành cho cán bộ Bộ Giáo dục (MOE HQ) và Cán bộ Nhà trường (School User) để quản lý cấu hình tài khoản EA, quy trình nạp tiền (Top-up), danh mục trường lớp, thiết lập học phí, xét duyệt trợ cấp tài chính (FAS), nhập đơn giấy offline, quản lý ngân sách và mô phỏng giao diện người dùng.  
 2. **e-Service Portal (F8 – F10):** Cổng dịch vụ công dành cho Phụ huynh (Parent) truy cập qua SingPass để tra cứu số dư tài khoản EA của con, thực hiện thanh toán học phí trực tuyến, nộp đơn trợ cấp FAS theo hộ gia đình, và được hỗ trợ tự động bởi Trợ lý AI.
 
-## **II. BẢN MÔ TẢ CHI TIẾT FULL 10 FUNCTION (FINAL VERSION)**
+## II. BẢN MÔ TẢ CHI TIẾT FULL 10 FUNCTION (FINAL VERSION)
 
-### **🏛️ PHÂN HỆ ADMIN PORTAL (F1 – F7)**
+### 🏛️ PHÂN HỆ ADMIN PORTAL (F1 – F7)
 
-#### **F1: Education Account Lifecycle (Quản lý vòng đời tài khoản EA)**
+#### F1: Education Account Lifecycle (Quản lý vòng đời tài khoản EA)
 
 Tự động hóa toàn bộ vòng đời tài khoản giáo dục của học sinh dựa trên dữ liệu đồng bộ khi Phụ huynh tương tác.
 
@@ -25,7 +23,7 @@ Tự động hóa toàn bộ vòng đời tài khoản giáo dục của học s
 * **1.4 Quản lý trạng thái EA:** Theo dõi và cập nhật trạng thái hoạt động của tài khoản (Active, Deactive).  
 * **1.5 Sổ cái EA (Ledger):** Hệ thống kế toán ghi nhận chính xác mọi giao dịch Ghi có (Credit), Ghi nợ (Debit), Hoàn tiền (Reversal) và Trạng thái chờ xử lý (Pending).
 
-#### **F2: Top-up (Nạp tiền vào tài khoản EA)**
+#### F2: Top-up (Nạp tiền vào tài khoản EA)
 
 Cho phép MOE HQ cấu hình và thực hiện nạp tiền vào các tài khoản EA.
 
@@ -37,7 +35,7 @@ Cho phép MOE HQ cấu hình và thực hiện nạp tiền vào các tài kho�
 * **2.6 Ghi có vào sổ cái EA:** Thực hiện cộng tiền vào sổ cái cho các tài khoản đang ở trạng thái Active.  
 * **2.7 Lịch sử top-up và audit:** Lưu trữ đầy đủ lịch sử giao dịch nạp tiền phục vụ công tác kiểm toán.
 
-#### **F3: School & Fee Maintenance (Quản lý Trường học & Cấu hình Phí)**
+#### F3: School & Fee Maintenance (Quản lý Trường học & Cấu hình Phí)
 
 Quản lý danh mục trường lớp, học sinh và thiết lập biểu phí dịch vụ giáo dục.
 
@@ -58,7 +56,7 @@ Quản lý danh mục trường lớp, học sinh và thiết lập biểu phí 
   * **3.13 Resolve recipient, tạo Student Charge:** Hệ thống tự động tạo khoản thu cho từng học sinh, quản lý các trạng thái (Issued / Due-dated / Paid / Cancelled).  
   * **3.14 Charge adjustment có audit:** Điều chỉnh giảm/tăng khoản phí Outstanding và lưu nhật ký kiểm toán.
 
-#### **F4: Financial Assistance Scheme (Xét duyệt Trợ cấp Tài chính \- FAS)**
+#### F4: Financial Assistance Scheme (Xét duyệt Trợ cấp Tài chính \- FAS)
 
 Tự động hóa kết hợp trí tuệ nhân tạo (AI/ML) để phân loại và cấp kinh phí hỗ trợ tài chính cho học sinh.
 
@@ -73,7 +71,7 @@ Tự động hóa kết hợp trí tuệ nhân tạo (AI/ML) để phân loại 
 * **4.9 Áp kết quả FAS vào charge Outstanding qua adjustment:** Tự động giảm trừ số tiền phải nộp trực tiếp trên các khoản phí Outstanding.  
 * **4.10 Hồ sơ và trạng thái FAS, audit:** Lưu trữ toàn bộ lịch sử xét duyệt, trạng thái hồ sơ và nhật ký kiểm toán.
 
-#### **F5: Hardcopy Applications (Xử lý đơn giấy offline)**
+#### F5: Hardcopy Applications (Xử lý đơn giấy offline)
 
 Giải pháp cho các phụ huynh không thể tiếp cận hoặc thao tác trên e-Service Portal.
 
@@ -82,7 +80,7 @@ Giải pháp cho các phụ huynh không thể tiếp cận hoặc thao tác tr�
 * **5.3 Kiểm tra trùng với đơn online:** Hệ thống tự động rà soát trùng lặp thông tin giữa đơn giấy và đơn online.  
 * **5.4 Đưa vào cùng flow xét duyệt FAS, gắn kênh \= paper:** Đưa hồ sơ vào luồng xét duyệt tập trung của F4 và đánh dấu nguồn nộp là "Paper".
 
-#### **F6: Budget & Statistics (Quản lý Ngân sách & Thống kê)**
+#### F6: Budget & Statistics (Quản lý Ngân sách & Thống kê)
 
 Theo dõi, phân bổ và cảnh báo hạn mức ngân sách trợ cấp.
 
@@ -92,7 +90,7 @@ Theo dõi, phân bổ và cảnh báo hạn mức ngân sách trợ cấp.
 * **6.4 School theo dõi thống kê SBFAS:** Cán bộ trường theo dõi số liệu và báo cáo ngân sách SBFAS nội bộ.  
 * **6.5 Cảnh báo khi gần hết budget:** Tự động gửi cảnh báo khi hạn mức chi trả trợ cấp vượt ngưỡng an toàn.
 
-#### **F7: Simulation (Giả lập giao diện)**
+#### F7: Simulation (Giả lập giao diện)
 
 Công cụ cho phép MOE HQ đóng vai người dùng khác để hỗ trợ xử lý sự cố/thắc mắc.
 
@@ -100,9 +98,9 @@ Công cụ cho phép MOE HQ đóng vai người dùng khác để hỗ trợ x�
 * **7.2 Màn hình "View as" chỉ đọc:** Hiển thị chính xác màn hình mà người dùng đó đang thấy (chế độ Read-only), có banner nhận diện đang giả lập.  
 * **7.3 Ghi log simulation:** Lưu lại toàn bộ thông tin phiên giả lập để đảm bảo an toàn hệ thống và bảo mật thông tin.
 
-### **🌐 PHÂN HỆ e-SERVICE PORTAL (F8 – F10)**
+### 🌐 PHÂN HỆ e-SERVICE PORTAL (F8 – F10)
 
-#### **F8: Parent Account Access (Truy cập & Hỗ trợ Phụ huynh)**
+#### F8: Parent Account Access (Truy cập & Hỗ trợ Phụ huynh)
 
 Cổng thông tin dành cho Phụ huynh, tích hợp trợ lý AI thông minh.
 
@@ -116,7 +114,7 @@ Cổng thông tin dành cho Phụ huynh, tích hợp trợ lý AI thông minh.
 * **8.8 AI Trả lời câu hỏi về e-Service (Tính năng AI):** Trợ lý AI giải đáp thắc mắc liên quan đến các tính năng và dịch vụ trên e-Service.  
 * **8.9 AI Hỏi lại để hiểu ngữ cảnh (Tính năng AI):** AI chủ động tương tác linh hoạt, đặt câu hỏi làm rõ nhu cầu để đưa ra câu trả lời chính xác nhất.
 
-#### **F9: Fee Payment (Thanh toán Học phí)**
+#### F9: Fee Payment (Thanh toán Học phí)
 
 Quy trình tra cứu phí, gom hóa đơn và thanh toán trực tuyến.
 
@@ -132,7 +130,7 @@ Quy trình tra cứu phí, gom hóa đơn và thanh toán trực tuyến.
 * **9.9 Xác nhận, xem biên lai theo từng item, thử lại khi lỗi:** Xem/tải biên lai chi tiết hoặc bấm thanh toán lại nếu gặp sự cố.  
 * **9.10 Hết hạn invoice:** Tự động hủy các hóa đơn quá hạn chưa hoàn tất để giải phóng khoản phí bị khóa.
 
-#### **F10: FAS Application (Nộp đơn xin Trợ cấp Tài chính)**
+#### F10: FAS Application (Nộp đơn xin Trợ cấp Tài chính)
 
 Quy trình nộp đơn FAS cho hộ gia đình có sự hỗ trợ của AI.
 
@@ -144,13 +142,13 @@ Quy trình nộp đơn FAS cho hộ gia đình có sự hỗ trợ của AI.
 
 **QUESTIONS**
 
-### **F2: Top-up (Nạp tiền vào tài khoản EA)**
+### F2: Top-up (Nạp tiền vào tài khoản EA)
 
 * **F2.1.** Danh sách đầy đủ tiêu chí rule batch (requirement ghi “etc.”): tuổi, số dư, schooling status, level, school, nationality...? Cách kết hợp AND/OR, khoảng giá trị?  
 * **F2.2.** Cách tính số tiền: cố định, theo cấp học, hay bù đến mức X? Có trần số dư tối đa không?   
 * **F2.3.** Account không đủ điều kiện (Closed, Due for closure, chưa tạo vì dưới 7 tuổi): bỏ qua và ghi lý do, hay chờ đến khi EA được tạo?
 
-### **F4: Financial Assistance Scheme (Xét duyệt Trợ cấp Tài chính \- FAS)**
+### F4: Financial Assistance Scheme (Xét duyệt Trợ cấp Tài chính \- FAS)
 
 * **F4.1.** Danh sách scheme ban đầu (MOEFAS, SBFAS, khác?) và tiêu chí cụ thể. Ngưỡng household income và per-capita income band, ai quản lý bộ ngưỡng, bộ ngưỡng là fixed hay có thể config được?  
 * **F4.2.** Nguồn dữ liệu thu nhập: phụ huynh khai báo, có chứng từ, hay lấy từ hệ thống ngoài?   
@@ -159,22 +157,22 @@ Quy trình nộp đơn FAS cho hộ gia đình có sự hỗ trợ của AI.
 * **F4.5.** Thời hạn hiệu lực FAS (năm học, theo kỳ), gia hạn, hết hạn giữa kỳ. Invoice đã Issued xử lý ra sao?  
 * **F4.6.** Ai duyệt SBFAS (School user nào), có cần approver thứ hai, có SLA, có audit lý do từ chối không?
 
-### **F6: Budget & Statistics (Quản lý Ngân sách & Thống kê)**
+### F6: Budget & Statistics (Quản lý Ngân sách & Thống kê)
 
 * **F6.1.** MOEFAS là quyền lợi tự động nhưng có ngân sách. Hết ngân sách thì chặn cấp, hay chỉ cảnh báo và vẫn cấp?  
 * **F6.2.** Cảnh báo ngưỡng (80%, 100%), xuất báo cáo (Excel, PDF), tần suất làm mới như thế nào?
 
-### **F7: Simulation (Giả lập giao diện)**
+### F7: Simulation (Giả lập giao diện)
 
 * **F7.1.** Chỉ đọc được chặn ở server (chặn payment, nộp FAS, lưu My details) hay chỉ ở UI? Có banner “đang mô phỏng” không?  
 * **F7.2.** Phiên simulate có làm hết phiên Parent thật hoặc ghi log như hành vi của Parent không?
 
-### **F8: AI Assistant & Support (Trợ lý AI & Hỗ trợ Phụ huynh)**
+### F8: AI Assistant & Support (Trợ lý AI & Hỗ trợ Phụ huynh)
 
 * **F8.1.** AI trả lời chỉ về cách dùng chức năng (FAQ) hay cả dữ liệu cá nhân (số dư, trạng thái hóa đơn)?  
 * **F8.2.** Nguồn tri thức (tài liệu hướng dẫn, FS), ngôn ngữ hỗ trợ, nhà cung cấp LLM, nơi lưu hội thoại và thời gian lưu?
 
-### **F10: FAS Application (Nộp đơn xin Trợ cấp Tài chính)**
+### F10: FAS Application (Nộp đơn xin Trợ cấp Tài chính)
 
 * **F10.1.** Cấu trúc hộ gia đình: thành viên nào gồm trong đơn (cha, mẹ, người giám hộ, con)? Nguồn dữ liệu thành viên và thu nhập.  
 * **F10.2.** Một đơn cho cả hộ nhưng quyết định theo từng con. Con học khác trường thì School nào xét SBFAS cho con nào? Kết quả từng con có độc lập không?  

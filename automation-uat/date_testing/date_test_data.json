@@ -1,0 +1,84 @@
+{
+  "system": {
+    "admin_url": "https://admin.20-255-158-192.sslip.io",
+    "parent_url": "https://eservice.20-255-158-192.sslip.io",
+    "timezone": "Asia/Singapore",
+    "standard_format": "DD/MM/YYYY",
+    "iso_format": "YYYY-MM-DD"
+  },
+  "accounts": {
+    "admin": {
+      "email": "admin@IAM.edu.vn",
+      "name": "MOE HQ Administrator"
+    },
+    "school": {
+      "email": "staff1@IAM.edu.vn",
+      "name": "Rosyth School Staff"
+    },
+    "parent": {
+      "nric": "S7654321B",
+      "name": "Pham Van Duc"
+    }
+  },
+  "selectors": {
+    "rate_rules": {
+      "new_url": "/fee-management/rate-rules/new",
+      "from_input": "#fixed-from",
+      "to_input": "#fixed-to",
+      "amount_input": "#fixed-amount",
+      "submit_btn": "button[type='submit']:has-text('Save rates'), button:has-text('Save rates')"
+    },
+    "sbfas": {
+      "new_url": "/financial/sbfas/new",
+      "scheme_name": "#scheme-name",
+      "budget_cap": "#total-budget",
+      "start_date": "input[name*='start' i], input[placeholder*='start' i], #start-date",
+      "end_date": "input[name*='end' i], input[placeholder*='end' i], #end-date"
+    },
+    "publications": {
+      "new_url": "/fee-management/publications/new",
+      "due_date": "input[type='date'], input[name*='due' i], #due-date",
+      "publish_btn": "button:has-text('Publish'), button:has-text('Create publication')"
+    }
+  },
+  "test_datasets": {
+    "valid_formats": [
+      {"label": "Standard DD/MM/YYYY", "input": "15/05/2026", "expected_iso": "2026-05-15"},
+      {"label": "Single digit D/M/YYYY", "input": "5/5/2026", "expected_iso": "2026-05-05"},
+      {"label": "Dashes DD-MM-YYYY", "input": "15-05-2026", "expected_iso": "2026-05-15"},
+      {"label": "ISO YYYY-MM-DD", "input": "2026-05-15", "expected_iso": "2026-05-15"},
+      {"label": "Whitespace padded", "input": "  15/05/2026  ", "expected_iso": "2026-05-15"}
+    ],
+    "boundary_leap_years": [
+      {"label": "Valid Leap Year 2024", "input": "29/02/2024", "valid": true, "expected_iso": "2024-02-29"},
+      {"label": "Valid Leap Year 2028", "input": "29/02/2028", "valid": true, "expected_iso": "2028-02-29"},
+      {"label": "Invalid Leap Year 2026", "input": "29/02/2026", "valid": false, "reason": "Not a leap year"},
+      {"label": "Invalid Leap Year 2025", "input": "29/02/2025", "valid": false, "reason": "Not a leap year"},
+      {"label": "Valid Century Leap 2000", "input": "29/02/2000", "valid": true, "expected_iso": "2000-02-29"},
+      {"label": "Invalid Century Non-Leap 1900", "input": "29/02/1900", "valid": false, "reason": "1900 not divisible by 400"}
+    ],
+    "month_boundaries": [
+      {"label": "April 31 (invalid, Apr has 30)", "input": "31/04/2026", "valid": false},
+      {"label": "June 31 (invalid, Jun has 30)", "input": "31/06/2026", "valid": false},
+      {"label": "November 31 (invalid, Nov has 30)", "input": "31/11/2026", "valid": false},
+      {"label": "February 30 (never exists)", "input": "30/02/2026", "valid": false},
+      {"label": "Dec 31 to Jan 01 rollover", "input": "31/12/2025", "valid": true}
+    ],
+    "malformed_and_security": [
+      {"label": "Day zero", "input": "00/05/2026", "valid": false},
+      {"label": "Month zero", "input": "15/00/2026", "valid": false},
+      {"label": "Day 32", "input": "32/01/2026", "valid": false},
+      {"label": "Month 13", "input": "15/13/2026", "valid": false},
+      {"label": "Alphabetic text", "input": "abc/def/ghij", "valid": false},
+      {"label": "XSS injection", "input": "<script>alert(1)</script>", "valid": false},
+      {"label": "SQL injection", "input": "' OR 1=1;--", "valid": false},
+      {"label": "Year overflow 5 digits", "input": "15/05/20266", "valid": false}
+    ],
+    "business_ranges": [
+      {"label": "Normal range", "from": "01/01/2026", "to": "31/12/2026", "valid": true},
+      {"label": "Inverted range From > To", "from": "31/12/2026", "to": "01/01/2026", "valid": false},
+      {"label": "Single day range From == To", "from": "15/05/2026", "to": "15/05/2026", "valid": true},
+      {"label": "Open-ended range", "from": "01/01/2026", "to": "", "valid": true}
+    ]
+  }
+}

@@ -17,19 +17,19 @@ class FasBeneficiaryForm:
         """Fill details for beneficiary at specific index (0-based)."""
         card = self.page.locator(locators.CARDS_BENEFICIARY).nth(index)
         if "fullName" in data:
-            card.locator("input[id$='-fullName']").fill(data["fullName"])
+            card.locator(locators.BENEFICIARY_FULL_NAME).fill(data["fullName"])
         if "nric" in data:
-            card.locator("input[id$='-nric']").fill(data["nric"])
+            card.locator(locators.BENEFICIARY_NRIC).fill(data["nric"])
         if "dateOfBirth" in data:
-            card.locator("input[id$='-dateOfBirth']").fill(data["dateOfBirth"])
+            card.locator(locators.BENEFICIARY_DOB).fill(data["dateOfBirth"])
         if "gender" in data:
-            card.locator(f"input[type='radio'][value='{data['gender']}']").check(force=True)
+            card.locator(locators.BENEFICIARY_GENDER).select_option(data["gender"])
         if "schoolName" in data:
-            card.locator("input[id$='-schoolName']").fill(data["schoolName"])
+            card.locator(locators.BENEFICIARY_SCHOOL).fill(data["schoolName"])
         if "classLevel" in data:
-            card.locator("select[id$='-classLevel']").select_option(data["classLevel"])
+            card.locator(locators.BENEFICIARY_CLASS_LEVEL).select_option(data["classLevel"])
         if "grade" in data:
-            card.locator("input[id$='-grade']").fill(data["grade"])
+            card.locator(locators.BENEFICIARY_GRADE).fill(data["grade"])
 
     def add_beneficiary(self) -> None:
         """Click button to add another beneficiary card."""
@@ -54,16 +54,18 @@ class FasBeneficiaryForm:
         """Fill details for family member card at index (0-based)."""
         card = self.page.locator(locators.CARDS_FAMILY).nth(index)
         if "fullName" in data:
-            card.locator("input[id$='-fullName']").fill(data["fullName"])
+            card.locator(locators.FAMILY_FULL_NAME).fill(data["fullName"])
         if "nric" in data:
-            card.locator("input[id$='-nric']").fill(data["nric"])
+            card.locator(locators.FAMILY_NRIC).fill(data["nric"])
         if "dateOfBirth" in data:
-            card.locator("input[id$='-dateOfBirth']").fill(data["dateOfBirth"])
+            card.locator(locators.FAMILY_DOB).fill(data["dateOfBirth"])
         if "gender" in data:
-            card.locator(f"input[name*='gender'][value='{data['gender']}']").check(force=True)
+            card.locator(locators.FAMILY_GENDER).select_option(data["gender"])
+        if "relationship" in data:
+            card.locator(locators.FAMILY_RELATIONSHIP).select_option(data["relationship"])
         if "hasIncome" in data:
-            income_val = "yes" if data["hasIncome"] else "no"
-            card.locator(f"input[name*='hasIncome'][value='{income_val}']").check(force=True)
+            income_control = locators.FAMILY_HAS_INCOME_YES if data["hasIncome"] else locators.FAMILY_HAS_INCOME_NO
+            card.locator(locators.FAMILY_HAS_INCOME_GROUP).locator(income_control).check()
 
     def add_family_member(self) -> None:
         """Click button to add a family member card."""

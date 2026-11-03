@@ -1,0 +1,91 @@
+{
+  "test_environments": {
+    "portal_base_url": "http://localhost:5174",
+    "mockpass_url": "http://localhost:5156",
+    "target_route": "/fas-application",
+    "login_route": "/parent/login"
+  },
+  "personas": {
+    "parent_eligible": {
+      "id": "c51ae3f0-8481-4df9-bc49-eb2591afa912",
+      "fullName": "LIM WEI MINH",
+      "nric": "S7890123F",
+      "email": "lim.wei.minh@singpass.local",
+      "phoneNumber": "91234567",
+      "address": "Blk 123 Ang Mo Kio Ave 3 #08-123 Singapore 560123",
+      "children": [
+        {
+          "fullName": "LIM JIA LE",
+          "nric": "T0812345A",
+          "dateOfBirth": "2016-05-15",
+          "gender": "MALE",
+          "schoolName": "Ang Mo Kio Primary School",
+          "classLevel": "PRIMARY",
+          "grade": "Primary 4",
+          "hasPendingApplication": false
+        }
+      ]
+    },
+    "parent_ineligible_age": {
+      "id": "d62bf4g1-9592-5ea0-cd50-fc3602bgb023",
+      "fullName": "TAN KAH KEE",
+      "nric": "S7123456D",
+      "children": [
+        {
+          "fullName": "TAN WEI MING",
+          "nric": "T0512345Z",
+          "dateOfBirth": "2010-01-10",
+          "age": 16,
+          "hasPendingApplication": false
+        }
+      ]
+    },
+    "parent_ineligible_conflict": {
+      "id": "e73cg5h2-0603-6fb1-de61-gd4713chc134",
+      "fullName": "WONG CHUN HIN",
+      "nric": "S7345678E",
+      "children": [
+        {
+          "fullName": "WONG XIAO LONG",
+          "nric": "T0923456B",
+          "dateOfBirth": "2015-08-20",
+          "hasPendingApplication": true,
+          "applicationStatus": "Under review"
+        }
+      ]
+    }
+  },
+  "draft_fixtures": {
+    "active_step2_draft": {
+      "id": "dft-fas-2026-001",
+      "parentId": "c51ae3f0-8481-4df9-bc49-eb2591afa912",
+      "currentStep": 2,
+      "data": {
+        "applicant": {
+          "fullName": "LIM WEI MINH",
+          "nric": "S7890123F",
+          "phoneNumber": "91234567",
+          "address": "Blk 123 Ang Mo Kio Ave 3 #08-123"
+        },
+        "beneficiaries": [
+          {
+            "fullName": "LIM JIA LE",
+            "nric": "T0812345A",
+            "schoolName": "Ang Mo Kio Primary School"
+          }
+        ]
+      }
+    }
+  },
+  "error_payloads": {
+    "api_500_response": {
+      "statusCode": 500,
+      "message": "Internal Server Error. Unable to verify prerequisites.",
+      "error": "InternalServerError"
+    },
+    "period_closed_response": {
+      "isFormOpen": false,
+      "message": "The FAS application period is currently closed."
+    }
+  }
+}

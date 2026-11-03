@@ -1,0 +1,52 @@
+{
+  "admin_credentials": {
+    "email": "admin@IAM.edu.vn",
+    "role": "moehq",
+    "portal_url": "https://admin.20-255-158-192.sslip.io",
+    "support_console_url": "/support-console"
+  },
+  "persona_mode": {
+    "tab_name": "School role (persona)",
+    "school_search": "RPS-0201",
+    "school_name": "Rosyth Primary School",
+    "school_code": "RPS-0201",
+    "role_name": "School Admin",
+    "alternative_role": "School Reviewer"
+  },
+  "user_mode": {
+    "tab_name": "School users",
+    "search_keyword": "staff1",
+    "user_email": "staff1@IAM.edu.vn",
+    "user_name": "Bui Thi H",
+    "target_header": "Thi H Bui | school"
+  },
+  "audit_form": {
+    "valid_payload": {
+      "reason": "Testing UAT Sprint 3 for Kent",
+      "ticket_reference": "UAT-KENT-01"
+    },
+    "boundary_reason": {
+      "below_min_9_chars": "123456789",
+      "exact_min_10_chars": "1234567890",
+      "nominal_28_chars": "Testing UAT Sprint 3 for Kent",
+      "exact_max_500_chars": "Audit justification for View As simulation session by MOE HQ System Administrator. Verifying that the target school administrator permissions and UI views align with Sprint 3 acceptance criteria. Session conducted for Rosyth Primary School under strict compliance with Ministry data governance and information privacy guidelines. Any modification performed within this session will be recorded in the centralized audit repository for Kent UAT inspection. End of official justification audit notes.",
+      "above_max_501_chars": "Audit justification for View As simulation session by MOE HQ System Administrator. Verifying that the target school administrator permissions and UI views align with Sprint 3 acceptance criteria. Session conducted for Rosyth Primary School under strict compliance with Ministry data governance and information privacy guidelines. Any modification performed within this session will be recorded in the centralized audit repository for Kent UAT inspection. End of official justification audit notes.X"
+    },
+    "boundary_ticket": {
+      "empty": "",
+      "spaces": "    ",
+      "valid": "UAT-KENT-01"
+    },
+    "security_payloads": {
+      "xss_reason": "<script>alert('XSS-AUDIT')</script> Safe Justification",
+      "sqli_ticket": "' OR '1'='1"
+    }
+  },
+  "expected_school_menus": [
+    { "name": "Classes", "href": "/class-management" },
+    { "name": "School configuration", "href": "/school-config" },
+    { "name": "Students", "href": "/student-management" },
+    { "name": "Fees & Fee Batches", "href": "/fee-batches" },
+    { "name": "SBFAS & FAS Applications", "href": "/fas-applications" }
+  ]
+}

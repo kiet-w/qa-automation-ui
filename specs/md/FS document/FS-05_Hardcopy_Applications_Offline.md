@@ -1,5 +1,3 @@
-# **R5**
-
 # **FS F5 – Đơn giấy (Paper Applications)**
 
 21/10/2026 · Phiên bản 1.2 · @Huy

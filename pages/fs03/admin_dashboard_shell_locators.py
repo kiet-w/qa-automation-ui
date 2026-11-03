@@ -7,35 +7,42 @@ class AdminDashboardShellLocators:
     """BSK-verified locators for EduFAMS Admin Portal Shell & Navigation (:5173)."""
 
     # Global Header & Controls
-    HEADER = "header"
-    COLLAPSE_SIDEBAR_BTN = 'header button[aria-label*="sidebar" i], header button[title*="sidebar" i]'
+    # The app also renders headers inside other page regions. The dashboard's
+    # global header is the one containing its breadcrumb navigation landmark.
+    HEADER = 'header:has(nav[aria-label="Breadcrumb"])'
+    COLLAPSE_SIDEBAR_BTN = 'header button[aria-label="Collapse sidebar"], header button[aria-label="Expand sidebar"]'
+    MOBILE_NAVIGATION_BTN = 'header button[aria-label="Open navigation"]'
     BREADCRUMB = 'nav[aria-label="Breadcrumb"]'
-    USER_NAME = "header strong"
-    USER_ROLE_OR_CODE = "header strong + span, header strong + div, header"
-    SKIP_LINK = 'a:has-text("Skip to main content")'
+    ACCOUNT_IDENTITY = 'header [aria-label*="("]:has(strong)'
+    USER_NAME = f"{ACCOUNT_IDENTITY} strong"
+    USER_ROLE_OR_CODE = ACCOUNT_IDENTITY
+    SKIP_LINK = 'a[href="#admin-main-content"]'
 
     # Sidebar Navigation Container & Elements
-    SIDEBAR_CONTAINER = "aside"
-    BRAND_LINK = 'aside a[aria-label*="Admin Portal" i], aside a[class*="brand" i], aside > a[href="/"]'
-    NAV = "aside nav"
-    NAV_LINKS = "aside nav a[href]"
-    NAV_ACTIVE_LINK = "aside nav a[aria-current='page'], aside nav a[class*='active' i]"
-    SIGN_OUT_BTN = 'aside button:has-text("Sign out"), button:has-text("Sign out")'
+    SIDEBAR_CONTAINER = 'aside[aria-label="Admin navigation sidebar"]'
+    BRAND_LINK = 'aside a[aria-label="EduFAMS Admin Portal"][href="/"]'
+    NAV = 'aside nav[aria-label="Admin navigation"]'
+    NAV_LINKS = 'aside nav[aria-label="Admin navigation"] a[href]'
+    NAV_ACTIVE_LINK = 'aside nav[aria-label="Admin navigation"] a[aria-current="page"]'
+    SIGN_OUT_BTN = 'aside button[aria-label="Sign out"]'
 
     # Main Content Area & Fallbacks
-    MAIN_CONTENT = "#admin-main-content, main"
+    MAIN_CONTENT = "main#admin-main-content"
     PAGE_BODY = "body"
     PAGE_HEADING = "h1"
     NOT_FOUND_CONTAINER = "#admin-main-content, main"
+    BACK_TO_HOME_LINK = 'main#admin-main-content a[href="/"]'
 
     # Feedback, Banners & Notifications
     ALERT = '[role="alert"]'
-    ACCESS_RESTRICTED_ALERT = '[role="alert"]:has-text("Access restricted")'
+    ACCESS_RESTRICTED_ALERT = '[role="alert"]:has-text("Access restricted"), [role="status"]:has-text("Access restricted"), :has-text("Access restricted")'
     NOTIFICATIONS_LIST = 'ul[aria-label="Notifications"], [role="status"]'
+    SCHOOL_BADGE = '[class*="schoolBadge"]'
+    SCHOOL_BADGE_CODE = '[class*="schoolBadgeCode"]'
 
     @staticmethod
     def nav_link_by_href(href: str) -> str:
-        return f'aside nav a[href="{href}"]'
+        return f'aside nav[aria-label="Admin navigation"] a[href="{href}"]'
 
     @staticmethod
     def action_by_label(label: str) -> str:

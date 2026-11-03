@@ -30,16 +30,21 @@ specs/
 │   ├── [Agile] High-level Solution.docx
 │   ├── Feature list.docx
 │   ├── First meeting questions.docx
+│   ├── Landing page UI design.docx   # [MỚI 26/10] Thiết kế layout Parent Home Page & EA Cards
 │   ├── Nội dung Overview Sprint 1.docx
 │   ├── Product Backlog V2.xlsm       # Backlog V2 (kèm Acceptance Criteria)
-│   ├── Test Cases + Defect sprint 1.xlsx # [CẬP NHẬT 25/10] 465+ Test Cases & 40 Defects (R1, R3, R8, R9)
-│   ├── defeact/                      # [MỚI 24/10] Báo cáo kiểm toán lỗi UI Profile Edusave
-│   │   └── DEFECT_MY_Profile_edusave.docx # Defect audit report chi tiết My Profile
-│   ├── Dev/                          # [MỚI 22/10] Thư mục kỹ thuật Sprint Backlog Dev
+│   ├── QA/                           # [MỚI 29/10] Thư mục QA Master từ Google Drive
+│   │   └── uat-master.xlsx           # Master UAT 61 Test Cases (đồng bộ song song sang uat/)
+│   ├── defeact/                      # [CẬP NHẬT 29/10] Báo cáo kiểm toán lỗi UI & Execution Evidence
+│   │   ├── DEFECT_MY_Profile_edusave.docx # Defect audit report chi tiết My Profile
+│   │   └── localhost-5173/           # [MỚI 29/10] 5 file Excel bằng chứng kiểm thử Admin Portal
+│   ├── Dev/                          # Thư mục kỹ thuật Sprint Backlog Dev
 │   │   └── Sprint Backlog.xlsx       # Sprint Backlog 1 (22 tasks), Sprint Backlog 2 (35 tasks), Kanban
 │   ├── Documentation/
-│   │   ├── [AGILE] MoM 23-10-2026.docx # [MỚI 23/10] Biên bản họp MoM ngày 23/10/2026
-│   │   ├── Meeting Transcript - 23 Oct 2026.docx # [MỚI 23/10] Bản gỡ băng chi tiết phiên họp 23/10
+│   │   ├── [AGILE] MoM 27-10-2026.docx # [MỚI 27/10] Biên bản họp MoM ngày 27/10/2026
+│   │   ├── Meeting Transcript - 27 Oct 2026.docx # [MỚI 27/10] Full transcript cuộc họp 27/10
+│   │   ├── [AGILE] MoM 23-10-2026.docx # Biên bản họp MoM ngày 23/10/2026
+│   │   ├── Meeting Transcript - 23 Oct 2026.docx # Bản gỡ băng chi tiết phiên họp 23/10
 │   │   ├── Agile Glossary.docx       # Bảng thuật ngữ chuyên ngành
 │   │   ├── Agile requirements.xlsx   # Ma trận 10 requirements, User Stories, Sprint Plan
 │   │   ├── Kickoff Transcript refined.docx
@@ -49,7 +54,7 @@ specs/
 │   │   ├── Questionaire.xlsx         # Bảng câu hỏi làm rõ (Clarification Questionnaire)
 │   │   └── Sprint 1 Review Transcript.docx
 │   ├── FS document/
-│   │   ├── Tổng hợp FS.docx          # FSD tổng hợp chính thức (cập nhật 25/10/2026, 5.8 MB)
+│   │   ├── Tổng hợp FS.docx          # FSD tổng hợp chính thức (cập nhật 28/10/2026, 5.9 MB)
 │   │   ├── FS Function 9 - Outstanding Fees and Payment (Final).docx
 │   │   ├── FS R2 – Top-Up Management.docx
 │   │   ├── FS-08 Parent Portal – SingPass, Education Account, Profile.docx
@@ -62,15 +67,21 @@ specs/
     ├── [Agile] High-level Solution.md
     ├── Feature list.md               # Danh mục tính năng chi tiết
     ├── First meeting questions.md
+    ├── Landing page UI design.md     # [MỚI 26/10] Layout Parent Home Page & Responsive EA Cards
     ├── Nội dung Overview Sprint 1.md
     ├── Product Backlog V2.md         # Toàn bộ User Stories US-001 đến US-058 & AC (US-004: Done)
-    ├── defeact/                      # [MỚI 24/10] Defect audit Markdown
-    │   └── DEFECT_MY_Profile_edusave.md # Chi tiết 3 lỗi nghiêm trọng My Profile (i18n raw key, validation, burger menu)
-    ├── Dev/                          # [MỚI 22/10] Sprint Backlog Dev Markdown
+    ├── QA/                           # [MỚI 29/10] Master UAT Markdown
+    │   └── uat-master.md             # Bảng Markdown toàn bộ 61 UAT cases
+    ├── defeact/                      # [CẬP NHẬT 29/10] Defect audit & Execution Evidence
+    │   ├── DEFECT_MY_Profile_edusave.md # Chi tiết lỗi My Profile
+    │   └── localhost-5173/           # Bằng chứng kiểm thử 01_Login, 02_Shell, 03_School, 04_User, 06_Class
+    ├── Dev/                          # Sprint Backlog Dev Markdown
     │   └── Sprint Backlog.md         # Chi tiết Sprint 1 & Sprint 2 task breakdown (TSK-R1..TSK-R9, US-004..US-053)
     ├── Documentation/
-    │   ├── [AGILE] MoM 23-10-2026.md # [MỚI 23/10] MoM phiên họp 23/10 (AAD, MyInfo, Top-up, Sprint 3 risk)
-    │   ├── Meeting Transcript - 23 Oct 2026.md # [MỚI 23/10] Full transcript cuộc họp 23/10
+    │   ├── [AGILE] MoM 27-10-2026.md # [MỚI 27/10] MoM phiên họp 27/10 (Fees, FAS Auto-Route, View As, Budget)
+    │   ├── Meeting Transcript - 27 Oct 2026.md # [MỚI 27/10] Full transcript cuộc họp 27/10
+    │   ├── [AGILE] MoM 23-10-2026.md # MoM phiên họp 23/10 (AAD, MyInfo, Top-up, Sprint 3 risk)
+    │   ├── Meeting Transcript - 23 Oct 2026.md # Full transcript cuộc họp 23/10
     │   ├── Agile Glossary.md         # Thuật ngữ Agile & Domain chuẩn
     │   ├── Agile requirements.md     # Requirements (EN/VN), US + AC, Sprint Plan
     │   ├── Kickoff Transcript refined.md
@@ -80,17 +91,17 @@ specs/
     │   ├── Questionaire.md           # Questionnaire các sheet
     │   └── Sprint 1 Review Transcript.md
     ├── FS document/
-    │   ├── Tổng hợp FS.md            # Đặc tả FSD tổng thể toàn hệ thống (cập nhật 25/10/2026)
-    │   ├── FS-01_Education_Account_Lifecycle.md       # R1: Vòng đời tài khoản EA (982 dòng)
-    │   ├── FS-02_Education_Account_TopUp.md          # R2 (v3): Nạp tiền đơn lẻ & theo lô (1,642 dòng)
-    │   ├── FS-03_School_Student_Fee_Management.md     # R3 (v3): Quản lý Trường, Lớp & Biểu phí (1,704 dòng)
-    │   ├── FS-04_Financial_Assistance_Scheme_FAS.md   # R4: Trợ cấp tài chính FAS & AI Scoring (343 dòng)
-    │   ├── FS-05_Hardcopy_Applications_Offline.md     # R5: Xử lý đơn giấy OCR (157 dòng)
-    │   ├── FS-06_FAS_Budget_and_Statistics.md         # R6: Ngân sách & Cảnh báo FAS (566 dòng)
-    │   ├── FS-07_User_Simulation_ViewAs.md            # R7: Giả lập góc nhìn người dùng (2 dòng)
-    │   ├── FS-08_Parent_Portal_SingPass_Profile.md    # R8: Cổng Phụ huynh SingPass, Profile (265 dòng)
-    │   ├── FS-09_Outstanding_Fees_and_Payment.md      # R9 (v2): Công nợ & Thanh toán (418 dòng)
-    │   ├── FS-10_FAS_Family_Application_Portal.md     # R10: Phụ huynh nộp đơn FAS trực tuyến (253 dòng)
+    │   ├── Tổng hợp FS.md            # Đặc tả FSD tổng thể toàn hệ thống (cập nhật 28/10/2026)
+    │   ├── FS-01_Education_Account_Lifecycle.md       # R1: Vòng đời tài khoản EA (978 dòng)
+    │   ├── FS-02_Education_Account_TopUp.md          # R2 (v3): Nạp tiền đơn lẻ & theo lô (2,214 dòng)
+    │   ├── FS-03_School_Student_Fee_Management.md     # R3 (v3): Quản lý Trường, Lớp & Biểu phí (1,698 dòng)
+    │   ├── FS-04_Financial_Assistance_Scheme_FAS.md   # R4: Trợ cấp tài chính FAS & AI Scoring (341 dòng)
+    │   ├── FS-05_Hardcopy_Applications_Offline.md     # R5: Xử lý đơn giấy OCR (155 dòng)
+    │   ├── FS-06_FAS_Budget_and_Statistics.md         # R6: Ngân sách & Cảnh báo FAS (564 dòng)
+    │   ├── FS-07_User_Simulation_ViewAs.md            # R7: Giả lập góc nhìn người dùng
+    │   ├── FS-08_Parent_Portal_SingPass_Profile.md    # R8: Cổng Phụ huynh SingPass, Profile (263 dòng)
+    │   ├── FS-09_Outstanding_Fees_and_Payment.md      # R9 (v2): Công nợ & Thanh toán (414 dòng)
+    │   ├── FS-10_FAS_Family_Application_Portal.md     # R10: Phụ huynh nộp đơn FAS trực tuyến (249 dòng)
     │   ├── FS R2 – Top-Up Management.md
     │   ├── FS Function 9 - Outstanding Fees and Payment (Final).md
     │   ├── FS-08 Parent Portal – SingPass, Education Account, Profile.md

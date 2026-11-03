@@ -1,0 +1,116 @@
+{
+  "test_environments": {
+    "citizen_portal": "http://localhost:5174",
+    "fas_application_route": "/fas-application",
+    "api_endpoints": {
+      "submit_application": "/v1/fas/parent/applications"
+    }
+  },
+  "valid_application_payloads": {
+    "single_beneficiary": {
+      "applicant": {
+        "fullName": "TAN WEI MING",
+        "nric": "S1234567A",
+        "dateOfBirth": "1984-05-15",
+        "gender": "MALE",
+        "nationality": "SC",
+        "race": "CHINESE",
+        "relationshipToBeneficiary": "FATHER",
+        "phoneNumber": "+6591234567",
+        "email": "tan.weiming@example.com",
+        "address": "Blk 123 Ang Mo Kio Ave 4 #08-12, Singapore 560123",
+        "commitmentAgreed": true,
+        "forwardToSchoolAgreed": true
+      },
+      "beneficiaries": [
+        {
+          "fullName": "TAN JIA WEI",
+          "nric": "T0912345B",
+          "dateOfBirth": "2015-08-20",
+          "gender": "MALE",
+          "schoolName": "Ang Mo Kio Primary School",
+          "classLevel": "PRIMARY",
+          "grade": "Primary 5A"
+        }
+      ],
+      "familyMembers": []
+    },
+    "multi_beneficiary_with_household": {
+      "applicant": {
+        "fullName": "CHUA BEE HUA",
+        "nric": "S8012345C",
+        "dateOfBirth": "1980-11-25",
+        "gender": "FEMALE",
+        "nationality": "SC",
+        "race": "CHINESE",
+        "relationshipToBeneficiary": "MOTHER",
+        "phoneNumber": "+6581234567",
+        "email": "chua.beehua@example.com",
+        "address": "Blk 456 Tampines St 42 #11-04, Singapore 520456",
+        "commitmentAgreed": true,
+        "forwardToSchoolAgreed": false
+      },
+      "beneficiaries": [
+        {
+          "fullName": "CHUA JIE LING",
+          "nric": "T1234567D",
+          "dateOfBirth": "2012-04-10",
+          "gender": "FEMALE",
+          "schoolName": "Tampines Primary School",
+          "classLevel": "PRIMARY",
+          "grade": "Primary 6B"
+        },
+        {
+          "fullName": "CHUA JUN WEI",
+          "nric": "T1567890E",
+          "dateOfBirth": "2015-09-18",
+          "gender": "MALE",
+          "schoolName": "Tampines Secondary School",
+          "classLevel": "SECONDARY",
+          "grade": "Secondary 1C"
+        }
+      ],
+      "familyMembers": [
+        {
+          "fullName": "CHUA KENG SENG",
+          "nric": "S5012345F",
+          "dateOfBirth": "1950-03-01",
+          "gender": "MALE",
+          "hasIncome": false
+        }
+      ]
+    }
+  },
+  "mock_api_responses": {
+    "success_200": {
+      "code": "APP-98765",
+      "status": "SUBMITTED",
+      "submittedAt": "2026-10-27T06:30:00.000Z"
+    },
+    "server_error_500": {
+      "status": 500,
+      "code": "ERR_INTERNAL_SERVER",
+      "message": "Internal Server Error during application processing."
+    },
+    "unauthorized_401": {
+      "status": 401,
+      "code": "AUTH_UNAUTHORIZED",
+      "message": "Unauthorized. A valid Bearer token is required."
+    }
+  },
+  "ui_locators": {
+    "submit_btn": "button:has-text('Submit application')",
+    "submitting_btn": "button:has-text('Submitting application…')",
+    "server_error_alert": "div[role='alert']#fas-server-error",
+    "alert_dialog": "div[role='alertdialog']",
+    "dialog_confirm_btn": "div[role='alertdialog'] button:has-text('Confirm & Submit')",
+    "dialog_cancel_btn": "div[role='alertdialog'] button:has-text('Keep editing'), div[role='alertdialog'] button:has-text('Cancel')",
+    "confirmation_section": "section[aria-labelledby='fas-confirmation-title']",
+    "confirmation_heading": "h1#fas-confirmation-title",
+    "confirmation_description": "section[aria-labelledby='fas-confirmation-title'] p",
+    "app_ref_code": "dt:has-text('Application reference') + dd",
+    "app_status": "dt:has-text('Status') + dd",
+    "submitted_at": "dt:has-text('Submitted at') + dd",
+    "start_new_app_btn": "button:has-text('Start a new application')"
+  }
+}

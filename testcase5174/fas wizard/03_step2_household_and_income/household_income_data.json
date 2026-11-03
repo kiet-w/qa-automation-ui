@@ -1,0 +1,61 @@
+{
+  "test_environment": {
+    "wizard_url": "http://localhost:5174/fas-application",
+    "step": 2,
+    "step_title": "Family member details"
+  },
+  "personas": {
+    "applicant_parent": {
+      "fullName": "TAN AH TECK",
+      "nric": "S7890123F",
+      "grossMonthlyIncome": 1800.0
+    },
+    "child_beneficiary_1": {
+      "fullName": "TAN XIAO WEI",
+      "nric": "T1456789A",
+      "dateOfBirth": "2014-05-12",
+      "grossMonthlyIncome": 0.0
+    }
+  },
+  "family_member_fixtures": [
+    {
+      "case": "grandfather_no_income",
+      "fullName": "Tan Ah Kow",
+      "nric": "S5512345F",
+      "dateOfBirth": "1955-08-15",
+      "gender": "MALE",
+      "hasIncome": "no"
+    },
+    {
+      "case": "grandmother_with_income",
+      "fullName": "Lim Geok Choo",
+      "nric": "S6012345C",
+      "dateOfBirth": "1960-03-22",
+      "gender": "FEMALE",
+      "hasIncome": "yes"
+    },
+    {
+      "case": "uncle_working",
+      "fullName": "Tan Ah Boon",
+      "nric": "S7712345E",
+      "dateOfBirth": "1977-11-04",
+      "gender": "MALE",
+      "hasIncome": "yes"
+    }
+  ],
+  "attack_vectors": {
+    "duplicate_with_applicant": "S7890123F",
+    "duplicate_with_child": "T1456789A",
+    "duplicate_between_members": "S6512345D",
+    "invalid_nrics": [
+      "S1234",
+      "12345678A",
+      "ABCDEFGHJ",
+      "T1234567!"
+    ],
+    "future_dob": "2099-12-31",
+    "xss_name": "<script>alert('XSS')</script><img src=x onerror=alert(1)>",
+    "max_length_name_200": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "over_length_name_201": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }
+}

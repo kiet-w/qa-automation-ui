@@ -1,5 +1,3 @@
-# **R3 v3**
-
 # **FUNCTIONAL SPECIFICATION – R3**
 
 ## **School, Student & Fee Management**
@@ -643,8 +641,6 @@ Hệ thống cần đảm bảo:
 * R4: FAS Eligibility Assessment, Grant và Subsidy Rules.  
 * R9: Payment Gateway, Wallet Debit và Reconciliation.
 
-# **R3 v2**
-
 # **FUNCTIONAL SPECIFICATION – R3: School, Student và Fee Management**
 
 ## **1\. Introduction**
@@ -1079,8 +1075,6 @@ F08 do System thực hiện, không có màn hình riêng.
 *End of Document*
 
 ## 
-
-# **R3**
 
 # **FUNCTIONAL SPECIFICATION – R3: School, Student và Fee Management**
 

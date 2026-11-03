@@ -125,10 +125,16 @@ class SchoolDirectoryPage(BasePage):
         self.inline_name_input.fill(name)
 
     def select_inline_type(self, label: str) -> None:
-        self.inline_type_select.select_option(label=label)
+        try:
+            self.inline_type_select.select_option(value=label)
+        except Exception:
+            self.inline_type_select.select_option(label=label)
 
     def save_inline(self) -> None:
         self.save_inline_button.click()
+
+    def discard_inline(self) -> None:
+        self.discard_inline_button.click()
 
     # --- Lifecycle dialog -------------------------------------------------
     def open_deactivate_dialog(self, code: str) -> None:

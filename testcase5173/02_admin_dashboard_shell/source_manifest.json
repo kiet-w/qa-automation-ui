@@ -1,0 +1,91 @@
+{
+  "scope": "13-admin-shell-sidebar-rbac-header",
+  "stage": "design",
+  "review": {
+    "status": "draft",
+    "evidence": ""
+  },
+  "entries": [
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 122,
+      "end": 125,
+      "roles": ["BR"],
+      "reason": "PB-03 role-based permissions user story and dependencies"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 167,
+      "end": 170,
+      "roles": ["BR", "Dependency"],
+      "reason": "Auth-01 Admin Portal login and role-dependent access"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 480,
+      "end": 480,
+      "roles": ["BR", "AC"],
+      "reason": "Resolved HQ all-record and SCHOOL school-scope clarification"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+      "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+      "start": 1,
+      "end": 92,
+      "roles": ["AC", "Validation", "Flow", "UI"],
+      "reason": "Live-DOM shell inventory, role menu matrix, state flow and active-link rules"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+      "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+      "start": 169,
+      "end": 187,
+      "roles": ["AC", "Error", "UI"],
+      "reason": "Shell pass/fail oracles and access feedback"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+      "start": 1,
+      "end": 14,
+      "roles": ["Dependency", "UI"],
+      "reason": "Admin auth routes, actors, endpoints and live-DOM provenance"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+      "start": 75,
+      "end": 113,
+      "roles": ["BR", "Flow", "Error", "Dependency"],
+      "reason": "Authentication sequence and explicit MOEHQ/SCHOOL route permissions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+      "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+      "start": 40,
+      "end": 67,
+      "roles": ["Flow", "Dependency"],
+      "reason": "Admin Portal role-based navigation map"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+      "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+      "start": 733,
+      "end": 744,
+      "roles": ["Validation", "UI"],
+      "reason": "Accessibility keyboard, contrast and responsive acceptance rules"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/Test Cases/DEFECTS_Sprint_1_Master.md",
+      "sha256": "257d40a87ea4eafd7aa6cf8df443fe32f57dcc36f316574fdf9367e7d5f70f65",
+      "start": 138,
+      "end": 173,
+      "roles": ["Error", "Dependency"],
+      "reason": "Known active-navigation defect BUG-R3-002 and regression oracle"
+    }
+  ],
+  "note": "Draft source selection for design. It is not user approval and does not certify semantic coverage."
+}

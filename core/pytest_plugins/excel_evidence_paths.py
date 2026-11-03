@@ -47,6 +47,22 @@ def find_actual_result_screenshot(
             path = repo_root / path
         if path.is_file():
             return path
+
+    # Fallback: check test-results/ directory for Playwright test-failed screenshots
+    test_results_dir = reports_dir / "test-results"
+    if test_results_dir.exists():
+        for slug in test_slug_candidates(nodeid):
+            sub = test_results_dir / slug
+            if sub.is_dir():
+                pngs = sorted(sub.glob("*.png"))
+                if pngs:
+                    return pngs[-1]
+            for d in test_results_dir.glob(f"*{slug}*"):
+                if d.is_dir():
+                    pngs = sorted(d.glob("*.png"))
+                    if pngs:
+                        return pngs[-1]
+
     return None
 
 

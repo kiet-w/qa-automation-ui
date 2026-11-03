@@ -26,9 +26,11 @@ WORKSPACE_DIR = REPO_ROOT
 DEFAULT_REPORTS_DIR = REPO_ROOT / "reports"
 
 TICKET_ALIASES = {
-    "fs03/fs03-admin-login": "localhost-5173/academic-and-users/01_admin_login_and_sso",
-    "fs03-admin-login": "localhost-5173/academic-and-users/01_admin_login_and_sso",
-    "academic-and-users/01_admin_login_and_sso": "localhost-5173/academic-and-users/01_admin_login_and_sso",
+    # Keep historical FS03 invocations beside the current testcase5173 suite
+    # so HTML, JSON, screenshots, and videos are never split across report trees.
+    "fs03/fs03-admin-login": "testcase5173/01_admin_login_and_sso",
+    "fs03-admin-login": "testcase5173/01_admin_login_and_sso",
+    "academic-and-users/01_admin_login_and_sso": "testcase5173/01_admin_login_and_sso",
 }
 
 
@@ -95,7 +97,13 @@ def pytest_configure(config):
     # Ensure pytest-html generates report.html in ticket folder if available
     if hasattr(config.option, "htmlpath"):
         curr_html = getattr(config.option, "htmlpath", None)
-        if not curr_html:
+        default_htmls = (
+            "reports/report.html",
+            "3_Bao_Cao_va_Ket_Qua/reports/report.html",
+            str(DEFAULT_REPORTS_DIR / "report.html"),
+            str(ticket_reports_dir / "report.html"),
+        )
+        if not curr_html or curr_html in default_htmls:
             config.option.htmlpath = str(ticket_reports_dir / "report.html")
             config.option.self_contained_html = True
 
@@ -137,6 +145,9 @@ def pytest_collection_finish(session):
                 config.option.output = str(ticket_reports_dir / "test-results" / run_id)
             if getattr(config.option, "json_report_file", None) in ("reports/report.json", str(DEFAULT_REPORTS_DIR / "report.json")):
                 config.option.json_report_file = str(ticket_reports_dir / "report.json")
+            if getattr(config.option, "htmlpath", None) in ("reports/report.html", str(DEFAULT_REPORTS_DIR / "report.html")):
+                config.option.htmlpath = str(ticket_reports_dir / "report.html")
+                config.option.self_contained_html = True
 
 
 @pytest.hookimpl(optionalhook=True)
@@ -366,10 +377,27 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
                     rel_v = v
                 terminalreporter.write_line(f"   -> {rel_v}")
 
-    report_html = reports_dir / "report.html"
+    configured_html = getattr(config.option, "htmlpath", None)
+    report_html = Path(configured_html) if configured_html else reports_dir / "report.html"
     if report_html.exists():
         terminalreporter.write_sep("=", "✅ [PYTEST HTML REPORT AVAILABLE]", bold=True, green=True)
         terminalreporter.write_line(f"   Report File: {report_html}")
+
+    # Automatically generate report.xlsx execution evidence workbook alongside report.html
+    try:
+        from core.pytest_plugins.excel_evidence_exporter import export_test_execution_evidence
+        excel_res = export_test_execution_evidence(
+            reports_dir=reports_dir,
+            report_json_path=report_json,
+            run_id=run_id,
+        )
+        if excel_res and excel_res.get("report_std_xlsx"):
+            terminalreporter.write_sep("=", "📊 [EXCEL EXECUTION REPORT (report.xlsx) AVAILABLE]", bold=True, green=True)
+            terminalreporter.write_line(f"   Report Excel: {excel_res['report_std_xlsx']}")
+            if excel_res.get("reports_xlsx") and excel_res["reports_xlsx"] != excel_res["report_std_xlsx"]:
+                terminalreporter.write_line(f"   Synced Excel: {excel_res['reports_xlsx']}")
+    except Exception as exc:
+        terminalreporter.write_line(f"   [Excel Export Notice]: {exc}")
 
 
 @pytest.fixture(scope="session", autouse=True)

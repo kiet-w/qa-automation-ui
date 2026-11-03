@@ -1,0 +1,183 @@
+{
+  "personas": {
+    "school_admin": {
+      "username": "staff1@IAM.edu.vn",
+      "role": "SCHOOL",
+      "school_id": "SCH-0201",
+      "school_name": "Rosyth Primary School",
+      "moe_code": "RPS-0201"
+    },
+    "system_admin": {
+      "username": "admin@IAM.edu.vn",
+      "role": "MOEHQ"
+    }
+  },
+  "academic_years": [
+    {
+      "id": "AY-2024",
+      "year": "2024",
+      "status": "COMPLETED",
+      "editable": false
+    },
+    {
+      "id": "AY-2025",
+      "year": "2025",
+      "status": "COMPLETED",
+      "editable": false
+    },
+    {
+      "id": "AY-2026",
+      "year": "2026",
+      "status": "ACTIVE",
+      "editable": true
+    },
+    {
+      "id": "AY-2027",
+      "year": "2027",
+      "status": "DRAFT",
+      "editable": true,
+      "clean": true
+    }
+  ],
+  "stages": [
+    "All",
+    "Primary",
+    "Secondary",
+    "Pre-University"
+  ],
+  "academic_levels": [
+    {
+      "code": "PRI-1",
+      "name": "Primary 1",
+      "stage": "Primary"
+    },
+    {
+      "code": "PRI-2",
+      "name": "Primary 2",
+      "stage": "Primary"
+    },
+    {
+      "code": "PRI-3",
+      "name": "Primary 3",
+      "stage": "Primary"
+    },
+    {
+      "code": "PRI-4",
+      "name": "Primary 4",
+      "stage": "Primary"
+    },
+    {
+      "code": "PRI-5",
+      "name": "Primary 5",
+      "stage": "Primary"
+    },
+    {
+      "code": "PRI-6",
+      "name": "Primary 6",
+      "stage": "Primary"
+    },
+    {
+      "code": "SEC-1",
+      "name": "Secondary 1",
+      "stage": "Secondary"
+    },
+    {
+      "code": "SEC-2",
+      "name": "Secondary 2",
+      "stage": "Secondary"
+    },
+    {
+      "code": "SEC-3",
+      "name": "Secondary 3",
+      "stage": "Secondary"
+    },
+    {
+      "code": "SEC-4",
+      "name": "Secondary 4",
+      "stage": "Secondary"
+    },
+    {
+      "code": "PU1",
+      "name": "Pre-University 1",
+      "stage": "Pre-University"
+    },
+    {
+      "code": "PU2",
+      "name": "Pre-University 2",
+      "stage": "Pre-University"
+    },
+    {
+      "code": "PU3",
+      "name": "Pre-University 3",
+      "stage": "Pre-University"
+    }
+  ],
+  "sample_classes": [
+    {
+      "class_code": "P1-A",
+      "class_name": "Primary 1-A",
+      "active_students": 32,
+      "status": "Active"
+    },
+    {
+      "class_code": "P1-B",
+      "class_name": "Primary 1-B",
+      "active_students": 30,
+      "status": "Active"
+    },
+    {
+      "class_code": "P1-C",
+      "class_name": "Primary 1-C",
+      "active_students": 28,
+      "status": "Active"
+    },
+    {
+      "class_code": "P2-A",
+      "class_name": "Primary 2-A",
+      "active_students": 31,
+      "status": "Active"
+    }
+  ],
+  "validation_payloads": {
+    "valid_class": {
+      "classCode": "P1-D",
+      "className": "Primary 1-D"
+    },
+    "bva_min_code": {
+      "classCode": "A",
+      "className": "Class A"
+    },
+    "bva_max_code": {
+      "classCode": "PRI-1-CL01",
+      "className": "Primary 1 Class 01"
+    },
+    "over_max_code": {
+      "classCode": "PRI-1-CLASS-TOOLONG",
+      "className": "Too Long Code"
+    },
+    "empty_code": {
+      "classCode": "",
+      "className": "Valid Name"
+    },
+    "whitespace_code": {
+      "classCode": "   ",
+      "className": "Valid Name"
+    },
+    "special_chars_code": {
+      "classCode": "P1@#$",
+      "className": "Invalid Code"
+    },
+    "duplicate_code": {
+      "classCode": "P1-A",
+      "className": "Duplicate Class"
+    },
+    "xss_payload": {
+      "classCode": "P1-XSS",
+      "className": "<script>alert('XSS')</script>"
+    },
+    "unicode_name": {
+      "classCode": "P1-VN",
+      "className": "Lớp 1-A Chu Văn An"
+    }
+  }
+}

@@ -17,29 +17,29 @@
   },
   "locators": {
     "username_input": {
-      "css": "input[autocomplete='username']",
+      "css": "input[placeholder*='username' i], input[placeholder*='tên đăng nhập' i], input[autocomplete='username']",
       "type": "text",
       "required": true
     },
     "password_input": {
-      "css": "input[autocomplete='current-password']",
+      "css": "input[placeholder*='password' i], input[placeholder*='mật khẩu' i], input[type='password'], input[autocomplete='current-password']",
       "type": "password",
       "required": true
     },
     "submit_button": {
-      "css": "button[type='submit']:has-text('Sign in')",
+      "css": "button[type='submit']:has-text('Sign in'), button[type='submit']:has-text('Đăng nhập')",
       "type": "submit"
     },
     "microsoft_button": {
-      "css": "button:has-text('Sign in with Microsoft')",
+      "css": "button:has-text('Sign in with Microsoft'), button:has-text('Đăng nhập với Microsoft')",
       "type": "button"
     },
     "toggle_password_button": {
-      "css": "button[aria-label*='password' i]",
+      "css": "button[aria-label*='password' i], button[aria-label*='mật khẩu' i]",
       "type": "button"
     },
     "language_select": {
-      "css": "select[aria-label='Language']",
+      "css": "select[aria-label='Language'], select[aria-label='Ngôn ngữ']",
       "type": "select"
     },
     "alert_error": {
@@ -51,21 +51,25 @@
       "component": "Spinner"
     },
     "simulator_tile_moehq": {
-      "css": ".account-tile:has-text('admin@IAM.edu.vn'), text='admin@IAM.edu.vn'"
+      "css": ".account-tile:has-text('admin@IAM.edu.vn')"
     },
     "simulator_tile_school": {
-      "css": ".account-tile:has-text('staff1@IAM.edu.vn'), text='staff1@IAM.edu.vn'"
+      "css": ".account-tile:has-text('staff1@IAM.edu.vn')"
     },
     "simulator_tile_parent": {
-      "css": ".account-tile:has-text('head1@IAM.edu.vn'), text='head1@IAM.edu.vn'"
+      "css": ".account-tile:has-text('head1@IAM.edu.vn')"
     },
     "simulator_continue": {
-      "css": "button:has-text('Continue')",
+      "css": "button.other-account-button, button:has-text('Continue')",
       "type": "button"
     },
     "simulator_use_another": {
-      "css": "input[placeholder*='name@example.com']",
+      "css": "input#other-email, input[placeholder*='name@example.com']",
       "type": "text"
+    },
+    "simulator_use_another_error": {
+      "css": "p#other-email-error, [role='alert']",
+      "type": "error"
     }
   },
   "expected_strings": {

@@ -1,0 +1,361 @@
+{
+  "project_meta": {
+    "project": "EduFAMS UAT Automation & Manual Test Suite",
+    "workflow": "End-to-End 8-Step Business Flow (Sprint 3)",
+    "target_environments": {
+      "admin_portal": "https://admin.20-255-158-192.sslip.io",
+      "parent_portal": "https://eservice.20-255-158-192.sslip.io"
+    },
+    "school_context": {
+      "name": "Rosyth Primary School",
+      "code": "RPS-0201",
+      "school_id": "SCH-003",
+      "level": "Primary"
+    },
+    "actors": {
+      "moe_hq_admin": {
+        "email": "admin@IAM.edu.vn",
+        "role_badge": "System Admin",
+        "auth_provider": "Microsoft Entra SSO Simulator"
+      },
+      "school_staff": {
+        "email": "staff1@IAM.edu.vn",
+        "name": "Bui Thi H",
+        "role": "School Admin / School Reviewer",
+        "auth_provider": "Microsoft Entra SSO Simulator"
+      },
+      "parent": {
+        "name": "Pham Van Duc",
+        "nric": "S7654321B",
+        "auth_provider": "Mockpass Singpass Simulator"
+      }
+    },
+    "target_student": {
+      "full_name": "Liam Pham",
+      "student_id": "STU-00001",
+      "nric_raw": "S4744854C",
+      "nric_masked": "*****854C",
+      "nationality": "Singapore citizen",
+      "stage": "Primary 1",
+      "class_code": "P1-A",
+      "edusave_account": {
+        "ea_code": "EDU-01001",
+        "initial_balance": "500.00",
+        "currency": "SGD"
+      }
+    }
+  },
+  "steps": {
+    "B1": {
+      "step_id": "B1",
+      "name": "Tạo Cán Bộ Trường",
+      "actor": "MOE HQ (admin@IAM.edu.vn)",
+      "url": "/school-user-management/new",
+      "route": "https://admin.20-255-158-192.sslip.io/school-user-management/new",
+      "test_data": {
+        "form_inputs": {
+          "nric": "S8912345A",
+          "first_name": "Arthur",
+          "last_name": "Kent",
+          "email": "staff1@IAM.edu.vn",
+          "school_search": "Rosyth Primary School",
+          "school_option": "Rosyth Primary School (RPS-0201)",
+          "role": "School Admin"
+        },
+        "boundary_and_validation": {
+          "invalid_nric": "INVALID123",
+          "invalid_email": "not-an-email",
+          "empty_form_errors": [
+            "NRIC is required.",
+            "First name is required.",
+            "Last name is required.",
+            "Email is required."
+          ]
+        }
+      },
+      "expected_result": {
+        "toast_message": "User created successfully",
+        "redirect_url": "/school-user-management",
+        "record_in_table": {
+          "name": "Arthur Kent",
+          "email": "staff1@IAM.edu.vn",
+          "school": "Rosyth Primary School",
+          "status": "Active"
+        }
+      }
+    },
+    "B2": {
+      "step_id": "B2",
+      "name": "Giả Lập Vai Trò (View As)",
+      "actor": "MOE HQ (admin@IAM.edu.vn)",
+      "url": "/support-console",
+      "route": "https://admin.20-255-158-192.sslip.io/support-console",
+      "test_data": {
+        "mode_selection": "School role (persona)",
+        "school_search": "Rosyth Primary School",
+        "school_code": "RPS-0201",
+        "target_role": "School Admin",
+        "audit_payload": {
+          "reason_valid": "Testing UAT Sprint 3 for Kent (30 chars)",
+          "ticket_reference_valid": "UAT-KENT-01"
+        },
+        "boundary_validation": {
+          "below_min_9_chars_reason": "123456789",
+          "exact_min_10_chars_reason": "1234567890",
+          "empty_ticket": "",
+          "expected_disabled_button": "Start View As"
+        }
+      },
+      "expected_result": {
+        "header_state": "Thi H Bui | school",
+        "sidebar_menus": [
+          "Classes (/class-management)",
+          "School configuration (/school-config)",
+          "Students (/student-management)",
+          "Fees & Fee Batches (/fee-batches)",
+          "SBFAS & FAS Applications (/fas-applications)"
+        ],
+        "banner_visible": "You are currently viewing as School Admin at Rosyth Primary School"
+      }
+    },
+    "B3": {
+      "step_id": "B3",
+      "name": "Quản Lý Lớp Học",
+      "actor": "Cán bộ trường (staff1@IAM.edu.vn)",
+      "url": "/class-management",
+      "route": "https://admin.20-255-158-192.sslip.io/class-management",
+      "test_data": {
+        "existing_class": {
+          "class_code": "P1-A",
+          "class_name": "Primary 1-A",
+          "offering": "Primary 1 · 2026",
+          "level": "Primary 1",
+          "year": "2026"
+        },
+        "create_class_payload": {
+          "class_code": "P1-B",
+          "class_name": "Primary 1-B",
+          "offering_option": "Primary 1 · 2026"
+        },
+        "validation_duplicate": {
+          "class_code": "P1-A",
+          "class_name": "Primary 1-A Duplicate",
+          "offering_option": "Primary 1 · 2026",
+          "expected_alert": "Unable to create class",
+          "expected_error": "Class code 'P1-A' already exists for this offering."
+        }
+      },
+      "expected_result": {
+        "list_verification": "P1-A hiển thị trong danh mục lớp với khối Primary 1 và năm học 2026",
+        "detail_verification": "Màn hình chi tiết /class-management/CLS-P1-A hiển thị 'Primary 1 · Academic year 2026' và danh sách học sinh (Roster) chứa Liam Pham (STU-00001)"
+      }
+    },
+    "B4": {
+      "step_id": "B4",
+      "name": "Cấu Hình Biểu Phí",
+      "actor": "MOE HQ (admin@IAM.edu.vn)",
+      "url": "/fee-management",
+      "route": "https://admin.20-255-158-192.sslip.io/fee-management",
+      "test_data": {
+        "component_setup": {
+          "name": "School Tuition Fee 2026",
+          "categories": ["Singapore citizen", "Permanent resident"],
+          "stages": ["Primary"],
+          "tax_applies": true
+        },
+        "rate_rule": {
+          "mode": "fixed-amount",
+          "amount": "100.00",
+          "currency": "SGD",
+          "effective_from": "2026-01-01",
+          "effective_to": "2026-12-31"
+        },
+        "boundary_validation": {
+          "empty_name": "",
+          "inverted_dates": {
+            "effective_from": "2026-12-31",
+            "effective_to": "2026-01-01"
+          },
+          "expected_error": "Effective from date must precede effective to date."
+        }
+      },
+      "expected_result": {
+        "fee_catalogue": "Biểu phí 'School Tuition Fee 2026' xuất hiện với trạng thái Active, định mức $100.00 SGD cho học sinh Primary."
+      }
+    },
+    "B5": {
+      "step_id": "B5",
+      "name": "Tạo Đợt Thu & Xuất Bản Nợ",
+      "actor": "MOE HQ (admin@IAM.edu.vn)",
+      "url": "/fee-batches",
+      "route": "https://admin.20-255-158-192.sslip.io/fee-batches",
+      "test_data": {
+        "batch_creation": {
+          "title": "Rosyth P1 Tuition Batch 2026",
+          "school": "Rosyth Primary School (RPS-0201)",
+          "level": "Primary 1",
+          "period_start": "2026-01-01",
+          "period_end": "2026-06-30",
+          "due_date": "2026-01-31",
+          "fee_component": "School Tuition Fee 2026 ($100.00 SGD)"
+        },
+        "target_charge": {
+          "student": "Liam Pham (STU-00001)",
+          "gross_amount": "100.00",
+          "currency": "SGD"
+        },
+        "negative_oracle": {
+          "stage": "Preview Phase",
+          "assertion": "Tại bước Preview, TUYỆT ĐỐI KHÔNG phát sinh công nợ trong student-management và số dư phụ huynh không thay đổi."
+        }
+      },
+      "expected_result": {
+        "post_publish_status": "POSTED",
+        "batch_status": "Published",
+        "invoice_created": {
+          "invoice_id": "INV-2026-00101",
+          "gross_amount": "100.00",
+          "status": "UNPAID / POSTED"
+        }
+      }
+    },
+    "B6": {
+      "step_id": "B6",
+      "name": "Tạo Gói Trợ Cấp SBFAS",
+      "actor": "Cán bộ trường (staff1@IAM.edu.vn)",
+      "url": "/sbfas-schemes/new",
+      "route": "https://admin.20-255-158-192.sslip.io/sbfas-schemes/new",
+      "test_data": {
+        "tier1_scheme": {
+          "scheme_name": "Tier 1",
+          "description": "SBFAS Tier 1 support scheme for Rosyth Primary School",
+          "open_from": "2026-11-01",
+          "open_to": "2026-11-30",
+          "effective_from": "2026-12-01",
+          "effective_to": "2027-11-30",
+          "total_budget": "50000",
+          "nationality": "Singapore citizen (SC)",
+          "income_band": {
+            "ghi_to": "3000",
+            "pci_to": "1000"
+          },
+          "subsidy_rates": {
+            "Primary 1": "100%",
+            "Primary 2": "80%",
+            "Primary 3": "60%",
+            "Primary 4": "60%"
+          }
+        },
+        "add_fee_component": {
+          "component_name": "Art Supplies Fee",
+          "rates": {
+            "Primary 1": "100%"
+          }
+        },
+        "validation_conflict": {
+          "duplicate_name": "Tier 1",
+          "expected_error": "A scheme with this name already exists for this school."
+        }
+      },
+      "expected_result": {
+        "scheme_status": "Active / Published",
+        "coverage": "Miễn giảm 100% học phí (Primary 1) cho học sinh đạt tiêu chuẩn GHI ≤ 3,000 SGD hoặc PCI ≤ 1,000 SGD."
+      }
+    },
+    "B7": {
+      "step_id": "B7",
+      "name": "Thẩm Định Đơn Trợ Cấp",
+      "actor": "Cán bộ trường (staff1@IAM.edu.vn)",
+      "url": "/fas-applications",
+      "route": "https://admin.20-255-158-192.sslip.io/fas-applications",
+      "test_data": {
+        "target_application": {
+          "application_code": "APP-01004",
+          "student_name": "Liam Pham (hoặc Ethan Rahman)",
+          "student_id": "STU-00001",
+          "school": "Rosyth Primary School",
+          "financials": {
+            "ghi": "$2,400",
+            "pci": "$600",
+            "household_size": "4"
+          },
+          "income_status": "Verified"
+        },
+        "approval_action": {
+          "selected_tier": "Tier 1",
+          "subsidy_rate": "100%",
+          "decision_comment": "Eligible for SBFAS Tier 1 100% tuition subsidy",
+          "target_status": "Approved"
+        },
+        "rejection_scenario": {
+          "rejection_app_code": "APP-01005",
+          "reason": "Income above limit",
+          "remarks": "Household income exceeds Tier 1 threshold.",
+          "target_status": "Rejected"
+        }
+      },
+      "expected_result": {
+        "toast_message": "Subsidy applied to the student's EA fees",
+        "app_status": "Approved",
+        "financial_offset": "Học phí gốc $100.00 SGD được khấu trừ $100.00 SGD (hoặc $60.00 SGD nếu Tier 2), công nợ thực thu chuyển sang Net Amount."
+      }
+    },
+    "B8": {
+      "step_id": "B8",
+      "name": "Khấu Trừ & Đóng Tiền",
+      "actor": "Phụ huynh (Singpass S7654321B)",
+      "url": "/accounts/STU-001/pay",
+      "route": "https://eservice.20-255-158-192.sslip.io/parent/login",
+      "test_data": {
+        "parent_login": {
+          "nric": "S7654321B",
+          "name": "Pham Van Duc",
+          "auth_method": "Mockpass Singpass Simulation"
+        },
+        "student_account": {
+          "name": "Liam Pham",
+          "class": "Primary 1 - 1A1 (P1-A)",
+          "school": "Rosyth Primary School",
+          "edusave_opening_balance": "500.00 SGD"
+        },
+        "financial_reconciliation": {
+          "scenario_tier_1_full_waiver": {
+            "gross_amount": 100.00,
+            "sbfas_subsidy": 100.00,
+            "net_payable": 0.00,
+            "expected_status": "Paid",
+            "edusave_balance_after": 500.00
+          },
+          "scenario_tier_2_partial_subsidy": {
+            "gross_amount": 100.00,
+            "sbfas_subsidy": 60.00,
+            "net_payable": 40.00,
+            "expected_status": "Payment pending",
+            "payment_methods": {
+              "ea_only": {
+                "ea_debit": 40.00,
+                "online_debit": 0.00,
+                "edusave_balance_after": 460.00
+              },
+              "split_payment": {
+                "ea_debit": 20.00,
+                "online_debit": 20.00,
+                "edusave_balance_after": 480.00
+              }
+            }
+          }
+        },
+        "safety_and_idempotency": {
+          "rule_g2": "Chống trừ tiền hai lần (Idempotency) khi nhấn nút Pay nhiều lần",
+          "rule_g3": "Hóa đơn biên lai (Receipt) hiển thị đủ Gross $100 - Subsidy $60 = Net $40, Balance $0."
+        }
+      },
+      "expected_result": {
+        "invoice_status": "PAID",
+        "receipt_generated": true,
+        "edusave_closing_balance": "460.00 SGD (hoặc 500.00 SGD nếu miễn 100%)",
+        "audit_ledger": "Hệ thống ghi nhận giao dịch thanh toán thành công và đồng bộ về Cổng Quản trị Admin."
+      }
+    }
+  }
+}

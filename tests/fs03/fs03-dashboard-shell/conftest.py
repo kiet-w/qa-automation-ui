@@ -77,10 +77,66 @@ def auth_mock(page: Page, shell_data: Dict[str, Any]):
             route.fulfill(status=204, body="")
 
         def business_api_handler(route: Route):
+            url = route.request.url
+            if "/bff/v1/dashboard/moe" in url:
+                payload = {
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "kpis": {
+                            "totalEnrolledStudents": 124500,
+                            "activeRatePercent": 98.5,
+                            "totalSchools": 350,
+                            "activeTopUpCampaigns": 3,
+                            "moeFasPendingReview": 12,
+                        },
+                        "budgetByStage": [],
+                        "moeFasEligibility": {
+                            "approvedCount": 100,
+                            "approvedPercent": 80,
+                            "underReviewCount": 15,
+                            "underReviewPercent": 12,
+                            "rejectedCount": 10,
+                            "rejectedPercent": 8,
+                        },
+                        "recentTopUpCampaigns": [],
+                        "activeMoeSchemes": [],
+                    },
+                }
+            elif "/bff/v1/dashboard/school" in url:
+                payload = {
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "kpis": {
+                            "activeStudents": 1200,
+                            "activeStudentsGrowthPercent": 5,
+                            "studentsWithoutClass": 0,
+                            "activeClassesCount": 40,
+                            "activeBatchesCount": 4,
+                            "sbfasPending": 2,
+                        },
+                        "outstandingByLevel": [],
+                        "sbfasDistribution": {"primary": 10, "secondary": 20},
+                        "recentPublicationBatches": [],
+                        "urgentApplications": [],
+                    },
+                }
+            else:
+                payload = {
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "items": [],
+                        "totalRecords": 0,
+                        "totalCount": 0,
+                        "metadata": {"totalRecords": 0, "pageNumber": 1, "pageSize": 10},
+                    },
+                }
             route.fulfill(
                 status=200,
                 content_type="application/json",
-                body='{"isSuccess": true, "statusCode": 200, "data": {"items": [], "totalRecords": 0, "totalCount": 0, "metadata": {"totalRecords": 0, "pageNumber": 1, "pageSize": 10}}}',
+                body=json.dumps(payload),
             )
 
         endpoint_pattern = "**/auth/me"

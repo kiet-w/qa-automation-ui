@@ -1,0 +1,54 @@
+{
+  "suite_name": "EduFAMS Destructive & Vulnerability Testing Suite",
+  "version": "1.0.0",
+  "environments": {
+    "admin_url": "https://admin.20-255-158-192.sslip.io",
+    "parent_url": "https://eservice.20-255-158-192.sslip.io"
+  },
+  "accounts": {
+    "admin": {
+      "email": "admin@IAM.edu.vn",
+      "role": "System Administrator (MOE HQ)"
+    },
+    "school_staff": {
+      "email": "staff1@IAM.edu.vn",
+      "school_name": "Rosyth Primary School",
+      "school_code": "SCH-003"
+    },
+    "parent": {
+      "nric": "S7654321B",
+      "name": "Pham Van Duc"
+    }
+  },
+  "student": {
+    "id": "STU-00001",
+    "name": "Liam Pham",
+    "nric": "S4744854C",
+    "class": "Primary 1 - 1A1"
+  },
+  "zone1_payloads": {
+    "overdraft_amount": "600.00",
+    "tampered_amounts": ["0.00", "-50.00", "0.001", "NaN"],
+    "double_click_iterations": 3
+  },
+  "zone2_payloads": {
+    "invalid_subsidy_percentages": ["-15", "150", "999"],
+    "bva_remarks_invalid_14": "Under 15 chars",
+    "bva_remarks_exact_15": "Exactly 15 char",
+    "duplicate_scheme_name": "Tier 1 Duplicate Attack"
+  },
+  "zone3_payloads": {
+    "inverted_dates": {
+      "from": "2027-12-31",
+      "to": "2026-01-01"
+    },
+    "invalid_rates": ["-100.00", "0.0001", "abc", "1e5"],
+    "component_name_prefix": "Destructive Fee"
+  },
+  "zone4_payloads": {
+    "xss_payload": "<script>alert('EDUFAMS-XSS')</script>",
+    "sqli_payload": "Arthur' OR '1'='1",
+    "whitespace_reason_bypass": "         A",
+    "duplicate_class_name": "P1-A"
+  }
+}

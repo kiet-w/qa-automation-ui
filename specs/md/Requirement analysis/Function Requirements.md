@@ -1,5 +1,3 @@
-# **Requirements**
-
 # **R1 – Education Account Creation & Closure**
 
 English
@@ -240,8 +238,6 @@ Portal: e-Service Portal
 | Requirement | Business Value | Main Actor | Dependency cần kiểm tra |
 | :---- | :---- | :---- | :---- |
 
-# **R1**
-
 # **R1 – Education Account Lifecycle Management**
 
 **Version:** 1.3  
@@ -302,8 +298,6 @@ Singapore Citizens có thể sử dụng Education Account để thanh toán cá
 | Sprint 1 sử dụng synthetic student data và mock lifecycle processing; không mặc định có kết nối thật với Government Data Source hoặc CPF. |
 | Tạm thiết kế eligibility evaluation dựa trên Citizenship và Age. |
 | Dùng mock data source cho Sprint 1\. Đề xuất Person ID làm unique identifier, kèm Name, DOB, Citizenship, optional Address và metadata phục vụ đồng bộ. |
-
-# **R3**
 
 # **R3 – School, Student & Fee Structure Management**
 
@@ -402,8 +396,6 @@ Các Working Assumptions chỉ hỗ trợ preliminary analysis và solution desi
 | R3-F11 | Lịch sử và nhật ký thay đổi dữ liệu | Cần xác nhận: ghi nhận thay đổi và lưu lịch sử khi cần. |
 | R3-F12 | Cấu hình phạm vi áp dụng phí | Cần xác nhận: xác định phí áp dụng theo School, Level/Cohort, Class hoặc Student. |
 
-# **R8**
-
 # **R8 – Parent e-Service Portal & AI Assistant**
 
 **Version:** 1.0  
@@ -450,8 +442,6 @@ Portal có AI assistant trả lời câu hỏi về các functionalities của e
 * Mobile number gồm 8 chữ số, bắt đầu bằng 8 hoặc 9; postal code gồm 6 chữ số.  
 * NRIC hiển thị dạng masked, ví dụ S\*\*\*\*567A.  
 * AI hiện typing indicator trong 1 giây và trả lời trong 10 giây
-
-# **R9**
 
 # **R9 – Fee Payment**
 

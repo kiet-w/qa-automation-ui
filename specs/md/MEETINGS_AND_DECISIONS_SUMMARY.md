@@ -25,6 +25,7 @@
    - 1.2 Cuộc họp Thẩm định & Nghiệm thu Sprint 1 (Sprint 1 Review Meeting - 16/10/2026)
    - 1.3 Bảng so sánh tiến trình và sự tiến hóa yêu cầu
    - 1.4 Cuộc họp Thẩm định & Demo SBFAS, Top-Up & Cảnh Báo Phạm Vi (Sprint 2 Alignment - 23/10/2026)
+   - 1.5 Cuộc họp Thẩm định Fee Management, FAS Auto-Route, View As & Budget (Sprint 3 Alignment - 27/10/2026)
 2. [Log Toàn Bộ Quyết Định Nghiệp Vụ Của Client (Client Decisions Log)](#2-log-toàn-bộ-quyết-định-nghiệp-vụ-của-client-client-decisions-log)
    - 2.1 Bảng ma trận Quyết định chuẩn hóa (Decisions Log Matrix)
    - 2.2 Phân tích chi tiết các quyết định then chốt và tác động kiến trúc
@@ -124,6 +125,20 @@
 
 ---
 
+### 1.5 Cuộc Họp Thẩm Định & Demo Fee Management, FAS Auto-Route, View As & Budget (Sprint 3 Alignment - 27/10/2026)
+* **Thời gian:** 14:30 - 15:06, Thứ Hai ngày 27/10/2026 (via MS Teams).
+* **Tài liệu căn cứ:** `Documentation/[AGILE] MoM 27-10-2026.docx` và `Documentation/Meeting Transcript - 27 Oct 2026.docx`.
+* **Thành phần tham dự:** Team Engineering & Client Lead.
+* **Mục tiêu & Nội dung:**
+  1. **Fee Management (Fee Type & Fee Component):** Demo thiết lập rate rules, fee type và fee component. Client phản hồi: trường "Effective To" nên là tùy chọn (open-ended) vì học phí ít thay đổi; rate rules phải cho phép chỉnh sửa hàng loạt (bulk edit) thay vì từng dòng đơn lẻ.
+  2. **Fee Batch & Parent Payment:** Demo tạo và phát hành đợt thu phí (batch). Client xác nhận: chỉ học sinh có trạng thái **Enrolled** mới được tính phí. Yêu cầu hiển thị bản xem trước danh sách học sinh và số tiền (Draft Preview) trước khi phát hành chính thức. Đưa kết quả chạy Job Run lên đầu trang đợt thu phí, biểu đồ phân tích đặt ở dưới.
+  3. **MOE FAS Scheme Setup & Parent Application:** Bỏ checkbox phụ huynh tự chuyển tiếp đơn sang trường; hệ thống phải **tự động định tuyến (auto-route)** đơn không đạt điều kiện MOEFAS sang xét duyệt tiếp ở cấp trường (SBFAS). Đang cân nhắc thêm tùy chọn mức trợ cấp cố định (flat amount).
+  4. **FAS School Review, Override & Hardcopy Form:** Demo duyệt đơn cấp trường. Client yêu cầu: School Admin **bắt buộc có quyền ghi đè (override)** duyệt đơn bị từ chối dựa trên hồ sơ chứng từ nộp trực tiếp offline vì dữ liệu HOMES có độ trễ. Khắc phục xung đột trạng thái UI. Mẫu đơn giấy và OCR sẽ demo vào thứ Sáu.
+  5. **Function 7 (Guided Tour & View As Simulation):** Thống nhất triển khai chế độ **"View As"** (Admin/School User mô phỏng màn hình phụ huynh sau khi phụ huynh đồng ý chia sẻ). **CÁC NÚT HÀNH ĐỘNG/THANH TOÁN BẮT BUỘC BỊ KHÓA (DISABLED)** để admin không thể thao tác thay tiền của phụ huynh. Mở rộng chế độ Simulation cho cả School User. Ưu tiên hoàn thiện Simulation trước Guided Tour. Về AI, khi phụ huynh hỏi thì chatbot truy xuất dữ liệu hệ thống để hướng dẫn.
+  6. **Function 6 (Budget):** MOE HQ và từng trường quản lý ngân sách độc lập. Trường không được chi vượt ngân sách; hệ thống phải phát cảnh báo và hiển thị số tiền vượt mức (over-budget amount).
+
+---
+
 ## 2. LOG TOÀN BỘ QUYẾT ĐỊNH NGHIỆP VỤ CỦA CLIENT (CLIENT DECISIONS LOG)
 
 ### 2.1 Bảng Ma Trận Quyết Định Chuẩn Hóa (Decisions Log Matrix)
@@ -152,6 +167,12 @@
 | **DEC-20** | Top-Up Terminology Standard | Bắt buộc đổi tên và chuẩn hóa toàn bộ thuật ngữ từ **"Campaign"** thành **"Top-up"** trên toàn bộ giao diện và tài liệu nghiệp vụ. | Meeting 23/10 & MoM §6 | **MEDIUM** | Refactor nhãn giao diện (UI label), route URL, database schema và API request/response từ `campaign` sang `top_up`. |
 | **DEC-21** | Scheduled Top-Up Requirement | Hỗ trợ tính năng **Scheduled Top-Up (Lên lịch nạp tiền trong tương lai)** theo kế hoạch giải ngân ngân sách giáo dục thường niên, thay vì chỉ nạp tiền ad-hoc tức thời. | Meeting 23/10 & MoM §6 | **HIGH** | Thiết kế cron/batch scheduler cho phép đặt lịch chạy Bulk Top-Up theo `scheduled_execution_date`. |
 | **DEC-22** | Failed Top-Up Dedicated Retry | Bác bỏ việc dùng Individual Top-Up để bù lỗi nạp lô. Bắt buộc cung cấp **cơ chế Retry tự động / bán tự động chuyên biệt dành riêng cho các bản ghi nạp tiền thất bại (Failed Records Retry)** kèm mã nguyên nhân lỗi. | Meeting 23/10 & MoM §7 | **HIGH** | Thiết kế bảng lưu vết `top_up_failures` và action `Retry Failed Accounts Only` trên Admin Portal. |
+| **DEC-23** | Fee Rate Open-Ended & Bulk Edit | Hạn hiệu lực biểu phí ("Effective To") là **tùy chọn (open-ended)** vì học phí ít thay đổi; cho phép **chỉnh sửa hàng loạt (bulk edit) rate rules**. | Meeting 27/10 & MoM §1 | **HIGH** | Cho phép `effective_to` mang giá trị NULL (vô thời hạn); xây dựng giao diện và batch mutation cập nhật bảng biểu phí hàng loạt. |
+| **DEC-24** | Enrolled Students Billing & Preview | Chỉ học sinh có trạng thái **Enrolled** mới được tính phí trong Fee Batch. Bắt buộc cung cấp **Draft Preview** danh sách học sinh và số tiền trước khi publish; đưa kết quả Job Run lên đầu trang. | Meeting 27/10 & MoM §2 | **CRITICAL** | Batch Billing Engine chỉ query `student_enrolment.status == 'Enrolled'`; thêm view Preview Draft Batch và layout Job Result ở đầu trang. |
+| **DEC-25** | FAS Auto-Routing (MOE to School) | Loại bỏ checkbox phụ huynh tự chuyển tiếp đơn; hệ thống **tự động định tuyến (auto-route)** đơn không đạt tiêu chí MOEFAS sang đề án FAS của trường (SBFAS). | Meeting 27/10 & MoM §3 | **CRITICAL** | Bỏ field checkbox trên e-Service form; Workflow Engine tự kích hoạt chuyển trạng thái đơn sang `SBFAS_Pending_Review` khi trượt MOEFAS. |
+| **DEC-26** | School Admin FAS Rejection Override | Cho phép **School Admin ghi đè / duyệt thủ công đơn bị từ chối** dựa trên hồ sơ chứng từ nộp trực tiếp offline vì dữ liệu HOMES chính phủ có độ trễ. | Meeting 27/10 & MoM §4 | **HIGH** | Bổ sung action `Override & Approve` kèm ô nhập lý do (audit trail) và component lưu vết tài liệu offline bổ sung. |
+| **DEC-27** | View As Simulation & Action Lock | Nhất trí chế độ **"View As"** mô phỏng màn hình người dùng cho Admin & School User; **CÁC NÚT THANH TOÁN & HÀNH ĐỘNG BẮT BUỘC BỊ KHÓA (DISABLED)** để Admin không thể thao tác thay tiền của phụ huynh. | Meeting 27/10 & MoM §5 | **CRITICAL** | Xây dựng Simulation Context Provider: khi `is_simulation_mode == true`, tất cả mutate/payment buttons chuyển sang `disabled` với tooltip cảnh báo. |
+| **DEC-28** | Independent School Budget & Over-Budget Alert | MOE HQ và từng trường **quản lý ngân sách FAS độc lập**. Trường không được giải ngân vượt ngân sách; hệ thống phải **phát cảnh báo và hiển thị số tiền vượt mức (Over-Budget Alert)**. | Meeting 27/10 & MoM §6 | **HIGH** | Thiết kế Budget Ledger cho từng `school_id`; kiểm tra hạn mức trước khi approve grant và trigger UI alert kèm chênh lệch tiền vượt. |
 
 ---
 

@@ -1,0 +1,26 @@
+{
+  "base_url": "https://localhost:5173",
+  "auth": {
+    "login_url": "https://localhost:5173/login",
+    "persona_email": "admin@IAM.edu.vn",
+    "persona_role": "MOEHQ"
+  },
+  "happy_path_mode_a": {
+    "name_prefix": "Tuition Fee 2026",
+    "categories": ["Singapore citizen", "Permanent resident"],
+    "stages": ["Primary"],
+    "tax_applies": true,
+    "mode": "fixed-amount",
+    "amount": "100.00",
+    "currency": "SGD",
+    "effective_from": "2026-01-01",
+    "effective_to": "2026-12-31"
+  },
+  "validation_cases": {
+    "empty_name": "",
+    "inverted_dates": {
+      "effective_from": "2026-12-31",
+      "effective_to": "2026-01-01"
+    }
+  }
+}

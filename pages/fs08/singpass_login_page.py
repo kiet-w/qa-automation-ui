@@ -16,18 +16,20 @@ class SingpassLoginPage(BasePage):
 
     # Landing Page Locators
     LOGIN_CONTAINER = "section[aria-labelledby='parent-login-title']"
-    LOGIN_WITH_SINGPASS_BTN = "button:has-text('Sign in with Singpass')"
-    HEADING = "#parent-login-title, h2:has-text('Parent portal login')"
-    DESCRIPTION = "section[aria-labelledby='parent-login-title'] p, p:has-text('Use Singpass')"
+    LOGIN_WITH_SINGPASS_BTN = 'role=button[name="Sign in with Singpass"]'
+    HEADING = 'role=heading[name="Parent portal login"]'
+    DESCRIPTION = 'text=Securely access and manage your children\'s education accounts with Singpass.'
 
     # Mockpass Simulator Locators (:5156)
-    MOCKPASS_TAB_APP = "button[role='tab']:has-text('Singpass app')"
-    MOCKPASS_TAB_PASSWORD = "button[role='tab']:has-text('Password login')"
-    MOCKPASS_CITIZEN_SELECT = "#persona-select, select"
-    MOCKPASS_SUBMIT_BTN = "button:has-text('Log in with Singpass')"
-    MOCKPASS_PASSWORD_NRIC_INPUT = "#nric, input[name='nric'], input[name='singpass-id']"
-    MOCKPASS_PASSWORD_INPUT = "#password, input[name='password'], input[type='password']"
-    MOCKPASS_PASSWORD_SUBMIT_BTN = "button:has-text('Log in'), button[type='submit']:has-text('Log in')"
+    MOCKPASS_HEADING = 'role=heading[name="Log in with Singpass"]'
+    MOCKPASS_TAB_APP = 'role=tab[name="Singpass app"]'
+    MOCKPASS_TAB_PASSWORD = 'role=tab[name="Password login"]'
+    MOCKPASS_CITIZEN_SELECT = 'role=combobox[name="Test Citizen Profile"]'
+    MOCKPASS_SUBMIT_BTN = 'role=button[name="Log in with Singpass"]'
+    MOCKPASS_PASSWORD_NRIC_INPUT = 'role=textbox[name="SINGPASS ID (NRIC / FIN)"]'
+    MOCKPASS_PASSWORD_INPUT = 'role=textbox[name="PASSWORD"]'
+    MOCKPASS_PASSWORD_UUID_INPUT = 'role=textbox[name="SINGPASS UUID"]'
+    MOCKPASS_PASSWORD_SUBMIT_BTN = 'role=button[name="Log in"]'
 
     # Callback Page Locators (/parent/callback)
     CALLBACK_ALERT = "[role='alert'], div[role='alert']"
@@ -36,8 +38,8 @@ class SingpassLoginPage(BasePage):
     CALLBACK_REDIRECT_NOTICE = "p[role='status']:has-text('Redirecting')"
 
     # Shell Navigation & Session
-    LOGOUT_BTN = "header button:has-text('Log out'), button[class*='_desktopLogout_']"
-    BRAND_LOGO = "header a:has-text('EduSave E-Service')"
+    LOGOUT_BTN = 'role=button[name="Log out"]'
+    BRAND_LOGO = 'role=link[name="EduFAMS E-Service"]'
     SESSION_EXPIRED_DIALOG = "div[role='dialog']:has-text('Session expired'), div[role='dialog']"
     SESSION_EXPIRED_ACTION_BTN = "div[role='dialog'] button:has-text('Sign in again')"
 
@@ -111,7 +113,7 @@ class SingpassLoginPage(BasePage):
         # Await completion of OAuth callback redirect to landing portal
         try:
             if "LIM SHU XIN" not in persona_keyword and "INVALID" not in persona_keyword:
-                self.page.wait_for_selector("h1:has-text('EduSave E-Service Portal')", timeout=25000)
+                self.page.wait_for_selector('role=heading[name="Your family’s education, at a glance"]', timeout=25000)
             else:
                 self.page.wait_for_selector(self.CALLBACK_ALERT, timeout=15000)
         except Exception:

@@ -22,7 +22,7 @@ class TransactionsPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.portal_base_url = os.environ.get("BASE_URL", "https://localhost:5174").rstrip("/")
+        self.portal_base_url = os.environ.get("BASE_URL", "http://localhost:5174").rstrip("/")
         self.grid = TransactionHelper(page, table_selector=Loc.TABLE)
 
     def open(self, student_id: Optional[str] = None, base_url: Optional[str] = None):
@@ -125,11 +125,13 @@ class TransactionsPage(BasePage):
 
     def is_empty_state_visible(self) -> bool:
         """Check if 'No transactions found.' empty state is visible."""
-        return self.grid.is_empty_state_visible()
+        empty_state = self.page.locator(Loc.EMPTY_STATE)
+        return empty_state.count() > 0 and empty_state.first.is_visible()
 
     def get_empty_state_text(self) -> str:
         """Get empty state text."""
-        return self.grid.get_empty_state_text()
+        empty_state = self.page.locator(Loc.EMPTY_STATE)
+        return empty_state.first.inner_text().strip() if empty_state.count() > 0 else ""
 
     def get_state_snapshot(self) -> Dict[str, Any]:
         """Produce standard snapshot for Exceptor consumption."""

@@ -1,0 +1,92 @@
+{
+  "flow_name": "EduFAMS Sprint 3 E2E Happy Path (Steps 1 to 8)",
+  "environments": {
+    "admin_url": "https://admin.20-255-158-192.sslip.io",
+    "parent_url": "https://eservice.20-255-158-192.sslip.io"
+  },
+  "roles": {
+    "admin": {
+      "email": "admin@IAM.edu.vn",
+      "role_name": "System Administrator (MOE HQ)",
+      "auth_type": "Microsoft SSO"
+    },
+    "school_staff": {
+      "email": "staff1@IAM.edu.vn",
+      "display_name": "Bui Thi H",
+      "school_name": "Rosyth Primary School",
+      "school_code": "SCH-003",
+      "role": "School Admin / Reviewer"
+    },
+    "parent": {
+      "full_name": "Pham Van Duc",
+      "nric": "S7654321B",
+      "auth_type": "Singpass Mock"
+    }
+  },
+  "student": {
+    "full_name": "Liam Pham",
+    "student_id": "STU-00001",
+    "nric_raw": "S4744854C",
+    "nric_masked": "*****854C",
+    "academic_level": "Primary 1",
+    "class_name": "Primary 1 - 1A1",
+    "school_name": "Rosyth Primary School"
+  },
+  "edusave_wallet": {
+    "account_no": "EDU-01001",
+    "currency": "SGD",
+    "initial_balance": 500.00
+  },
+  "step_parameters": {
+    "step_01": {
+      "first_name": "Arthur",
+      "last_name": "Kent",
+      "email_prefix": "kent.uat",
+      "domain": "edu.gov.sg"
+    },
+    "step_02": {
+      "persona": "Rosyth Primary School (RPS-0201)",
+      "reason": "Execution of UAT Kent Sprint 3 Happy Path Flow",
+      "ticket_ref": "UAT-SPRINT3-HAPPYPATH"
+    },
+    "step_03": {
+      "class_name": "P1-A",
+      "academic_level": "Primary 1"
+    },
+    "step_04": {
+      "component_name_prefix": "Tuition Fee UAT",
+      "fee_type": "School Tuition Fee",
+      "category": "Singapore citizen",
+      "stage": "Primary",
+      "rate_mode": "fixed-amount",
+      "amount": "100.00",
+      "effective_from": "2026-11-01",
+      "effective_to": "2027-11-01"
+    },
+    "step_05": {
+      "batch_title_prefix": "P1 Tuition Batch",
+      "period_start": "2026-11-15",
+      "period_end": "2026-12-15",
+      "due_date": "2026-12-31",
+      "expected_gross": 100.00
+    },
+    "step_06": {
+      "scheme_name_prefix": "SBFAS Tier 1 UAT",
+      "budget": "50000",
+      "ghi_ceiling": "3000",
+      "pci_ceiling": "1000",
+      "subsidy_rate": "100"
+    },
+    "step_07": {
+      "target_application_id": "APP-RAHMAN-2026",
+      "assigned_tier": "Tier 1",
+      "approval_remarks": "Eligible for Tier 1 100% SBFAS Support"
+    },
+    "step_08": {
+      "expected_gross": "100.00",
+      "expected_net_min": "0.00",
+      "expected_net_max": "100.00",
+      "payment_method": "EducationAccount"
+    }
+  }
+}

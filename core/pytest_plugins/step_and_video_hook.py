@@ -3,6 +3,8 @@ core/pytest_plugins/step_and_video_hook.py - StepTracker execution timeline, evi
 and pytest_runtest_makereport error classification hook.
 """
 import os
+import base64
+from html import escape
 from pathlib import Path
 import re
 import time
@@ -27,6 +29,89 @@ def pytest_runtest_makereport(item, call):
     """
     outcome = yield
     report = outcome.get_result()
+
+    # Attach failure and pass execution steps + screenshots directly to the HTML report
+    if report.when == "teardown":
+        try:
+            from pytest_html import extras as html_extras
+
+            metadata = item.funcargs.get("json_metadata", {}) if hasattr(item, "funcargs") else {}
+            steps = metadata.get("steps", []) if isinstance(metadata, dict) else []
+            extras = list(getattr(report, "extras", []))
+            has_failed = getattr(item, "_has_failed", False)
+            step_lines = []
+            screenshot_paths = []
+            inline_images = []
+            seen_screenshots = set()
+            for index, step in enumerate(steps, 1):
+                title = step.get("title", f"Step {index}")
+                status = step.get("status", "unknown")
+                error = step.get("error") or ""
+                step_lines.append(f"{index}. [{status}] {title}" + (f" — {error}" if error else ""))
+
+            if not has_failed:
+                # Strictly ONE pass screenshot (actual_result.png)
+                pass_screen = getattr(item, "_qa_actual_screenshot", None)
+                if not pass_screen:
+                    for step in reversed(steps):
+                        if step.get("screenshot"):
+                            pass_screen = step.get("screenshot")
+                            break
+                if pass_screen:
+                    p = Path(pass_screen)
+                    if not p.is_absolute():
+                        p = WORKSPACE_DIR / p
+                    if p.is_file():
+                        encoded = base64.b64encode(p.read_bytes()).decode("ascii")
+                        inline_images.append(
+                            '<figure style="margin:12px 0 24px;">'
+                            '<figcaption style="font-weight:600;margin-bottom:6px;color:#15803d;">'
+                            '📷 Actual Result (Pass Evidence)'
+                            '</figcaption>'
+                            f'<img alt="Actual Result Pass" src="data:image/png;base64,{encoded}" '
+                            'style="display:block;width:auto;max-width:100%;max-height:720px;height:auto;'
+                            'border:2px solid #22c55e;border-radius:6px;" />'
+                            "</figure>"
+                        )
+            else:
+                for index, step in enumerate(steps, 1):
+                    title = step.get("title", f"Step {index}")
+                    image_path = step.get("screenshot")
+                    if image_path:
+                        path = Path(image_path)
+                        if not path.is_absolute():
+                            path = WORKSPACE_DIR / path
+                        if path.is_file() and path not in seen_screenshots:
+                            seen_screenshots.add(path)
+                            screenshot_paths.append((title, path))
+                            if len(inline_images) < 8:
+                                encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+                                inline_images.append(
+                                    '<figure style="margin:12px 0 24px;">'
+                                    f'<figcaption style="font-weight:600;margin-bottom:6px;color:#b91c1c;">{escape(title)}</figcaption>'
+                                    f'<img alt="{escape(title)}" src="data:image/png;base64,{encoded}" '
+                                    'style="display:block;width:auto;max-width:100%;max-height:720px;height:auto;'
+                                    'border:2px solid #ef4444;border-radius:6px;" />'
+                                    "</figure>"
+                                )
+
+            if step_lines:
+                label_name = "Failure steps" if has_failed else "Execution steps"
+                extras.append(html_extras.text("\n".join(step_lines), name=label_name))
+
+            if inline_images:
+                sec_class = "qa-failure-evidence" if has_failed else "qa-pass-evidence"
+                sec_title = "Failure screenshots" if has_failed else "Pass screenshot"
+                extras.append(html_extras.html(
+                    f'<section class="{sec_class}"><h3>{sec_title}</h3>'
+                    + "".join(inline_images)
+                    + "</section>"
+                ))
+
+            report.extras = extras
+        except Exception:
+            # Reporting must never turn a test teardown into an error.
+            pass
 
     if report.when == "call" and report.failed:
         setattr(item, "_has_failed", True)

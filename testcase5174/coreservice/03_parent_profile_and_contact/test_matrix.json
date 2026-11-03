@@ -1,0 +1,2013 @@
+{
+  "title": "Cổng Dịch vụ Phụ huynh EduSave — Biểu mẫu Hồ sơ Phụ huynh & Cập nhật Thông tin Liên hệ (:5174) — Đặc tả Kiểm thử 5 Trụ Cột",
+  "sources": [
+    {
+      "id": "BR-CORE",
+      "pillar": "BR",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_parent_profile_and_contact.md",
+      "section": "Quy tắc nghiệp vụ cốt lõi & RBAC (FS-08, D-20, D-28)"
+    },
+    {
+      "id": "AC-CORE",
+      "pillar": "AC",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_parent_profile_and_contact.md",
+      "section": "Tiêu chí nghiệm thu chức năng (AC #10, #14, #15, #16, #17, #18, #09)"
+    },
+    {
+      "id": "VAL-12",
+      "pillar": "Validation",
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "section": "Ma trận kiểm thử hợp lệ ô nhập liệu 12 lớp & BVA"
+    },
+    {
+      "id": "FLOW-CORE",
+      "pillar": "Flow",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_parent_profile_and_contact.md",
+      "section": "Luồng tương tác, máy trạng thái State Machine & xác nhận modal"
+    },
+    {
+      "id": "ERR-CORE",
+      "pillar": "Error",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_parent_profile_and_contact.md",
+      "section": "Xử lý ngoại lệ, mã lỗi MSG-xxxx & UI health 0-console-error"
+    }
+  ],
+  "locators": [
+    {
+      "name": "Tiêu đề trang (Heading H1)",
+      "selector": "h1:has-text('My Profile')",
+      "source": "Header trang hồ sơ phụ huynh"
+    },
+    {
+      "name": "Nút Chuyển sửa (Update details)",
+      "selector": "button:has-text('Update details')",
+      "source": "Khu vực hành động trang hồ sơ (View Mode)"
+    },
+    {
+      "name": "Nút Đổi mặt nạ NRIC (Show/Hide NRIC)",
+      "selector": "button:has-text('Show NRIC'), button:has-text('Hide NRIC')",
+      "source": "Bên cạnh nhãn NRIC trong khối SingPass Verified"
+    },
+    {
+      "name": "Họ và tên SingPass (Full Name)",
+      "selector": "section:has-text('SINGPASS VERIFIED') dl div:has-text('Name') dd, [data-testid='full-name']",
+      "source": "Khối SingPass Verified (Chỉ đọc, bất biến)"
+    },
+    {
+      "name": "Số NRIC SingPass",
+      "selector": "section:has-text('SINGPASS VERIFIED') dl div:has-text('NRIC') dd, [data-testid='nric']",
+      "source": "Khối SingPass Verified (Chỉ đọc, mask *****123F)"
+    },
+    {
+      "name": "Địa chỉ thường trú SingPass",
+      "selector": "section:has-text('SINGPASS VERIFIED') dl div:has-text('Residential Address') dd, [data-testid='residential-address']",
+      "source": "Khối SingPass Verified (Chỉ đọc, quyết định D-20)"
+    },
+    {
+      "name": "Ô nhập Số điện thoại (Mobile Number)",
+      "selector": "input[name='phoneNumber']",
+      "source": "Biểu mẫu sửa - input[type='tel'], 8 số SG đầu 6,8,9"
+    },
+    {
+      "name": "Ô nhập Email (Email Address)",
+      "selector": "input[name='email']",
+      "source": "Biểu mẫu sửa - input[type='email'], chuẩn RFC 5322"
+    },
+    {
+      "name": "Ô nhập Số tòa/Block (Mailing Block)",
+      "selector": "input[name='mailingBlock']",
+      "source": "Biểu mẫu sửa - input[type='text'], tùy chọn"
+    },
+    {
+      "name": "Ô nhập Tên đường (Mailing Street)",
+      "selector": "input[name='mailingStreet']",
+      "source": "Biểu mẫu sửa - input[type='text'], bắt buộc max 100"
+    },
+    {
+      "name": "Ô nhập Căn hộ/Tầng (Mailing Unit)",
+      "selector": "input[name='mailingUnit']",
+      "source": "Biểu mẫu sửa - input[type='text'], tùy chọn (#08-45)"
+    },
+    {
+      "name": "Ô nhập Mã bưu chính (Mailing Postal Code)",
+      "selector": "input[name='mailingPostalCode']",
+      "source": "Biểu mẫu sửa - input[type='text'], 6 chữ số SG"
+    },
+    {
+      "name": "Ô nhập Quốc gia (Mailing Country)",
+      "selector": "input[name='mailingCountry']",
+      "source": "Biểu mẫu sửa - input[type='text'], mặc định Singapore"
+    },
+    {
+      "name": "Nút Lưu thay đổi (Save changes form)",
+      "selector": "form button:has-text('Save changes')",
+      "source": "Cuối biểu mẫu sửa (Disabled khi pristine)"
+    },
+    {
+      "name": "Nút Hủy bỏ (Cancel form)",
+      "selector": "form button:has-text('Cancel')",
+      "source": "Cuối biểu mẫu sửa (Hoàn trả View Mode)"
+    },
+    {
+      "name": "Dòng nhắc thay đổi (Pristine Hint)",
+      "selector": "p:has-text('Make a change to enable saving.')",
+      "source": "Bên cạnh nút Save changes khi form chưa sửa"
+    },
+    {
+      "name": "Hộp thoại xác nhận (Confirm Dialog)",
+      "selector": "[role='alertdialog'], [role='dialog']",
+      "source": "Modal xuất hiện khi click Save changes hợp lệ"
+    },
+    {
+      "name": "Tiêu đề hộp thoại xác nhận",
+      "selector": "[role='alertdialog'] h2:has-text('Save your changes?')",
+      "source": "Heading h2 trong modal alertdialog"
+    },
+    {
+      "name": "Nút Lưu trong hộp thoại (Dialog Save changes)",
+      "selector": "[role='alertdialog'] button:has-text('Save changes')",
+      "source": "Button submit mutation PATCH cập nhật DB"
+    },
+    {
+      "name": "Nút Tiếp tục sửa (Keep editing)",
+      "selector": "[role='alertdialog'] button:has-text('Keep editing')",
+      "source": "Button đóng modal và giữ nguyên dữ liệu đang sửa"
+    },
+    {
+      "name": "Banner thông báo thành công (Success Toast)",
+      "selector": "p[role='status'][class*='success']",
+      "source": "Thông báo MSG-0807 'Profile updated successfully.'"
+    },
+    {
+      "name": "Thông báo lỗi inline và viền đỏ",
+      "selector": "div:has(input[name]) [class*='error'], input[aria-invalid='true']",
+      "source": "Hiển thị câu lỗi bên dưới trường nhập liệu"
+    },
+    {
+      "name": "Cảnh báo lỗi hệ thống trong modal",
+      "selector": "[role='alertdialog'] [role='alert']",
+      "source": "Alert hiển thị MSG-0808 khi API PATCH trả HTTP 500"
+    },
+    {
+      "name": "Cảnh báo chưa liên kết tài khoản Edu",
+      "selector": "main [role='alert']",
+      "source": "Alert hiển thị MSG-0801 khi phụ huynh không có tài khoản"
+    }
+  ],
+  "fixtures": {
+    "fixture_reference": "03_parent_profile_and_contact_data.json",
+    "design_status": "Not Run",
+    "result_fields": "Actual Result và Defect ID để trống phục vụ kiểm thử thực tế",
+    "endpoints": {
+      "profile_get": "GET /iam/v1/parent/profile",
+      "profile_patch": "PATCH /iam/v1/parent/update/profile"
+    },
+    "mock_profiles": {
+      "standard_parent": {
+        "fullName": "Tan Wei Ming",
+        "nric": "S1234123F",
+        "residentialAddress": "Blk 123 Ang Mo Kio Ave 3 #08-1234 Singapore 560123",
+        "phoneNumber": "91234567",
+        "email": "tan.wm@example.com",
+        "mailingBlock": "123",
+        "mailingStreet": "Ang Mo Kio Ave 3",
+        "mailingUnit": "#08-1234",
+        "mailingPostalCode": "560123",
+        "mailingCountry": "Singapore"
+      }
+    }
+  },
+  "coverage": [
+    {
+      "subject": "Định danh SingPass bất biến (Name, NRIC, Residential Address - D-20)",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-01"
+      ]
+    },
+    {
+      "subject": "Bảo vệ phía máy chủ chống giả mạo payload định danh SingPass",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-02"
+      ]
+    },
+    {
+      "subject": "Phân quyền theo tuổi con: Khóa View-only khi tất cả con >= 16 tuổi (AC #09)",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-03"
+      ]
+    },
+    {
+      "subject": "Phân quyền theo tuổi con: Cho phép chỉnh sửa khi có con < 16 tuổi",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-04"
+      ]
+    },
+    {
+      "subject": "Cô lập dữ liệu phụ huynh: Cập nhật thông tin Cha không ảnh hưởng Mẹ",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-05"
+      ]
+    },
+    {
+      "subject": "Đồng bộ kênh liên lạc chính thức nhận thông báo học vụ và OTP",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-06"
+      ]
+    },
+    {
+      "subject": "Quy chuẩn D-28: Không gửi email thông báo khi phụ huynh cập nhật hồ sơ",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-BR-07"
+      ]
+    },
+    {
+      "subject": "Hiển thị đầy đủ bố cục View Mode 3 khối thông tin chính",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-01"
+      ]
+    },
+    {
+      "subject": "Chuyển đổi mặt nạ bảo mật NRIC (Show NRIC / Hide NRIC)",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-02"
+      ]
+    },
+    {
+      "subject": "Chuyển sang Edit Mode nạp sẵn dữ liệu vào 7 ô nhập liệu",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-03"
+      ]
+    },
+    {
+      "subject": "Trạng thái Pristine của form: Disabled nút Save và hiển thị gợi ý",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-04"
+      ]
+    },
+    {
+      "subject": "Trạng thái Dirty của form: Tự động kích hoạt nút Save changes",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-05"
+      ]
+    },
+    {
+      "subject": "Hủy bỏ thao tác (Cancel): Khôi phục dữ liệu ban đầu về View Mode",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-06"
+      ]
+    },
+    {
+      "subject": "Mở hộp thoại xác nhận 'Save your changes?' khi nhấn Save",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-07"
+      ]
+    },
+    {
+      "subject": "Đóng hộp thoại giữ nguyên biểu mẫu đang sửa dở (Keep editing)",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-08"
+      ]
+    },
+    {
+      "subject": "Xác nhận lưu thành công và hiển thị banner thông báo MSG-0807",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-09"
+      ]
+    },
+    {
+      "subject": "Cập nhật hiển thị dữ liệu mới trên View Mode sau khi lưu",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-AC-10"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động: Định dạng hợp lệ 8 số SG đầu 6, 8, 9",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-01"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động (BVA): Bắt lỗi độ dài khác 8 chữ số MSG-0805",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-02"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động: Bắt lỗi tiền tố sai dải viễn thông MSG-0805",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-03"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động: Chặn ký tự chữ và ký hiệu đặc biệt",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-04"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động: Tự động xóa khoảng trắng giữa số (Normalization)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-05"
+      ]
+    },
+    {
+      "subject": "Số điện thoại di động: Báo lỗi để trống trường bắt buộc MSG-0001",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-06"
+      ]
+    },
+    {
+      "subject": "Địa chỉ Email: Chấp nhận định dạng hợp lệ RFC 5322",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-07"
+      ]
+    },
+    {
+      "subject": "Địa chỉ Email: Báo lỗi sai định dạng MSG-0806",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-08"
+      ]
+    },
+    {
+      "subject": "Địa chỉ Email (BVA): Giới hạn tối đa 150 ký tự",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-09"
+      ]
+    },
+    {
+      "subject": "Địa chỉ Email: Từ chối email chứa khoảng trắng ở giữa",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-10"
+      ]
+    },
+    {
+      "subject": "Địa chỉ Email: Báo lỗi để trống trường bắt buộc MSG-0001",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-11"
+      ]
+    },
+    {
+      "subject": "Mã bưu chính: Chấp nhận định dạng bưu điện SG đúng 6 chữ số",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-12"
+      ]
+    },
+    {
+      "subject": "Mã bưu chính: Bảo toàn số 0 đứng đầu dạng chuỗi không mất số 0",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-13"
+      ]
+    },
+    {
+      "subject": "Mã bưu chính (BVA): Bắt lỗi độ dài khác 6 chữ số MSG-0001",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-14"
+      ]
+    },
+    {
+      "subject": "Mã bưu chính: Báo lỗi khi chứa ký tự chữ cái hoặc ký hiệu",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-15"
+      ]
+    },
+    {
+      "subject": "Mã bưu chính: Báo lỗi để trống trường bắt buộc MSG-0001",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-16"
+      ]
+    },
+    {
+      "subject": "Tên đường: Chấp nhận tên đường và tự động cắt tỉa khoảng trắng (Trim)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-17"
+      ]
+    },
+    {
+      "subject": "Tên đường (BVA): Giới hạn độ dài tối đa 100 ký tự",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-18"
+      ]
+    },
+    {
+      "subject": "Tên đường: Báo lỗi để trống trường bắt buộc MSG-0001",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-19"
+      ]
+    },
+    {
+      "subject": "Số tòa/Block: Cho phép để trống hợp lệ (Optional)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-20"
+      ]
+    },
+    {
+      "subject": "Số tòa/Block (BVA): Chấp nhận chuỗi chữ và số tối đa 20 ký tự",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-21"
+      ]
+    },
+    {
+      "subject": "Căn hộ/Tầng: Cho phép để trống hợp lệ (Optional)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-22"
+      ]
+    },
+    {
+      "subject": "Căn hộ/Tầng: Chấp nhận định dạng chuẩn Singapore và max 20 ký tự",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-23"
+      ]
+    },
+    {
+      "subject": "Quốc gia: Điền sẵn mặc định Singapore và bắt lỗi khi xóa trắng",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-24"
+      ]
+    },
+    {
+      "subject": "Quốc gia (BVA): Giới hạn độ dài tối đa 100 ký tự",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-25"
+      ]
+    },
+    {
+      "subject": "Bảo mật chống tấn công XSS trong trường địa chỉ",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-26"
+      ]
+    },
+    {
+      "subject": "Bảo mật chống tấn công SQL Injection trong các trường biểu mẫu",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-VAL-27"
+      ]
+    },
+    {
+      "subject": "Luồng End-to-End: View Mode -> Edit Mode -> Modal -> Submit -> Success",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-01"
+      ]
+    },
+    {
+      "subject": "Luồng tương tác Modal: Chọn Keep editing giữ nguyên biểu mẫu",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-02"
+      ]
+    },
+    {
+      "subject": "Luồng hủy bỏ biểu mẫu: Nhấn Cancel khôi phục dữ liệu ban đầu",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-03"
+      ]
+    },
+    {
+      "subject": "Hoàn nguyên form thủ công: Sửa về giá trị ban đầu tự trở về Pristine",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-04"
+      ]
+    },
+    {
+      "subject": "Bảo toàn dữ liệu bền vững (Persistence Integrity): F5 Reload trang",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-05"
+      ]
+    },
+    {
+      "subject": "Chống gửi trùng lặp (Double-Submission): Khóa nút và spinner khi gửi",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-FLOW-06"
+      ]
+    },
+    {
+      "subject": "Phản hồi viền đỏ đồng bộ aria-invalid='true' khi để trống trường bắt buộc",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-01"
+      ]
+    },
+    {
+      "subject": "Khớp chuẩn danh mục mã lỗi FSD (MSG-0805, MSG-0806, MSG-0001)",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-02"
+      ]
+    },
+    {
+      "subject": "Không rò rỉ mã dịch thô (Zero Raw i18n Keys) trên toàn giao diện",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-03"
+      ]
+    },
+    {
+      "subject": "Xử lý lỗi máy chủ HTTP 500: Hiển thị MSG-0808 và giữ nguyên dữ liệu đã gõ",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-04"
+      ]
+    },
+    {
+      "subject": "Xử lý phụ huynh không có tài khoản Edu: Hiển thị cảnh báo MSG-0801",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-05"
+      ]
+    },
+    {
+      "subject": "Sức khỏe giao diện (UI Health): Zero Console Error trong suốt phiên",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-06"
+      ]
+    },
+    {
+      "subject": "Độ co giãn Responsive: Zero Horizontal Scroll tại mọi kích thước màn hình",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-07"
+      ]
+    },
+    {
+      "subject": "Khả năng tiếp cận Accessibility: Đạt chuẩn WCAG 2.1 AA và bẫy focus modal",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-08"
+      ]
+    },
+    {
+      "subject": "Bảo mật PII phía Client: Che NRIC mặc định và không rò rỉ vào Web Storage",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-PRF-ERR-09"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "ID": "TC-PRF-BR-01",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Bảo toàn dữ liệu định danh SingPass: Họ tên, NRIC và Địa chỉ thường trú ở trạng thái chỉ đọc bất biến",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh đã đăng nhập tài khoản SingPass; đang ở màn hình Hồ sơ cá nhân (/profile)",
+      "Test Data": "Họ tên: 'Tan Wei Ming', NRIC: 'S1234123F', Địa chỉ thường trú: 'Blk 123 Ang Mo Kio Ave 3'",
+      "Steps Test": "3",
+      "Test Steps": "1. Mở màn hình Hồ sơ phụ huynh (/profile).\n2. Kiểm tra phần tử hiển thị Họ và tên, Số NRIC và Địa chỉ thường trú.\n3. Nhấn nút 'Update details' để sang Edit Mode và kiểm tra lại 3 trường này.",
+      "Expected Result": "Các trường Họ tên, NRIC và Địa chỉ thường trú chỉ hiển thị dưới dạng thẻ văn bản ngữ nghĩa (<dd>/<span>), tuyệt đối không có ô nhập <input>; không thể chỉnh sửa trong cả View Mode lẫn Edit Mode (Quyết định D-20).",
+      "Actual Result": "",
+      "Assumption Ref": "D-20; FR-08.3; AC #10; AC #18",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; D-20; AC #10; AC #18",
+      "Note": "Minh chứng ảnh chụp View Mode và Edit Mode không chứa input cho trường định danh SingPass."
+    },
+    {
+      "ID": "TC-PRF-BR-02",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Bảo vệ phía máy chủ: API từ chối hoặc bóc tách payload can thiệp trái phép sửa trường định danh SingPass",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Dịch vụ IAM API",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Bảo mật",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Tài khoản phụ huynh đã xác thực với Bearer token hợp lệ",
+      "Test Data": "Payload can thiệp: {'fullName': 'HACKED NAME', 'nric': 'T9999999Z', 'residentialAddress': 'Malicious Street'}",
+      "Steps Test": "4",
+      "Test Steps": "1. Chặn bắt request API PATCH /iam/v1/parent/update/profile.\n2. Chèn các trường định danh trái phép vào payload JSON.\n3. Gửi request lên máy chủ backend.\n4. Kiểm tra phản hồi HTTP và tải lại trang hồ sơ.",
+      "Expected Result": "Máy chủ phản hồi HTTP 400 Bad Request hoặc tự động loại bỏ các trường định danh trái phép khỏi câu lệnh update; dữ liệu thực trong CSDL giữ nguyên 100%.",
+      "Actual Result": "",
+      "Assumption Ref": "NFR-SEC; Invariant 8; Server-side Schema Validation",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; NFR-SEC; Invariant 8",
+      "Note": "Bảo đảm phòng thủ chiều sâu từ máy chủ, ngăn chặn tấn công giả mạo tham số."
+    },
+    {
+      "ID": "TC-PRF-BR-03",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Phân quyền theo độ tuổi con: Khóa toàn diện quyền chỉnh sửa khi tất cả con trong hộ đều từ 16 tuổi trở lên",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh có hồ sơ liên kết mà tất cả con đều >= 16 tuổi (tài khoản EduSave đóng)",
+      "Test Data": "Hồ sơ con sinh năm 2008 (18 tuổi), không có con nào nhỏ hơn 16 tuổi",
+      "Steps Test": "3",
+      "Test Steps": "1. Đăng nhập với tài khoản phụ huynh có tất cả con >= 16 tuổi.\n2. Mở màn hình Hồ sơ phụ huynh (/profile).\n3. Kiểm tra sự hiện diện của nút 'Update details' và trạng thái biểu mẫu.",
+      "Expected Result": "Trang hồ sơ ở trạng thái chỉ đọc (View-only); nút 'Update details' bị ẩn hoặc disabled kèm thông báo giải thích phụ huynh không còn quyền chỉnh sửa.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #09; FR-08.3 RBAC",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; AC #09",
+      "Note": "Tuân thủ quy tắc đóng tài khoản học vụ EduSave khi con đủ tuổi trưởng thành."
+    },
+    {
+      "ID": "TC-PRF-BR-04",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Phân quyền theo độ tuổi con: Cho phép chỉnh sửa khi gia đình có ít nhất một con dưới 16 tuổi",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh có ít nhất 1 người con dưới 16 tuổi đang theo học",
+      "Test Data": "Hồ sơ có con A sinh 2009 (17 tuổi) và con B sinh 2015 (11 tuổi)",
+      "Steps Test": "3",
+      "Test Steps": "1. Đăng nhập với tài khoản phụ huynh có con < 16 tuổi.\n2. Mở màn hình Hồ sơ phụ huynh (/profile).\n3. Kiểm tra trạng thái nút 'Update details'.",
+      "Expected Result": "Nút 'Update details' hiển thị trạng thái Enabled; phụ huynh có thể bấm vào để chuyển sang chế độ cập nhật thông tin.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #09; FR-08.3 Lifecycle",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; AC #09",
+      "Note": "Đảm bảo quyền lợi cập nhật thông tin cho phụ huynh vẫn còn con trong độ tuổi học vụ."
+    },
+    {
+      "ID": "TC-PRF-BR-05",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Cô lập dữ liệu phụ huynh: Cập nhật thông tin của Cha không ảnh hưởng đến hồ sơ liên lạc riêng của Mẹ",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Hệ thống có hồ sơ độc lập của Cha (FA) và Mẹ (MO) cùng quản lý học sinh",
+      "Test Data": "SĐT Cha cập nhật: 91234567; SĐT Mẹ giữ nguyên: 81239999",
+      "Steps Test": "4",
+      "Test Steps": "1. Đăng nhập tài khoản Cha, cập nhật SĐT mới thành 91234567 và nhấn Lưu thành công.\n2. Đăng xuất tài khoản Cha.\n3. Đăng nhập tài khoản Mẹ của cùng học sinh.\n4. Mở màn hình Hồ sơ cá nhân của Mẹ và kiểm tra SĐT.",
+      "Expected Result": "Hồ sơ của Mẹ vẫn hiển thị nguyên vẹn SĐT 81239999; không bị ghi đè hay thay đổi bởi thao tác cập nhật của Cha.",
+      "Actual Result": "",
+      "Assumption Ref": "FR-08.3 Independent Profiles; D-12",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; D-12",
+      "Note": "Bảo đảm phân lập dữ liệu người dùng cá nhân trong cùng một hộ gia đình."
+    },
+    {
+      "ID": "TC-PRF-BR-06",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Đồng bộ kênh liên lạc: Số điện thoại và Email mới lập tức trở thành kênh nhận thông báo chính thức",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh đã cập nhật thông tin liên hệ mới thành công",
+      "Test Data": "SĐT mới: 98765432, Email mới: parent.new@example.com",
+      "Steps Test": "3",
+      "Test Steps": "1. Cập nhật Số điện thoại và Email mới trên trang hồ sơ.\n2. Thực hiện thao tác phát sinh OTP hoặc thông báo học vụ.\n3. Kiểm tra địa chỉ đích nhận thông báo của hệ thống.",
+      "Expected Result": "Thông tin liên lạc mới được đồng bộ thành công vào hệ thống IAM; mọi thông báo và mã OTP được gửi tới SĐT và Email mới.",
+      "Actual Result": "",
+      "Assumption Ref": "FR-08.3 Contact Sync",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; FR-08.3",
+      "Note": "Xác nhận tính liên thông giữa phân hệ Profile và hệ thống Notification/IAM."
+    },
+    {
+      "ID": "TC-PRF-BR-07",
+      "Scenario ID": "TS-PRF-BR",
+      "Title": "Quy chuẩn thông báo D-28: Không gửi email xác nhận cho phụ huynh khi cập nhật thông tin cá nhân",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh cập nhật thành công email và số điện thoại",
+      "Test Data": "Email mới: updated.parent@example.com",
+      "Steps Test": "3",
+      "Test Steps": "1. Chuyển sang Edit Mode và cập nhật địa chỉ Email mới.\n2. Xác nhận lưu thay đổi thành công.\n3. Kiểm tra hộp thư mail log/notification dispatch của hệ thống.",
+      "Expected Result": "Hệ thống không kích hoạt lệnh gửi email thông báo xác nhận cập nhật thông tin cá nhân (Quyết định nghiệp vụ chốt D-28).",
+      "Actual Result": "",
+      "Assumption Ref": "D-28; MEETINGS_AND_DECISIONS_SUMMARY.md",
+      "Defect ID": "",
+      "Traceability": "BR-CORE; D-28",
+      "Note": "Tuân thủ chặt chẽ quyết định D-28 để tránh lãng phí tài nguyên và spam người dùng."
+    },
+    {
+      "ID": "TC-PRF-AC-01",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Hiển thị đầy đủ thông tin View Mode: SingPass Verified, Thông tin liên hệ và Địa chỉ gửi thư",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh đã đăng nhập tài khoản; mở màn hình /profile",
+      "Test Data": "Hồ sơ mẫu chuẩn: Tan Wei Ming, S1234123F, 91234567, tan.wm@example.com",
+      "Steps Test": "3",
+      "Test Steps": "1. Truy cập URL http://localhost:5174/profile.\n2. Quan sát tiêu đề trang H1 'My Profile'.\n3. Kiểm tra sự hiện diện của 3 khối: SINGPASS VERIFIED, CONTACT INFORMATION và MAILING ADDRESS.",
+      "Expected Result": "Trang hiển thị đầy đủ tiêu đề H1 và 3 khối dữ liệu với đầy đủ các nhãn và giá trị tương ứng; nút 'Update details' hiển thị rõ ràng.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #10; AC #18; BSK DOM Section 1.1",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #10; AC #18",
+      "Note": "Minh chứng DOM View Mode đầy đủ các khối chức năng."
+    },
+    {
+      "ID": "TC-PRF-AC-02",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Chuyển đổi mặt nạ bảo mật NRIC: Bấm nút 'Show NRIC' và 'Hide NRIC' chuyển đổi đúng định dạng",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở View Mode trên trang Hồ sơ phụ huynh",
+      "Test Data": "NRIC thực: S1234123F; NRIC che: *****123F",
+      "Steps Test": "4",
+      "Test Steps": "1. Kiểm tra trạng thái mặc định của trường NRIC.\n2. Nhấn nút 'Show NRIC'.\n3. Kiểm tra giá trị NRIC hiển thị và nhãn nút.\n4. Nhấn nút 'Hide NRIC' và kiểm tra lại.",
+      "Expected Result": "Mặc định NRIC bị che '*****123F' và nút có nhãn 'Show NRIC'. Khi bấm nút, hiển thị 'S1234123F' và nhãn đổi thành 'Hide NRIC'. Bấm lại thì che lại như cũ.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #10; BSK DOM button:has-text('Show NRIC')",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #10",
+      "Note": "Bảo vệ thông tin cá nhân PII khi người dùng ở nơi công cộng."
+    },
+    {
+      "ID": "TC-PRF-AC-03",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Chuyển sang Edit Mode: Nhấn nút 'Update details' hiển thị đầy đủ 7 ô nhập liệu có điền sẵn dữ liệu",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở View Mode trên trang Hồ sơ phụ huynh",
+      "Test Data": "Dữ liệu hồ sơ hiện tại nạp vào form",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhấn nút 'Update details'.\n2. Quan sát sự thay đổi giao diện.\n3. Kiểm tra 7 ô nhập: phoneNumber, email, mailingBlock, mailingStreet, mailingUnit, mailingPostalCode, mailingCountry.",
+      "Expected Result": "Giao diện chuyển sang Edit Mode; hiển thị form chứa đủ 7 ô nhập liệu đã được điền sẵn giá trị hiện tại; xuất hiện nút 'Save changes' và 'Cancel'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.2",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Form nạp đúng trạng thái ban đầu của người dùng."
+    },
+    {
+      "ID": "TC-PRF-AC-04",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Trạng thái Pristine của biểu mẫu: Nút 'Save changes' bị vô hiệu hóa khi form chưa có thay đổi",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Vừa nhấn 'Update details' vào Edit Mode, chưa sửa bất kỳ ô nào",
+      "Test Data": "Form ở trạng thái nguyên bản (Pristine)",
+      "Steps Test": "3",
+      "Test Steps": "1. Vào Edit Mode.\n2. Kiểm tra thuộc tính disabled của nút 'Save changes'.\n3. Kiểm tra thông báo hướng dẫn bên dưới.",
+      "Expected Result": "Nút 'Save changes' có thuộc tính disabled=true; xuất hiện dòng nhắc 'Make a change to enable saving.'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.2 & State Machine",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Ngăn chặn việc gửi mutation không cần thiết lên máy chủ."
+    },
+    {
+      "ID": "TC-PRF-AC-05",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Trạng thái Dirty của biểu mẫu: Nút 'Save changes' tự động kích hoạt khi có thay đổi dữ liệu",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Thay đổi SĐT từ 91234567 thành 91234568",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập một chữ số mới vào ô Số điện thoại.\n2. Quan sát trạng thái của nút 'Save changes'.\n3. Kiểm tra dòng nhắc 'Make a change to enable saving.'.",
+      "Expected Result": "Nút 'Save changes' chuyển sang trạng thái Enabled (hết disabled); dòng nhắc biến mất; sẵn sàng để người dùng nhấn lưu.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; State Machine Dirty State",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Phản hồi trực quan ngay lập tức khi phát hiện form bị dirty."
+    },
+    {
+      "ID": "TC-PRF-AC-06",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Hủy bỏ thao tác chỉnh sửa: Nút 'Cancel' khôi phục toàn bộ dữ liệu gốc và trở về View Mode",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode và đã thay đổi một số thông tin",
+      "Test Data": "Sửa SĐT thành 99998888, sửa Email thành test@abc.com",
+      "Steps Test": "3",
+      "Test Steps": "1. Thay đổi dữ liệu trong ô SĐT và Email.\n2. Nhấn nút 'Cancel'.\n3. Quan sát trạng thái màn hình và dữ liệu hiển thị.",
+      "Expected Result": "Màn hình thoát Edit Mode quay lại View Mode; nút 'Update details' hiển thị lại; các thông tin hiển thị là dữ liệu gốc ban đầu, không bị ghi đè.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.2",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Đảm bảo tính an toàn dữ liệu khi người dùng muốn hủy bỏ thao tác."
+    },
+    {
+      "ID": "TC-PRF-AC-07",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Hộp thoại xác nhận thay đổi: Nhấn 'Save changes' mở modal cảnh báo 'Save your changes?'",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode với dữ liệu form hợp lệ đã thay đổi",
+      "Test Data": "Form dirty hợp lệ",
+      "Steps Test": "3",
+      "Test Steps": "1. Sửa đổi thông tin hợp lệ trong form.\n2. Nhấn nút 'Save changes' của form.\n3. Kiểm tra sự xuất hiện của hộp thoại xác nhận.",
+      "Expected Result": "Modal [role='alertdialog'] xuất hiện; hiển thị tiêu đề H2 'Save your changes?', câu hỏi 'Are you sure you want to save these changes?' cùng 2 nút 'Save changes' và 'Keep editing'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.3",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Bảo đảm quy trình 2 bước trước khi cập nhật dữ liệu quan trọng."
+    },
+    {
+      "ID": "TC-PRF-AC-08",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Đóng hộp thoại giữ nguyên biểu mẫu: Nhấn 'Keep editing' trong modal quay lại form đang sửa",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Hộp thoại xác nhận 'Save your changes?' đang hiển thị",
+      "Test Data": "Dữ liệu đang nhập dở dang trong modal",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhấn nút 'Keep editing' trong modal.\n2. Quan sát trạng thái modal.\n3. Kiểm tra các trường dữ liệu trên form phía sau.",
+      "Expected Result": "Modal [role='alertdialog'] đóng lại; form Edit Mode vẫn hiển thị với toàn bộ dữ liệu vừa chỉnh sửa được giữ nguyên 100%.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.3",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Trải nghiệm mượt mà không làm mất công nhập liệu của người dùng."
+    },
+    {
+      "ID": "TC-PRF-AC-09",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Xác nhận lưu thành công: Gửi API PATCH và hiển thị thông báo thành công màu xanh MSG-0807",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Hộp thoại xác nhận đang hiển thị sau khi sửa thông tin hợp lệ",
+      "Test Data": "SĐT mới: 91234567, Email mới: updated@example.com",
+      "Steps Test": "4",
+      "Test Steps": "1. Nhấn nút 'Save changes' trong modal xác nhận.\n2. Quan sát hiệu ứng gửi dữ liệu (loading/spinner).\n3. Kiểm tra việc đóng modal.\n4. Quan sát thông báo hiển thị trên trang.",
+      "Expected Result": "Modal đóng lại; xuất hiện banner thông báo thành công màu xanh p[role='status'] với nội dung 'Profile updated successfully.' (MSG-0807); màn hình chuyển về View Mode.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; MSG-0807; BSK DOM Section 1.4",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14; MSG-0807",
+      "Note": "Minh chứng kết quả cập nhật thành công chuẩn nghiệp vụ."
+    },
+    {
+      "ID": "TC-PRF-AC-10",
+      "Scenario ID": "TS-PRF-AC",
+      "Title": "Cập nhật hiển thị View Mode: Dữ liệu liên lạc và địa chỉ mới được hiển thị chính xác sau khi lưu",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Vừa thực hiện lưu cập nhật thông tin thành công",
+      "Test Data": "SĐT: 81234567, Email: parent.new@moe.edu.sg, Đường: Orchard Road, Mã bưu điện: 238888",
+      "Steps Test": "3",
+      "Test Steps": "1. Quan sát khối CONTACT INFORMATION trong View Mode.\n2. Quan sát khối MAILING ADDRESS trong View Mode.\n3. Đối chiếu giá trị hiển thị với dữ liệu vừa cập nhật.",
+      "Expected Result": "Các thẻ <dd> hiển thị đúng giá trị mới: SĐT '81234567', Email 'parent.new@moe.edu.sg', Địa chỉ thư tín chứa 'Orchard Road' và '238888'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #14; BSK DOM Section 1.1",
+      "Defect ID": "",
+      "Traceability": "AC-CORE; AC #14",
+      "Note": "Khẳng định giao diện đồng bộ chính xác với state mới."
+    },
+    {
+      "ID": "TC-PRF-VAL-01",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động: Chấp nhận số điện thoại Singapore hợp lệ 8 chữ số bắt đầu bằng 8, 9 hoặc 6",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Các số hợp lệ: '91234567', '81234567', '61234567'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập lần lượt các số điện thoại hợp lệ vào ô Mobile Number.\n2. Blur chuột ra ngoài ô nhập liệu.\n3. Quan sát thông báo lỗi và viền ô nhập.",
+      "Expected Result": "Ô nhập không có viền đỏ; không xuất hiện thông báo lỗi; thuộc tính aria-invalid không có hoặc bằng false.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; VAL Lớp 4 Regex ^[689]\\d{7}$",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #15",
+      "Note": "Quy chuẩn số di động và cố định hợp lệ tại Singapore."
+    },
+    {
+      "ID": "TC-PRF-VAL-02",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động (BVA): Báo lỗi MSG-0805 khi độ dài khác 8 chữ số (7 số hoặc 9 số)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "7 số: '9123456'; 9 số: '912345678'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '9123456' vào ô Mobile Number và blur.\n2. Kiểm tra thông báo lỗi.\n3. Thay bằng '912345678' và blur kiểm tra tiếp.",
+      "Expected Result": "Ô nhập đổi viền đỏ, có thuộc tính aria-invalid='true'; xuất hiện thông báo lỗi chuẩn MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; MSG-0805; VAL Lớp 3 BVA",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0805",
+      "Note": "Phân tích giá trị biên BVA độ dài số điện thoại."
+    },
+    {
+      "ID": "TC-PRF-VAL-03",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động: Báo lỗi MSG-0805 khi tiền tố bắt đầu bằng chữ số không hợp lệ (2, 3, 4, 5, 7)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Các số sai đầu: '21234567', '31234567', '41234567', '51234567', '71234567'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập số '51234567' (đầu 5) vào ô Mobile Number.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông báo và thuộc tính ô nhập.",
+      "Expected Result": "Hệ thống từ chối tiền tố không phải 6,8,9; ô nhập có viền đỏ và báo lỗi MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; MSG-0805; VAL Lớp 4 Tiền tố SG",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0805",
+      "Note": "Bắt chặt dải đầu số viễn thông Singapore quy định."
+    },
+    {
+      "ID": "TC-PRF-VAL-04",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động: Báo lỗi hoặc chặn nhập khi chứa ký tự chữ cái hoặc ký hiệu đặc biệt",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Chứa chữ: '9123abcd', 'abcdefgh'; Chứa ký hiệu: '+65-91234567', '9123-4567'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '9123abcd' vào ô Mobile Number và blur.\n2. Quan sát phản hồi của ô nhập.\n3. Thử tiếp với chuỗi ký hiệu '+65-91234567'.",
+      "Expected Result": "Hệ thống chặn không cho nhập ký tự không phải số hoặc đánh dấu lỗi viền đỏ aria-invalid='true' với MSG-0805.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; MSG-0805; VAL Lớp 2 Charset",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0805",
+      "Note": "Đảm bảo tính thuần số của dữ liệu điện thoại lưu trữ."
+    },
+    {
+      "ID": "TC-PRF-VAL-05",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động: Tự động loại bỏ khoảng trắng thừa giữa các cụm số (Normalization)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Chuỗi có khoảng trắng: '9123 4567', '  81234567  '",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '9123 4567' có khoảng trắng ở giữa.\n2. Blur chuột ra ngoài ô nhập hoặc mở modal xác nhận.\n3. Kiểm tra payload chuẩn hóa gửi đi.",
+      "Expected Result": "Hệ thống tự động loại bỏ khoảng trắng (.replace(/\\s+/g, '')); hiển thị và gửi payload dưới dạng thuần 8 chữ số '91234567'.",
+      "Actual Result": "",
+      "Assumption Ref": "FR-08.3 Normalization; VAL Lớp 5 Chuẩn hóa",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Tự động chuẩn hóa mang lại trải nghiệm tiện lợi cho phụ huynh gõ cách số."
+    },
+    {
+      "ID": "TC-PRF-VAL-06",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số điện thoại di động: Báo lỗi bắt buộc MSG-0001 và viền đỏ khi xóa trắng trường",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng hoàn toàn ô Mobile Number",
+      "Steps Test": "3",
+      "Test Steps": "1. Chọn toàn bộ nội dung trong ô Mobile Number và xóa trắng.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông báo lỗi và trạng thái nút Save.",
+      "Expected Result": "Ô Mobile Number có viền đỏ, aria-invalid='true'; câu lỗi MSG-0001 xuất hiện: 'Enter your mobile number'; nút Save changes bị chặn.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 1 Empty Required",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16; MSG-0001",
+      "Note": "Số điện thoại là trường bắt buộc để nhận OTP và cảnh báo học vụ."
+    },
+    {
+      "ID": "TC-PRF-VAL-07",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Địa chỉ Email: Chấp nhận các định dạng email hợp lệ chuẩn RFC 5322 bao gồm tên miền con và dấu cộng",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Các email hợp lệ: 'parent@example.com', 'tan.wm+esave@moe.edu.sg', 'user_123@sub.domain.org'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập lần lượt các email hợp lệ vào ô Email Address.\n2. Blur chuột ra ngoài ô nhập liệu.\n3. Quan sát trạng thái kiểm tra lỗi.",
+      "Expected Result": "Các định dạng email đều được chấp nhận hợp lệ; không xuất hiện thông báo lỗi; aria-invalid='false'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; VAL Lớp 4 RFC 5322",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #15",
+      "Note": "Tương thích đa dạng dạng thức email cá nhân và tổ chức."
+    },
+    {
+      "ID": "TC-PRF-VAL-08",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Địa chỉ Email: Báo lỗi MSG-0806 khi nhập sai định dạng (thiếu @, thiếu tên miền hoặc sai cú pháp)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Các email sai: 'parentexample.com', 'parent@', 'parent@domain', '@example.com'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập 'parentexample.com' vào ô Email Address.\n2. Blur chuột ra ngoài ô nhập.\n3. Kiểm tra thông điệp lỗi và viền ô.",
+      "Expected Result": "Ô Email có viền đỏ và aria-invalid='true'; hiển thị câu lỗi chuẩn MSG-0806: 'Enter an email address in the correct format, like name@example.com'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; MSG-0806; VAL Lớp 4 Regex",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0806",
+      "Note": "Bắt lỗi sai cú pháp email theo đúng mã thông điệp FSD."
+    },
+    {
+      "ID": "TC-PRF-VAL-09",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Địa chỉ Email (BVA): Giới hạn tối đa 150 ký tự; chấp nhận 150 ký tự và từ chối 151 ký tự",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "150 ký tự: 'a'*138 + '@example.com'; 151 ký tự: 'a'*139 + '@example.com'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập chuỗi email hợp lệ có độ dài đúng 150 ký tự và blur.\n2. Kiểm tra ô nhập có hợp lệ.\n3. Nhập chuỗi email dài 151 ký tự và blur.",
+      "Expected Result": "Email 150 ký tự hợp lệ; email vượt quá 150 ký tự bị chặn nhập hoặc báo lỗi định dạng MSG-0806.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 3 BVA độ dài",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Phân tích biên BVA độ dài tối đa của email."
+    },
+    {
+      "ID": "TC-PRF-VAL-10",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Địa chỉ Email: Từ chối địa chỉ email chứa khoảng trắng ở giữa chuỗi",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Email chứa khoảng trắng: 'parent @example.com', 'parent@ example.com'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập 'parent @example.com' vào ô Email Address.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông báo lỗi.",
+      "Expected Result": "Hệ thống từ chối; ô nhập báo lỗi viền đỏ và hiển thị MSG-0806.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #15; MSG-0806; VAL Lớp 5 Whitespace",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0806",
+      "Note": "Khoảng trắng không hợp lệ trong địa chỉ email chuẩn."
+    },
+    {
+      "ID": "TC-PRF-VAL-11",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Địa chỉ Email: Báo lỗi bắt buộc MSG-0001 và viền đỏ khi xóa trắng trường",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng hoàn toàn ô Email Address",
+      "Steps Test": "3",
+      "Test Steps": "1. Chọn toàn bộ nội dung trong ô Email Address và xóa sạch.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông điệp cảnh báo.",
+      "Expected Result": "Ô Email Address đổi viền đỏ, aria-invalid='true'; hiển thị câu lỗi bắt buộc MSG-0001: 'Enter your email address'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 1 Empty Required",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16; MSG-0001",
+      "Note": "Email là trường liên lạc bắt buộc."
+    },
+    {
+      "ID": "TC-PRF-VAL-12",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Mã bưu chính (Postal Code): Chấp nhận mã bưu chính Singapore hợp lệ đúng 6 chữ số",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Mã bưu điện hợp lệ: '560123', '238888', '089123'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập mã bưu chính 6 chữ số vào ô Postal code.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát trạng thái kiểm tra lỗi.",
+      "Expected Result": "Ô Postal code hợp lệ; không hiển thị viền đỏ hay thông báo lỗi; aria-invalid='false'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; VAL Lớp 4 Regex ^\\d{6}$",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16",
+      "Note": "Chuẩn mã bưu điện Singapore 6 số."
+    },
+    {
+      "ID": "TC-PRF-VAL-13",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Mã bưu chính (Postal Code): Bảo toàn số 0 đứng đầu dạng chuỗi không bị ép kiểu làm mất số 0",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Mã bưu điện có số 0 đầu: '018956', '089123'",
+      "Steps Test": "4",
+      "Test Steps": "1. Nhập '018956' vào ô Postal code.\n2. Thực hiện lưu thay đổi thành công.\n3. Kiểm tra hiển thị tại View Mode.\n4. F5 tải lại trang để kiểm tra dữ liệu.",
+      "Expected Result": "Số 0 đứng đầu được bảo toàn nguyên vẹn '018956'; không bị ép kiểu số nguyên thành '18956'.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Lớp 7 Leading Zero; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "VAL-12; Rule 02",
+      "Note": "Ngăn chặn lỗi parse integer làm mất chữ số bưu chính vùng trung tâm Singapore."
+    },
+    {
+      "ID": "TC-PRF-VAL-14",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Mã bưu chính (BVA): Báo lỗi MSG-0001 khi độ dài khác 6 chữ số (5 số hoặc 7 số)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "5 số: '56012'; 7 số: '5601234'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '56012' vào ô Postal code và blur.\n2. Kiểm tra thông báo lỗi.\n3. Đổi thành '5601234' và blur kiểm tra tiếp.",
+      "Expected Result": "Ô nhập đổi viền đỏ, aria-invalid='true'; hiển thị câu lỗi MSG-0001: 'Enter a 6-digit postal code'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 3 BVA",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0001",
+      "Note": "Phân tích giá trị biên BVA độ dài mã bưu chính."
+    },
+    {
+      "ID": "TC-PRF-VAL-15",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Mã bưu chính: Báo lỗi khi chứa ký tự chữ cái hoặc ký hiệu gạch ngang",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Chứa chữ: '560ABC'; Chứa gạch nối: '560-123'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '560ABC' vào ô Postal code.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông báo lỗi.",
+      "Expected Result": "Hệ thống từ chối ký tự chữ; ô nhập báo lỗi viền đỏ với thông điệp 'Enter a 6-digit postal code'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 2 Charset",
+      "Defect ID": "",
+      "Traceability": "VAL-12; MSG-0001",
+      "Note": "Chỉ chấp nhận ký tự số thuần túy."
+    },
+    {
+      "ID": "TC-PRF-VAL-16",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Mã bưu chính: Báo lỗi bắt buộc MSG-0001 và viền đỏ khi xóa trắng trường",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng hoàn toàn ô Postal code",
+      "Steps Test": "3",
+      "Test Steps": "1. Chọn và xóa sạch nội dung ô Postal code.\n2. Blur chuột ra ngoài ô nhập.\n3. Kiểm tra cảnh báo.",
+      "Expected Result": "Ô Postal code có viền đỏ và aria-invalid='true'; hiển thị câu lỗi MSG-0001: 'Enter a 6-digit postal code'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 1 Empty Required",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16; MSG-0001",
+      "Note": "Postal code là trường thông tin bưu chính bắt buộc."
+    },
+    {
+      "ID": "TC-PRF-VAL-17",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Tên đường (Street): Chấp nhận tên đường hợp lệ và tự động cắt tỉa khoảng trắng ở hai đầu (Trim)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Tên đường có khoảng trắng đầu cuối: '   Ang Mo Kio Ave 3   '",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập '   Ang Mo Kio Ave 3   ' vào ô Street.\n2. Thực hiện lưu thay đổi.\n3. Kiểm tra giá trị lưu trữ và hiển thị.",
+      "Expected Result": "Hệ thống tự động cắt tỉa khoảng trắng thừa hai đầu; lưu trữ và hiển thị chuẩn 'Ang Mo Kio Ave 3'.",
+      "Actual Result": "",
+      "Assumption Ref": "FR-08.3 Normalization; VAL Lớp 5 Trim",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Tự động chuẩn hóa dữ liệu văn bản địa chỉ."
+    },
+    {
+      "ID": "TC-PRF-VAL-18",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Tên đường (BVA): Giới hạn tối đa 100 ký tự; chấp nhận 100 ký tự và chặn vượt quá 100",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "100 ký tự: 'A'*100; 101 ký tự: 'A'*101",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập chuỗi 100 ký tự vào ô Street và blur.\n2. Kiểm tra ô hợp lệ không có lỗi.\n3. Thử dán chuỗi 101 ký tự vào ô Street.",
+      "Expected Result": "Chuỗi 100 ký tự được chấp nhận; chuỗi 101 ký tự bị cắt ngắn tự động tại 100 hoặc báo lỗi vượt quá giới hạn độ dài.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 3 BVA độ dài",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Phân tích giá trị biên BVA độ dài trường Tên đường."
+    },
+    {
+      "ID": "TC-PRF-VAL-19",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Tên đường: Báo lỗi bắt buộc MSG-0001 và viền đỏ khi xóa trắng trường",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng hoàn toàn ô Street",
+      "Steps Test": "3",
+      "Test Steps": "1. Xóa sạch dữ liệu trong ô Street.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát thông báo lỗi.",
+      "Expected Result": "Ô Street có viền đỏ, aria-invalid='true'; hiển thị câu lỗi bắt buộc MSG-0001: 'Enter your street name'.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; VAL Lớp 1 Empty Required",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16; MSG-0001",
+      "Note": "Tên đường là trường bắt buộc để gửi thư hành chính."
+    },
+    {
+      "ID": "TC-PRF-VAL-20",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số tòa/Block: Cho phép để trống hợp lệ vì là trường tùy chọn (Optional)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Để trống hoàn toàn ô Block",
+      "Steps Test": "3",
+      "Test Steps": "1. Xóa sạch ô Block.\n2. Điền đầy đủ các trường bắt buộc khác (Street, Postal code, Country, Mobile, Email).\n3. Nhấn Lưu thay đổi.",
+      "Expected Result": "Biểu mẫu hợp lệ; mở modal xác nhận và cho phép lưu thành công mà không bắt lỗi ô Block.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 1 Optional",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Nhà riêng hoặc khu chung cư không có Block vẫn lưu được hợp lệ."
+    },
+    {
+      "ID": "TC-PRF-VAL-21",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Số tòa/Block (BVA): Chấp nhận chuỗi chữ và số tối đa 20 ký tự (vd: 'Blk 123A')",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "20 ký tự: 'Block 123A-Tower B01'; 21 ký tự: 'Block 123A-Tower B012'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập chuỗi 20 ký tự vào ô Block và blur.\n2. Kiểm tra ô hợp lệ.\n3. Thử dán chuỗi 21 ký tự vào ô Block.",
+      "Expected Result": "Chuỗi 20 ký tự được chấp nhận; chuỗi vượt quá 20 ký tự bị giới hạn tối đa 20 ký tự.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 3 BVA độ dài",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Phân tích giá trị biên BVA trường Block."
+    },
+    {
+      "ID": "TC-PRF-VAL-22",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Căn hộ/Tầng (Unit): Cho phép để trống hợp lệ vì là trường tùy chọn (Optional)",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Để trống hoàn toàn ô Unit",
+      "Steps Test": "3",
+      "Test Steps": "1. Xóa sạch ô Unit.\n2. Điền đầy đủ các trường bắt buộc khác.\n3. Nhấn Lưu thay đổi.",
+      "Expected Result": "Hệ thống chấp nhận; không báo lỗi ô Unit; mở modal xác nhận bình thường.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 1 Optional",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Nhà mặt đất (Landed property) không có số tầng/căn hộ."
+    },
+    {
+      "ID": "TC-PRF-VAL-23",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Căn hộ/Tầng (Unit): Chấp nhận các định dạng phòng chuẩn Singapore và giới hạn 20 ký tự",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Các định dạng: '#08-45', '#02-01', 'Level 2', '#12-34A'",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập lần lượt các định dạng Unit phổ biến tại Singapore.\n2. Blur chuột ra ngoài ô nhập.\n3. Quan sát phản hồi kiểm tra hợp lệ.",
+      "Expected Result": "Các định dạng Unit đều được chấp nhận hợp lệ; không có lỗi cú pháp; tối đa 20 ký tự.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Nhóm Địa chỉ SG; BSK DOM Section 1.2",
+      "Defect ID": "",
+      "Traceability": "VAL-12; Rule 02",
+      "Note": "Quy chuẩn căn hộ chung cư HDB và chung cư tư nhân Singapore."
+    },
+    {
+      "ID": "TC-PRF-VAL-24",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Quốc gia (Country): Điền sẵn mặc định 'Singapore' và báo lỗi bắt buộc khi bị xóa trắng",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng ô Country",
+      "Steps Test": "3",
+      "Test Steps": "1. Kiểm tra giá trị ban đầu trong ô Country (mặc định là 'Singapore').\n2. Xóa sạch nội dung ô Country.\n3. Blur chuột ra ngoài ô nhập.",
+      "Expected Result": "Ô Country chuyển viền đỏ và aria-invalid='true'; xuất hiện thông báo lỗi bắt buộc MSG-0001.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; BSK DOM Section 1.2",
+      "Defect ID": "",
+      "Traceability": "VAL-12; AC #16; MSG-0001",
+      "Note": "Quốc gia là trường địa chỉ bắt buộc."
+    },
+    {
+      "ID": "TC-PRF-VAL-25",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Quốc gia (BVA): Giới hạn tối đa 100 ký tự; chấp nhận 100 ký tự và chặn vượt quá",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Low",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "100 ký tự: 'C'*100; 101 ký tự: 'C'*101",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập chuỗi 100 ký tự vào ô Country và blur.\n2. Kiểm tra ô hợp lệ.\n3. Thử dán chuỗi 101 ký tự vào ô Country.",
+      "Expected Result": "Chuỗi 100 ký tự hợp lệ; chuỗi vượt quá 100 ký tự bị chặn nhập hoặc giới hạn tối đa 100.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD FS-08 Table sec. 6; VAL Lớp 3 BVA độ dài",
+      "Defect ID": "",
+      "Traceability": "VAL-12; FR-08.3",
+      "Note": "Phân tích giá trị biên BVA trường Country."
+    },
+    {
+      "ID": "TC-PRF-VAL-26",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Bảo mật chống tấn công XSS: Dữ liệu chứa mã script trong trường địa chỉ được escape an toàn khi hiển thị",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Bảo mật",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Chuỗi XSS: '<script>alert(\"XSS\")</script>', '<img src=x onerror=alert(1)>'",
+      "Steps Test": "4",
+      "Test Steps": "1. Nhập chuỗi script độc hại vào ô Street.\n2. Thực hiện lưu thay đổi thành công.\n3. Quan sát giao diện View Mode.\n4. Kiểm tra mã nguồn DOM xem mã script có bị thực thi hay không.",
+      "Expected Result": "Mã script không bao giờ bị thực thi; nội dung được mã hóa thực thể HTML (&lt;script&gt;) hoặc hiển thị dưới dạng văn bản an toàn.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Lớp 10 Security XSS; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "VAL-12; Rule 02",
+      "Note": "Ngăn chặn tấn công Stored XSS qua các trường địa chỉ tự do."
+    },
+    {
+      "ID": "TC-PRF-VAL-27",
+      "Scenario ID": "TS-PRF-VAL",
+      "Title": "Bảo mật chống tấn công SQL Injection: Các ký tự điều khiển SQL được xử lý như văn bản thuần",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Bảo mật",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Chuỗi SQL Injection: \"' OR '1'='1' --\", \"admin'--\"",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập chuỗi SQL Injection vào ô Street hoặc Block.\n2. Thực hiện lưu thay đổi.\n3. Kiểm tra phản hồi của máy chủ và dữ liệu lưu trữ.",
+      "Expected Result": "Backend sử dụng Parameterized Query xử lý chuỗi như dữ liệu văn bản thuần; không gây ra lỗi SQL 500 hay rò rỉ dữ liệu.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Lớp 10 SQL Injection; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "VAL-12; Rule 02",
+      "Note": "Phòng vệ câu truy vấn CSDL an toàn tuyệt đối."
+    },
+    {
+      "ID": "TC-PRF-FLOW-01",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Luồng End-to-End: Quy trình chuyển trạng thái View Mode sang Edit Mode, mở Modal, Submit và lưu thành công",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh đăng nhập, ở View Mode (/profile)",
+      "Test Data": "SĐT mới: 91238888, Email mới: flow.parent@example.com, Đường: Victoria Street",
+      "Steps Test": "6",
+      "Test Steps": "1. Nhấn nút 'Update details' để sang Edit Mode.\n2. Cập nhật Số điện thoại, Email và Tên đường.\n3. Nhấn nút 'Save changes' trên form.\n4. Kiểm tra modal xác nhận xuất hiện và nội dung cảnh báo.\n5. Nhấn 'Save changes' trong modal.\n6. Kiểm tra banner thành công và dữ liệu mới hiển thị trên View Mode.",
+      "Expected Result": "Toàn bộ luồng chuyển đổi trạng thái thực hiện hoàn hảo theo sơ đồ State Machine; dữ liệu được cập nhật thành công và hiển thị chuẩn.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-CORE; State Machine Section 2.1",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; AC #14",
+      "Note": "Happy path hoàn chỉnh của tính năng cập nhật thông tin liên hệ."
+    },
+    {
+      "ID": "TC-PRF-FLOW-02",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Luồng tương tác Modal: Chọn 'Keep editing' giữ nguyên trạng thái Dirty và focus trả về biểu mẫu",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang mở modal 'Save your changes?'",
+      "Test Data": "SĐT đang gõ dở: 91238888",
+      "Steps Test": "4",
+      "Test Steps": "1. Mở modal xác nhận.\n2. Nhấn nút 'Keep editing'.\n3. Kiểm tra sự biến mất của modal [role='alertdialog'].\n4. Kiểm tra giá trị trong ô Mobile Number và trạng thái nút Save changes.",
+      "Expected Result": "Modal đóng lại; form vẫn giữ nguyên trạng thái Edit Mode và Dirty; dữ liệu 91238888 vẫn còn nguyên; nút Save changes vẫn Enabled.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-CORE; State Machine Section 2.1",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; AC #14",
+      "Note": "Bảo đảm quy trình đóng modal không reset dữ liệu của form."
+    },
+    {
+      "ID": "TC-PRF-FLOW-03",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Luồng hủy bỏ biểu mẫu: Nhấn 'Cancel' từ trạng thái Dirty khôi phục dữ liệu ban đầu không lưu",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode với dữ liệu đã thay đổi",
+      "Test Data": "Thay đổi SĐT thành 99990000 nhưng không muốn lưu",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập SĐT mới 99990000.\n2. Nhấn nút 'Cancel' ở chân biểu mẫu.\n3. Kiểm tra giao diện và dữ liệu View Mode sau khi thoát.",
+      "Expected Result": "Form Edit Mode đóng; View Mode hiển thị lại với SĐT ban đầu (không phải 99990000); không có API PATCH nào được gọi đi.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-CORE; State Machine Section 2.1",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; AC #14",
+      "Note": "Tính năng hủy bỏ bảo đảm không ghi đè dữ liệu sai lệch."
+    },
+    {
+      "ID": "TC-PRF-FLOW-04",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Hoàn nguyên form thủ công: Nhập lại giá trị ban đầu tự động đưa form từ Dirty trở về Pristine",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S3",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "SĐT ban đầu: 91234567. Đổi thành 91234568 rồi sửa lại đúng 91234567",
+      "Steps Test": "4",
+      "Test Steps": "1. Sửa SĐT thành 91234568 (nút Save sáng lên).\n2. Xóa và nhập lại đúng số cũ 91234567.\n3. Blur chuột ra ngoài ô nhập.\n4. Quan sát trạng thái của nút 'Save changes'.",
+      "Expected Result": "Form nhận diện dữ liệu hiện tại trùng khớp hoàn toàn với dữ liệu gốc ban đầu; tự động chuyển về trạng thái Pristine; nút 'Save changes' bị disabled trở lại.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-CORE; State Machine Dirty -> Pristine",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; State Machine",
+      "Note": "Xử lý thông minh trạng thái Dirty của biểu mẫu."
+    },
+    {
+      "ID": "TC-PRF-FLOW-05",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Bảo toàn dữ liệu bền vững (Persistence Integrity): Làm mới trang (F5) dữ liệu cập nhật vẫn duy trì 100%",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Tính toàn vẹn dữ liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Vừa hoàn thành lưu thông tin liên hệ và địa chỉ mới thành công",
+      "Test Data": "SĐT: 91237777, Email: persist@example.com, Bưu chính: 089123",
+      "Steps Test": "4",
+      "Test Steps": "1. Thực hiện lưu thông tin mới thành công.\n2. Nhấn F5 (hoặc reload trình duyệt) để tải lại toàn bộ trang từ máy chủ.\n3. Kiểm tra các trường hiển thị trong View Mode.\n4. Nhấn 'Update details' để kiểm tra giá trị nạp vào Edit Mode.",
+      "Expected Result": "Sau khi reload, dữ liệu mới vẫn được hiển thị nguyên vẹn 100% trong cả View Mode và Edit Mode; không bị mất mát hay quay về giá trị cũ.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Lớp 12 Persistence Integrity; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; Rule 02",
+      "Note": "Khẳng định dữ liệu đã được ghi bền vững vào cơ sở dữ liệu."
+    },
+    {
+      "ID": "TC-PRF-FLOW-06",
+      "Scenario ID": "TS-PRF-FLOW",
+      "Title": "Chống gửi trùng lặp (Double-Submission): Nút Save trong modal hiển thị trạng thái loading khi đang gửi mutation",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang mở modal xác nhận 'Save your changes?'",
+      "Test Data": "Mạng bị nghẽn (throttling Slow 3G)",
+      "Steps Test": "3",
+      "Test Steps": "1. Bật mạng chậm (Slow 3G) trong DevTools.\n2. Nhấn nút 'Save changes' trong modal.\n3. Thử nhấn liên tiếp nhiều lần vào nút trong khi request đang gửi.",
+      "Expected Result": "Nút 'Save changes' tự động chuyển sang disabled và hiển thị icon loading/spinner; các lần click tiếp theo bị chặn hoàn toàn, ngăn gửi trùng request.",
+      "Actual Result": "",
+      "Assumption Ref": "FR-08.3 Double-Submission Protection; Invariant 8",
+      "Defect ID": "",
+      "Traceability": "FLOW-CORE; Invariant 8",
+      "Note": "Bảo vệ hệ thống tránh race conditions và double mutation."
+    },
+    {
+      "ID": "TC-PRF-ERR-01",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Phản hồi viền đỏ đồng bộ: Tất cả các trường bắt buộc để trống đều có viền đỏ aria-invalid='true'",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "Xóa trắng toàn bộ 5 trường bắt buộc: phoneNumber, email, mailingStreet, mailingPostalCode, mailingCountry",
+      "Steps Test": "3",
+      "Test Steps": "1. Xóa sạch dữ liệu trong cả 5 trường bắt buộc.\n2. Blur qua từng trường.\n3. Kiểm tra thuộc tính aria-invalid và class viền đỏ trên DOM.",
+      "Expected Result": "Tất cả 5 ô nhập đều có thuộc tính aria-invalid='true' và class CSS viền đỏ (border-red-500); hiển thị thông điệp lỗi tương ứng bên dưới từng ô.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #16; MSG-0001; Rule 02 Lớp 1",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; AC #16",
+      "Note": "Tuân thủ tiêu chuẩn khả năng tiếp cận và nhận diện lỗi trực quan."
+    },
+    {
+      "ID": "TC-PRF-ERR-02",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Khớp chuẩn danh mục mã lỗi FSD: Thông điệp lỗi hiển thị chính xác từng từ theo catalog MSG-xxxx",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở Edit Mode",
+      "Test Data": "SĐT sai: 123; Email sai: abc; Postal code sai: 12",
+      "Steps Test": "3",
+      "Test Steps": "1. Nhập SĐT sai để kích hoạt lỗi điện thoại.\n2. Nhập Email sai để kích hoạt lỗi email.\n3. Đối chiếu câu lỗi thực tế với FSD.",
+      "Expected Result": "Câu lỗi SĐT khớp 100% với MSG-0805: 'Enter a mobile number in the correct format, like 9123 4567'; Câu lỗi Email khớp 100% với MSG-0806: 'Enter an email address in the correct format, like name@example.com'.",
+      "Actual Result": "",
+      "Assumption Ref": "FSD Error Catalog; MSG-0805; MSG-0806",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; MSG-0805; MSG-0806",
+      "Note": "Không tự ý biến tấu nội dung câu thông báo lỗi."
+    },
+    {
+      "ID": "TC-PRF-ERR-03",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Không rò rỉ mã dịch thô (Zero Raw i18n Keys): Toàn bộ nhãn và thông báo lỗi hiển thị câu chữ người dùng",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang thao tác trên màn hình Hồ sơ phụ huynh",
+      "Test Data": "Duyệt toàn bộ trang từ View Mode, Edit Mode đến lúc kích hoạt lỗi",
+      "Steps Test": "3",
+      "Test Steps": "1. Quét toàn bộ DOM của trang trong View Mode và Edit Mode.\n2. Cố tình nhập sai để kích hoạt tất cả các câu lỗi validation.\n3. Tìm kiếm các chuỗi chứa tiền tố mã dịch như 'features.*', 'profile.*', 'validation.*'.",
+      "Expected Result": "Không xuất hiện bất kỳ mã i18n thô nào trên giao diện (Zero Raw i18n translation leaks); 100% nhãn và câu thông báo là ngôn ngữ tự nhiên đã biên dịch.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Lớp 6 i18n Translation Leaks; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; Rule 02",
+      "Note": "Đảm bảo tính hoàn thiện chuyên nghiệp của sản phẩm."
+    },
+    {
+      "ID": "TC-PRF-ERR-04",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Xử lý lỗi máy chủ HTTP 500: Hiển thị MSG-0808 trong modal cảnh báo và bảo toàn nguyên vẹn dữ liệu đã nhập",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Mock API PATCH /iam/v1/parent/update/profile trả HTTP 500 Internal Server Error",
+      "Test Data": "Dữ liệu hợp lệ mới nhập vào form",
+      "Steps Test": "4",
+      "Test Steps": "1. Nhập thông tin mới hợp lệ và bấm Save changes mở modal.\n2. Bấm Save changes trong modal khi máy chủ trả HTTP 500.\n3. Quan sát modal xác nhận.\n4. Kiểm tra dữ liệu đang nhập trên form.",
+      "Expected Result": "Modal không bị đóng; xuất hiện thông báo lỗi [role='alert'] bên trong modal với nội dung chuẩn MSG-0808: 'We could not update your details. Please try again.'; toàn bộ dữ liệu người dùng vừa gõ vẫn được giữ nguyên vẹn 100%.",
+      "Actual Result": "",
+      "Assumption Ref": "AC #17; MSG-0808; BSK DOM Section 1.3",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; AC #17; MSG-0808",
+      "Note": "Bảo vệ công sức nhập liệu của người dùng khi hệ thống gặp sự cố tạm thời."
+    },
+    {
+      "ID": "TC-PRF-ERR-05",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Xử lý phụ huynh không có tài khoản Edu: Hiển thị cảnh báo cấp trang MSG-0801",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Phụ huynh đăng nhập tài khoản chưa liên kết bất kỳ học sinh/tài khoản Edu nào",
+      "Test Data": "Mock API trả mã lỗi liên kết tài khoản",
+      "Steps Test": "3",
+      "Test Steps": "1. Đăng nhập với tài khoản chưa liên kết Edu Account.\n2. Truy cập màn hình /profile.\n3. Quan sát banner cảnh báo cấp trang.",
+      "Expected Result": "Trang hiển thị cảnh báo main [role='alert'] với nội dung MSG-0801: 'No Edu Account linked with for this parent'; form chỉnh sửa bị khóa.",
+      "Actual Result": "",
+      "Assumption Ref": "BSK DOM Section 1.4; MSG-0801",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; MSG-0801",
+      "Note": "Xử lý trường hợp phụ huynh mới hoặc chưa có con theo học trong hệ thống."
+    },
+    {
+      "ID": "TC-PRF-ERR-06",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Sức khỏe giao diện (UI Health): Tuyệt đối không phát sinh JavaScript Exception trong Console trình duyệt",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Sức khỏe hệ thống",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Trình duyệt bật lắng nghe sự kiện console.error và unhandledrejection",
+      "Test Data": "Thao tác đầy đủ các luồng: View, Edit, Validate, Submit, Cancel, Modal",
+      "Steps Test": "4",
+      "Test Steps": "1. Đăng ký page.on('console', msg => checkError(msg)).\n2. Thực hiện toàn bộ các thao tác chỉnh sửa, nhập sai dữ liệu, mở và đóng modal.\n3. Thực hiện lưu thành công và tải lại trang.\n4. Kiểm tra tổng số lỗi trong mảng console log.",
+      "Expected Result": "Số lượng console error và cảnh báo nghiêm trọng bằng 0 (Zero Console Error) trong suốt toàn bộ phiên tương tác.",
+      "Actual Result": "",
+      "Assumption Ref": "Invariant 7 Console Health; Rule 02 UI Health",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; Invariant 7",
+      "Note": "Đảm bảo độ tin cậy và độ sạch của mã nguồn frontend."
+    },
+    {
+      "ID": "TC-PRF-ERR-07",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Độ co giãn Responsive: Không xuất hiện thanh cuộn ngang (Zero Horizontal Scroll) tại mọi kích thước",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở trang Hồ sơ cá nhân (/profile)",
+      "Test Data": "Các breakpoint màn hình: 320, 375, 480, 768, 1024, 1280, 1440, 1920 px",
+      "Steps Test": "3",
+      "Test Steps": "1. Thiết lập viewport trình duyệt lần lượt theo các breakpoint từ di động đến màn hình lớn.\n2. Đo lường: document.documentElement.scrollWidth === document.documentElement.clientWidth.\n3. Kiểm tra các nút bấm hành động có bị tràn lề hay che khuất không.",
+      "Expected Result": "Trên toàn bộ các breakpoint, scrollWidth luôn bằng clientWidth; tuyệt đối không xuất hiện thanh cuộn ngang; bố cục co giãn mượt mà.",
+      "Actual Result": "",
+      "Assumption Ref": "Rule 02 Zero Horizontal Scroll; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; Rule 02",
+      "Note": "Đảm bảo giao diện tương thích hoàn hảo từ mobile đến desktop."
+    },
+    {
+      "ID": "TC-PRF-ERR-08",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Khả năng tiếp cận Accessibility: Đạt chuẩn WCAG 2.1 AA, bẫy focus modal và đầy đủ nhãn form",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S2",
+      "Priority": "Medium",
+      "Execution Status": "Not Run",
+      "Test Type": "Tiếp cận (A11y)",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở trang Hồ sơ cá nhân (/profile)",
+      "Test Data": "Kiểm tra ngữ nghĩa thẻ HTML và bẫy focus phím Tab",
+      "Steps Test": "4",
+      "Test Steps": "1. Kiểm tra 100% ô nhập đều có nhãn <label> liên kết qua id/for.\n2. Mở modal xác nhận 'Save your changes?'.\n3. Bấm phím Tab liên tục để kiểm tra bẫy focus (focus trap).\n4. Bấm phím Escape để kiểm tra đóng modal.",
+      "Expected Result": "Focus bàn phím bị giữ chặt bên trong modal không lọt ra ngoài nền; các ô nhập có đầy đủ nhãn ngữ nghĩa hỗ trợ trình đọc màn hình (Screen Reader); đạt chuẩn WCAG 2.1 AA.",
+      "Actual Result": "",
+      "Assumption Ref": "WCAG 2.1 AA Standards; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; Invariant 7",
+      "Note": "Tuân thủ tiêu chuẩn tiếp cận chính phủ số."
+    },
+    {
+      "ID": "TC-PRF-ERR-09",
+      "Scenario ID": "TS-PRF-ERR",
+      "Title": "Bảo mật PII phía Client: Che mặt nạ NRIC mặc định và không rò rỉ dữ liệu nhạy cảm vào Web Storage",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "Hồ sơ Phụ huynh",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Bảo mật",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang ở trang Hồ sơ phụ huynh",
+      "Test Data": "Kiểm tra F12 Application Storage (localStorage, sessionStorage, cookie)",
+      "Steps Test": "3",
+      "Test Steps": "1. Kiểm tra NRIC hiển thị trên màn hình (định dạng mask *****123F).\n2. Mở Application Storage (localStorage, sessionStorage, cookies).\n3. Quét tìm các giá trị PII dạng văn bản rõ (plain-text NRIC, họ tên đầy đủ chưa mã hóa).",
+      "Expected Result": "Mặc định NRIC luôn được che mặt nạ bảo mật; Web Storage không lưu trữ thông tin NRIC dạng rõ; bảo vệ an toàn PII theo luật PDPA Singapore.",
+      "Actual Result": "",
+      "Assumption Ref": "PDPA Singapore; Rule 02 Client-side PII; Invariant 7",
+      "Defect ID": "",
+      "Traceability": "ERR-CORE; Rule 02",
+      "Note": "Tuân thủ nghiêm ngặt quy định bảo vệ dữ liệu cá nhân PDPA."
+    }
+  ]
+}

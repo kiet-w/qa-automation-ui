@@ -14,6 +14,10 @@ class AcademicYearsPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
+        # The live route currently renders a 404 screen; keep the planned form
+        # locators below for when the feature becomes available.
+        self.not_found_heading: Locator = page.get_by_role("heading", name="404 - Page Not Found")
+        self.back_to_home_link: Locator = page.get_by_role("link", name="Back to Home")
         self.search_input: Locator = page.locator('input[placeholder*="Search by year" i]')
         self.status_filter: Locator = page.locator('select:has(option[value="DRAFT"])')
         self.search_button: Locator = page.locator('button[type="submit"]:has-text("Search")')

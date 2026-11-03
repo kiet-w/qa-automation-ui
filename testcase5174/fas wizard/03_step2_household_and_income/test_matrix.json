@@ -1,0 +1,346 @@
+{
+  "title": "Cổng Dịch vụ Phụ huynh EduSave — Hỗ trợ Tài chính FAS: Bước 2 - Nhân khẩu & Kê khai Thu nhập GHI/PCI (:5174) — Đặc tả Kiểm thử 5 Trụ Cột",
+  "sources": [
+    {
+      "id": "BR-CORE",
+      "pillar": "BR",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_step2_household_and_income.md",
+      "section": "Quy tắc nghiệp vụ cốt lõi"
+    },
+    {
+      "id": "AC-CORE",
+      "pillar": "AC",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_step2_household_and_income.md",
+      "section": "Tiêu chí nghiệm thu chức năng"
+    },
+    {
+      "id": "VAL-12",
+      "pillar": "Validation",
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "section": "Ma trận kiểm thử hợp lệ ô nhập liệu"
+    },
+    {
+      "id": "FLOW-CORE",
+      "pillar": "Flow",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_step2_household_and_income.md",
+      "section": "Luồng tương tác và chuyển đổi trạng thái"
+    },
+    {
+      "id": "ERR-CORE",
+      "pillar": "Error",
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5174/03_step2_household_and_income.md",
+      "section": "Xử lý ngoại lệ và cảnh báo lỗi"
+    }
+  ],
+  "locators": [
+    {
+      "name": "Nút Thêm thành viên",
+      "selector": "button:has-text('Add Member'), button:has-text('Thêm thành viên')",
+      "source": "Đầu danh sách thành viên"
+    },
+    {
+      "name": "Ô nhập Họ và tên thành viên",
+      "selector": "input[name*='memberName' i]",
+      "source": "Form thêm thành viên"
+    },
+    {
+      "name": "Ô nhập Thu nhập hàng tháng",
+      "selector": "input[name*='income' i]",
+      "source": "Form thêm thành viên"
+    },
+    {
+      "name": "Hộp chọn Mối quan hệ",
+      "selector": "select[name*='relation' i]",
+      "source": "Form thêm thành viên"
+    },
+    {
+      "name": "Khung tóm tắt GHI và PCI",
+      "selector": ".income-summary, [data-testid='income-summary']",
+      "source": "Bên phải hoặc cuối Bước 2"
+    }
+  ],
+  "fixtures": {
+    "fixture_reference": "03_step2_household_and_income_data.json",
+    "design_status": "Not Run",
+    "result_fields": "Actual Result và Defect ID để trống phục vụ kiểm thử thực tế"
+  },
+  "coverage": [
+    {
+      "subject": "Quy tắc nghiệp vụ cốt lõi và phân quyền",
+      "layer": "BR",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS03-01",
+        "TC-FAS03-02"
+      ]
+    },
+    {
+      "subject": "Tiêu chí nghiệm thu chức năng chính",
+      "layer": "AC",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS03-03",
+        "TC-FAS03-04"
+      ]
+    },
+    {
+      "subject": "Kiểm tra tính hợp lệ dữ liệu ô nhập (Validation)",
+      "layer": "Validation",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS03-05",
+        "TC-FAS03-06"
+      ]
+    },
+    {
+      "subject": "Luồng tương tác và chuyển trạng thái (Flow)",
+      "layer": "Flow",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS03-07",
+        "TC-FAS03-08"
+      ]
+    },
+    {
+      "subject": "Xử lý lỗi và phản hồi cảnh báo (Error)",
+      "layer": "Error",
+      "status": "Applicable",
+      "tc_ids": [
+        "TC-FAS03-09",
+        "TC-FAS03-10"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "ID": "TC-FAS03-01",
+      "Scenario ID": "TS-FAS03-BR",
+      "Title": "Tự động tính thu nhập chuẩn: Tính Tổng thu nhập gia đình (GHI) và Bình quân đầu người (PCI)",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Kê khai các thành viên có thu nhập",
+      "Test Data": "Thu nhập của cha và mẹ",
+      "Steps Test": "2",
+      "Test Steps": "1. Khai thu nhập của cha ($2,000) và mẹ ($1,000) trong gia đình 4 người.\n2. Quan sát ô GHI và PCI.",
+      "Expected Result": "Hệ thống tự động tính: GHI = $3,000.00 SGD; PCI = $750.00 SGD ($3,000 / 4 người) theo đúng công thức quy định.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-FAS03-PCI-FORMULA; AUTO-CALC",
+      "Defect ID": "",
+      "Traceability": "BR-FAS03-PCI-FORMULA; AUTO-CALC",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-02",
+      "Scenario ID": "TS-FAS03-BR",
+      "Title": "Kê khai nhân khẩu: Bắt buộc kê khai đầy đủ các thành viên sống chung cùng hộ để tính chính xác PCI",
+      "Test Suite": "Quy tắc nghiệp vụ (BR)",
+      "Pillar": "BR",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S1",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Nghiệp vụ",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Thêm các thành viên gia đình",
+      "Test Data": "Danh sách thành viên",
+      "Steps Test": "2",
+      "Test Steps": "1. Thêm từng thành viên gia đình vào biểu mẫu.\n2. Quan sát chỉ số Tổng số nhân khẩu.",
+      "Expected Result": "Tổng nhân khẩu cập nhật tương ứng với từng thành viên được thêm; làm căn cứ tính toán mức hỗ trợ công bằng.",
+      "Actual Result": "",
+      "Assumption Ref": "BR-FAS03-HOUSEHOLD-INTEGRITY; HEADCOUNT",
+      "Defect ID": "",
+      "Traceability": "BR-FAS03-HOUSEHOLD-INTEGRITY; HEADCOUNT",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-03",
+      "Scenario ID": "TS-FAS03-AC",
+      "Title": "Biểu mẫu cho phép thêm mới thành viên: Họ tên, NRIC, Mối quan hệ, Nghề nghiệp và Thu nhập",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Màn hình Bước 2",
+      "Test Data": "Biểu mẫu Thêm thành viên",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhấn nút 'Thêm thành viên'.\n2. Kiểm tra các trường thông tin trong form.",
+      "Expected Result": "Hiển thị đầy đủ các ô nhập: Họ và tên, Số NRIC, Mối quan hệ (Cha/Mẹ/Anh/Chị/Em), Tình trạng việc làm và Thu nhập tháng.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-FAS03-ADD-MEMBER-FORM; DOM-STEP2",
+      "Defect ID": "",
+      "Traceability": "AC-FAS03-ADD-MEMBER-FORM; DOM-STEP2",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-04",
+      "Scenario ID": "TS-FAS03-AC",
+      "Title": "Khung tóm tắt tự động cập nhật mức GHI và PCI tức thì ngay khi chỉnh sửa thu nhập",
+      "Test Suite": "Tiêu chí nghiệm thu (AC)",
+      "Pillar": "AC",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Giao diện",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đã có danh sách 3 thành viên",
+      "Test Data": "Sửa ô Thu nhập của 1 thành viên",
+      "Steps Test": "2",
+      "Test Steps": "1. Sửa mức thu nhập của thành viên từ $1,000 thành $1,500.\n2. Quan sát bảng tóm tắt bên cạnh.",
+      "Expected Result": "Tổng thu nhập GHI và mức PCI lập tức cập nhật giá trị mới một cách mượt mà mà không giật màn hình.",
+      "Actual Result": "",
+      "Assumption Ref": "AC-FAS03-REACTIVE-SUMMARY; INSTANT-UPDATE",
+      "Defect ID": "",
+      "Traceability": "AC-FAS03-REACTIVE-SUMMARY; INSTANT-UPDATE",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-05",
+      "Scenario ID": "TS-FAS03-VAL",
+      "Title": "Báo lỗi viền đỏ khi để trống Họ tên hoặc Mối quan hệ của thành viên được thêm",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Form thêm thành viên",
+      "Test Data": "Họ tên để trống, chọn quan hệ Cha",
+      "Steps Test": "2",
+      "Test Steps": "1. Để trống ô Họ tên và nhấn Thêm.\n2. Quan sát phản hồi của form.",
+      "Expected Result": "Ô Họ tên hiển thị viền đỏ cảnh báo: 'Vui lòng nhập họ và tên của thành viên gia đình'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 1; MANDATORY-FIELD",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 1; MANDATORY-FIELD",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-06",
+      "Scenario ID": "TS-FAS03-VAL",
+      "Title": "Kiểm tra ô Thu nhập tháng: Chặn nhập số âm hoặc ký tự đặc biệt",
+      "Test Suite": "Kiểm tra hợp lệ (Validation)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Kiểm thử nhập liệu",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Form thêm thành viên",
+      "Test Data": "Thu nhập nhập '-500'",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhập số âm '-500' vào ô Thu nhập hàng tháng.\n2. Quan sát phản hồi.",
+      "Expected Result": "Ô nhập chặn số âm và báo lỗi: 'Thu nhập hàng tháng không thể là số âm (tối thiểu là $0 nếu không đi làm)'.",
+      "Actual Result": "",
+      "Assumption Ref": "VAL-12 Lớp 3; POSITIVE-INCOME",
+      "Defect ID": "",
+      "Traceability": "VAL-12 Lớp 3; POSITIVE-INCOME",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-07",
+      "Scenario ID": "TS-FAS03-FLOW",
+      "Title": "Quy trình thêm đầy đủ thành viên gia đình, kiểm tra PCI và nhấn Tiếp tục sang Bước 3",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Kê khai hoàn tất các thành viên",
+      "Test Data": "Nút 'Tiếp tục'",
+      "Steps Test": "3",
+      "Test Steps": "1. Thêm đầy đủ thông tin cha, mẹ, học sinh.\n2. Đọc kết quả tính toán PCI.\n3. Nhấn nút Tiếp tục.",
+      "Expected Result": "Hệ thống ghi nhận toàn bộ thông tin nhân khẩu và chuyển tiếp suôn sẻ sang Bước 3: Đính kèm tài liệu minh chứng.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-FAS03-COMPLETE-PROCEED; WIZARD-STEP",
+      "Defect ID": "",
+      "Traceability": "FLOW-FAS03-COMPLETE-PROCEED; WIZARD-STEP",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-08",
+      "Scenario ID": "TS-FAS03-FLOW",
+      "Title": "Xóa một thành viên nhập nhầm kèm hộp thoại hỏi lại an toàn trước khi xóa",
+      "Test Suite": "Luồng chức năng (Function Flow)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Luồng chức năng",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Đang có 4 thành viên trong danh sách",
+      "Test Data": "Nút Xóa tại dòng thành viên",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhấn biểu tượng thùng rác tại dòng thành viên nhập nhầm.\n2. Nhấn 'Xác nhận xóa' trên hộp thoại.",
+      "Expected Result": "Dòng thành viên biến mất ngay lập tức; tổng số nhân khẩu và chỉ số PCI được tính toán lại chính xác.",
+      "Actual Result": "",
+      "Assumption Ref": "FLOW-FAS03-DELETE-MEMBER; CONFIRM-MODAL",
+      "Defect ID": "",
+      "Traceability": "FLOW-FAS03-DELETE-MEMBER; CONFIRM-MODAL",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-09",
+      "Scenario ID": "TS-FAS03-ERR",
+      "Title": "Cảnh báo khi tổng số nhân khẩu nhỏ hơn số lượng học sinh thụ hưởng đã chọn ở Bước 1",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Bước 1 chọn 2 con; Bước 2 chỉ khai 1 người",
+      "Test Data": "Nhấn nút Tiếp tục",
+      "Steps Test": "2",
+      "Test Steps": "1. Để số lượng thành viên ít hơn số con đã chọn ở Bước 1.\n2. Nhấn Tiếp tục.",
+      "Expected Result": "Hệ thống chặn lại và cảnh báo: 'Tổng số nhân khẩu không thể nhỏ hơn số lượng học sinh thụ hưởng trong đơn'.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-FAS03-HEADCOUNT-CONFLICT; INTEGRITY",
+      "Defect ID": "",
+      "Traceability": "ERR-FAS03-HEADCOUNT-CONFLICT; INTEGRITY",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    },
+    {
+      "ID": "TC-FAS03-10",
+      "Scenario ID": "TS-FAS03-ERR",
+      "Title": "Hiển thị lưu ý cảnh báo nhẹ nếu mức thu nhập PCI vượt mức trần xét duyệt hỗ trợ",
+      "Test Suite": "Xử lý lỗi (Error Handling)",
+      "Pillar": "Tech/UI",
+      "Page": "FAS Bước 2: Kê khai Thu nhập",
+      "Severity": "S2",
+      "Priority": "High",
+      "Execution Status": "Not Run",
+      "Test Type": "Xử lý lỗi",
+      "Environment": "Môi trường kiểm thử UAT Cổng Dịch vụ Phụ huynh EduSave",
+      "Preconditions": "Mức PCI tính ra $1,500 (trên mức trần $1,100)",
+      "Test Data": "Khung tóm tắt PCI",
+      "Steps Test": "2",
+      "Test Steps": "1. Nhập thu nhập khiến mức PCI vượt trần tiêu chuẩn.\n2. Quan sát khung tóm tắt.",
+      "Expected Result": "Xuất hiện hộp lưu ý màu vàng: 'Mức PCI hiện tại cao hơn tiêu chuẩn thông thường. Đơn của bạn sẽ cần nhà trường xem xét đặc biệt'.",
+      "Actual Result": "",
+      "Assumption Ref": "ERR-FAS03-PCI-EXCEEDED-NOTE; ADVISORY",
+      "Defect ID": "",
+      "Traceability": "ERR-FAS03-PCI-EXCEEDED-NOTE; ADVISORY",
+      "Note": "Chụp ảnh màn hình minh chứng các bước và kết quả thực tế khi kiểm thử."
+    }
+  ]
+}

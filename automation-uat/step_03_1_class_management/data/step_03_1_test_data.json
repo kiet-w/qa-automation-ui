@@ -1,0 +1,52 @@
+{
+  "step_id": "STEP_03_1",
+  "step_name": "Kiểm tra hoặc Tạo Lớp học (Classes)",
+  "section": "3.1",
+  "portal": "Admin Portal",
+  "url": "/class-management",
+  "actor": "staff1@IAM.edu.vn (School Admin / User)",
+  "school": {
+    "code": "RPS-0201",
+    "id": "SCH-003",
+    "name": "Rosyth Primary School"
+  },
+  "execution_summary": {
+    "target_class": "P1-A",
+    "target_level": "Primary 1 (PRI-1)",
+    "academic_year": "2026",
+    "target_status": "EXISTS",
+    "recommendation": "Dùng luôn lớp P1-A hiện có (sĩ số 0 học sinh), chuyển ngay sang mục 3.2"
+  },
+  "payloads": {
+    "existing_class": {
+      "class_code": "P1-A",
+      "class_name": "Primary 1-A (Courage)",
+      "academic_level": "PRI-1 - Primary 1",
+      "academic_year": "2026",
+      "enrolled_students": 0,
+      "active_students": 0,
+      "system_id": "CLS-RPS-P1A"
+    },
+    "duplicate_attempt": {
+      "class_code": "P1-A",
+      "class_name": "Primary 1-A Duplicate",
+      "level_offering": "Primary 1 · 2026 · Rosyth Primary School",
+      "expected_error": "Class code 'P1-A' already exists for this offering."
+    },
+    "mandatory_validation": {
+      "class_code": "",
+      "class_name": "",
+      "level_offering": "",
+      "expected_errors": [
+        "Class code is required.",
+        "Class name is required.",
+        "Select a school level offering."
+      ]
+    },
+    "happy_path_created": {
+      "class_code_prefix": "P1-A",
+      "class_name_prefix": "Primary 1-A Auto",
+      "level_offering": "Primary 1 · 2026 · Rosyth Primary School"
+    }
+  }
+}

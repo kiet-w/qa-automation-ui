@@ -17,6 +17,7 @@ class AdminDashboardShellPage(BasePage):
         # Header components
         self.header = self.page.locator(AdminDashboardShellLocators.HEADER)
         self.collapse_sidebar_btn = self.page.locator(AdminDashboardShellLocators.COLLAPSE_SIDEBAR_BTN)
+        self.mobile_navigation_btn = self.page.locator(AdminDashboardShellLocators.MOBILE_NAVIGATION_BTN)
         self.breadcrumb = self.page.locator(AdminDashboardShellLocators.BREADCRUMB)
         self.user_name = self.page.locator(AdminDashboardShellLocators.USER_NAME)
         self.user_role_or_code = self.page.locator(AdminDashboardShellLocators.USER_ROLE_OR_CODE)
@@ -35,10 +36,13 @@ class AdminDashboardShellPage(BasePage):
         self.page_body = self.page.locator(AdminDashboardShellLocators.PAGE_BODY)
         self.page_heading = self.page.locator(AdminDashboardShellLocators.PAGE_HEADING)
         self.not_found_container = self.page.locator(AdminDashboardShellLocators.NOT_FOUND_CONTAINER)
+        self.back_to_home_link = self.page.locator(AdminDashboardShellLocators.BACK_TO_HOME_LINK)
 
         # Alerts and notifications
         self.alert = self.page.locator(AdminDashboardShellLocators.ALERT)
         self.access_restricted_alert = self.page.locator(AdminDashboardShellLocators.ACCESS_RESTRICTED_ALERT)
+        self.school_badge = self.page.locator(AdminDashboardShellLocators.SCHOOL_BADGE)
+        self.school_badge_code = self.page.locator(AdminDashboardShellLocators.SCHOOL_BADGE_CODE)
 
     def open(self, base_url: str = "http://localhost:5173", path: str = "/") -> None:
         """Navigate to target route within admin shell."""
@@ -122,6 +126,10 @@ class AdminDashboardShellPage(BasePage):
     def click_action_by_label(self, label: str) -> None:
         """Click an externally specified shell action."""
         self.action_by_label(label).first.click()
+
+    def click_back_to_home(self) -> None:
+        """Return from the not-found page to the dashboard."""
+        self.back_to_home_link.click()
 
     def get_main_content_text(self) -> str:
         """Return visible main content text for assertions owned by tests."""

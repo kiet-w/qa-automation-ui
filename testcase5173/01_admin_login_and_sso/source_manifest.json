@@ -1,0 +1,66 @@
+{
+  "scope": "Academic & Users / Admin Login & Microsoft SSO / localhost:5173 and Entra simulator:5288",
+  "stage": "design",
+  "review": {
+    "status": "draft",
+    "evidence": "Awaiting user review of the generated 50-case matrix."
+  },
+  "entries": [
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+      "start": 1,
+      "end": 197,
+      "roles": ["UI", "Flow", "Error"],
+      "reason": "Verified login, Entra and callback DOM plus OAuth/RBAC behavior and pass/fail oracles."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/FS document/FS-03_School_Student_Fee_Management.md",
+      "sha256": "a5f5615d1ef559aedb792627bb5b632b294b057741a1cf0aed54f1dce64f3535",
+      "start": 37,
+      "end": 127,
+      "roles": ["BR", "AC"],
+      "reason": "Authentication/authorization rules and F02 Microsoft-login capabilities/business rules."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/FS document/FS-03_School_Student_Fee_Management.md",
+      "sha256": "a5f5615d1ef559aedb792627bb5b632b294b057741a1cf0aed54f1dce64f3535",
+      "start": 535,
+      "end": 574,
+      "roles": ["Dependency", "Error"],
+      "reason": "Microsoft-account dependency and access-denial exception behavior."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/MEETINGS_AND_DECISIONS_SUMMARY.md",
+      "sha256": "268548f1d3ef8e00166abbe406b7bf2b835bbfa770bc88edcfcbf866f56dfe31",
+      "start": 129,
+      "end": 180,
+      "roles": ["BR"],
+      "reason": "DEC-06, DEC-10 and DEC-16 governing scope, SSO and no local password storage."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/MEETINGS_AND_DECISIONS_SUMMARY.md",
+      "sha256": "268548f1d3ef8e00166abbe406b7bf2b835bbfa770bc88edcfcbf866f56dfe31",
+      "start": 232,
+      "end": 275,
+      "roles": ["BR", "Dependency"],
+      "reason": "Rejected local-password design and ACT-01 remediation."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/component_specs/fs03/integration/school_user_provisioning_flow.md",
+      "sha256": "40b411c76ebe4371d3d4e746533f06c9f2695a28a680d074af7abd9275ce22be",
+      "start": 1,
+      "end": 47,
+      "roles": ["Flow", "Dependency"],
+      "reason": "SSO linking preconditions/postconditions and School Assignment scope constraint."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/HUONG_DAN_THIET_KE_TEST_CASE_UAT_5_PILLARS.md",
+      "sha256": "4ed207ed40041b905db44777dea649c5e8fb01c65617f109765b0bd1c20a2b48",
+      "start": 25,
+      "end": 55,
+      "roles": ["Validation"],
+      "reason": "Project 5-pillar design contract and mandatory 12-layer validation requirement."
+    }
+  ]
+}

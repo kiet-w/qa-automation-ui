@@ -31,9 +31,11 @@ automation-ui/
    - `pages/` và `components/` chỉ thực hiện hành động trên UI (`click`, `fill`, `navigate`) và trả về dữ liệu/trạng thái.
    - **Tuyệt đối không viết `assert` trong `pages/` hay `components/`.** Mọi assertions thuộc về file test trong `tests/`.
 
-2. **Dữ Liệu & Locators Chuẩn Xác (Zero Guesswork):**
+2. **Dữ Liệu & Locators Chuẩn Xác — CẤM ĐỌC SOURCE CODE (Strict Black-Box):**
+   - **Tuyệt đối không đọc mã nguồn code (React `.tsx`, C# `.cs`, API controllers/handlers)** để làm testcase hay lấy selector/thông báo lỗi.
+   - Mọi testcase và locators bắt buộc tuân theo kiểm thử hộp đen chuẩn mực: lấy từ **Tài liệu Đặc tả Nghiệp vụ / UAT specs** và **Quét trực tiếp màn hình thực tế (Live DOM Scan qua `bsk`)**.
    - Dữ liệu test nằm trong `data/**/*.json` hoặc Pytest fixtures. Sử dụng `copy.deepcopy` trước khi chỉnh sửa.
-   - Selectors và chuỗi thông báo lỗi đối soát trực tiếp từ `specs/ui_bsk/` hoặc DOM thực tế. Tuyệt đối không tự suy diễn.
+   - Selectors và chuỗi thông báo lỗi đối soát trực tiếp từ `specs/ui_bsk/` hoặc Live DOM thực tế. Tuyệt đối không tự suy diễn.
 
 3. **Tập Trung 4 Thành Phần Cốt Lõi (In-Scope Coverage):**
    - **BR (Business Rules):** Logic nghiệp vụ, điều kiện dữ liệu và ràng buộc tính toán.
@@ -41,10 +43,10 @@ automation-ui/
    - **Validation:** Bắt buộc kiểm tra 3 trạng thái: đúng câu thông báo lỗi, kích hoạt `aria-invalid="true"`/viền đỏ, và tự xóa lỗi khi nhập đúng.
    - **Function Flow:** Luồng thao tác chính (Happy path, Submit, Cancel, Back).
 
-4. **Pytest First & Báo Cáo Tinh Gọn:**
+4. **Pytest First & Báo Cáo Minh Chứng:**
    - Chạy test trực tiếp qua lệnh `pytest` tiêu chuẩn.
-   - Tự động chụp ảnh màn hình và lưu trace **chỉ khi test FAIL** (`--screenshot=only-on-failure`), tiết kiệm tài nguyên và ổ cứng.
-   - Xuất báo cáo trực quan 1 file HTML duy nhất tại `reports/report.html`.
+   - Tự động chụp ảnh màn hình minh chứng giao diện cho cả ca test **PASS** (Actual Result) và **FAIL** (`actual_result.png`).
+   - Lưu `report.html` và `report.json` trong thư mục module tương ứng dưới `reports/`, cùng với ảnh minh chứng được nhúng trực tiếp vào báo cáo.
 
 ---
 
@@ -79,15 +81,16 @@ pytest tests/fs03/ -n 3 -v
 # 4. Chạy test và mở trình duyệt trực quan để debug (Headed mode)
 pytest tests/fs08/fs08-parent-login/ --headed -v
 
-# 5. Xuất báo cáo HTML độc lập
-pytest tests/unit/ --html=reports/report.html --self-contained-html
+# 5. Chạy test và tự động lưu báo cáo HTML/JSON trong thư mục module
+pytest tests/unit/
 ```
 
 ---
 
 ## 4. Báo Cáo & Debug
 
-- Sau mỗi lượt chạy, báo cáo tổng hợp được cập nhật tự động tại:
-  - **HTML Report:** `reports/report.html` (Mở trực tiếp trên bất kỳ trình duyệt nào)
-  - **JSON Report:** `reports/report.json`
-- Khi test gặp lỗi (FAIL), Playwright tự động chụp ảnh màn hình lưu vào `reports/test-results/` để bạn đối soát ngay lập tức.
+- Báo cáo thực thi, ảnh/video minh chứng, gói xuất và phiên đăng nhập được giữ cục bộ, không commit lên GitHub. Chỉ commit code, dữ liệu test và tài liệu/testcase nguồn; chạy lại `pytest` để tạo báo cáo.
+- Sau mỗi lượt chạy, báo cáo được cập nhật tự động trong thư mục suite tương ứng, ví dụ `reports/testcase5173/01_admin_login_and_sso/`:
+  - **HTML Report:** `report.html` (self-contained, mở trực tiếp trên trình duyệt)
+  - **JSON Report:** `report.json`
+  - **Ảnh lỗi/trace:** `test-results/` dưới cùng thư mục suite; ảnh lỗi cũng được nhúng vào chi tiết test trong HTML.

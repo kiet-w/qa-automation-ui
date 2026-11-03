@@ -1,0 +1,51 @@
+{
+  "module": "step_03_class_management",
+  "name": "Quản lý khối lớp (Primary 1) và lớp học (P1-A) tại Rosyth Primary School (B3)",
+  "base_url": "https://admin.20-255-158-192.sslip.io",
+  "target_url": "/class-management",
+  "create_url": "/class-management/new",
+  "auth": {
+    "school_email": "staff1@IAM.edu.vn",
+    "role": "School Admin / School User",
+    "school_name": "Rosyth Primary School"
+  },
+  "existing_class": {
+    "class_code": "P1-A",
+    "class_name": "Primary 1-A",
+    "academic_year": "2026",
+    "school_level": "Primary 1",
+    "status": "Active"
+  },
+  "new_class_payload": {
+    "class_code": "P1-B",
+    "class_name": "Primary 1-B",
+    "offering_option": "Primary 1 · 2026",
+    "academic_year": "2026",
+    "school_level": "Primary 1"
+  },
+  "validation_cases": {
+    "empty_form": {
+      "expected_errors": {
+        "class_code": "Class code is required.",
+        "class_name": "Class name is required.",
+        "offering": "Select a school level offering."
+      }
+    },
+    "duplicate_class_code": {
+      "class_code": "P1-A",
+      "class_name": "Primary 1-A Duplicate",
+      "offering_option": "Primary 1 · 2026",
+      "expected_alert": "Unable to create class",
+      "expected_error": "Class code 'P1-A' already exists for this offering."
+    }
+  },
+  "expected_outcome": {
+    "redirect_url": "/class-management",
+    "roster_verification": {
+      "class_code": "P1-A",
+      "initial_student_count": 0,
+      "enrolled_student": "Liam Pham",
+      "student_id": "STU-00001"
+    }
+  }
+}

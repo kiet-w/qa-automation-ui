@@ -1,0 +1,41 @@
+{
+  "seed_id": "UAT-MOE-01-KENT",
+  "purpose": "Prepare the synthetic data contract for Kent's EA-to-school-to-fee UAT flow.",
+  "source": "specs/uat/TESTS.md#UAT-MOE-01",
+  "environment": "QA only",
+  "mode": "UI-seeded; do not insert directly into the database",
+  "preconditions": {
+    "government_mock": "Has a Singapore Citizen profile matching the student identity below; reuse the mock profile and its approved date of birth.",
+    "daily_sync": "Run only after confirming this profile has no existing EA; expect one Active EA with SGD 0.00 balance.",
+    "school": "Reuse the existing School Test 01 record; do not create a duplicate.",
+    "school_user": "Reuse the existing School User assigned to School Test 01; do not change shared role mappings.",
+    "class": "Reuse P1A if already present for the intended academic year; otherwise create it once under School Test 01.",
+    "fee_configuration": "Confirm Tuition fee type, component, and rate are configured before creating a publication."
+  },
+  "student": {
+    "test_account": "student.test01",
+    "nric": "S0000001A",
+    "category": "SC",
+    "date_of_birth": "Reuse the matching Government API mock value; the UAT spec only requires that the student has just turned 7.",
+    "school": "School Test 01",
+    "class": "P1A"
+  },
+  "expected_links": [
+    "Government mock identity -> one Active EA",
+    "School Test 01 -> student enrollment -> class P1A",
+    "Student identity -> the matching EA after class assignment"
+  ],
+  "fee": {
+    "name": "Tuition fee",
+    "amount": "100.00",
+    "currency": "SGD",
+    "publication": "Create and publish only after verifying the student, enrollment, class, and EA links."
+  },
+  "verification": [
+    "EA is Active and starts at SGD 0.00 before any payment/top-up activity.",
+    "Student is linked to the matching EA after class assignment.",
+    "The published fee creates one POSTED Student Charge visible to the parent."
+  ],
+  "reset_scope": "Remove only records created for this seed, in dependency order, after downstream charges/applications are cleared. Never reset shared school, student, EA, or fee records.",
+  "status": "Prepared; not loaded into QA"
+}

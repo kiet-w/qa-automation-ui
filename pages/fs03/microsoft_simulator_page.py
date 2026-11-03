@@ -12,12 +12,13 @@ class MicrosoftSimulatorPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
+        self.pick_account_heading = self.page.locator(MicrosoftSimulatorLocators.PICK_ACCOUNT_HEADING)
         self.moehq_tile = self.page.locator(MicrosoftSimulatorLocators.MOEHQ_ACCOUNT_TILE)
         self.school_tile = self.page.locator(MicrosoftSimulatorLocators.SCHOOL_ACCOUNT_TILE)
         self.parent_tile = self.page.locator(MicrosoftSimulatorLocators.PARENT_ACCOUNT_TILE)
         self.use_another_account_btn = self.page.locator(MicrosoftSimulatorLocators.USE_ANOTHER_ACCOUNT_BTN)
+        self.use_another_account_input = self.page.locator(MicrosoftSimulatorLocators.USE_ANOTHER_ACCOUNT_INPUT)
         self.continue_btn = self.page.locator(MicrosoftSimulatorLocators.CONTINUE_BTN)
-        self.cancel_btn = self.page.locator(MicrosoftSimulatorLocators.CANCEL_BTN)
 
     def select_moehq_admin(self) -> None:
         """Select MOE HQ Admin tile (admin@IAM.edu.vn)."""
@@ -34,16 +35,16 @@ class MicrosoftSimulatorPage(BasePage):
         self.parent_tile.first.click()
         self.page.wait_for_load_state("domcontentloaded")
 
+    def fill_custom_account(self, email: str) -> None:
+        """Enter custom account email in simulator input."""
+        if self.use_another_account_input.count() > 0:
+            self.use_another_account_input.first.fill(email)
+        elif self.use_another_account_btn.count() > 0:
+            self.use_another_account_btn.first.click()
+            self.use_another_account_input.first.fill(email)
+
     def click_cancel(self) -> None:
-        """Cancel authentication in simulator and safely return to login (using browser back)."""
-        cancel = self.page.locator("a:has-text('Cancel'), button:has-text('Cancel')")
-        try:
-            if cancel.count() > 0 and cancel.first.is_visible():
-                cancel.first.click()
-                self.page.wait_for_load_state("domcontentloaded")
-                return
-        except Exception:
-            pass
+        """Cancel authentication using the simulator flow's browser-back behavior."""
         self.page.go_back()
         self.page.wait_for_load_state("domcontentloaded")
 

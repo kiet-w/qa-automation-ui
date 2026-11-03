@@ -23,7 +23,7 @@ class FasApplicantForm:
         if "dateOfBirth" in applicant_data:
             card.locator(locators.APPLICANT_DOB).fill(applicant_data["dateOfBirth"])
         if "gender" in applicant_data:
-            card.locator(f"input[name='applicant-gender'][value='{applicant_data['gender']}']").check(force=True)
+            card.locator(locators.APPLICANT_GENDER).select_option(applicant_data["gender"])
         if "nationality" in applicant_data:
             card.locator(locators.APPLICANT_NATIONALITY).select_option(applicant_data["nationality"])
         if "race" in applicant_data:
@@ -36,6 +36,8 @@ class FasApplicantForm:
             card.locator(locators.APPLICANT_EMAIL).fill(applicant_data["email"])
         if "address" in applicant_data:
             card.locator(locators.APPLICANT_ADDRESS).fill(applicant_data["address"])
+        if "employmentStatus" in applicant_data:
+            card.locator(locators.APPLICANT_EMPLOYMENT_STATUS).fill(applicant_data["employmentStatus"])
         if "commitmentAgreed" in applicant_data:
             self.set_commitment(applicant_data["commitmentAgreed"])
         if "forwardToSchoolAgreed" in applicant_data:

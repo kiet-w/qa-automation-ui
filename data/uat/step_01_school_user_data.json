@@ -1,0 +1,62 @@
+{
+  "module": "step_01_create_school_user",
+  "name": "Cấp tài khoản mới cho cán bộ trường Rosyth (B1)",
+  "base_url": "https://admin.20-255-158-192.sslip.io",
+  "target_url": "/school-user-management/new",
+  "auth": {
+    "admin_email": "admin@IAM.edu.vn",
+    "role": "MOE HQ System Administrator"
+  },
+  "school": {
+    "name": "Rosyth Primary School",
+    "code": "RPS-0201",
+    "school_id": "SCH-003"
+  },
+  "valid_user_payload": {
+    "nric": "S8912345A",
+    "first_name": "Arthur",
+    "last_name": "Kent",
+    "email": "staff1@IAM.edu.vn",
+    "school_option": "Rosyth Primary School",
+    "role": "School Admin"
+  },
+  "dynamic_user_template": {
+    "nric_prefix": "S",
+    "nric_suffix": "A",
+    "first_name": "Arthur",
+    "last_name": "Kent",
+    "email_domain": "edu.gov.sg"
+  },
+  "validation_cases": {
+    "empty_form": {
+      "expected_errors": [
+        "NRIC is required.",
+        "First name is required.",
+        "Last name is required.",
+        "Email is required."
+      ]
+    },
+    "invalid_nric_format": {
+      "nric": "INVALID123",
+      "expected_error": "Enter a valid NRIC/FIN format (e.g. S1234567A)."
+    },
+    "invalid_email_format": {
+      "email": "not-an-email",
+      "expected_error": "Enter a valid email address."
+    },
+    "duplicate_nric": {
+      "nric": "S1234567A",
+      "expected_error": "User with this NRIC already exists."
+    }
+  },
+  "expected_outcome": {
+    "toast_message": "User created successfully",
+    "redirect_url": "/school-user-management",
+    "table_verification": {
+      "name": "Arthur Kent",
+      "email": "staff1@IAM.edu.vn",
+      "school": "Rosyth Primary School",
+      "status": "Active"
+    }
+  }
+}

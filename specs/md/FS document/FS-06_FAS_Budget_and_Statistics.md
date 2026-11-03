@@ -1,6 +1,4 @@
-# **R6**
-
-# **FFUNCTIONAL SPECIFICATION**
+# **FUNCTIONAL SPECIFICATION**
 
 ## **R6 – FAS Budget & Statistics**
 

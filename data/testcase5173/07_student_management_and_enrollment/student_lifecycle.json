@@ -1,0 +1,13 @@
+{
+  "student": {
+    "display_name_prefix": "Lifecycle automation",
+    "category": "SC",
+    "nric_pattern": "T{suffix}A",
+    "date_of_birth": "2019-05-15",
+    "enrolled_from": "2025-01-01",
+    "enrolled_to_exclusive": "2025-12-31"
+  },
+  "school_code": "RPS-0201",
+  "active_enrollment_start": "2026-10-29",
+  "class_code": "1A1"
+}

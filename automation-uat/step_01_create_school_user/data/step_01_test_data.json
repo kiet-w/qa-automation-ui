@@ -1,0 +1,38 @@
+{
+  "step_id": "STEP_01",
+  "step_name": "Create School User",
+  "portal": "Admin Portal",
+  "url": "/school-user-management/new",
+  "actor": "moehq (System Admin)",
+  "school": {
+    "code": "RPS-0201",
+    "name": "Rosyth Primary School"
+  },
+  "payloads": {
+    "happy_path": {
+      "nric": "S7123456A",
+      "first_name": "Kent",
+      "last_name": "SchoolAdmin",
+      "email": "kent.admin@rosyth.edu.sg",
+      "school": "Rosyth Primary School"
+    },
+    "xss_attack": {
+      "payload": "<script>window.__xss_executed=true;</script><img src=x onerror=\"window.__xss_executed=true;\">"
+    },
+    "sqli_attack": {
+      "payload": "' OR '1'='1"
+    },
+    "buffer_overflow": {
+      "payload_length": 5000,
+      "char": "A",
+      "zalgo": "T̷e̷s̷t̷ ̷Z̷a̷l̷g̷o̷ ̶D̶e̶s̶t̶r̶o̶y̶ ̶U̶I̶",
+      "bidi_rtl": "\u202E\u0041\u0042\u0043\u0044"
+    },
+    "whitespace_bypass": {
+      "payload": "    "
+    },
+    "ghost_school": {
+      "payload": "NonExistentSchool_99999_X"
+    }
+  }
+}

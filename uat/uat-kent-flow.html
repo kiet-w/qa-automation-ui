@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2b">
+  <title>UAT Flow — Kent | EduFAMS Sprint 3</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --panel: #111c2e;
+      --panel2: #16243a;
+      --ink: #eff5ff;
+      --muted: #a6b5ca;
+      --line: #34465f;
+      --teal: #5ee0c2;
+      --blue: #82b8ff;
+      --amber: #ffce70;
+      --rose: #ff91a3;
+      --green: #78e2a8;
+      --shadow: 0 18px 46px #02081766;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body.light {
+      color-scheme: light;
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel2: #edf3fb;
+      --ink: #15243a;
+      --muted: #52637a;
+      --line: #c7d3e2;
+      --teal: #007f71;
+      --blue: #246fbd;
+      --amber: #9b6700;
+      --rose: #b23d54;
+      --green: #177547;
+      --shadow: 0 18px 42px #19315116;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: radial-gradient(900px 520px at 85% -10%, #20395a66, transparent 70%), var(--bg); color: var(--ink); }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .shell { max-width: 1540px; margin: auto; padding: 26px clamp(14px, 3vw, 42px) 42px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 22px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .14em; color: var(--teal); font-size: 11px; font-weight: 800; }
+    h1 { font-size: clamp(28px, 4vw, 44px); letter-spacing: -.035em; line-height: 1.04; margin: 9px 0 12px; }
+    .intro { color: var(--muted); max-width: 800px; font-size: 15px; line-height: 1.6; margin: 0; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    button, .button { color: var(--ink); background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer; }
+    button:hover, .button:hover { border-color: var(--teal); }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin: 22px 0; }
+    .metric { background: linear-gradient(145deg, var(--panel), var(--panel2)); border: 1px solid var(--line); border-radius: 15px; padding: 14px 16px; box-shadow: var(--shadow); }
+    .metric b { display: block; font-size: 24px; letter-spacing: -.03em; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .notice { background: color-mix(in srgb, var(--amber) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--amber) 48%, var(--line)); border-radius: 13px; padding: 13px 16px; line-height: 1.5; color: var(--ink); margin: 0 0 18px; }
+    .notice strong { color: var(--amber); }
+    .board { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+    .canvas, .detail, .guide { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .canvas { overflow: hidden; position: relative; }
+    .canvas-head { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line); gap: 12px; }
+    .canvas-head strong { font-size: 13px; }
+    .canvas-head small { color: var(--muted); }
+    .canvas-wrap { height: min(76vh, 930px); min-height: 600px; overflow: hidden; cursor: grab; touch-action: none; background-image: radial-gradient(var(--line) .7px, transparent .7px); background-size: 18px 18px; }
+    .canvas-wrap.dragging { cursor: grabbing; }
+    svg { width: 100%; height: 100%; display: block; }
+    .lane { fill: color-mix(in srgb, var(--panel2) 70%, transparent); stroke: var(--line); stroke-width: 1.5; rx: 22; }
+    .lane-title { fill: var(--muted); font-size: 15px; font-weight: 800; letter-spacing: .12em; }
+    .connector { fill: none; stroke: var(--line); stroke-width: 3; marker-end: url(#arrow); }
+    .connector.fee { stroke: var(--blue); }
+    .connector.fas { stroke: var(--teal); }
+    .connector.shared { stroke: var(--amber); stroke-dasharray: 8 7; }
+    .node { cursor: pointer; outline: none; }
+    .node rect { fill: var(--panel); stroke: var(--line); stroke-width: 2; rx: 16; transition: .18s ease; filter: drop-shadow(0 5px 8px #0002); }
+    .node:hover rect, .node:focus rect, .node.selected rect { stroke: var(--teal); stroke-width: 3; }
+    .node.gate rect { fill: color-mix(in srgb, var(--amber) 12%, var(--panel)); stroke: color-mix(in srgb, var(--amber) 60%, var(--line)); }
+    .node.fee rect { fill: color-mix(in srgb, var(--blue) 8%, var(--panel)); }
+    .node.fas rect { fill: color-mix(in srgb, var(--teal) 8%, var(--panel)); }
+    .node.report rect { fill: color-mix(in srgb, var(--green) 9%, var(--panel)); }
+    .n-id { fill: var(--teal); font-size: 12px; font-weight: 900; letter-spacing: .05em; }
+    .n-title { fill: var(--ink); font-size: 15px; font-weight: 800; }
+    .n-copy { fill: var(--muted); font-size: 11px; }
+    .n-gate { fill: var(--amber); font-size: 10px; font-weight: 800; }
+    .badge { fill: var(--muted); font-size: 9px; font-weight: 800; }
+    .trace-dot { display: none; fill: var(--ink); stroke: var(--teal); stroke-width: 4; filter: drop-shadow(0 0 8px var(--teal)); }
+    .tracing .trace-dot { display: block; }
+    .tracing .trace-motion { animation: dash 1.3s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -30; } }
+    .side { display: grid; gap: 14px; }
+    .detail, .guide { padding: 17px; }
+    .detail h2, .guide h2 { margin: 4px 0 10px; font-size: 18px; }
+    .detail p, .detail li, .guide p, .guide li { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .detail ul, .guide ol, .guide ul { padding-left: 20px; margin: 10px 0; }
+    .detail .tag { display: inline-flex; border: 1px solid var(--line); background: var(--panel2); color: var(--teal); border-radius: 999px; font-size: 10px; font-weight: 800; padding: 4px 8px; margin: 2px 3px 0 0; }
+    .checklist { display: grid; gap: 8px; margin-top: 12px; }
+    .check { display: flex; gap: 9px; align-items: flex-start; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .check i { width: 18px; height: 18px; flex: 0 0 18px; border: 1px solid var(--line); border-radius: 5px; }
+    .sources { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 12px; }
+    .footer { margin-top: 18px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 11px; }
+    .legend span { display: inline-flex; gap: 6px; align-items: center; }
+    .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    @media (max-width: 1080px) { .board { grid-template-columns: 1fr; } .side { grid-template-columns: repeat(2,minmax(0,1fr)); } .canvas-wrap { height: 72vh; } }
+    @media (max-width: 680px) { header { display: block; } .actions { justify-content: flex-start; margin-top: 15px; } .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .side { grid-template-columns: 1fr; } .canvas-wrap { min-height: 560px; height: 68vh; } }
+    @media print { body { --bg: #fff; --panel:#fff; --panel2:#f4f7fb; --ink:#17263c; --muted:#52637a; --line:#cdd7e3; color:var(--ink); } .actions, .side, .canvas-head button { display:none!important; } .canvas-wrap { height: 900px; } .board { display:block; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <div class="eyebrow">EduFAMS · Sprint 3 · UAT runbook</div>
+        <h1>Flow UAT của Kent</h1>
+        <p class="intro">Sơ đồ hướng dẫn 11 kịch bản Kent phụ trách: chuẩn bị dữ liệu và cổng kiểm soát, chạy nhánh Học phí, chạy nhánh MOEFAS/SBFAS, rồi ghi bằng chứng và bàn giao. Đây là kế hoạch thao tác; kết quả UAT phải được ghi từ lần chạy thực tế.</p>
+      </div>
+      <div class="actions" aria-label="Công cụ sơ đồ">
+        <button id="theme" type="button">☀ Sáng</button>
+        <button id="trace" type="button">▶ Chạy luồng</button>
+        <button id="zoomOut" type="button">−</button>
+        <button id="zoomIn" type="button">＋</button>
+        <button id="reset" type="button">Căn lại</button>
+        <button id="exportSvg" type="button">Tải SVG</button>
+        <button id="exportPng" type="button">Tải PNG</button>
+        <button id="exportWebp" type="button">Tải WebP</button>
+      </div>
+    </header>
+
+    <section class="metrics" aria-label="Tóm tắt">
+      <div class="metric"><b>11</b><span>kịch bản gán Kent trong <code>TESTS.md</code></span></div>
+      <div class="metric"><b>2</b><span>nhánh nghiệp vụ: Fees và FAS</span></div>
+      <div class="metric"><b>4</b><span>gate cần xét: G2, G3, G4 và D05</span></div>
+      <div class="metric"><b>Chan</b><span>review chéo theo phân công hiện tại</span></div>
+    </section>
+
+    <div class="notice"><strong>Trước khi chạy:</strong> G3 (quyền/luồng FAS) và G4 (ngày trường/học phí) vẫn ghi <em>Open</em>; G2 ảnh hưởng UAT-MOE-01; D05 về ngân sách chưa được phê duyệt. Chỉ chạy và chấm các biến thể đã có quyết định rõ ràng. Biến thể còn thiếu quy tắc hoặc dữ liệu thì ghi <b>Blocked</b>, không tự đặt expected result.</div>
+
+    <div class="board">
+      <section class="canvas" aria-label="Sơ đồ flow UAT">
+        <div class="canvas-head">
+          <div><strong>Flow tổng quan · bấm một thẻ để xem hướng dẫn</strong><br><small>Kéo để pan · lăn chuột để zoom</small></div>
+          <div class="legend"><span><i class="swatch" style="background:var(--amber)"></i>Chuẩn bị/gate</span><span><i class="swatch" style="background:var(--blue)"></i>Học phí</span><span><i class="swatch" style="background:var(--teal)"></i>FAS</span><span><i class="swatch" style="background:var(--green)"></i>Kết quả/evidence</span></div>
+        </div>
+        <div class="canvas-wrap" id="viewport">
+          <svg id="diagram" viewBox="0 0 1540 1450" role="img" aria-labelledby="diagramTitle diagramDesc">
+            <title id="diagramTitle">Quy trình UAT của Kent</title>
+            <desc id="diagramDesc">Chuẩn bị, kiểm tra gate, chạy bốn UAT học phí và bảy UAT FAS, ghi bằng chứng, review chéo và bàn giao.</desc>
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="context-stroke"/></marker>
+            </defs>
+            <g id="scene">
+              <!-- Preparation and gates -->
+              <g class="node gate" tabindex="0" role="button" data-id="START" data-title="0 · Chốt readiness và gate" data-gates="READY-01..10 · G2 · G3 · G4 · D05" data-detail="Trước khi chạy, kiểm build/commit và URL; tài khoản/role; nguồn dữ liệu, reset, clock và fault-control; expected result đã được duyệt; người review; mẫu ghi evidence. G3 đang Open cho FAS, G4 Open cho ngày/rate, G2 Open cho lifecycle/EA, D05 chưa duyệt chính sách ngân sách. Không tuyên bố readiness khi trạng thái còn Not checked.">
+                <rect x="35" y="42" width="330" height="150"/>
+                <text x="58" y="72" class="n-id">0 · TRƯỚC KHI CHẠY</text><text x="58" y="101" class="n-title">Chốt readiness + rule</text><text x="58" y="126" class="n-copy">Build, role, data/reset, clock, evidence</text><text x="58" y="149" class="n-gate">READY-01..10 · G2 / G3 / G4 / D05</text>
+              </g>
+              <g class="node gate" tabindex="0" role="button" data-id="DATA" data-title="1 · Chuẩn bị test data có kiểm soát" data-gates="DATA-ROLES · DATA-FEES · DATA-SCHOOL · DATA-SCHEME · DATA-FAS" data-detail="Dùng dữ liệu/fixture QA được cấp và các bản reset độc lập theo scenario. Chuẩn bị trường A/B, catalogues và component, category/stage, kỳ hiệu lực, học sinh/EA, scheme MOEFAS/SBFAS và hồ sơ Pending. Ghi before-state/ID, xác nhận ownership và reset được; không dùng dữ liệu production. DATA-FEES cần charge gốc, bản đã thanh toán và case due-date riêng; DATA-SCHEME cần component được hỗ trợ/không hỗ trợ và form/effective-date boundary.">
+                <rect x="410" y="42" width="335" height="150"/>
+                <text x="433" y="72" class="n-id">1 · TEST DATA</text><text x="433" y="101" class="n-title">Chuẩn bị bản test riêng</text><text x="433" y="126" class="n-copy">Role · Schools · Fees · Schemes · FAS</text><text x="433" y="149" class="n-gate">Đọc lại before-state trước mỗi case</text>
+              </g>
+              <g class="node gate" tabindex="0" role="button" data-id="ROLES" data-title="2 · Xác nhận actor và reviewer" data-gates="Kent owner · Chan reviewer" data-detail="Kent là owner của 11 scenario trong TESTS.md. Chạy đúng actor ở từng case: MOE HQ, School Admin/School Reviewer hoặc Parent observer. Chan review chéo script/evidence; người review không phải người tự ký thay kết quả thực thi. Với quyết định FAS, chỉ người/role được phê duyệt mới thao tác; HQ observer chỉ quan sát nếu rule đã chốt như vậy.">
+                <rect x="790" y="42" width="320" height="150"/>
+                <text x="813" y="72" class="n-id">2 · ACTOR & REVIEW</text><text x="813" y="101" class="n-title">Kent chạy · Chan review</text><text x="813" y="126" class="n-copy">HQ · School · Parent observer</text><text x="813" y="149" class="n-gate">Đúng quyền, đúng tenant/trường</text>
+              </g>
+              <g class="node gate" tabindex="0" role="button" data-id="COUNT" data-title="Phạm vi và số lượng cần đối soát" data-gates="TESTS.md = 11 · READINESS.md ghi 13" data-detail="Danh sách owner Kent trong uat/TESTS.md có 11 scenario: 4 Fees + 7 FAS. TEAM.md/README.md cũng ghi 11, trong khi READY-02 ở READINESS.md ghi Kent 13. Hãy đối soát count/assignment với người điều phối trước khi ký readiness; sơ đồ này liệt kê theo từng ID owner trong TESTS.md, không tự thêm 2 case.">
+                <rect x="1155" y="42" width="350" height="150"/>
+                <text x="1178" y="72" class="n-id">PHẠM VI CẦN LÀM RÕ</text><text x="1178" y="101" class="n-title">11 case trong TESTS.md</text><text x="1178" y="126" class="n-copy">READINESS.md hiện ghi Kent = 13</text><text x="1178" y="149" class="n-gate">Đối soát count trước sign-off</text>
+              </g>
+
+              <path d="M365 117 H395" class="connector shared"/><path d="M745 117 H775" class="connector shared"/>
+              <path d="M1108 117 H1138" class="connector shared"/>
+              <path d="M950 193 V242 H390 V278" class="connector shared"/>
+              <path d="M950 242 H1165 V278" class="connector shared"/>
+              <g class="node gate" tabindex="0" role="button" data-id="BLOCK" data-title="Gate decision: chạy, chặn, hay chỉ ghi quan sát" data-gates="G2/G3/G4 Open · D05 unapproved" data-detail="Nếu gate ảnh hưởng trực tiếp scenario và chưa có rule/fixture được duyệt, không chấm pass/fail theo giả định: đánh dấu Blocked đúng case/variant và ghi dependency. Các case không bị gate vẫn có thể chạy theo quyết định đã được chấp thuận, ghi rõ điều kiện. Lỗi môi trường khiến case chưa chạy không phải product fail; giữ Not Run cho ca chưa bắt đầu.">
+                <rect x="565" y="220" width="310" height="100"/>
+                <text x="586" y="250" class="n-id">DECISION</text><text x="586" y="278" class="n-title">Gate mở? Chặn đúng scope</text><text x="586" y="301" class="n-copy">Không suy đoán expected result</text>
+              </g>
+              <path d="M565 270 H390 V330" class="connector shared"/><path d="M875 270 H1165 V330" class="connector shared"/>
+
+              <!-- Lanes -->
+              <rect x="35" y="335" width="700" height="770" class="lane"/>
+              <rect x="805" y="335" width="700" height="770" class="lane"/>
+              <text x="62" y="371" class="lane-title">NHÁNH A · FEES & CHARGES · 4 CASE</text>
+              <text x="832" y="371" class="lane-title">NHÁNH B · MOEFAS / SBFAS · 7 CASE</text>
+
+              <!-- Fee flow -->
+              <path d="M385 330 V392" class="connector fee"/>
+              <path d="M388 482 V498" class="connector fee"/><path d="M388 592 V608" class="connector fee"/><path d="M388 702 V718" class="connector fee"/>
+              <g class="node fee" tabindex="0" role="button" data-id="UAT-019" data-title="UAT-019 · Shared và school fee catalogues" data-gates="DATA-ROLES · DATA-FEES · US-034 · US-035" data-detail="1) Đăng nhập actor MOE HQ để tạo/cập nhật fee type/component dùng chung. 2) Đăng nhập School A để tạo component riêng và extension được phép. 3) So sánh School B và shared catalogue để bảo đảm không bị ghi đè. 4) Deactivate component lịch sử, mở lại bill cũ và thử edit không có quyền. Kết quả: definition có đúng ownership; history còn nguyên; chỉnh sửa trái quyền bị ngăn. Ghi owner/component IDs để nối sang scheme/subsidy.">
+                <rect x="80" y="392" width="615" height="90"/><text x="104" y="419" class="n-id">UAT-019 · CATALOGUE</text><text x="104" y="444" class="n-title">Tạo shared + School A fees</text><text x="104" y="466" class="n-copy">Đối chiếu ownership, School B và lịch sử component</text>
+              </g>
+              <g class="node fee" tabindex="0" role="button" data-id="UAT-020" data-title="UAT-020 · Rate theo ngày, stage và category" data-gates="G4 Open · DATA-FEES · DATA-SCHOOL · US-036" data-detail="1) Chỉ dùng stage/category/rate/effective dates đã được BA chốt. 2) Tạo các kỳ hợp lệ sát nhau. 3) Preview ở ngày trước và đúng ngày đổi rate cho các nhóm SC/PR theo fixture. 4) Thử overlap hoặc thiếu rate bằng bản riêng. So sánh với expected amount được tính độc lập; ngày tính phí tách riêng system clock. Nếu G4 còn Open ở rule liên quan, Blocked biến thể đó; không tự đặt tỷ lệ.">
+                <rect x="80" y="502" width="615" height="90"/><text x="104" y="529" class="n-id">UAT-020 · RATE BOUNDARY · G4</text><text x="104" y="554" class="n-title">Chọn đúng rate theo ngày/nhóm</text><text x="104" y="576" class="n-copy">Trước/ngày hiệu lực · overlap · thiếu rate</text>
+              </g>
+              <g class="node fee" tabindex="0" role="button" data-id="UAT-021" data-title="UAT-021 · Preview → publish → charge → handoff" data-gates="G4 Open · DATA-FEES · DATA-SCHOOL · Gavin nhận charge IDs" data-detail="1) Cấu hình kỳ, đối tượng, component và preview; có student eligible không có EA cùng control không eligible. 2) Đối chiếu recipient/amount; preview không tạo charge. 3) Xử lý missing-rate control, rồi publish bản hợp lệ. 4) Xác minh đúng một charge/recipient/component; no-EA eligible vẫn có charge, không tạo EA/đổi balance, không phụ thuộc FAS. 5) Lặp publish theo thao tác cho phép; kiểm không duplicate và Admin/Parent hiển thị cùng state. Ghi charge IDs + amount receipt, bàn giao Gavin; Parent chỉ observer ở case này.">
+                <rect x="80" y="612" width="615" height="90"/><text x="104" y="639" class="n-id">UAT-021 · PUBLISH ONCE · G4</text><text x="104" y="664" class="n-title">Preview, publish và kiểm Student Charges</text><text x="104" y="686" class="n-copy">Không tạo charge ở preview · chống duplicate · handoff Gavin</text>
+              </g>
+              <g class="node fee" tabindex="0" role="button" data-id="UAT-MOE-01" data-title="UAT-MOE-01 · School + student + EA + fee journey" data-gates="G2 lifecycle Open · G4 school dates Open · DATA-ROLES/SCHOOL/FEES" data-detail="1) Trên fixture Government API mock, chạy daily sync; xác nhận Active EA balance 0.00 cho student fixture. 2) HQ tạo school và School User. 3) School User tạo class, nhập student và assign vào class. 4) Xác minh identity link tới EA chỉ sau assignment. 5) HQ tạo publication và publish; mở Student Charge. Expected: charge POSTED và có thể xem ở parent portal. Gate G2/G4 ảnh hưởng thì chặn đúng variant. Đây là end-to-end case; không chạy lẫn fixture của payment.">
+                <rect x="80" y="722" width="615" height="90"/><text x="104" y="749" class="n-id">UAT-MOE-01 · INTEGRATED FEE JOURNEY</text><text x="104" y="774" class="n-title">Sync EA → School setup → publish fee</text><text x="104" y="796" class="n-copy">Student link đúng EA · charge POSTED · Parent thấy charge</text>
+              </g>
+              <g class="node report" tabindex="0" role="button" data-id="HANDOFF-FEES" data-title="Bàn giao nhánh Fees" data-gates="Handoff Gavin · Parent observer" data-detail="Sau UAT-021/UAT-MOE-01, gửi charge ID, student fixture key, component breakdown, amount, publication ID, before/after state và evidence cho Gavin để chạy các case payment thuộc owner Gavin. Kent không đánh dấu kết quả thanh toán thay Gavin. Gửi Chan các receipt nếu UAT-016/017 cần original posted charge/future rate fixture.">
+                <rect x="80" y="832" width="615" height="90"/><text x="104" y="859" class="n-id">HANDOFF A</text><text x="104" y="884" class="n-title">Gửi charge IDs / amount receipt</text><text x="104" y="906" class="n-copy">Gavin tiếp tục payment · Chan dùng fixture transfer khi cần</text>
+              </g>
+
+              <!-- FAS flow -->
+              <path d="M1165 330 V392" class="connector fas"/>
+              <path d="M1160 482 V498" class="connector fas"/><path d="M1160 592 V608" class="connector fas"/><path d="M1160 702 V718" class="connector fas"/><path d="M1160 812 V828" class="connector fas"/><path d="M1160 922 V938" class="connector fas"/><path d="M1160 1032 V1048" class="connector fas"/>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-MOE-06" data-title="UAT-MOE-06 · HQ tạo MOEFAS và xem applications" data-gates="G3 FAS access Open · D05 nếu grant/budget bị ảnh hưởng" data-detail="1) Với MOE HQ User và một active fee component, tạo MOEFAS scheme: tên, form open/close, effective date. 2) Chọn nationality + GHI/PCI bands theo rule đã duyệt. 3) Nhập subsidy rate theo level, review và publish. 4) Xác nhận scheme published/read-only và status đúng; mở FAS applications. 5) Xác minh HQ xem toàn bộ trường nhưng không có Approve/Reject nếu quyền đọc-only là quyết định được chốt. 6) Với clock/test copy độc lập, kiểm cutoff trước/đúng/sau chỉ khi G3 chốt timezone/cutoff; kiểm grant không duplicate. D05 nếu budget policy liên quan vẫn chưa duyệt thì không kết luận.">
+                <rect x="850" y="392" width="615" height="90"/><text x="874" y="419" class="n-id">UAT-MOE-06 · HQ · G3 / D05</text><text x="874" y="444" class="n-title">Tạo MOEFAS → review/publish → xem hồ sơ</text><text x="874" y="466" class="n-copy">Eligibility + rate theo level · HQ observer không quyết định</text>
+              </g>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-MOE-06-N1" data-title="UAT-MOE-06-N1 · Invalid MOEFAS dates" data-gates="G3 FAS access Open" data-detail="Tạo scheme bằng test copy; set Form closes và Effective from cùng ngày (fixture 31 Dec 2028). Thực hiện Publish ở Review. Expected theo test definition: thấy rule Effective from phải sau Form closes và scheme không publish. Ghi screenshot/actual text từ live UI; không tự thay bằng thông báo giả định nếu UI khác. Hủy/reset draft theo hướng dẫn QA, không xóa shared policy.">
+                <rect x="850" y="502" width="615" height="90"/><text x="874" y="529" class="n-id">UAT-MOE-06-N1 · INVALID DATES</text><text x="874" y="554" class="n-title">Effective from không sau Form closes</text><text x="874" y="576" class="n-copy">Dùng bản riêng · Publish bị từ chối · giữ evidence</text>
+              </g>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-SCH-02" data-title="UAT-SCH-02 · Tạo SBFAS và thêm fee component" data-gates="G3 FAS access Open · D05 nếu budget ảnh hưởng" data-detail="1) School Admin tạo Tier 1, form/effective periods. 2) Chọn nationality và GHI/PCI bands đã được duyệt, nhập subsidy theo level rồi review/publish. 3) Khi scheme Active/Upcoming, Add fee component chưa có trong scheme; chọn component active, thêm value và xác nhận cột mới. 4) Kiểm cột cũ read-only; xác minh subsidy áp dụng cho open fees của student đã được grant scheme theo rule. Không chỉnh catalogue dùng chung bằng role trường.">
+                <rect x="850" y="612" width="615" height="90"/><text x="874" y="639" class="n-id">UAT-SCH-02 · SCHOOL ADMIN · G3</text><text x="874" y="664" class="n-title">Tạo Tier 1 → publish → add fee</text><text x="874" y="686" class="n-copy">Active/Upcoming · component mới · cột cũ read-only</text>
+              </g>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-SCH-02-N1" data-title="UAT-SCH-02-N1 · Duplicate/overlap SBFAS" data-gates="G3 FAS access Open" data-detail="Với Tier 1 đã published, tạo scheme thứ hai trùng tên và application period overlap rồi Publish. Expected: báo overlap/existing scheme và không publish. Đổi tên thành Tier 2, publish lại trên bản test; expected lần hai được publish. Lưu riêng evidence của cả lần bị chặn và lần hợp lệ để không biến một case thành một kết quả mơ hồ.">
+                <rect x="850" y="722" width="615" height="90"/><text x="874" y="749" class="n-id">UAT-SCH-02-N1 · DUPLICATE</text><text x="874" y="774" class="n-title">Tier 1 overlap bị chặn → Tier 2 hợp lệ</text><text x="874" y="796" class="n-copy">Lưu evidence riêng cho hai lần publish</text>
+              </g>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-SCH-03" data-title="UAT-SCH-03 · Approve SBFAS" data-gates="G3 FAS access Open · D05 nếu budget áp dụng" data-detail="1) School Admin/Reviewer mở FAS Applications → Pending → Review. 2) Xem thu nhập/context và ML recommendation; treat như advisory nếu rule đã chốt, không auto-approve. 3) Chọn Tier 1, nhập comment, Confirm approval. 4) Kiểm status Approved, tier/effective date đúng, subsidy gắn open EA fees, confirmation message hiện, parent notification theo hợp đồng và application read-only. Dùng pending application độc lập; ghi application ID và grant/charge links.">
+                <rect x="850" y="832" width="615" height="90"/><text x="874" y="859" class="n-id">UAT-SCH-03 · APPROVE</text><text x="874" y="884" class="n-title">Review hồ sơ Pending và approve đúng tier</text><text x="874" y="906" class="n-copy">Decision người có quyền · grant/application link · parent result</text>
+              </g>
+              <g class="node fas" tabindex="0" role="button" data-id="UAT-SCH-03-N1" data-title="UAT-SCH-03-N1 · Reject SBFAS" data-gates="G3 FAS access Open" data-detail="Mở hồ sơ Pending riêng, chọn Reject; điền cả Reason và Comment. Kiểm Reject application disabled đến khi đủ cả hai trường. Reject và xác minh status Rejected, thông báo xác nhận và lý do được lưu; parent notification/email theo test contract. Không dùng lại application đã approve; giữ ID/evidence độc lập.">
+                <rect x="850" y="942" width="615" height="90"/><text x="874" y="969" class="n-id">UAT-SCH-03-N1 · REJECT</text><text x="874" y="994" class="n-title">Reason + Comment bắt buộc trước reject</text><text x="874" y="1016" class="n-copy">Hồ sơ độc lập · status/reason/notification đối chiếu</text>
+              </g>
+              <g class="node report" tabindex="0" role="button" data-id="UAT-035" data-title="UAT-035 · School decision, finality và role boundary" data-gates="G3 Open · D05 budget decision unapproved · US-045/US-050" data-detail="1) Chuẩn bị 2 application riêng đã được route School A. 2) Lọc Pending, review income/GHI/PCI và advisory recommendation. 3) Một case grant; case còn lại reject có reason bắt buộc. 4) Reopen hồ sơ finalized để kiểm decision không đổi tùy tiện. 5) School B không xem/approve case School A; HQ observer chỉ có quyền được phê duyệt. 6) Kiểm authorized human decision thắng recommendation; không suy ra độ chính xác ML. G3/D05 chưa chốt thì block phần bị ảnh hưởng. UAT-035 là role/finality scope; SCH-03/N1 là hai thao tác outcome chi tiết.">
+                <rect x="850" y="1052" width="615" height="90"/><text x="874" y="1079" class="n-id">UAT-035 · HUMAN CONTROL / FINALITY</text><text x="874" y="1104" class="n-title">Kiểm role scope, quyết định và tính final</text><text x="874" y="1126" class="n-copy">School A/B isolation · HQ observer · không auto grant</text>
+              </g>
+
+              <!-- evidence and close -->
+              <path d="M388 922 V1194 H440 V1220" class="connector shared"/>
+              <path d="M1160 1142 V1194 H1100 V1220" class="connector shared"/>
+              <path d="M440 1278 H620" class="connector shared"/><path d="M1100 1278 H920" class="connector shared"/>
+              <g class="node report" tabindex="0" role="button" data-id="EVIDENCE" data-title="3 · Ghi kết quả và evidence cho từng case" data-gates="Actual result · build · date/actor · evidence · defect" data-detail="Mỗi UAT ID được ghi riêng: build/commit và environment, actor/role, date/time window, data IDs/before-state, thao tác hoàn tất, observed actual result, screenshot/evidence link, defect ID nếu có và hạn chế/gate. Chọn Pass/Fail/Blocked/Not Run đúng quy ước; In Progress chỉ tạm thời. Thiếu thời gian là Not Run/incomplete, không phải Blocked. Một scenario có nhiều required variants thì không đánh Pass nếu còn variant thiếu.">
+                <rect x="315" y="1220" width="500" height="116"/><text x="340" y="1250" class="n-id">3 · PER-CASE EVIDENCE</text><text x="340" y="1279" class="n-title">Actual result + build + actor + evidence</text><text x="340" y="1305" class="n-copy">Pass / Fail / Blocked / Not Run · không điền kết quả dự kiến</text>
+              </g>
+              <g class="node report" tabindex="0" role="button" data-id="REVIEW" data-title="4 · Chan review rồi mới readiness/exit" data-gates="READY-02 · EXIT-01/02/03" data-detail="Chan peer-review kịch bản và bằng chứng của Kent, ghi issue/disposition. Owner/QA báo readiness và hạn chế. Sau execution, đối chiếu mọi variant, defect và retest. EXIT-01 yêu cầu mọi scenario có kết quả/evidence trên build được chấp nhận; EXIT-02 xử lý blocking failure; EXIT-03 cần đại diện business được ủy quyền ghi quyết định accept/accept with limitations/reject. QA rehearsal không phải business acceptance.">
+                <rect x="835" y="1220" width="500" height="116"/><text x="860" y="1250" class="n-id">4 · PEER REVIEW & EXIT</text><text x="860" y="1279" class="n-title">Chan review → business quyết định</text><text x="860" y="1305" class="n-copy">Exit criteria chưa đạt thì UAT chưa được nghiệm thu</text>
+              </g>
+              <circle class="trace-dot" r="8"><animateMotion dur="4s" repeatCount="indefinite" path="M200 192 L200 270 L390 270 L390 392 L388 482 L388 592 L388 702 L388 812 L388 922 L440 1194 L440 1270"/></circle>
+              <circle class="trace-dot" r="8"><animateMotion dur="4s" begin=".7s" repeatCount="indefinite" path="M950 192 L950 270 L1165 270 L1165 392 L1160 482 L1160 592 L1160 702 L1160 812 L1160 922 L1160 1032 L1160 1142 L1100 1194 L1100 1270"/></circle>
+            </g>
+          </svg>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="detail" aria-live="polite">
+          <div class="eyebrow">Selected step</div>
+          <h2 id="detailTitle">0 · Chốt readiness và gate</h2>
+          <div id="detailTags"><span class="tag">READY-01..10</span><span class="tag">G2</span><span class="tag">G3</span><span class="tag">G4</span><span class="tag">D05</span></div>
+          <p id="detailText">Trước khi chạy, kiểm build/commit và URL; tài khoản/role; nguồn dữ liệu, reset, clock và fault-control; expected result đã được duyệt; người review; mẫu ghi evidence. G3 đang Open cho FAS, G4 Open cho ngày/rate, G2 Open cho lifecycle/EA, D05 chưa được phê duyệt chính sách ngân sách. Không tuyên bố readiness khi trạng thái còn Not checked.</p>
+          <div class="checklist">
+            <div class="check"><i></i><span>Ghi đúng actual result từ UI; không chép expected làm actual.</span></div>
+            <div class="check"><i></i><span>Case bị rule/gate chặn: ghi lý do, owner dependency và variant bị ảnh hưởng.</span></div>
+            <div class="check"><i></i><span>Giữ before/after IDs và evidence trước reset.</span></div>
+          </div>
+        </section>
+        <section class="guide">
+          <div class="eyebrow">Cách dùng khi hướng dẫn người chạy</div>
+          <h2>Thứ tự thực hiện</h2>
+          <ol>
+            <li>Chốt readiness và các gate liên quan; xác nhận quyền, dữ liệu riêng và reset.</li>
+            <li>Chạy 4 case Fees theo UAT ID; UAT-021/MOE-01 tạo charge để bàn giao Gavin.</li>
+            <li>Chạy 7 case FAS bằng bản dữ liệu riêng; giữ riêng HQ và School A/B.</li>
+            <li>Ghi actual/evidence cho từng case, rồi gửi Chan peer-review.</li>
+            <li>Josh điều phối readiness; chỉ authorized business representative chốt accept/reject.</li>
+          </ol>
+          <p><b>Quy tắc trạng thái:</b> thiếu thời gian → Not Run; thiếu rule/fixture cần thiết → Blocked; confirmed wrong result → Fail; Pass chỉ khi đủ mọi biến thể bắt buộc.</p>
+        </section>
+      </aside>
+    </div>
+    <div class="footer">
+      Nguồn dự án: <a href="TESTS.md">UAT/TESTS.md</a> · <a href="GATES.md">UAT/GATES.md</a> · <a href="READINESS.md">UAT/READINESS.md</a> · <a href="TEAM.md">UAT/TEAM.md</a> · <a href="TEST_DATA.md">UAT/TEST_DATA.md</a> · <a href="modules/04_fees_and_payments/README.md">Fees</a> · <a href="modules/07_fas_assessment/README.md">FAS assessment</a>.<br>
+      Phạm vi sơ đồ là hướng dẫn theo các scenario đang được gán cho Kent trong <code>TESTS.md</code>. Team/README ghi 11 case Kent, READY-02 ghi 13; hãy đối soát con số phân công trước khi ký readiness. Các gate đang Open/Not checked không được coi là đã thông qua.
+    </div>
+  </div>
+  <script>
+    (() => {
+      const body = document.body;
+      const svg = document.getElementById("diagram");
+      const scene = document.getElementById("scene");
+      const vp = document.getElementById("viewport");
+      let scale = 1, tx = 0, ty = 0, drag = null;
+      const apply = () => scene.setAttribute("transform", `translate(${tx} ${ty}) scale(${scale})`);
+      const choose = node => {
+        document.querySelectorAll(".node.selected").forEach(n => n.classList.remove("selected"));
+        node.classList.add("selected");
+        document.getElementById("detailTitle").textContent = node.dataset.title || node.dataset.id;
+        document.getElementById("detailText").textContent = node.dataset.detail || "";
+        const tags = (node.dataset.gates || "").split("·").map(t => t.trim()).filter(Boolean);
+        document.getElementById("detailTags").replaceChildren(...tags.map(t => { const el = document.createElement("span"); el.className = "tag"; el.textContent = t; return el; }));
+      };
+      document.querySelectorAll(".node").forEach(node => {
+        node.addEventListener("click", () => choose(node));
+        node.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); choose(node); } });
+      });
+      document.getElementById("theme").addEventListener("click", e => {
+        body.classList.toggle("light"); e.currentTarget.textContent = body.classList.contains("light") ? "☾ Tối" : "☀ Sáng";
+      });
+      document.getElementById("trace").addEventListener("click", e => {
+        svg.classList.toggle("tracing"); e.currentTarget.textContent = svg.classList.contains("tracing") ? "Ⅱ Dừng luồng" : "▶ Chạy luồng";
+      });
+      document.getElementById("zoomIn").addEventListener("click", () => { scale = Math.min(1.8, scale * 1.15); apply(); });
+      document.getElementById("zoomOut").addEventListener("click", () => { scale = Math.max(.55, scale / 1.15); apply(); });
+      document.getElementById("reset").addEventListener("click", () => { scale = 1; tx = 0; ty = 0; apply(); });
+      vp.addEventListener("pointerdown", e => { if (e.target.closest(".node")) return; drag = { x:e.clientX, y:e.clientY, tx, ty }; vp.classList.add("dragging"); vp.setPointerCapture(e.pointerId); });
+      vp.addEventListener("pointermove", e => { if (!drag) return; const k = svg.clientWidth / 1540; tx = drag.tx + (e.clientX - drag.x) / k; ty = drag.ty + (e.clientY - drag.y) / k; apply(); });
+      const endDrag = () => { drag = null; vp.classList.remove("dragging"); };
+      vp.addEventListener("pointerup", endDrag); vp.addEventListener("pointercancel", endDrag);
+      vp.addEventListener("wheel", e => { e.preventDefault(); scale = Math.max(.55, Math.min(1.8, scale * (e.deltaY < 0 ? 1.08 : .92))); apply(); }, { passive:false });
+      const save = (blob, name) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); };
+      const serializedSvg = () => {
+        const clone = svg.cloneNode(true); clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        clone.setAttribute("width", "1540"); clone.setAttribute("height", "1450");
+        const css = Array.from(document.styleSheets).flatMap(sheet => { try { return Array.from(sheet.cssRules).map(rule => rule.cssText); } catch { return []; } }).join("\n");
+        const vars = ["--bg", "--panel", "--panel2", "--ink", "--muted", "--line", "--teal", "--blue", "--amber", "--rose", "--green"]
+          .map(name => `${name}:${getComputedStyle(body).getPropertyValue(name).trim()}`).join(";");
+        const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+        style.textContent = `:root{${vars}}\n${css}`; clone.insertBefore(style, clone.firstChild);
+        return new XMLSerializer().serializeToString(clone);
+      };
+      document.getElementById("exportSvg").addEventListener("click", () => {
+        const source = serializedSvg();
+        save(new Blob([source], {type:"image/svg+xml;charset=utf-8"}), "uat-kent-flow.svg");
+      });
+      const exportRaster = format => {
+        const source = serializedSvg(); const url = URL.createObjectURL(new Blob([source], {type:"image/svg+xml;charset=utf-8"}));
+        const img = new Image(); img.onload = () => { const c = document.createElement("canvas"); c.width=3080; c.height=2900; const ctx=c.getContext("2d");
+          if (format === "image/png") { ctx.fillStyle = getComputedStyle(body).getPropertyValue("--bg").trim(); ctx.fillRect(0,0,c.width,c.height); }
+          ctx.drawImage(img,0,0,c.width,c.height); c.toBlob(blob => { if (blob) save(blob, `uat-kent-flow.${format === "image/png" ? "png" : "webp"}`); URL.revokeObjectURL(url); }, format);
+        }; img.onerror = () => URL.revokeObjectURL(url); img.src=url;
+      };
+      document.getElementById("exportPng").addEventListener("click", () => exportRaster("image/png"));
+      document.getElementById("exportWebp").addEventListener("click", () => exportRaster("image/webp"));
+      const first = document.querySelector('.node[data-id="START"]'); if (first) choose(first);
+    })();
+  </script>
+</body>
+</html>

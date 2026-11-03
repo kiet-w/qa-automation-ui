@@ -1,0 +1,30 @@
+{
+  "module": "step_04_fee_management_and_rate_rules",
+  "name": "Quy trình Khởi tạo Thành phần Phí & Cấu hình Biểu phí qua 4 Màn hình",
+  "base_url": "https://localhost:5173",
+  "cloud_url": "https://admin.20-255-158-192.sslip.io",
+  "auth": {
+    "admin_email": "admin@IAM.edu.vn",
+    "role": "MOEHQ / System Admin"
+  },
+  "component_data": {
+    "name_prefix": "School Tuition Fee 2026",
+    "categories": ["Singapore citizen", "Permanent resident"],
+    "stages": ["Primary"],
+    "tax_applies": true
+  },
+  "rate_rules_mode_a": {
+    "mode": "fixed-amount",
+    "amount": "100.00",
+    "currency": "SGD",
+    "effective_from": "2026-01-01",
+    "effective_to": "2026-12-31"
+  },
+  "validation_cases": {
+    "empty_name": "",
+    "inverted_dates": {
+      "effective_from": "2026-12-31",
+      "effective_to": "2026-01-01"
+    }
+  }
+}

@@ -14,12 +14,12 @@ class SchoolConfigPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.year_select: Locator = page.locator('select:has(option:has-text("2026"))')
-        self.add_level_btn: Locator = page.locator('button:has-text("Add Academic Levels")')
-        self.copy_prev_year_btn: Locator = page.locator('button:has-text("Copy Previous Year")')
-        self.search_level_input: Locator = page.locator('input[placeholder*="Search by code or name" i]')
-        self.add_class_btn: Locator = page.locator('button:has-text("Add class")')
-        self.classes_table: Locator = page.locator('[class*="schoolConfigLevelDetail"] table, table')
+        self.year_select: Locator = page.get_by_label("Academic year", exact=True)
+        self.add_level_btn: Locator = page.get_by_role("button", name="Add Academic Levels")
+        self.copy_prev_year_btn: Locator = page.get_by_role("button", name="Copy Previous Year")
+        self.search_level_input: Locator = page.get_by_role("textbox", name="Search academic levels")
+        self.add_class_btn: Locator = page.get_by_role("button", name="Add Class")
+        self.classes_table: Locator = page.locator('article:has(button:has-text("Add Class")) table')
 
     def open(self, base_url: str = "http://localhost:5173") -> None:
         self.page.goto(f"{base_url}{self.URL_PATH}", wait_until="domcontentloaded")

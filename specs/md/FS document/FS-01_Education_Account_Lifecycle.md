@@ -1,5 +1,3 @@
-# **R1 (Final)**
-
 #  **R1 – Education Account Lifecycle Management**
 
 ## **Updated Functional Specification – Sprint 1 MVP**
@@ -651,8 +649,6 @@ Citizenship Change được Team Decision đưa vào Closure Eligibility. Tuy nh
 **\[WA\] Other Operational Rules**
 
 Leap Year Handling, một số Failure Handling Rules và Remaining Balance Closure Deferred Rule vẫn là Working Assumptions cho đến khi team thống nhất.
-
-# **R1**
 
 # **R1 – Education Account Lifecycle Management**
 

@@ -60,6 +60,9 @@ flowchart TD
 
 ### 2.1 Cổng Dịch Vụ Phụ Huynh / Công Dân (localhost:5174)
 
+> [!IMPORTANT]
+> **Live recon mới nhất (2026-10-29):** [RECON_2026-10-29.md](localhost-5174/RECON_2026-10-29.md). Dùng file này làm locator hiện hành cho dashboard, account details, transactions, billing, profile, FAS và payment result. Các snapshot cũ bên dưới được giữ để tham khảo luồng nghiệp vụ. UI FAS live hiện có list `/fas-application` và form một trang `/fas-application/new`; tài liệu step 1–4 cũ không khớp cấu trúc route hiện tại.
+
 #### 🔹 Nhóm Dịch Vụ Cốt Lõi (Core Citizen Services)
 Thư mục: [`specs/ui_bsk/localhost-5174/`](file:///home/baudui/Projects/automation-ui/specs/ui_bsk/localhost-5174/)
 

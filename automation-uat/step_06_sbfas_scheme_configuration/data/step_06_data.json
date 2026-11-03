@@ -1,0 +1,36 @@
+{
+  "module": "step_06_sbfas_scheme_configuration",
+  "title": "Bước 6: Cấu hình Gói Trợ cấp Trường SBFAS (UAT-SCH-02 & UAT-SCH-02-N1)",
+  "base_url": "https://admin.20-255-158-192.sslip.io",
+  "auth": {
+    "school_email": "staff1@IAM.edu.vn",
+    "school_name": "Rosyth Primary School",
+    "role": "School User / School Admin"
+  },
+  "tier1_scheme": {
+    "name_prefix": "Rosyth SBFAS Tier 1",
+    "open_from": "2026-11-01",
+    "open_to": "2026-11-30",
+    "effective_from": "2026-12-01",
+    "effective_to": "2027-11-30",
+    "budget": "50000",
+    "description": "SBFAS Tier 1 support scheme for Rosyth Primary School",
+    "nationality": "SC",
+    "ghi_to": "3000",
+    "pci_to": "1000",
+    "default_rate": "100"
+  },
+  "add_fee_component": {
+    "component_name": "Art Supplies Fee",
+    "rates": ["100", "80", "60", "60"]
+  },
+  "n1_conflict": {
+    "recovery_name_prefix": "Rosyth SBFAS Tier 2",
+    "expected_error_title": "Unable to create scheme",
+    "expected_error_desc": "A scheme with this name already exists for this school."
+  },
+  "validation_cases": {
+    "inverted_date": "2026-11-30",
+    "missing_income_band_error": "Enter the upper value of the income band"
+  }
+}

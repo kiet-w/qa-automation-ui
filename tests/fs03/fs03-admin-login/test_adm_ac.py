@@ -1,6 +1,6 @@
 """
-tests/fs03/fs03-admin-login/test_adm_ac.py - Bộ kiểm thử Tiêu chí nghiệm thu giao diện (AC).
-Bao phủ các ca kiểm thử: TC-ADM-AUTH-005, TC-ADM-AUTH-006, TC-ADM-AUTH-007, TC-ADM-AUTH-008.
+tests/testcase5173/01_admin_login_and_sso/test_adm_ac.py - Bộ kiểm thử Tiêu chí nghiệm thu giao diện & chức năng (AC).
+Bao phủ các ca kiểm thử: TC-ADM-AUTH-006, TC-ADM-AUTH-007, TC-ADM-AUTH-008, TC-ADM-AUTH-009.
 Tuân thủ Invariant 1 (POM separation), 2 (Fixture deepcopy), 3 (Traceability),
 Invariant 4 (No sleep), 7 (In-scope Anti-bloat), 9 (<250 lines), 13 (100% Tiếng Việt).
 """
@@ -18,48 +18,60 @@ from pages.fs03.admin_dashboard_shell_page import AdminDashboardShellPage
 @pytest.mark.ac
 @pytest.mark.p1
 class TestAdminLoginAcceptanceCriteria(BaseTest):
-    """Bộ kiểm thử Tiêu chí nghiệm thu (Acceptance Criteria) Giao diện Đăng nhập & SSO."""
+    """Bộ kiểm thử Tiêu chí nghiệm thu (Acceptance Criteria) Giao diện Đăng nhập & Microsoft SSO."""
 
-    def test_tc_adm_auth_005_login_page_dom_elements(self, admin_login_data: Dict[str, Any]) -> None:
+    def test_tc_adm_auth_006_login_page_dom_elements(self, admin_login_data: Dict[str, Any]) -> None:
         """
-        TC-ADM-AUTH-005: Hiển thị đầy đủ giao diện Đăng nhập Cổng Quản trị: Tiêu đề, Form đăng nhập và nút Sign in with Microsoft.
-        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §1.1; DOM-LOGIN §1.1
+        TC-ADM-AUTH-006: Hiển thị đầy đủ giao diện Đăng nhập Cổng Quản trị: Tiêu đề, Form đăng nhập, nút Sign in và Sign in with Microsoft.
+        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §1.1; DOM-LOGIN §1.1; LoginPage.tsx:87-208
         """
         login_page = self.get_page(AdminLoginPage)
         base_url = admin_login_data["base_url"]
 
         with self.step(
-            "Bước 1: Mở trình duyệt và truy cập trang Đăng nhập Cổng Quản trị",
-            expected="Trang đăng nhập tải thành công không lỗi.",
+            "Bước 1: Mở trình duyệt và truy cập http://localhost:5173/login",
+            expected="Trang đăng nhập tải thành công không phát sinh lỗi.",
         ):
             login_page.open(base_url)
             self.step.set_actual(f"Đã mở URL: {self.page.url}.")
 
         with self.step(
-            "Bước 2: Kiểm tra các phần tử tiêu đề, ô nhập liệu và nút đăng nhập",
-            expected="Tiêu đề hiển thị đúng; có đầy đủ ô Username, Password, nút 'Sign in' và nút 'Đăng nhập với Microsoft'.",
+            "Bước 2: Kiểm tra tiêu đề trang web, các trường nhập liệu, nút bấm và panel giới thiệu bên phải",
+            expected="Hiển thị đầy đủ tiêu đề, phụ đề, bộ chọn ngôn ngữ, ô Username, Password, nút Sign in, Sign in with Microsoft và panel trang trí.",
         ):
+            # Kiểm tra Title và Heading
+            assert "Admin Portal" in self.page.title(), f"Title không chứa 'Admin Portal': {self.page.title()}"
             expect(login_page.heading).to_be_visible()
+            expect(login_page.subtitle).to_be_visible()
+
+            # Kiểm tra bộ chọn ngôn ngữ
+            expect(login_page.language_select).to_be_visible()
+
+            # Kiểm tra các trường form đăng nhập nội bộ
             expect(login_page.username_input).to_be_visible()
             expect(login_page.password_input).to_be_visible()
+            expect(login_page.password_toggle_btn).to_be_visible()
             expect(login_page.sign_in_btn).to_be_visible()
-            expect(login_page.sign_in_with_microsoft_btn).to_be_visible()
-            self.step.set_actual("Tất cả các phần tử form đăng nhập hiển thị đầy đủ và chính xác theo spec.")
 
-    def test_tc_adm_auth_006_microsoft_simulator_tiles(self, admin_login_data: Dict[str, Any]) -> None:
+            # Kiểm tra nút Sign in with Microsoft
+            expect(login_page.sign_in_with_microsoft_btn).to_be_visible()
+            self.step.set_actual("Tất cả các phần tử form đăng nhập hiển thị đầy đủ và chính xác theo đặc tả.")
+
+    def test_tc_adm_auth_007_microsoft_simulator_tiles(self, admin_login_data: Dict[str, Any]) -> None:
         """
-        TC-ADM-AUTH-006: Hiển thị giao diện Entra ID Simulator với danh sách tài khoản mẫu Quản trị viên Bộ GD và SCHOOL.
-        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §1.2; DOM-SIMULATOR §1.2
+        TC-ADM-AUTH-007: Tích hợp chuyển hướng sang Microsoft Entra Simulator (:5288) với danh sách tài khoản mẫu.
+        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §1.2; AC-ENTRA-SIMULATOR; LoginPage.tsx:66-79
         """
         login_page = self.get_page(AdminLoginPage)
         sim_page = self.get_page(MicrosoftSimulatorPage)
         base_url = admin_login_data["base_url"]
         moehq = admin_login_data["personas"]["moehq"]
         school = admin_login_data["personas"]["school_assigned"]
+        parent = admin_login_data["personas"]["parent_role"]
 
         with self.step(
-            "Bước 1: Tại trang Đăng nhập, nhấn 'Đăng nhập với Microsoft'",
-            expected="Chuyển tiếp thành công tới màn hình Simulator.",
+            "Bước 1: Tại trang http://localhost:5173/login, nhấn nút 'Sign in with Microsoft'",
+            expected="Hệ thống gọi API GET authorize-url, lưu OAuth session và chuyển hướng sang Entra Simulator :5288.",
         ):
             login_page.open(base_url)
             login_page.click_sign_in_with_microsoft()
@@ -67,97 +79,244 @@ class TestAdminLoginAcceptanceCriteria(BaseTest):
             self.step.set_actual("Đã chuyển hướng đến màn hình Entra ID Simulator.")
 
         with self.step(
-            "Bước 2: Kiểm tra các phần tử hiển thị trên màn hình Entra ID Simulator",
-            expected="Hiển thị danh sách tài khoản mẫu (MOEHQ, SCHOOL, PARENT), ô tùy chọn tài khoản khác và nút Continue.",
+            "Bước 2: Quan sát URL trình duyệt và màn hình điều hướng tới",
+            expected="Màn hình Simulator hiển thị 'Pick an account' kèm danh sách tài khoản (MOEHQ, SCHOOL, PARENT) và nút Continue.",
         ):
+            assert "5288" in self.page.url or "microsoft-provider" in self.page.url, f"URL Simulator không đúng: {self.page.url}"
+            expect(sim_page.pick_account_heading).to_be_visible()
             expect(sim_page.moehq_tile.first).to_be_visible()
             expect(sim_page.school_tile.first).to_be_visible()
             expect(sim_page.parent_tile.first).to_be_visible()
+            expect(sim_page.use_another_account_input).to_be_visible()
             expect(sim_page.continue_btn.first).to_be_visible()
-            self.step.set_actual(f"Hiển thị đầy đủ thẻ tài khoản {moehq['email']}, {school['email']} và nút Continue trên Simulator.")
+            self.step.set_actual(f"Hiển thị đầy đủ thẻ tài khoản {moehq['email']}, {school['email']}, {parent['email']} và nút Continue trên Simulator.")
 
-    def test_tc_adm_auth_007_oauth_callback_handling(self, admin_login_data: Dict[str, Any]) -> None:
+    def test_tc_adm_auth_008_oauth_callback_handling(self, admin_login_data: Dict[str, Any]) -> None:
         """
-        TC-ADM-AUTH-007: Quá trình callback xử lý mã xác thực OAuth (/login/microsoft/callback) và điều hướng vào Trang chủ.
-        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §2.1; DOM-CALLBACK §2.1
+        TC-ADM-AUTH-008: Xử lý Callback OAuth (/login/microsoft/callback): Hiển thị spinner và trao đổi mã xác thực.
+        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §1.3; AC-OAUTH-CALLBACK; MicrosoftCallbackPage.tsx:48-65
         """
         login_page = self.get_page(AdminLoginPage)
         shell = self.get_page(AdminDashboardShellPage)
         base_url = admin_login_data["base_url"]
         oauth_data = admin_login_data["oauth"]
+        callback_requests = []
+
+        import json
+        moe_user_payload = {
+            "isSuccess": True,
+            "statusCode": 200,
+            "data": {
+                "id": "moe-admin-001",
+                "username": "admin@IAM.edu.vn",
+                "fullName": "MOE HQ Administrator",
+                "schoolId": None,
+                "roles": [{"name": "MOEHQ"}],
+                "permissions": [],
+            },
+        }
+
+        def handle_auth_login(route):
+            callback_requests.append(route.request.post_data_json or {})
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body='{"isSuccess": true, "data": {"token": "jwt-token-valid-001"}}',
+            )
+
+        def handle_auth_me(route):
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps(moe_user_payload),
+            )
+
+        def handle_moe_dashboard(route):
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps({
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "kpis": {
+                            "totalEnrolledStudents": 500,
+                            "activeRatePercent": 100,
+                            "totalSchools": 10,
+                            "activeTopUpCampaigns": 2,
+                            "moeFasPendingReview": 20,
+                            "edusaveTotalBalance": 1000000,
+                            "edusaveAverageBalance": 2000,
+                        },
+                        "budgetByStage": [],
+                        "moeFasEligibility": {
+                            "approvedCount": 0,
+                            "approvedPercent": 0,
+                            "underReviewCount": 0,
+                            "underReviewPercent": 0,
+                            "rejectedCount": 0,
+                            "rejectedPercent": 0,
+                        },
+                        "recentTopUpCampaigns": [],
+                        "activeMoeSchemes": [],
+                    },
+                }),
+            )
+
+        self.page.route("**/auth/admin/microsoft-login**", handle_auth_login)
+        self.page.route("**/auth/me**", handle_auth_me)
+        self.page.route("**/bff/v1/dashboard/**", handle_moe_dashboard)
+
+        try:
+            with self.step(
+                "Bước 1: Chọn tài khoản hợp lệ (admin@IAM.edu.vn) trên màn hình Entra Simulator",
+                expected="Simulator điều hướng về URL callback kèm code và state.",
+            ):
+                login_page.open(base_url)
+                # Khởi tạo OAuth session hợp lệ trong sessionStorage
+                self.page.evaluate(
+                    f"""sessionStorage.setItem('edusave.admin.microsoft-oauth', JSON.stringify({{
+                        'redirectUri': '{base_url}/login/microsoft/callback',
+                        'state': '{oauth_data['valid_state']}',
+                        'codeVerifier': 'verifier-abc-123',
+                        'returnTo': '/'
+                    }}));"""
+                )
+                login_page.open_callback(
+                    base_url=base_url,
+                    params=f"?code={oauth_data['valid_code']}&state={oauth_data['valid_state']}",
+                )
+                self.step.set_actual("Đã chuyển tiếp đến URL callback với mã code và state hợp lệ.")
+
+            with self.step(
+                "Bước 2: Quan sát giai đoạn xử lý callback tại URL http://localhost:5173/login/microsoft/callback",
+                expected="Hiển thị spinner div[role='status'], gửi POST /microsoft-login và tự động điều hướng về trang chủ /.",
+            ):
+                self.page.wait_for_url(f"{base_url}/", timeout=15000)
+                expect(shell.header.first).to_be_visible()
+                assert len(callback_requests) == 1, "Callback không gửi duy nhất một yêu cầu xác thực OAuth"
+                callback_payload = callback_requests[0]
+                for key in ("code", "state", "redirectUri", "codeVerifier"):
+                    assert key in callback_payload, f"Thiếu trường '{key}' trong payload callback OAuth"
+                assert callback_payload["state"] == oauth_data["valid_state"]
+                assert callback_payload["code"] == oauth_data["valid_code"]
+                assert self.page.evaluate("sessionStorage.getItem('edusave.admin.microsoft-oauth')") is None
+                self.step.set_actual("Xử lý callback thành công và điều hướng mượt mà vào Trang chủ.")
+        finally:
+            self.page.unroute("**/auth/admin/microsoft-login**")
+            self.page.unroute("**/auth/me**")
+            self.page.unroute("**/bff/v1/dashboard/**")
+
+    def test_tc_adm_auth_009_return_to_destination_redirect(self, admin_login_data: Dict[str, Any]) -> None:
+        """
+        TC-ADM-AUTH-009: Chuyển hướng về trang đích ban đầu (Return-to Destination) sau khi đăng nhập thành công.
+        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §2.2; AC-RETURN-DESTINATION; LoginPage.tsx:74/212
+        """
+        login_page = self.get_page(AdminLoginPage)
+        shell = self.get_page(AdminDashboardShellPage)
+        base_url = admin_login_data["base_url"]
+        target_path = "/school-management"
+
+        def handle_unauth_me(route):
+            route.fulfill(
+                status=401,
+                content_type="application/json",
+                body='{"isSuccess": false, "statusCode": 401, "message": "Unauthorized"}',
+            )
 
         def handle_auth_login(route):
             route.fulfill(
                 status=200,
                 content_type="application/json",
-                body='{"isSuccess": true, "token": "jwt-token-valid-001", "role": "MOEHQ"}',
+                body='{"isSuccess": true, "data": {"token": "jwt-token-return-001"}}',
             )
 
-        self.page.route("**/iam/v1/auth/admin/microsoft-login", handle_auth_login)
+        def handle_auth_me(route):
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps({
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "id": "moe-admin-001",
+                        "username": "admin@moe.gov.vn",
+                        "email": "admin@moe.gov.vn",
+                        "fullName": "MOE Administrator",
+                        "schoolId": None,
+                        "roles": [{"name": "MOEHQ"}],
+                        "permissions": [],
+                    },
+                }),
+            )
 
-        with self.step(
-            "Bước 1: Khởi tạo phiên chuyển tiếp chứa mã xác thực auth code hợp lệ đến /login/microsoft/callback",
-            expected="Trang callback tải và bắt đầu gửi mã xác thực tới backend.",
-        ):
-            session_raw = json.dumps({
-                "redirectUri": f"{base_url}/login/microsoft/callback",
-                "returnTo": "/",
-                "state": oauth_data["valid_state"],
-                "codeVerifier": "mock-verifier-code-12345"
-            })
-            self.page.add_init_script(f'sessionStorage.setItem("edusave.admin.microsoft-oauth", {json.dumps(session_raw)});')
-            callback_url = f"{base_url}/login/microsoft/callback?code={oauth_data['valid_code']}&state={oauth_data['valid_state']}"
-            self.page.goto(callback_url, wait_until="domcontentloaded")
-            self.step.set_actual("Đã gửi request xác thực callback.")
+        def handle_school_table(route):
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps({
+                    "isSuccess": True,
+                    "statusCode": 200,
+                    "data": {
+                        "items": [],
+                        "metadata": {
+                            "totalRecords": 0,
+                            "totalPages": 0,
+                            "pageNumber": 1,
+                            "pageSize": 10,
+                        },
+                    },
+                }),
+            )
 
-        with self.step(
-            "Bước 2: Quan sát trạng thái xử lý trên giao diện trong lúc chờ callback hoàn tất",
-            expected="Giao diện hiển thị trạng thái đang xử lý mà không bị lỗi crash giao diện.",
-        ):
-            expect(self.page.locator("body")).to_be_visible()
-            self.step.set_actual("Trạng thái xử lý hiển thị an toàn trên màn hình.")
+        try:
+            self.page.route("**/auth/me**", handle_unauth_me)
 
-        with self.step(
-            "Bước 3: Kiểm tra kết quả chuyển hướng cuối cùng",
-            expected="Điều hướng thành công; URL được làm sạch mã xác thực tạm thời.",
-        ):
-            self.page.wait_for_url(lambda u: "callback" not in u, timeout=15000)
-            assert "code=" not in self.page.url, "URL callback vẫn còn chứa authorization code"
-            self.step.set_actual(f"Đã hoàn tất callback và điều hướng an toàn: {self.page.url}.")
+            with self.step(
+                f"Bước 1: Khi chưa đăng nhập, nhập trực tiếp URL {base_url}{target_path} vào thanh địa chỉ",
+                expected="Hệ thống điều hướng sang /login kèm lưu trữ đích đến ban đầu.",
+            ):
+                self.page.goto(f"{base_url}{target_path}", wait_until="domcontentloaded")
+                expect(login_page.sign_in_with_microsoft_btn).to_be_visible()
+                self.step.set_actual(f"Chưa đăng nhập, đã bị điều hướng an toàn về {self.page.url}.")
 
-        self.page.unroute("**/iam/v1/auth/admin/microsoft-login")
+            with self.step(
+                "Bước 2: Hệ thống ghi nhận returnTo trong OAuth session, hoàn tất xác thực đăng nhập",
+                expected="Xác thực danh tính người dùng thành công.",
+            ):
+                self.page.unroute("**/auth/me**")
+                self.page.route("**/auth/admin/microsoft-login**", handle_auth_login)
+                self.page.route("**/auth/me**", handle_auth_me)
+                self.page.route("**/academic-resources/**", handle_school_table)
 
-    def test_tc_adm_auth_008_return_to_destination_redirect(self, admin_login_data: Dict[str, Any]) -> None:
-        """
-        TC-ADM-AUTH-008: Chuyển hướng về trang đích ban đầu (Return-to Destination) sau khi đăng nhập thành công.
-        Kịch bản: TS-ADM-AUTH-AC | Nguồn đặc tả: 01_admin_login_and_sso.md §2.2; AC-RETURN-URL
-        """
-        login_page = self.get_page(AdminLoginPage)
-        sim_page = self.get_page(MicrosoftSimulatorPage)
-        base_url = admin_login_data["base_url"]
-        target_path = "/school-management"
+                self.page.evaluate(
+                    f"""sessionStorage.setItem('edusave.admin.microsoft-oauth', JSON.stringify({{
+                        'redirectUri': '{base_url}/login/microsoft/callback',
+                        'state': 'state-return-001',
+                        'codeVerifier': 'verifier-123',
+                        'returnTo': '{target_path}'
+                    }}));"""
+                )
+                login_page.open_callback(base_url=base_url, params="?code=code-return-001&state=state-return-001")
+                self.step.set_actual("Đã hoàn tất xác thực thông qua callback.")
 
-        with self.step(
-            "Bước 1: Truy cập trực tiếp vào một đường dẫn nội bộ được bảo vệ khi chưa đăng nhập",
-            expected="Hệ thống tự động chuyển tiếp về trang /login kèm tham số returnTo.",
-        ):
-            self.page.goto(f"{base_url}{target_path}", wait_until="domcontentloaded")
-            self.page.wait_for_url("**/login**", timeout=10000)
-            self.step.set_actual(f"Đã chuyển tiếp về trang đăng nhập: {self.page.url}.")
-
-        with self.step(
-            "Bước 2: Quan sát URL trang Đăng nhập",
-            expected="Hệ thống đính kèm đúng tham số returnTo=/school-management trên URL.",
-        ):
-            assert "returnTo=" in self.page.url or "return_to=" in self.page.url or "login" in self.page.url
-            self.step.set_actual("URL chứa tham số đích ban đầu hợp lệ.")
-
-        with self.step(
-            "Bước 3: Thực hiện đăng nhập thành công bằng Microsoft SSO",
-            expected="Sau khi đăng nhập thành công, tự động điều hướng đúng về trang đích ban đầu /school-management.",
-        ):
-            login_page.click_sign_in_with_microsoft()
-            self.page.wait_for_url("**/microsoft-provider/**", timeout=15000)
-            sim_page.select_moehq_admin()
-            self.page.wait_for_url(f"**{target_path}**", timeout=20000)
-            self.step.set_actual(f"Điều hướng chính xác về trang đích ban đầu: {self.page.url}.")
+            with self.step(
+                f"Bước 3: Quan sát trang đích mà người dùng được đưa đến sau khi xác thực xong",
+                expected=f"Hệ thống điều hướng chính xác về {target_path} thay vì trang chủ mặc định /.",
+            ):
+                self.page.wait_for_url(f"**{target_path}**", timeout=15000)
+                assert target_path in self.page.url, f"Không chuyển hướng về đúng trang đích {target_path}: {self.page.url}"
+                self.step.set_actual(f"Đã chuyển hướng chính xác về trang đích ban đầu: {self.page.url}.")
+        finally:
+            try:
+                self.page.unroute("**/auth/admin/microsoft-login**")
+            except Exception:
+                pass
+            try:
+                self.page.unroute("**/auth/me**")
+            except Exception:
+                pass
+            try:
+                self.page.unroute("**/academic-resources/**")
+            except Exception:
+                pass

@@ -1,5 +1,3 @@
-# **R10**
-
 # **FS F10 – Phụ huynh nộp đơn FAS (Parent FAS Application)**
 
 21/10/2026 · Phiên bản 1.2 · @Huy
@@ -160,8 +158,6 @@ Tiêu đề "Your circumstances and wishes". Ô nhập tuỳ chọn, tối đa 2
 | T10 | Con là PR | SBFAS, do trường xét. |
 | T11 | Trường duyệt SBFAS | Timeline Decision Approved; khung hiển thị "SBFAS Tier n from …". |
 | T12 | Không có form FAS nào đang mở | Các con bị khoá với "application form is closed (opens …)"; Continue bị khoá. |
-
-# **Function list**
 
 | No | Requirements | Portal | AI (Features) |
 | :---: | ----- | :---: | ----- |

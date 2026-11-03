@@ -1,7 +1,3 @@
-# **R9 (v2)**
-
-# **R9 (v1)**
-
 # **FS Function 9 \- Outstanding Fees and Payment**
 
 ## **1\. Introduction**

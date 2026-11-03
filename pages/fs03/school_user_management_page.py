@@ -17,24 +17,24 @@ class SchoolUserManagementPage(BasePage):
         super().__init__(page)
 
         # Navigation & Sidebar Elements
-        self.sidebar_nav: Locator = self.page.locator("nav")
+        self.sidebar_nav: Locator = self.page.locator('nav[aria-label="Admin navigation"]')
         self.school_users_nav_link: Locator = self.page.locator(
-            "nav a[href='/school-user-management'], nav a:has-text('School Users')"
+            "nav[aria-label='Admin navigation'] a[href='/school-user-management']"
         )
         self.admin_profile_role: Locator = self.page.locator("text=System Admin")
         self.admin_profile_username: Locator = self.page.locator("text=moehq")
 
         # Page Header & Controls
-        self.page_heading: Locator = self.page.locator("h1:has-text('School user management')")
+        self.page_heading: Locator = self.page.locator("#school-user-management-heading")
         self.page_subtitle: Locator = self.page.locator("text=Manage users assigned to schools.")
         self.create_school_user_button: Locator = self.page.locator("button:has-text('Create School User')")
 
         # Table & Search Elements
-        self.search_input: Locator = self.page.locator("input[type='search']")
-        self.table: Locator = self.page.locator("table")
-        self.table_rows: Locator = self.page.locator("table tbody tr")
-        self.table_headers: Locator = self.page.locator("table thead th")
-        self.pagination: Locator = self.page.locator("nav[aria-label*='pagination' i], [class*='pagination']")
+        self.search_input: Locator = self.page.get_by_role("searchbox", name="Search school users")
+        self.table: Locator = self.page.get_by_role("table", name="School users")
+        self.table_rows: Locator = self.table.locator("tbody tr")
+        self.table_headers: Locator = self.table.locator("thead th")
+        self.pagination: Locator = self.page.get_by_label("School users pagination")
 
     # --- Navigation Methods ---
     def open(self, base_url: str = "http://localhost:5173") -> None:
@@ -141,5 +141,5 @@ class SchoolUserManagementPage(BasePage):
             if identifier
             else self.table_rows.nth(index)
         )
-        row.locator("button[aria-label='Detail'], a[href*='school-user-management/']").first.click()
+        row.locator("button[aria-label='Detail']").click()
         self.page.wait_for_load_state("domcontentloaded")

@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "manifest": {
+    "scope": "13-admin-shell-sidebar-rbac-header",
+    "stage": "design",
+    "review": {
+      "status": "draft",
+      "evidence": ""
+    },
+    "entries": [
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+        "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+        "start": 122,
+        "end": 125,
+        "roles": [
+          "BR"
+        ],
+        "reason": "PB-03 role-based permissions user story and dependencies"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+        "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+        "start": 167,
+        "end": 170,
+        "roles": [
+          "BR",
+          "Dependency"
+        ],
+        "reason": "Auth-01 Admin Portal login and role-dependent access"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+        "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+        "start": 480,
+        "end": 480,
+        "roles": [
+          "BR",
+          "AC"
+        ],
+        "reason": "Resolved HQ all-record and SCHOOL school-scope clarification"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+        "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+        "start": 1,
+        "end": 92,
+        "roles": [
+          "AC",
+          "Validation",
+          "Flow",
+          "UI"
+        ],
+        "reason": "Live-DOM shell inventory, role menu matrix, state flow and active-link rules"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+        "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+        "start": 169,
+        "end": 187,
+        "roles": [
+          "AC",
+          "Error",
+          "UI"
+        ],
+        "reason": "Shell pass/fail oracles and access feedback"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+        "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+        "start": 1,
+        "end": 14,
+        "roles": [
+          "Dependency",
+          "UI"
+        ],
+        "reason": "Admin auth routes, actors, endpoints and live-DOM provenance"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+        "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+        "start": 75,
+        "end": 113,
+        "roles": [
+          "BR",
+          "Flow",
+          "Error",
+          "Dependency"
+        ],
+        "reason": "Authentication sequence and explicit MOEHQ/SCHOOL route permissions"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+        "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+        "start": 40,
+        "end": 67,
+        "roles": [
+          "Flow",
+          "Dependency"
+        ],
+        "reason": "Admin Portal role-based navigation map"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+        "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+        "start": 733,
+        "end": 744,
+        "roles": [
+          "Validation",
+          "UI"
+        ],
+        "reason": "Accessibility keyboard, contrast and responsive acceptance rules"
+      },
+      {
+        "path": "1_Nghiep_Vu_va_Specs/specs/md/Test Cases/DEFECTS_Sprint_1_Master.md",
+        "sha256": "257d40a87ea4eafd7aa6cf8df443fe32f57dcc36f316574fdf9367e7d5f70f65",
+        "start": 138,
+        "end": 173,
+        "roles": [
+          "Error",
+          "Dependency"
+        ],
+        "reason": "Known active-navigation defect BUG-R3-002 and regression oracle"
+      }
+    ],
+    "note": "Draft source selection for design. It is not user approval and does not certify semantic coverage."
+  },
+  "chunks": [
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+      "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+      "start": 40,
+      "end": 67,
+      "roles": [
+        "Dependency",
+        "Flow"
+      ],
+      "text": "### 1.1 Sơ đồ Điều hướng Admin Portal (Site Map & Navigation)\n\n```mermaid\nflowchart TD\n    Login[Màn hình Đăng nhập Quản trị] --> AuthCheck{Kiểm tra Vai trò}\n    \n    AuthCheck -->|MOE HQ User| HQHome[Admin Dashboard - MOE HQ]\n    AuthCheck -->|School User| SchHome[Admin Dashboard - School Admin]\n\n    subgraph Admin_Portal_Modules [Cổng Quản trị EAFAMS - Phân hệ chức năng]\n        HQHome --> M_R1[R1: EA Lifecycle Management]\n        HQHome --> M_R2[R2: Top-Up Management]\n        HQHome --> M_R3[R3: School, Student & Fee Master]\n        HQHome --> M_R4[R4: FAS Global Review]\n        HQHome --> M_R6_HQ[R6: MOEFAS Budget & Stats]\n        HQHome --> M_R7[R7: Simulation Mode Activator]\n\n        SchHome --> M_R3_Sch[R3: School Students & Enrolment]\n        SchHome --> M_R4_Sch[R4: SBFAS Review & ML Score]\n        SchHome --> M_R5[R5: Hardcopy OCR Intake]\n        SchHome --> M_R6_Sch[R6: SBFAS School Budget]\n    end\n\n    M_R7 -.->|Kích hoạt Giả lập| SimMode[Simulation Banner Active: Read-Only]\n    SimMode -.-> SchHome\n    SimMode -.-> ParentView[Simulated Parent e-Service]\n```\n"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/EAFAMS_UI_SPECIFICATION_AND_INTERACTION_GUIDE.md",
+      "sha256": "f858ca1b471bfe54f1acce723a80d0557fca0a51bbb11670217ed25d2970f070",
+      "start": 733,
+      "end": 744,
+      "roles": [
+        "UI",
+        "Validation"
+      ],
+      "text": "### 4.3 UI Accessibility (WCAG 2.1 AA) & Cross-Browser Checklist\n\n* **Độ tương phản màu sắc (Color Contrast)**:\n  - Tỷ lệ tương phản chữ trên nền tối thiểu đạt `4.5:1` đối với văn bản chuẩn và `3:1` đối với văn bản lớn/tiêu đề.\n* **Điều hướng bằng bàn phím (Keyboard Navigation)**:\n  - Phím `Tab` di chuyển tuần tự qua các trường form theo thứ tự tự nhiên từ trái sang phải, trên xuống dưới.\n  - Phím `Enter` kích hoạt nút submit hoặc mở dropdown; phím `Escape` đóng modal/drawer.\n  - Vòng viền Focus (`Focus Indicator Ring`) màu xanh dương rõ nét `2px outline` khi đối tượng được focus.\n* **Tương thích màn hình (Responsive Breakpoints)**:\n  - **Desktop (1440px - 1920px)**: Giao diện đầy đủ cho Admin Portal và e-Service Portal.\n  - **Tablet (768px - 1024px)**: Sidebar Admin tự động thu nhỏ thành Icon Drawer; bảng dữ liệu cho phép cuộn ngang (Horizontal scroll).\n  - **Mobile (375px - 414px)**: Ưu tiên tối ưu e-Service Portal cho Phụ huynh: Thẻ con xếp dọc 1 cột (`Single column card`), bảng thu nhập chuyển thành Card Accordion."
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 122,
+      "end": 125,
+      "roles": [
+        "BR"
+      ],
+      "text": "**[PB-03] HQ vs School role-based permissions** (Seq: 3.0)\n- **Mô tả / User Story:** As an MOE HQ administrator, I want HQ and School Users to have access limited by their roles and authorized records, so that school and student data can only be managed by permitted users.\n- **Cơ sở yêu cầu (Basis):** Client clarified\n- **Phụ thuộc kỹ thuật (Dependencies):** PB-02; user identity/roles"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 167,
+      "end": 170,
+      "roles": [
+        "BR",
+        "Dependency"
+      ],
+      "text": "**[Auth-01] Admin Portal Login** (Seq: )\n- **Mô tả / User Story:** As an MOE HQ or School User, I want to log in to the Admin Portal securely, so that I can access the system functions and data according to my assigned role.\n- **Cơ sở yêu cầu (Basis):** \n- **Phụ thuộc kỹ thuật (Dependencies):** User authentication mechanism, user roles and permissions"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/REQUIREMENTS_AND_BACKLOG_SUMMARY.md",
+      "sha256": "c444a30eb760120088e014122f300b1dd997b24d797618b26a3fe9325f049ff2",
+      "start": 480,
+      "end": 480,
+      "roles": [
+        "AC",
+        "BR"
+      ],
+      "text": "| **10.0** | Unclear data management scope between MOE HQ and School users. | Establish a permissions matrix by role and school scope. | What permissions should MOE HQ and School users have? Can School users access and manage only their own school's data? | **`Resolved`** | Client đã nêu phạm vi tổng quát: - MOE HQ users: quản lý tất cả records liên quan. - School users: quản lý records thuộc phạm vi trường mình, ở level của trường và các level bên dưới. |"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/md/Test Cases/DEFECTS_Sprint_1_Master.md",
+      "sha256": "257d40a87ea4eafd7aa6cf8df443fe32f57dcc36f316574fdf9367e7d5f70f65",
+      "start": 138,
+      "end": 173,
+      "roles": [
+        "Dependency",
+        "Error"
+      ],
+      "text": "### `BUG-R3-002`: [Navigation] Sidebar highlights Education Accounts instead of the current menu on Create school user and Create school\n\n- **Module**: `R3` (R3 Defect)\n- **Status**: **Open**\n- **Severity / Priority**: `S4 (lowest)` / `Low`\n- **Defect Type**: `UI`\n- **Linked Test Case(s)**: `TC-R3-F02-001, TC-R3-F01-001`\n- **Environment**: SIT |  Chrome (latest) |  Build: Sprint 1 MVP (taken from the test cases, confirm at retest) |  Admin Portal, URL not captured in the evidence\n- **Evidence**: Image 2 and Image 4 (sheet Evidence)\n- **Notes**: The active menu seems to be matched by route prefix, so child pages fall under Education Accounts. Check the other create and edit pages for the same behaviour.\n\n**Preconditions:**\n```text\nLogged in to the Admin Portal as MOE HQ User.\n```\n\n**Steps to Reproduce:**\n1. Open School user management and click Create school user.\n2. Look at the highlighted item in the sidebar.\n3. Open School management, click Create school and look at the sidebar again.\n\n**Expected Result:**\n> 1. On Create school user the sidebar highlights School user management.\n>  2. On Create school the sidebar highlights School management only.\n\n**Actual Result:**\n> 1. On Create school user the sidebar highlights Education Accounts (Dashboard is also shaded) and School user management is not highlighted.\n>  2. On Create school the sidebar highlights Education Accounts together with School management.\n\n**Pytest Strict XFAIL Directive:**\n```python\n@pytest.mark.xfail(strict=True, reason=\"BUG-R3-002: [Navigation] Sidebar highlights Education Accounts instead of the current menu on Create school user and Create school\")\n```\n\n---\n"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+      "start": 1,
+      "end": 14,
+      "roles": [
+        "Dependency",
+        "UI"
+      ],
+      "text": "# 📋 BSK Locator & Functional Flow Spec: Admin Login & Microsoft SSO Simulator\n\n| Trường Thông Tin | Chi Tiết |\n| :--- | :--- |\n| **Portal / Cổng Dịch Vụ** | `localhost:5173` & Microsoft Entra ID Simulator `localhost:5288` |\n| **Đường Dẫn Thực Tế (URL)** | `http://localhost:5173/login`<br>`http://localhost:5288/microsoft-provider/oauth2/v2.0/authorize`<br>`http://localhost:5173/login/microsoft/callback` |\n| **Tiêu Đề Trang (Title)** | `EduFAMS | Admin Portal` |\n| **Heading Chính (H1)** | `Sign in to your account` / `Pick an account` |\n| **RBAC / Phân Quyền** | Public / All Admin Roles (`MOEHQ`, `SCHOOL`) |\n| **Backend API Endpoints** | `GET /iam/v1/auth/admin/microsoft/authorize-url`<br>`POST /iam/v1/auth/admin/microsoft-login`<br>`POST /iam/v1/auth/admin/login`<br>`GET /iam/v1/auth/me`<br>`POST /iam/v1/auth/logout` |\n| **Thời Điểm Trích Xuất (BSK)** | Live DOM Verified via Playwright Engine |\n\n---\n"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/01_admin_login_and_sso.md",
+      "sha256": "af592e0cb90f93498fa32a8121a4d447907dff0c93fca17f1bb98d60ddc43d4e",
+      "start": 75,
+      "end": 113,
+      "roles": [
+        "BR",
+        "Dependency",
+        "Error",
+        "Flow"
+      ],
+      "text": "### 2.1 Sơ đồ Trạng thái Luồng Đăng nhập Microsoft SSO (Mermaid)\n\n```mermaid\nsequenceDiagram\n    autonumber\n    actor User as Quản trị viên\n    participant Web as Admin Portal (:5173)\n    participant BFF as Backend API IAM (:5000)\n    participant SSO as Entra ID Simulator (:5288)\n\n    User->>Web: Truy cập http://localhost:5173/login\n    User->>Web: Click \"Sign in with Microsoft\"\n    Web->>BFF: GET /iam/v1/auth/admin/microsoft/authorize-url\n    BFF-->>Web: Trả về { authorizeUrl, state, codeChallenge }\n    Note over Web: Lưu session OAuth vào sessionStorage\n    Web->>SSO: Redirect trình duyệt sang authorizeUrl (:5288)\n    User->>SSO: Chọn tài khoản (admin@IAM.edu.vn hoặc staff1@IAM.edu.vn)\n    SSO-->>Web: Redirect về /login/microsoft/callback?code=...&state=...\n    Web->>BFF: POST /iam/v1/auth/admin/microsoft-login { code, state, redirectUri, codeVerifier }\n    BFF-->>Web: Set HTTP-Only Auth Cookie / Token (Status 200/204)\n    Web->>Web: window.location.replace(\"/\")\n    Web->>BFF: GET /iam/v1/auth/me\n    BFF-->>Web: Trả về AuthMeResponse { roles: [\"MOEHQ\" | \"SCHOOL\"], schoolId, ... }\n    Web->>User: Hiển thị Admin Shell Dashboard phù hợp với quyền\n```\n\n### 2.2 Quy tắc Xác thực & Phân quyền (RBAC Business Rules)\n1. **OAuth2 + PKCE Flow**:\n   - Client tạo `code_verifier` ngẫu nhiên và băm SHA-256 thành `code_challenge`.\n   - `state` được lưu trong `sessionStorage` để chống CSRF. Nếu `callback.state !== sessionStorage.state`, hệ thống từ chối đăng nhập với lỗi `\"The Microsoft authorization state is invalid\"`.\n2. **Quyền MOEHQ (`admin@IAM.edu.vn`)**:\n   - Truy cập: Dashboard, Quản lý trường học (`/school-management`), Quản lý cán bộ (`/school-user-management`), Niên khóa (`/academic-years`), Cấp học (`/academic-levels`), Quản lý tài chính (`/fee-management`, `/fas-application-management`).\n   - Cấm: Truy cập cấu hình riêng từng trường (`/school-config`), Quản lý lớp học (`/class-management`).\n3. **Quyền SCHOOL (`staff1@IAM.edu.vn`)**:\n   - Truy cập: Dashboard, Cấu hình trường (`/school-config`), Quản lý lớp học (`/class-management`), Học sinh trường (`/student-management`).\n   - Yêu cầu tiên quyết: Tài khoản cán bộ trường phải có `schoolId`. Nếu `schoolId === null`, hệ thống hiển thị cảnh báo `schoolAssignmentRequired`.\n\n---\n"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+      "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+      "start": 1,
+      "end": 92,
+      "roles": [
+        "AC",
+        "Flow",
+        "UI",
+        "Validation"
+      ],
+      "text": "# 📋 BSK Locator & Functional Flow Spec: Admin Dashboard & Navigation Shell\n\n| Trường Thông Tin | Chi Tiết |\n| :--- | :--- |\n| **Portal / Cổng Dịch Vụ** | `localhost:5173` |\n| **Đường Dẫn Thực Tế (URL)** | `http://localhost:5173/` (Root Navigation Shell) |\n| **Tiêu Đề Trang (Title)** | `EduFAMS | Admin Portal` |\n| **Heading Chính (H1)** | `Education Fanancial Account Management System` |\n| **RBAC / Phân Quyền** | `MOEHQ`, `SCHOOL` (Tất cả tài khoản Admin đã đăng nhập) |\n| **Backend API Endpoints** | `GET /iam/v1/auth/me`<br>`POST /iam/v1/auth/logout` |\n| **Thời Điểm Trích Xuất (BSK)** | Live DOM Verified via Playwright Engine |\n\n---\n\n## 🔍 1. Bảng Locators Chi Tiết (BSK Verified DOM Elements)\n\n### 1.1 Khung Điều Hướng Toàn Cục (Global Header)\n| Phần Tử / Nhãn | Loại | Selector Tối Ưu (Playwright) | Trạng Thái & Ý Nghĩa |\n| :--- | :--- | :--- | :--- |\n| Skip to main content | `link` | `a:has-text(\"Skip to main content\")` | Bỏ qua menu, focus trực tiếp vào `#admin-main-content` |\n| Brand Logo / Link | `link` | `header a[href=\"/\"]` | Điều hướng về trang chủ Dashboard |\n| Chuyển đổi ngôn ngữ | `select` | `select[aria-label=\"Language\"]` | Lựa chọn ngôn ngữ hiển thị (English / Vietnamese) |\n| Nút Menu Mobile | `button` | `button[aria-label*=\"navigation\" i]` | Mở ngăn menu điều hướng trên màn hình nhỏ |\n\n---\n\n### 1.2 Thanh Điều Hướng Bên Trái (Sidebar Navigation Links)\n| Nhóm / Group | Nhãn Mục Điều Hướng | Đường Dẫn (Href) | Selector Playwright | Phân Quyền Hạn Định (RBAC) |\n| :--- | :--- | :--- | :--- | :--- |\n| **DASHBOARD** | Dashboard | `/` | `nav a[href=\"/\"]` | Mọi vai trò (`MOEHQ`, `SCHOOL`) |\n| **EDUSAVE** | Education accounts | `/education-accounts` | `nav a[href=\"/education-accounts\"]` | Chỉ `MOEHQ` |\n| **EDUSAVE** | Top-up | `/top-up` | `nav a[href=\"/top-up\"]` | Chỉ `MOEHQ` |\n| **ACADEMIC** | Academic levels | `/academic-levels` | `nav a[href=\"/academic-levels\"]` | Chỉ `MOEHQ` |\n| **ACADEMIC** | Academic years | `/academic-years` | `nav a[href=\"/academic-years\"]` | Chỉ `MOEHQ` |\n| **ACADEMIC** | School management | `/school-management` | `nav a[href=\"/school-management\"]` | Chỉ `MOEHQ` |\n| **ACADEMIC** | School user management | `/school-user-management` | `nav a[href=\"/school-user-management\"]` | Chỉ `MOEHQ` |\n| **ACADEMIC** | School configuration | `/school-config` | `nav a[href=\"/school-config\"]` | Chỉ `SCHOOL` (Cán bộ trường) |\n| **ACADEMIC** | Class management | `/class-management` | `nav a[href=\"/class-management\"]` | Chỉ `SCHOOL` (Cán bộ trường) |\n| **ACADEMIC** | Student management | `/student-management` | `nav a[href=\"/student-management\"]` | Cả `MOEHQ` và `SCHOOL` |\n| **FINANCIAL** | Fee management | `/fee-management` | `nav a[href=\"/fee-management\"]` | Chỉ `MOEHQ` |\n| **FINANCIAL** | FAS application management | `/fas-application-management` | `nav a[href=\"/fas-application-management\"]` | Chỉ `MOEHQ` |\n\n---\n\n### 1.3 Menu Tài Khoản & Đăng Xuất (User Profile & Account Dropdown)\n| Phần Tử / Thao Tác | Loại | Selector Playwright | Mô Tả |\n| :--- | :--- | :--- | :--- |\n| Profile Trigger Button | `button` | `aside button:has([class*=\"accountInitials\"])`, `button:has-text(\"System Admin\")`, `button:has-text(\"Thi H Bui\")` | Hiển thị chữ viết tắt (Initials), tên đầy đủ và vai trò người dùng |\n| Menu Popup | `menu` | `[role=\"menu\"]` | Hộp menu mở ra khi click vào User Trigger |\n| Nút Sign Out (Đăng xuất) | `menuitem` | `[role=\"menuitem\"]:has-text(\"Sign out\"), button:has-text(\"Sign out\")` | Kích hoạt gọi API `/iam/v1/auth/logout` và chuyển hướng về `/login` |\n\n---\n\n### 1.4 Trạng Thái Cảnh Báo & Quyền Hạn (Access States & Banners)\n| Loại Thông Báo / Banner | Trạng Thái | Selector Playwright | Kịch Bản Kích Hoạt |\n| :--- | :--- | :--- | :--- |\n| School Assignment Required | `warning` | `[role=\"alert\"]:has-text(\"School assignment required\")` | Cán bộ trường có role `SCHOOL` nhưng chưa được gán `schoolId` |\n| Authorization Denied | `redirect` | `section[class*=\"accessState\"]` | Truy cập URL ngoài phạm vi phân quyền, tự động điều hướng về `/` |\n\n---\n\n## 🔄 2. Đặc Tả Luồng Nghiệp Vụ Chi Tiết (Functional Flow & State Machine)\n\n### 2.1 Sơ đồ Phân Quyền & Hiển Thị Menu Theo Role (Mermaid)\n\n```mermaid\ngraph TD\n    A[Người dùng đăng nhập thành công] --> B{Kiểm tra Vai Trò RBAC}\n    \n    B -->|Role: MOEHQ| C[MOEHQ Navigation Tree]\n    C --> C1[Dashboard: /]\n    C --> C2[EduSave: Education Accounts & Top-up]\n    C --> C3[Academic: Levels, Years, Schools, Users, Students]\n    C --> C4[Financial: Fees & FAS Applications]\n\n    B -->|Role: SCHOOL| D{Đã gán trường học schoolId?}\n    D -->|Chưa gán schoolId| D1[Hiển thị Alert: School Assignment Required]\n    D -->|Đã có schoolId| D2[School Navigation Tree]\n    D2 --> D3[Dashboard: /]\n    D2 --> D4[Academic: School Config, Class Management, Students]\n    D2 --> D5[Ẩn hoàn toàn nhóm EduSave]\n\n    UserSignOut[Click Sign out trong Dropdown] --> CallLogoutAPI[Gọi POST /iam/v1/auth/logout]\n    CallLogoutAPI --> ClearSession[Xóa state Auth & Redirect /login]\n```\n\n### 2.2 Quy tắc Trạng thái Menu (Navigation Active States)\n- Liên kết trang hiện tại tự động nhận class `navigationLinkActive` và thuộc tính `aria-current=\"page\"`.\n- Khi chuyển đổi ngôn ngữ qua `LanguageSwitcher`, toàn bộ nhãn mục menu lập tức dịch sang ngôn ngữ tương ứng (`en` hoặc `vi`) mà không cần tải lại trang.\n\n---\n"
+    },
+    {
+      "path": "1_Nghiep_Vu_va_Specs/specs/ui_bsk/localhost-5173/academic-and-users/02_admin_dashboard_shell.md",
+      "sha256": "0bd18688a061dd6b66ae6d6eb7c85e69abe5225284c0f7ab9b791c4f363fac2b",
+      "start": 169,
+      "end": 187,
+      "roles": [
+        "AC",
+        "Error",
+        "UI"
+      ],
+      "text": "## 🎯 4. Tiêu Chí Xác Nhận Pass/Fail & Error Handling (Pass/Fail Oracles & Assertions)\n\n### 4.1 Tiêu Chí Xác Nhận Thành Công (Pass Oracles)\n| Hành Động / Kịch Bản Kiểm Thử | Loại UI Feedback | Selector Playwright Tối Ưu | Kỳ Vọng Text / Giá Trị | Playwright Assertion Cú Pháp Mẫu (Dành Cho `tests/`) |\n| :--- | :--- | :--- | :--- | :--- |\n| **Tải Shell Admin thành công** | Cây Sidebar & Header hiển thị | `aside nav, header` | Sidebar chứa các link chức năng | `expect(page.locator('aside nav')).to_be_visible()` |\n| **Phân quyền Menu MOEHQ (RBAC MOEHQ)** | Hiển thị trọn bộ menu Quản trị cấp Bộ | `nav a[href=\"/school-management\"]` | Hiển thị menu Quản lý trường học | `expect(page.locator('nav a[href=\"/school-management\"]')).to_be_visible()` |\n| **Phân quyền Menu SCHOOL Staff (RBAC)** | Ẩn các menu cấp Bộ, chỉ hiện Học vụ | `nav a[href=\"/school-management\"]` | Bị ẩn hoặc không có trong DOM | `expect(page.locator('nav a[href=\"/school-management\"]')).to_be_hidden()` |\n| **Đổi ngôn ngữ giao diện (EN -> VI)** | Phản hồi ngôn ngữ tức thì | `select[aria-label=\"Language\"]` | Text sidebar và header dịch sang tiếng Việt | `page.locator('select[aria-label=\"Language\"]').select_option(\"vi-VN\")`<br>`expect(page.locator('aside')).to_contain_text(\"Quản lý\")` |\n| **Đăng xuất thành công (Sign out)** | Chuyển hướng về Login & Xóa Session | URL và Chuyển hướng | URL về `/login` | `page.wait_for_url(\"**/login\")`<br>`expect(page).to_have_url(re.compile(r\".*/login.*\"))` |\n\n---\n\n### 4.2 Tiêu Chí Bắt Lỗi & Xử Lý Ngoại Lệ (Fail & Error Handling Feedback)\n| Tình Huống Lỗi / Trigger | Loại UI Feedback | Selector Playwright Tối Ưu | Mã Lỗi & Text Kỳ Vọng | Playwright Assertion Cú Pháp Mẫu (Dành Cho `tests/`) |\n| :--- | :--- | :--- | :--- | :--- |\n| **Truy cập khi chưa đăng nhập (Unauthenticated)** | Tự động chuyển hướng về Login | Chuyển hướng URL | URL chuyển về `/login` | `page.goto(\"http://localhost:5173/\")`<br>`page.wait_for_url(\"**/login\")` |\n| **Truy cập URL vượt quyền (SCHOOL vào link MOE)** | Thông báo từ chối truy cập 403 | `[role=\"alert\"], h1:has-text(\"Access Denied\")` | `\"Access Denied\"` hoặc `\"Forbidden\"` | `page.goto(\"http://localhost:5173/school-management\")`<br>`expect(page.locator('[role=\"alert\"], h1')).to_contain_text(\"Access\")` |\n"
+    }
+  ]
+}

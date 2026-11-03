@@ -1,0 +1,125 @@
+{
+  "test_environments": {
+    "portal_url": "http://localhost:5174",
+    "fas_application_route": "/fas-application",
+    "step3_heading": "Commitment and Declarations"
+  },
+  "locators": {
+    "FILE_INPUT": "input[type='file'], input[data-testid='input-supporting-doc']",
+    "DROPZONE": "div[data-testid='dropzone-documents'], div[class*='dropzone']",
+    "FILE_ITEMS": "li[data-testid^='doc-file-item-'], div[class*='fileItem']",
+    "REMOVE_FILE_BTN": "button[data-testid^='btn-remove-doc-'], button:has-text('Remove file'), button[aria-label*='Remove']",
+    "FILE_ERROR_MSG": "div[class*='fileError'], p[role='alert']",
+    "COMMITMENT_CHECKBOX": "input#applicant-commitmentAgreed",
+    "FORWARD_TO_SCHOOL_CHECKBOX": "input#applicant-forwardToSchoolAgreed",
+    "COMMITMENT_ERROR": "label:has(#applicant-commitmentAgreed) ~ p, p[class*='error'], #applicant-commitmentAgreed-error",
+    "CONTEXT_TEXTAREA": "textarea#applicant-context, textarea[name='circumstancesContext'], textarea[name*='context']",
+    "CONTEXT_COUNTER": "span[data-testid='counter-context'], span:has-text('/2000')",
+    "BACK_BUTTON": "button:has-text('Back'), button:has-text('Previous')",
+    "NEXT_BUTTON": "button:has-text('Next'), button:has-text('Save & Continue')",
+    "STEP_HEADING": "h2:has-text('Review'), #review-heading, h3:has-text('Commitment')"
+  },
+  "test_data": {
+    "files": {
+      "valid_pdf_small": {
+        "fileName": "income_assessment_notice.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 102400,
+        "description": "Standard IRAS income tax assessment PDF (100 KB)"
+      },
+      "valid_jpg_image": {
+        "fileName": "medical_exemption_card.jpg",
+        "mimeType": "image/jpeg",
+        "sizeBytes": 512000,
+        "description": "Medical card photo scan (500 KB)"
+      },
+      "valid_png_image": {
+        "fileName": "layoff_severance_letter.png",
+        "mimeType": "image/png",
+        "sizeBytes": 1500000,
+        "description": "Employer termination letter PNG (1.5 MB)"
+      },
+      "boundary_exact_5mb": {
+        "fileName": "comprehensive_family_records.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 5242880,
+        "description": "Exact 5 MB boundary limit document (5,242,880 bytes)"
+      },
+      "boundary_oversized_5mb_plus_1b": {
+        "fileName": "oversized_tax_dossier.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 5242881,
+        "description": "Oversized document exceeding boundary by 1 byte (5,242,881 bytes)"
+      },
+      "rejected_huge_file": {
+        "fileName": "large_archive_scans.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 10485760,
+        "description": "10 MB oversized document"
+      },
+      "rejected_empty_file": {
+        "fileName": "empty_zero_byte_doc.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 0,
+        "description": "Corrupt or empty 0-byte file"
+      },
+      "disallowed_docx": {
+        "fileName": "household_summary.docx",
+        "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "sizeBytes": 25000,
+        "description": "MS Word document format"
+      },
+      "disallowed_zip": {
+        "fileName": "supporting_slips.zip",
+        "mimeType": "application/zip",
+        "sizeBytes": 45000,
+        "description": "Compressed ZIP archive"
+      },
+      "disallowed_executable": {
+        "fileName": "updater_payload.exe",
+        "mimeType": "application/x-msdownload",
+        "sizeBytes": 60000,
+        "description": "Executable binary payload"
+      },
+      "disallowed_script": {
+        "fileName": "automation_macro.sh",
+        "mimeType": "text/x-shellscript",
+        "sizeBytes": 1200,
+        "description": "Shell script file"
+      },
+      "disallowed_svg": {
+        "fileName": "vector_signature.svg",
+        "mimeType": "image/svg+xml",
+        "sizeBytes": 8500,
+        "description": "SVG vector image with potential XML/XSS payload"
+      },
+      "xss_filename": {
+        "fileName": "<img src=x onerror=alert('XSS')>.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 4096,
+        "description": "Malicious file name attempting HTML injection"
+      },
+      "path_traversal_filename": {
+        "fileName": "../../etc/passwd.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 4096,
+        "description": "Relative path traversal attack in file name"
+      }
+    },
+    "context_strings": {
+      "empty": "",
+      "single_char": "A",
+      "typical_valid": "Father recently underwent spinal surgery in July 2026 and is currently on unpaid medical convalescence leave. Mother is sole caregiver for 3 school-going children.",
+      "boundary_1999": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor... (1999 chars total)",
+      "boundary_2000": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor... (2000 chars total)",
+      "overflow_2005": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor... (2005 chars total)",
+      "xss_payload": "<script>alert('FAS_XSS_INJECTION')</script><svg/onload=alert('XSS')>"
+    },
+    "expected_messages": {
+      "commitment_required": "You must agree to the commitment before submitting.",
+      "file_oversized_fragment": "larger than 5 MB",
+      "file_format_disallowed_fragment": "only PDF, JPG or PNG files",
+      "file_empty_fragment": "the file is empty"
+    }
+  }
+}

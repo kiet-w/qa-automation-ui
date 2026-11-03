@@ -14,6 +14,8 @@ import shutil
 from typing import Dict, Any, Optional, List
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from openpyxl.drawing.image import Image as OpenpyxlImage
 
 from core.pytest_plugins.excel_evidence_paths import (
     find_actual_result_screenshot,
@@ -25,12 +27,13 @@ from core.pytest_plugins.excel_evidence_paths import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-STANDARD_20_HEADERS = [
+STANDARD_HEADERS = [
     "ID", "Scenario ID", "Title", "Test Suite", "Page", "Severity", "Priority",
     "Execution Status", "Test Type", "Environment", "Preconditions", "Test Data",
-    "Steps Test", "Test Steps", "Expected Result", "Actual Result", "Assumption Ref",
-    "Defect ID", "Traceability", "Note"
+    "Steps Test", "Test Steps", "Expected Result", "Actual Result",
+    "Traceability", "Note"
 ]
+STANDARD_20_HEADERS = STANDARD_HEADERS
 
 TICKET_MODULE_MAP = {
     # FS03 / Admin Portal (localhost:5173)
@@ -44,6 +47,121 @@ TICKET_MODULE_MAP = {
     "fs03/fs03-class-management": "06_class_management",
     "fs03/fs03-student-enrollment": "07_student_management_and_enrollment",
     "fs03/fs03-school-config": "08_school_config",
+}
+
+KNOWN_ISSUE_DEV_NOTES = {
+    # 06_class_management
+    "TC-CLS-007": (
+        "[UI BEHAVIOR] Nút 'Reset filters' đang ở trạng thái ENABLED ngay cả khi các ô lọc "
+        "(Search, Academic Level, Academic Year) đều rỗng. Theo AC, nút 'Reset filters' phải bị disabled "
+        "mặc định và chỉ được kích hoạt (enabled) khi người dùng có nhập ít nhất một điều kiện lọc."
+    ),
+    "TC-CLS-010": (
+        "[VALIDATION BUG] Form tạo lớp cho phép nhập mã lớp chứa dấu cách và ký tự đặc biệt "
+        "('P1 A class!') mà không kích hoạt thuộc tính aria-invalid='true' và viền đỏ cảnh báo trên ô input "
+        "'#class-classCode'. Cần bổ sung regex validation client-side (chỉ cho phép ký tự chữ và số liền nhau, "
+        "vd: ^[A-Za-z0-9_-]+$) trước khi submit."
+    ),
+    "TC-CLS-016": (
+        "[AUTH/SESSION BUG] Khi click nút Detail để mở màn hình chi tiết lớp học (/class-management/:classId), "
+        "trang web bị redirect về màn hình Login (/login) do mất cookie/auth token phiên đăng nhập. "
+        "Cần kiểm tra cơ chế lưu token/session persistence hoặc route guard của trang chi tiết lớp học."
+    ),
+    "TC-CLS-018": (
+        "[RATE-LIMIT BUG] Sau khi ngắt mạng và click nút 'Try again', bảng danh sách lớp không phục hồi được "
+        "mà hiển thị thông báo 'Unable to load classes: Too many requests. Please try again later.' do API "
+        "bị kích hoạt rate-limit (HTTP 429). Cần thêm debounce cho nút Retry hoặc nới lỏng rate limiter trên SIT."
+    ),
+
+    # 07_student_management_and_enrollment
+    "TC-STU-003": (
+        "[CHƯA CÓ TÍNH NĂNG] Chức năng 'Assign in class' trên giao diện hiện đang bị khóa (disabled) đối với các "
+        "học sinh đã được phân lớp; hệ thống chưa có luồng 'Chuyển lớp' (Change class) để kiểm tra nghiệp vụ lưu vết "
+        "lịch sử chuyển lớp (enrollment history)."
+    ),
+    "TC-STU-004": (
+        "[GIỚI HẠN GIAO DIỆN] Khi tạo hồ sơ học sinh có thời hạn nhập học đã kết thúc (enrolled_to_exclusive trong quá khứ), "
+        "hệ thống tự động ẩn học sinh này khỏi danh bạ Students. Do đó không thể chọn học sinh này vào màn hình phân lớp "
+        "để kiểm tra thông báo từ chối phân lớp cho học sinh đã rút hồ sơ/thôi học."
+    ),
+    "TC-STU-005": (
+        "[THIẾU TRƯỜNG DỮ LIỆU] Màn hình Chi tiết học sinh (Student Detail) hiện tại chưa hiển thị trường/thông tin "
+        "liên kết Quỹ Giáo dục (Education Account - EA) của công dân Singapore (SC) để đối chiếu tự động theo BR-STU-005."
+    ),
+    "TC-STU-008": (
+        "[THIẾU TRƯỜNG GIAO DIỆN] Màn hình Tiếp nhận học sinh (/student-management/enroll) hiện chỉ có trường "
+        "Student ID, School combo và ngày bắt đầu/kết thúc; chưa có bộ chọn Niên khóa (Academic Year) và Cấp học "
+        "(Academic Level) như đặc tả ban đầu."
+    ),
+    "TC-STU-013": (
+        "[LỖI THÔNG BÁO BACKEND] Khi nhập ngày sinh ở tương lai (2099-01-01), backend trả về chuỗi lỗi mã hóa chung "
+        "'Unable to complete student actionSystem.ValidationFailed' thay vì thông báo lỗi thân thiện trên UI "
+        "('Date of birth must be in the past'). Cần map lỗi ValidationException của backend thành error message chuẩn trên UI."
+    ),
+    "TC-STU-015": (
+        "[LỆCH SPEC GIAO DIỆN] Form nhập học hiện tại của hệ thống được thiết kế theo mô hình Student ID + School ID trực tiếp, "
+        "không có dropdown chọn Niên khóa & Cấp học. Đang chờ BA/Product chốt lại luồng giao diện chuẩn."
+    ),
+    "TC-STU-017": (
+        "[TIMEOUT ĐIỀU HƯỚNG] Thao tác tạo học sinh và tiếp nhận vào trường bị timeout sau 30 giây: Sau khi bấm nút Submit "
+        "form tạo học sinh mới, trang web phản hồi chậm hoặc không tự động redirect về màn hình danh bạ Students. "
+        "Cần kiểm tra API backend /api/students response time và logic xử lý on-success trên form."
+    ),
+    "TC-STU-018": (
+        "[LỖI ĐỒNG BỘ DỮ LIỆU] Thao tác phân công học sinh vào lớp '1A1' thành công trên modal, nhưng khi quay lại "
+        "bảng danh bạ học sinh (Students list), cột Lớp (Class) của học sinh vẫn bị trống, không hiển thị mã lớp 1A1. "
+        "Cần kiểm tra việc re-fetch dữ liệu danh sách hoặc cache sau khi phân lớp."
+    ),
+    "TC-STU-020": (
+        "[TIMEOUT TẢI TRANG] Form tạo học sinh (/student-management/new) không tải kịp trong thời gian chờ 30 giây trong "
+        "quá trình chuẩn bị dữ liệu học sinh mẫu để thử phân lớp. Cần kiểm tra kết nối mạng nội bộ và tốc độ load form."
+    ),
+
+    # 08_school_config
+    "TC-CFG-002": (
+        "[THIẾU DỮ LIỆU NGUỒN] Niên khóa 2025 trên môi trường SIT hiện không có dữ liệu cấu hình cấp học nguồn; thao tác "
+        "sao chép vào năm 2026 sẽ làm thay đổi dữ liệu trường dùng chung. Cần cấp tài khoản trường riêng biệt hoặc seed data "
+        "chuẩn cho năm 2025 để chạy test."
+    ),
+    "TC-CFG-003": (
+        "[LỖI KHÓA DỮ LIỆU ĐÃ ĐÓNG] Khi người dùng chọn xem niên khóa 2025 đã hoàn thành (CLOSED/COMPLETED), nút 'Add Academic Levels' "
+        "vẫn ở trạng thái ENABLED thay vì bị vô hiệu hóa (disabled). Theo BR-CFG-003, mọi nút thay đổi cấu trúc học vụ phải bị khóa "
+        "hoàn toàn khi niên khóa đã hoàn thành."
+    ),
+    "TC-CFG-004": (
+        "[CHƯA CÓ TÍNH NĂNG] Giao diện Cấu hình trường hiện tại chưa xây dựng chức năng Xóa cấp học (nút Remove / Delete Level) "
+        "nên không thể thực hiện kiểm thử quy tắc chặn xóa cấp học có lớp học đang hoạt động."
+    ),
+    "TC-CFG-011": (
+        "[BẢO TOÀN DỮ LIỆU TEST] Tạm thời bỏ qua thao tác gửi request sao chép từ năm 2025 rỗng vào năm 2027 để tránh làm biến đổi "
+        "trạng thái DRAFT dùng chung của niên khóa 2027."
+    ),
+    "TC-CFG-012": (
+        "[BẢO TOÀN DỮ LIỆU TEST] Kiểm thử hộp thoại xác nhận ghi đè đòi hỏi niên khóa nguồn phải có đủ dữ liệu và đích đến là trường "
+        "test cách ly. Tạm skip để bảo toàn cấu hình hiện hành của trường."
+    ),
+    "TC-CFG-013": (
+        "[LỖI PHIÊN ĐĂNG NHẬP] Trình duyệt bị văng về trang đăng nhập (/login) khi đang thao tác chuyển đổi dropdown niên khóa, "
+        "làm gián đoạn bài test. Cần kiểm tra cơ chế refresh token hoặc session timeout trên frontend."
+    ),
+    "TC-CFG-014": (
+        "[BẢO TOÀN DỮ LIỆU DÙNG CHUNG] Việc thêm cấp học mới sẽ lưu vĩnh viễn vào trường dùng chung mà hệ thống chưa có API dọn dẹp "
+        "(cleanup/rollback) sau kiểm thử. Cần môi trường test sandbox có thể reset database."
+    ),
+    "TC-CFG-015": (
+        "[THIẾU DỮ LIỆU & TRÁNH XUNG ĐỘT] Năm nguồn 2025 rỗng và việc thực thi sao chép thành công sẽ làm thay đổi cấu hình "
+        "niên khóa dùng chung của các tester khác."
+    ),
+    "TC-CFG-016": (
+        "[LỖI PHIÊN ĐĂNG NHẬP] Phiên đăng nhập bị mất (redirect to /login) khi truy cập màn hình Cấu hình trường. "
+        "Cần đảm bảo cookie xác thực được duy trì ổn định giữa các tác vụ điều hướng."
+    ),
+    "TC-CFG-017": (
+        "[LỖI PHIÊN ĐĂNG NHẬP] Phiên đăng nhập bị mất (redirect to /login) trước khi mở modal sao chép cấu hình."
+    ),
+    "TC-CFG-018": (
+        "[LỖI PHIÊN ĐĂNG NHẬP] Phiên đăng nhập bị redirect về /login khi bắt đầu kiểm thử."
+    ),
 }
 
 
@@ -79,48 +197,56 @@ def create_standard_evidence_workbook(ticket_name: str) -> openpyxl.Workbook:
 
 def find_candidate_source_workbooks(reports_dir: Path, ticket_name: str) -> Optional[Path]:
     """
-    Search canonical locations in 1_Nghiep_Vu_va_Specs/ and reports_dir
+    Search canonical locations in testcase5173/, testcase5174/, specs/, and reports_dir
     for an existing testcase specification or execution evidence workbook.
+    Prioritizes original specification workbooks (TC_*.xlsx) to preserve Traceability and Note.
     """
-    # 1. Check reports_dir first
-    rep_ev = find_evidence_xlsx_file(reports_dir)
-    if rep_ev and rep_ev.exists():
-        return rep_ev
-
-    # 2. Candidate folders in 1_Nghiep_Vu_va_Specs
-    specs_root = REPO_ROOT / "1_Nghiep_Vu_va_Specs"
     last_part = Path(ticket_name).name.lower()
     mapped_mod = TICKET_MODULE_MAP.get(ticket_name)
 
     search_dirs = [
-        specs_root / "testcases" / ticket_name,
+        REPO_ROOT / ticket_name,
+        REPO_ROOT / "specs" / ticket_name,
+        REPO_ROOT / "1_Nghiep_Vu_va_Specs" / "testcases" / ticket_name,
     ]
 
-    # Check 5173 / 5174 / UAT subdirectories
-    for group_name in ("testcase5173", "testcase5174", "uattestcase", "uat", "testcases"):
-        group_dir = specs_root / group_name
-        if not group_dir.exists():
-            continue
-        # Direct mapped module
-        if mapped_mod and (group_dir / mapped_mod).is_dir():
-            search_dirs.append(group_dir / mapped_mod)
-        # Search matching folders
-        for sub in group_dir.glob("*"):
-            if sub.is_dir():
-                sub_l = sub.name.lower()
-                if last_part in sub_l or sub_l in last_part:
-                    search_dirs.append(sub)
+    for base_parent in (REPO_ROOT, REPO_ROOT / "specs", REPO_ROOT / "1_Nghiep_Vu_va_Specs"):
+        for group_name in ("testcase5173", "testcase5174", "uattestcase", "uat", "testcases"):
+            group_dir = base_parent / group_name
+            if not group_dir.exists():
+                continue
+            if mapped_mod and (group_dir / mapped_mod).is_dir():
+                search_dirs.append(group_dir / mapped_mod)
+            for sub in group_dir.glob("*"):
+                if sub.is_dir():
+                    sub_l = sub.name.lower()
+                    if last_part in sub_l or sub_l in last_part:
+                        search_dirs.append(sub)
+
+    # 1. Prefer original specification workbooks (TC_*.xlsx or UAT_*.xlsx)
+    for d in search_dirs:
+        if d.exists():
+            tc_files = [
+                f for f in d.glob("*.xlsx")
+                if not f.name.startswith("~")
+                and not f.name.startswith(".")
+                and not f.name.startswith("TEST_EXECUTION_EVIDENCE_")
+                and not f.name.startswith("report")
+                and "master" not in f.name.lower()
+            ]
+            if tc_files:
+                return tc_files[0]
+
+    # 2. Check existing evidence in reports_dir or search_dirs
+    rep_ev = find_evidence_xlsx_file(reports_dir)
+    if rep_ev and rep_ev.exists():
+        return rep_ev
 
     for d in search_dirs:
         if d.exists():
-            # Check for TEST_EXECUTION_EVIDENCE_*.xlsx
             ev_files = [f for f in d.glob("TEST_EXECUTION_EVIDENCE_*.xlsx") if not f.name.startswith("~")]
             if ev_files:
                 return ev_files[0]
-            # Check for TC_*.xlsx or UAT_*.xlsx
-            tc_files = [f for f in d.glob("*.xlsx") if not f.name.startswith("~") and not f.name.startswith(".") and "master" not in f.name.lower()]
-            if tc_files:
-                return tc_files[0]
 
     return None
 
@@ -308,18 +434,58 @@ def export_test_execution_evidence(
             header_row_idx = r_cand
             break
 
+    # Automatically drop unneeded columns: "Assumption Ref" and "Defect ID"
+    unneeded_cols = [
+        col for col in range(1, ws.max_column + 1)
+        if str(ws.cell(row=header_row_idx, column=col).value or "").strip() in ("Assumption Ref", "Defect ID")
+    ]
+    if unneeded_cols:
+        for col in sorted(unneeded_cols, reverse=True):
+            ws.delete_cols(col, 1)
+        # Rebuild header map after deletion
+        header_col_map = {
+            str(ws.cell(row=header_row_idx, column=col).value).strip(): col
+            for col in range(1, ws.max_column + 1)
+            if ws.cell(row=header_row_idx, column=col).value
+        }
+
     id_col = find_header_column(header_col_map, "ID", "Test Case ID", "TC ID") or 1
     status_col = find_header_column(header_col_map, "Execution Status", "Status") or 8
     actual_col = find_header_column(header_col_map, "Actual Result", "Actual Result (Verified)") or 16
+
+    # Strictly preserve Traceability and Note without overwriting them.
+    trace_col = find_header_column(header_col_map, "Traceability")
+    note_col = find_header_column(header_col_map, "Note")
+    protected_cols = {c for c in (trace_col, note_col) if c}
+
     evidence_link_col = find_header_column(
         header_col_map,
         "📷 Visual Evidence",
-        "🎬 Video Evidence (Play in Browser)",
         "Visual Evidence",
-        "Evidence",
-        "Note",
-    ) or 20
-    evidence_file_col = find_header_column(header_col_map, "Evidence File Name", "Video File Name") or 19
+        "Evidence Link",
+    )
+    if not evidence_link_col or evidence_link_col in protected_cols:
+        evidence_link_col = ws.max_column + 1
+        h_link = ws.cell(row=header_row_idx, column=evidence_link_col, value="📷 Visual Evidence")
+        h_link.fill = PatternFill(start_color="001B365D", end_color="001B365D", fill_type="solid")
+        h_link.font = Font(name="Segoe UI", size=9.5, bold=True, color="00FFFFFF")
+        h_link.alignment = Alignment(horizontal="center", vertical="center")
+
+    ws.column_dimensions[get_column_letter(evidence_link_col)].width = 28
+
+    img_col = evidence_link_col + 1
+    h_img = ws.cell(row=header_row_idx, column=img_col, value="📷 Screenshot Evidence")
+    h_img.fill = PatternFill(start_color="001B365D", end_color="001B365D", fill_type="solid")
+    h_img.font = Font(name="Segoe UI", size=9.5, bold=True, color="00FFFFFF")
+    h_img.alignment = Alignment(horizontal="center", vertical="center")
+    ws.column_dimensions[get_column_letter(img_col)].width = 75
+
+    if note_col:
+        ws.column_dimensions[get_column_letter(note_col)].width = 45
+
+    # Clear any preexisting images if refreshing existing workbook to prevent stacking
+    if hasattr(ws, "_images") and ws._images:
+        ws._images.clear()
 
     # Build row index map: TC_ID -> row_number
     tc_id_row_map = {}
@@ -395,6 +561,7 @@ def export_test_execution_evidence(
         # 1. Update Execution Status
         c_status = ws.cell(row=target_row, column=status_col)
         c_actual = ws.cell(row=target_row, column=actual_col)
+        c_note = ws.cell(row=target_row, column=note_col) if note_col else None
 
         if outcome == "passed":
             c_status.value = "Passed"
@@ -404,6 +571,10 @@ def export_test_execution_evidence(
             if not c_actual.value or "failed" in str(c_actual.value).lower():
                 c_actual.value = "Verified: All automated assertions and visual gates passed successfully in SIT."
                 c_actual.font = Font(name="Segoe UI", size=8.5, color="00166534")
+            if c_note and (not c_note.value or "thao tác và ghi nhận" in str(c_note.value).lower()):
+                c_note.value = "Mọi tiêu chí nghiệm thu và quy tắc nghiệp vụ đã được xác minh thành công."
+                c_note.font = Font(name="Segoe UI", size=8.5, color="00166534")
+                c_note.alignment = Alignment(vertical="center", wrap_text=True)
         elif outcome == "failed":
             c_status.value = "Failed"
             c_status.fill = status_fail_fill
@@ -415,10 +586,47 @@ def export_test_execution_evidence(
             err_msg = re.sub(r"\s+", " ", err_msg).strip()
             c_actual.value = f"Defect: {err_msg}" if err_msg else "Defect: Assertion failed during execution."
             c_actual.font = Font(name="Segoe UI", size=8.5, color="00DC2626")
+
+            if c_note:
+                if derived_id in KNOWN_ISSUE_DEV_NOTES:
+                    c_note.value = KNOWN_ISSUE_DEV_NOTES[derived_id]
+                else:
+                    c_note.value = f"[DEFECT] {err_msg}"
+                c_note.font = Font(name="Segoe UI", size=8.5, color="00DC2626")
+                c_note.alignment = Alignment(vertical="center", wrap_text=True)
         else:
             c_status.value = "Skipped"
             c_status.fill = status_skip_fill
             c_status.font = Font(name="Segoe UI", size=9.0, color="0064748B")
+
+            # Extract skip reason
+            setup_info = test.get("setup", {}) or {}
+            skip_msg = ""
+            for source_info in (setup_info, call_info):
+                longrepr = source_info.get("longrepr")
+                if isinstance(longrepr, tuple) and len(longrepr) >= 3:
+                    skip_msg = str(longrepr[2])
+                    break
+                elif isinstance(longrepr, str) and "Skipped" in longrepr:
+                    skip_msg = longrepr
+                    break
+
+            if skip_msg:
+                clean_skip = re.sub(r"^Skipped:\s*", "", skip_msg).strip()
+                c_actual.value = f"Skipped: {clean_skip[:200]}"
+            else:
+                c_actual.value = "Skipped: Test case skipped during execution."
+            c_actual.font = Font(name="Segoe UI", size=8.5, color="0064748B")
+
+            if c_note:
+                if derived_id in KNOWN_ISSUE_DEV_NOTES:
+                    c_note.value = KNOWN_ISSUE_DEV_NOTES[derived_id]
+                elif skip_msg:
+                    c_note.value = f"[SKIPPED] {skip_msg}"
+                else:
+                    c_note.value = "[SKIPPED] Điều kiện môi trường/dữ liệu kiểm thử chưa sẵn sàng."
+                c_note.font = Font(name="Segoe UI", size=8.5, color="00475569")
+                c_note.alignment = Alignment(vertical="center", wrap_text=True)
 
         # 2. Update Video / Screenshot Evidence Link
         func_slug = re.sub(r"\[.*?\]$", "", nodeid.split("::")[-1]).lower()
@@ -437,7 +645,37 @@ def export_test_execution_evidence(
 
         step_count = len(list(test_screenshots_dir.glob("step_*.png"))) if test_screenshots_dir.exists() else 0
 
-        if outcome in ("failed", "xfailed"):
+        if actual_screen and actual_screen.exists():
+            rel_screen = relative_excel_target(actual_screen, reports_dir)
+            c_vid = ws.cell(row=target_row, column=evidence_link_col)
+            if outcome in ("failed", "xfailed"):
+                c_vid.value = "🚨 Full HD Defect"
+                c_vid.font = Font(name="Segoe UI", size=9.5, bold=True, underline="single", color="00DC2626")
+            else:
+                c_vid.value = "🔍 Full HD Actual Result"
+                c_vid.font = link_font
+            c_vid.alignment = Alignment(horizontal="center", vertical="center")
+            c_vid.hyperlink = str(rel_screen)
+
+            # Embed high-resolution reviewable screenshot cleanly into img_col
+            try:
+                img = OpenpyxlImage(str(actual_screen))
+                target_w = 520
+                if img.width and img.height:
+                    aspect = img.height / img.width
+                    target_h = int(target_w * aspect)
+                else:
+                    target_h = 292
+                img.width = target_w
+                img.height = target_h
+                cell_coord = f"{get_column_letter(img_col)}{target_row}"
+                ws.add_image(img, cell_coord)
+                ws.row_dimensions[target_row].height = max(80, int(target_h * 0.75) + 14)
+                ws.cell(row=target_row, column=img_col).hyperlink = str(rel_screen)
+            except Exception:
+                pass
+        elif outcome in ("failed", "xfailed"):
+            # If no screenshot exists, fall back to recorded video
             v_path = meta_info.get("video_path")
             matched_video = None
             if v_path and Path(v_path).exists():
@@ -450,7 +688,6 @@ def export_test_execution_evidence(
                         break
 
             if matched_video and matched_video.exists():
-                # Relative path from reports/<ticket>/
                 try:
                     rel_vid_reports = matched_video.relative_to(reports_dir)
                 except Exception:
@@ -461,56 +698,6 @@ def export_test_execution_evidence(
                 c_vid.font = link_font
                 c_vid.alignment = Alignment(horizontal="center", vertical="center")
                 c_vid.hyperlink = str(rel_vid_reports)
-
-                # Video file name & size
-                if evidence_file_col:
-                    c_vname = ws.cell(row=target_row, column=evidence_file_col)
-                    size_kb = round(matched_video.stat().st_size / 1024, 1)
-                    clean_vid_name = f"{str(ws.cell(row=target_row, column=id_col).value).lower().replace('-', '_')}.webm"
-                    c_vname.value = f"{clean_vid_name} ({size_kb} KB)"
-                    c_vname.font = Font(name="Consolas", size=8.5, color="00475569")
-            elif actual_screen and actual_screen.exists():
-                rel_screen = relative_excel_target(actual_screen, reports_dir)
-                c_vid = ws.cell(row=target_row, column=evidence_link_col)
-                link_label = f"📷 Actual Result (Defect +{step_count} steps)" if step_count > 0 else "📷 Actual Result (Defect)"
-                c_vid.value = link_label
-                c_vid.font = Font(name="Segoe UI", size=9.5, bold=True, underline="single", color="00DC2626")
-                c_vid.alignment = Alignment(horizontal="center", vertical="center")
-                c_vid.hyperlink = str(rel_screen)
-
-                if evidence_file_col:
-                    c_vname = ws.cell(row=target_row, column=evidence_file_col)
-                    size_kb = round(actual_screen.stat().st_size / 1024, 1)
-                    if step_count > 0 and test_screenshots_dir.exists():
-                        rel_dir = relative_excel_target(test_screenshots_dir, reports_dir)
-                        c_vname.value = f"📁 {step_count + 1} files ({actual_screen.name} + {step_count} steps)"
-                        c_vname.hyperlink = str(rel_dir)
-                        c_vname.font = Font(name="Segoe UI", size=8.5, underline="single", color="000284C7")
-                    else:
-                        c_vname.value = f"{actual_screen.name} ({size_kb} KB)"
-                        c_vname.font = Font(name="Consolas", size=8.5, color="00475569")
-        elif outcome == "passed":
-            # Pass tests link strictly to verified Actual Result screenshot evidence
-            if actual_screen and actual_screen.exists():
-                rel_screen = relative_excel_target(actual_screen, reports_dir)
-                c_vid = ws.cell(row=target_row, column=evidence_link_col)
-                link_label = f"📷 Actual Result (+{step_count} steps)" if step_count > 0 else "📷 Actual Result"
-                c_vid.value = link_label
-                c_vid.font = link_font
-                c_vid.alignment = Alignment(horizontal="center", vertical="center")
-                c_vid.hyperlink = str(rel_screen)
-
-                if evidence_file_col:
-                    c_vname = ws.cell(row=target_row, column=evidence_file_col)
-                    size_kb = round(actual_screen.stat().st_size / 1024, 1)
-                    if step_count > 0 and test_screenshots_dir.exists():
-                        rel_dir = relative_excel_target(test_screenshots_dir, reports_dir)
-                        c_vname.value = f"📁 {step_count + 1} files ({actual_screen.name} + {step_count} steps)"
-                        c_vname.hyperlink = str(rel_dir)
-                        c_vname.font = Font(name="Segoe UI", size=8.5, underline="single", color="000284C7")
-                    else:
-                        c_vname.value = f"{actual_screen.name} ({size_kb} KB)"
-                        c_vname.font = Font(name="Consolas", size=8.5, color="00475569")
 
     # 3. Recalculate Executive Banner (Row 2 Metrics)
     total_tcs = len(tc_id_row_map)
@@ -545,19 +732,20 @@ def export_test_execution_evidence(
     dest_reports_xlsx.parent.mkdir(parents=True, exist_ok=True)
     wb.save(dest_reports_xlsx)
 
-    # 5. Save synced copy to 1_Nghiep_Vu_va_Specs/ if source was loaded from there
-    synced_specs_xlsx = None
-    if src_wb_path and "1_Nghiep_Vu_va_Specs" in str(src_wb_path):
-        synced_specs_xlsx = src_wb_path.parent / evidence_filename
-        synced_specs_xlsx.parent.mkdir(parents=True, exist_ok=True)
-        wb.save(synced_specs_xlsx)
+    # 4b. Always guarantee report.xlsx is saved alongside report.html
+    report_std_xlsx = reports_dir / "report.xlsx"
+    wb.save(report_std_xlsx)
 
     return {
         "ticket": ticket_name,
         "reports_xlsx": str(dest_reports_xlsx),
-        "synced_specs_xlsx": str(synced_specs_xlsx) if synced_specs_xlsx else None,
+        "report_std_xlsx": str(report_std_xlsx),
         "total": total_tcs,
         "passed": pass_count,
         "failed": fail_count,
         "updated_tcs_count": len(updated_rows),
     }
+
+
+# Backwards compatibility alias
+update_or_create_evidence_workbook = export_test_execution_evidence

@@ -33,18 +33,23 @@
       {"text": "Dashboard", "href": "/"},
       {"text": "Education Accounts", "href": "/education-accounts"},
       {"text": "Top-up", "href": "/top-up"},
+      {"text": "View As", "href": "/support-console"},
       {"text": "School Users", "href": "/school-user-management"},
       {"text": "School management", "href": "/school-management"},
       {"text": "Students", "href": "/student-management"},
       {"text": "Fee Batches", "href": "/fee-batches"},
       {"text": "Fees", "href": "/fee-management"},
       {"text": "FAS", "href": "/fas-application-management"},
-      {"text": "MOEFAS", "href": "/moe-hq/moe-fas"}
+      {"text": "MOEFAS", "href": "/moe-hq/moe-fas"},
+      {"text": "FAS applications", "href": "/moe-hq/fas-applications"}
     ],
     "moehq_forbidden_hrefs": [
       "/school-config",
       "/class-management",
-      "/sbfas-schemes"
+      "/sbfas-schemes",
+      "/academic-years",
+      "/academic-levels",
+      "/fas-applications"
     ],
     "school_expected_links": [
       {"text": "Dashboard", "href": "/"},
@@ -53,15 +58,18 @@
       {"text": "Students", "href": "/student-management"},
       {"text": "Fee Batches", "href": "/fee-batches"},
       {"text": "Fees", "href": "/fee-management"},
-      {"text": "FAS", "href": "/fas-application-management"},
-      {"text": "SBFAS schemes", "href": "/sbfas-schemes"}
+      {"text": "FAS Applications", "href": "/fas-applications"},
+      {"text": "SBFAS", "href": "/sbfas-schemes"}
     ],
     "school_forbidden_hrefs": [
       "/education-accounts",
       "/top-up",
+      "/support-console",
       "/school-management",
       "/school-user-management",
-      "/moe-hq/moe-fas"
+      "/moe-hq/moe-fas",
+      "/moe-hq/fas-applications",
+      "/fas-application-management"
     ],
     "sequential_test_routes": [
       {"name": "School management", "href": "/school-management"},
@@ -91,9 +99,7 @@
     "back_to_home_text": "Back to Home"
   },
   "offline_recovery": {
-    "navigation_href": "/student-management",
-    "alert_text": "Mất kết nối mạng, vui lòng kiểm tra đường truyền",
-    "retry_label": "Thử lại"
+    "navigation_href": "/student-management"
   },
   "auth_server_error": {
     "status": 500,

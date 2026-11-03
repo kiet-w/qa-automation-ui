@@ -15,16 +15,18 @@ class HomePortalPage(BasePage):
     URL_PATH = "/"
 
     # Header and General Portal Elements
-    PORTAL_HEADING = "h1:has-text('EduSave E-Service Portal')"
-    CARDS_CONTAINER = "ul[aria-label='Education accounts']"
-    CARD_ARTICLES = "ul[aria-label='Education accounts'] article, article[class*='_card_']"
+    PORTAL_HEADING = 'role=heading[name="Your family’s education, at a glance"]'
+    CARDS_CONTAINER = 'role=list[name="Education accounts"]'
+    CARD_ARTICLES = 'role=list[name="Education accounts"] >> role=article'
 
     # Shell Navigation Links
-    NAV_HOME = "nav a[href='/']"
-    NAV_PROFILE = "nav a[href='/profile']"
-    NAV_TRANSACTIONS = "nav a[href='/transactions']"
-    NAV_FEES = "nav a[href='/billing']"
-    LOGOUT_BTN = "header button:has-text('Log out'), button[class*='_desktopLogout_']"
+    NAV_HOME = 'role=link[name="EduFAMS E-Service"]'
+    NAV_PROFILE = 'role=link[name="My Profile"]'
+    NAV_TRANSACTIONS = 'role=link[name="View invoices & payments"]'
+    NAV_FEES = 'role=link[name="View fees for"]'
+    LOGOUT_BTN = 'role=button[name="Log out"]'
+    USER_OPTIONS_BTN = 'role=button[name="Open user options"]'
+    NAV_FAS = 'role=link[name="FAS Application"]'
 
     # Pagination on Home (if applicable)
     HOME_PAGINATION = "nav[aria-label='Pagination']"
@@ -79,7 +81,7 @@ class HomePortalPage(BasePage):
         full_text = card.inner_text()
 
         # Extract title link / child name
-        card_link = card.locator("a[class*='_cardLink_'], h2 a, h3 a, a").first
+        card_link = card.locator('role=link[name=/View education account details for/]').first
         child_name = card_link.inner_text().strip() if card_link.count() > 0 else ""
         link_href = card_link.get_attribute("href") if card_link.count() > 0 else ""
 
@@ -124,13 +126,22 @@ class HomePortalPage(BasePage):
         """Click on the child card link to view student transactions."""
         cards = self.page.locator(self.CARD_ARTICLES)
         if index < cards.count():
-            card_link = cards.nth(index).locator("a[class*='_cardLink_'], a").first
+            card_link = cards.nth(index).locator('role=link[name=/View education account details for/]').first
             card_link.click()
             self.page.wait_for_load_state("domcontentloaded")
 
     def navigate_to_profile(self):
         """Click 'My Profile' in header navigation."""
+        if not self.is_visible(self.NAV_PROFILE):
+            self.page.click(self.USER_OPTIONS_BTN)
         self.page.click(self.NAV_PROFILE)
+        self.page.wait_for_load_state("domcontentloaded")
+
+    def navigate_to_fas_applications(self):
+        """Open FAS applications from the authenticated user options menu."""
+        if not self.is_visible(self.NAV_FAS):
+            self.page.click(self.USER_OPTIONS_BTN)
+        self.page.click(self.NAV_FAS)
         self.page.wait_for_load_state("domcontentloaded")
 
     def navigate_to_transactions(self):

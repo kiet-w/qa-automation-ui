@@ -1,9 +1,9 @@
 """
-pages/fs03/admin_login_page.py - Page Object for Admin Portal Login & SSO Authentication.
+pages/fs03/admin_login_page.py - Page Object for Admin Portal Login & Microsoft SSO Authentication.
 Complies with Invariant 1 (Zero assertions in Page Objects) and line limit (<200 lines).
 """
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 from playwright.sync_api import Locator, Page
 from pages.base_page import BasePage
 from pages.fs03.locators import AdminLoginLocators, MicrosoftSimulatorLocators, AdminShellLocators
@@ -25,9 +25,15 @@ class AdminLoginPage(BasePage):
         self.mock_role_select = self.page.locator(AdminLoginLocators.MOCK_ROLE_SELECT)
         self.password_toggle_btn = self.page.locator(AdminLoginLocators.PASSWORD_TOGGLE_BTN)
         self.heading = self.page.locator(AdminLoginLocators.PAGE_HEADING)
+        self.subtitle = self.page.locator(AdminLoginLocators.PAGE_SUBTITLE)
+        self.decoration_image = self.page.locator(AdminLoginLocators.DECORATION_IMAGE)
         self.mock_alert = self.page.locator(AdminLoginLocators.MOCK_ALERT)
         self.error_alert = self.page.locator(AdminLoginLocators.ALERT)
         self.error_alert_failed = self.page.locator(AdminLoginLocators.ALERT_FAILED)
+        self.toast_status = self.page.locator(AdminLoginLocators.TOAST_STATUS)
+        self.toast_error = self.page.locator(AdminLoginLocators.TOAST_ERROR)
+        self.field_errors = self.page.locator(AdminLoginLocators.FIELD_ERROR)
+        self.assignment_required_alert = self.page.locator(AdminShellLocators.ASSIGNMENT_REQUIRED_ALERT)
         self.admin_tile = self.page.locator(MicrosoftSimulatorLocators.MOEHQ_ACCOUNT_TILE)
         self.portal_header = self.page.locator(AdminShellLocators.PORTAL_HEADER)
         self.dashboard_shell = self.page.locator(AdminShellLocators.DASHBOARD_SHELL)
@@ -37,10 +43,14 @@ class AdminLoginPage(BasePage):
         """Navigate to admin login page."""
         self.page.goto(f"{base_url}/login", wait_until="domcontentloaded")
 
+    def open_callback(self, base_url: str = "http://localhost:5173", params: str = "") -> None:
+        """Navigate directly to OAuth callback URL with query parameters."""
+        url = f"{base_url}/login/microsoft/callback{params}"
+        self.page.goto(url, wait_until="domcontentloaded")
+
     def click_sign_in_with_microsoft(self) -> None:
         """Trigger Microsoft SSO flow with hydration safety."""
         self.sign_in_with_microsoft_btn.wait_for(state="visible", timeout=10000)
-        self.page.wait_for_timeout(500)
         self.sign_in_with_microsoft_btn.click()
 
     def fill_credentials(self, username: Optional[str] = None, password: Optional[str] = None) -> None:
@@ -82,8 +92,28 @@ class AdminLoginPage(BasePage):
     def get_alert_text(self) -> str:
         """Return alert message text if present."""
         if self.error_alert.count() > 0 and self.error_alert.first.is_visible():
-            return self.error_alert.first.inner_text()
+            return self.error_alert.first.inner_text().strip()
         return ""
+
+    def get_toast_text(self) -> str:
+        """Return visible toast message text if present."""
+        if self.toast_error.count() > 0 and self.toast_error.first.is_visible():
+            return self.toast_error.first.inner_text().strip()
+        if self.toast_status.count() > 0 and self.toast_status.first.is_visible():
+            return self.toast_status.first.inner_text().strip()
+        return ""
+
+    def get_field_errors_text(self) -> List[str]:
+        """Return text of visible inline field error messages."""
+        results: List[str] = []
+        count = self.field_errors.count()
+        for i in range(count):
+            el = self.field_errors.nth(i)
+            if el.is_visible():
+                text = el.inner_text().strip()
+                if text:
+                    results.append(text)
+        return results
 
     def login_with_microsoft_as_admin(self, base_url: str = "http://localhost:5173") -> None:
         """
@@ -94,7 +124,6 @@ class AdminLoginPage(BasePage):
             self.open(base_url)
 
         self.sign_in_with_microsoft_btn.wait_for(state="visible", timeout=10000)
-        self.page.wait_for_timeout(500)
         self.sign_in_with_microsoft_btn.click()
 
         self.page.wait_for_url("**/microsoft-provider/**", timeout=15000)

@@ -1,0 +1,39 @@
+{
+  "environments": {
+    "admin_portal": "http://localhost:5173",
+    "login": "http://localhost:5173/login",
+    "callback": "http://localhost:5173/login/microsoft/callback",
+    "entra_authorize": "http://localhost:5288/microsoft-provider/oauth2/v2.0/authorize"
+  },
+  "personas": {
+    "moehq": {"email": "admin@IAM.edu.vn", "user_id": "USR-00001", "role": "MOEHQ"},
+    "school_assigned": {"email": "staff1@IAM.edu.vn", "user_id": "USR-00002", "role": "SCHOOL", "school_id": "RPS-0201"},
+    "parent_role": {"email": "head1@IAM.edu.vn", "user_id": "USR-00003", "role": "PARENT"},
+    "school_unassigned": {"email": "school.unassigned@IAM.edu.vn", "role": "SCHOOL", "school_id": null},
+    "unregistered": {"email": "not.registered@IAM.edu.vn"}
+  },
+  "mock_basic_auth": {
+    "valid": {"username": "admin@IAM.edu.vn", "password_secret_ref": "ADMIN_LOGIN_PASSWORD"},
+    "invalid": {"username": "unknown@IAM.edu.vn", "password": "invalid-password"},
+    "whitespace": "     ",
+    "unicode_username": "quản-trị@IAM.edu.vn",
+    "stress_1000_ref": "repeat('A', 1000)",
+    "xss": "<script>alert(1)</script>",
+    "sqli": "' OR 1=1 --"
+  },
+  "oauth": {
+    "valid_state": "state-fixture-valid-001",
+    "tampered_state": "state-fixture-tampered-999",
+    "valid_code": "code-fixture-valid-001",
+    "replayed_code": "code-fixture-consumed-001",
+    "redirect_uri": "http://localhost:5173/login/microsoft/callback"
+  },
+  "prohibited_i18n_patterns": ["features.", "validation.", "*.undefined", "schoolAssignmentRequired"],
+  "viewports": [
+    {"width": 1920, "height": 1080},
+    {"width": 1366, "height": 768},
+    {"width": 768, "height": 1024},
+    {"width": 375, "height": 812},
+    {"width": 320, "height": 568}
+  ]
+}

@@ -33,8 +33,8 @@ class ParentProfilePage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.portal_base_url = os.environ.get("BASE_URL", "https://localhost:5174").rstrip("/")
-        self.form = FormHelper(page, container=Loc.PROFILE_HEADING + " ~ form, main, body")
+        self.portal_base_url = os.environ.get("BASE_URL", "http://localhost:5174").rstrip("/")
+        self.form = FormHelper(page, container=Loc.UPDATE_FORM)
 
     def open(self, base_url: Optional[str] = None):
         """Open the /profile page."""
@@ -104,15 +104,18 @@ class ParentProfilePage(BasePage):
         country: Optional[str] = None,
     ):
         """Populate form inputs in Edit Mode."""
-        data = {}
-        if phone is not None: data["phoneNumber"] = phone
-        if email is not None: data["email"] = email
-        if block is not None: data["mailingBlock"] = block
-        if street is not None: data["mailingStreet"] = street
-        if unit is not None: data["mailingUnit"] = unit
-        if postal_code is not None: data["mailingPostalCode"] = postal_code
-        if country is not None: data["mailingCountry"] = country
-        self.form.fill_fields(data)
+        data = {
+            "phoneNumber": (Loc.INPUT_PHONE, phone),
+            "email": (Loc.INPUT_EMAIL, email),
+            "mailingBlock": (Loc.INPUT_BLOCK, block),
+            "mailingStreet": (Loc.INPUT_STREET, street),
+            "mailingUnit": (Loc.INPUT_UNIT, unit),
+            "mailingPostalCode": (Loc.INPUT_POSTAL, postal_code),
+            "mailingCountry": (Loc.INPUT_COUNTRY, country),
+        }
+        for selector, value in data.values():
+            if value is not None:
+                self.page.locator(selector).fill(value)
 
     def click_save_changes(self):
         """Click 'Save changes' submit button."""
@@ -147,11 +150,26 @@ class ParentProfilePage(BasePage):
 
     def is_field_invalid(self, field_name: str) -> bool:
         """Check if an input field is marked as invalid."""
-        return self.form.is_field_invalid(field_name)
+        selector = self._field_selector(field_name)
+        control = self.page.locator(selector)
+        return control.count() > 0 and control.get_attribute("aria-invalid") == "true"
 
     def blur_field(self, field_name: str):
         """Trigger blur event on an input field to invoke inline field-level validation."""
-        self.form._find_control(field_name).blur()
+        self.page.locator(self._field_selector(field_name)).blur()
+
+    @staticmethod
+    def _field_selector(field_name: str) -> str:
+        """Map existing test data keys to the current accessible field names."""
+        return {
+            "phoneNumber": Loc.INPUT_PHONE,
+            "email": Loc.INPUT_EMAIL,
+            "mailingBlock": Loc.INPUT_BLOCK,
+            "mailingStreet": Loc.INPUT_STREET,
+            "mailingUnit": Loc.INPUT_UNIT,
+            "mailingPostalCode": Loc.INPUT_POSTAL,
+            "mailingCountry": Loc.INPUT_COUNTRY,
+        }.get(field_name, field_name)
 
     def is_success_toast_visible(self, timeout: int = 5000) -> bool:
         """Check if update success message appears."""

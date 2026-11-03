@@ -1,0 +1,34 @@
+{
+  "title": "UAT timeline",
+  "description": "Schedule starts Monday 26 October 2026. Internal execution is Wednesday 28 October. Client UAT starts the week of 2 November.",
+  "items": [
+    {
+      "When": "Mon 26 Oct 2026",
+      "Milestone": "Finish test case design by owner",
+      "Owner": "Josh, Kent, Chan, Howard and Gavin",
+      "Done when": "76-case baseline reviewed by each owner and paired reviewer; source mappings and retained follow-ups recorded. Review is not implied by the merge.",
+      "Status": "In progress"
+    },
+    {
+      "When": "Tue 27 Oct 2026",
+      "Milestone": "Receive code from Dev; map data and check readiness",
+      "Owner": "Devs; Chan with QA owners",
+      "Done when": "Rule answers due 27 Oct by 11:00, before Dev handover. Then verify build, accounts, mapped data, reset/fault controls and shared clock windows; name unresolved gates.",
+      "Status": "Planned"
+    },
+    {
+      "When": "Wed 28 Oct 2026",
+      "Milestone": "Run all UAT cases and finish results",
+      "Owner": "QA owners; Josh",
+      "Done when": "Target all 76 cases with Pass, Fail or Blocked and linked evidence. Log defects, do not fix them. Missing time stays Not Run and is reported as incomplete; never call it Blocked. This is internal execution, not client acceptance.",
+      "Status": "Planned"
+    },
+    {
+      "When": "Week of 2 Nov 2026",
+      "Milestone": "Client UAT phase starts",
+      "Owner": "Client and business; QA support",
+      "Done when": "Internal results, defects and open gates are handed over; client UAT is tracked separately.",
+      "Status": "Planned"
+    }
+  ]
+}

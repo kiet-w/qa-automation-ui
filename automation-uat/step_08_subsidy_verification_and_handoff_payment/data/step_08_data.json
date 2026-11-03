@@ -1,0 +1,100 @@
+{
+  "module": "step_08_handoff_payment",
+  "name": "Kiểm tra Kết quả Giảm trừ & Bàn giao Thanh toán (UAT-PAR-01, UAT-PAR-01-A1, Gates G2 & G3)",
+  "handoff_meta": {
+    "sender": "Kent (School Admin / UAT Lead R03)",
+    "recipient": "Gavin (Tester Fees & Payments R09)",
+    "cycle": "Sprint 3 — EduFAMS End-to-End Cycle (Fee → Batch → SBFAS → Payment)",
+    "gate_readiness": "Gate G1 Passed"
+  },
+  "environments": {
+    "admin_portal": "https://admin.20-255-158-192.sslip.io",
+    "parent_eservice_portal": "https://eservice.20-255-158-192.sslip.io/parent/login"
+  },
+  "student_fixture": {
+    "full_name": "Liam Pham",
+    "student_id": "STU-00001",
+    "nric_raw": "S4744854C",
+    "nric_masked": "*****854C",
+    "school_name": "Rosyth Primary School",
+    "school_code": "SCH-003",
+    "class_name": "Primary 1 - 1A1"
+  },
+  "parent_fixture": {
+    "full_name": "Pham Van Duc",
+    "singpass_mock_nric": "S7654321B",
+    "singpass_selector": "#btn-login-selected"
+  },
+  "edusave_account": {
+    "ea_code": "EDU-01001",
+    "currency": "SGD",
+    "opening_balance": 500.00,
+    "sufficient_for_net": true
+  },
+  "charge_invoice_fixture": {
+    "fee_batch_id": "BATCH-2026-001",
+    "charge_id": "CHG-2026-01001",
+    "invoice_id": "INV-2026-00101",
+    "charge_name": "Tuition Fee 2026",
+    "gross_amount": 100.00,
+    "scenarios": {
+      "partial_subsidy_60": {
+        "tier": "Tier 2",
+        "subsidy_amount": 60.00,
+        "net_amount": 40.00,
+        "expected_admin_status": "PARTIALLY_SUBSIDIZED",
+        "expected_parent_status": "Payment pending",
+        "linked_scheme": "SBF-01015 - Tier 2",
+        "app_id": "APP-01001"
+      },
+      "full_subsidy_100": {
+        "tier": "Tier 1",
+        "subsidy_amount": 100.00,
+        "net_amount": 0.00,
+        "expected_admin_status": "SUBSIDIZED_PAID",
+        "expected_parent_status": "Paid",
+        "linked_scheme": "SBF-01015 - Tier 1",
+        "app_id": "APP-01001"
+      }
+    }
+  },
+  "payment_execution_scenarios": {
+    "uat_par_01_ea_only": {
+      "test_id": "TC-PAY-0808",
+      "method": "Edusave (EA) only",
+      "net_payable": 40.00,
+      "ea_debit": 40.00,
+      "online_debit": 0.00,
+      "closing_balance": 460.00,
+      "final_invoice_status": "PAID"
+    },
+    "uat_par_01_a1_split_payment": {
+      "test_id": "TC-PAY-0810",
+      "method": "Split Payment (EA + Online)",
+      "net_payable": 40.00,
+      "ea_debit": 20.00,
+      "online_debit": 20.00,
+      "closing_balance": 480.00,
+      "gateway_sandbox_status": "Success",
+      "final_invoice_status": "PAID"
+    }
+  },
+  "safety_gates": {
+    "gate_g2_idempotency": {
+      "rule": "No double debit",
+      "test_id": "TC-SEC-0812",
+      "assertion": "Repeated clicks or token replay must debit exactly 40.00 SGD once."
+    },
+    "gate_g3_receipt_reconciliation": {
+      "rule": "Receipt financial integrity",
+      "test_id": "TC-REP-0813",
+      "expected_receipt": {
+        "student": "Liam Pham",
+        "gross": "SGD 100.00",
+        "subsidy_sbfas": "SGD 60.00",
+        "net_paid": "SGD 40.00",
+        "balance_outstanding": "SGD 0.00"
+      }
+    }
+  }
+}

@@ -1,5 +1,3 @@
-# **R4**
-
 # **FS F4 – Đơn FAS (FAS Applications)**
 
 21/10/2026 · Phiên bản 1.3 · @Huy

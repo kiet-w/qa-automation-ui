@@ -40,48 +40,16 @@ def _capture_action_from_locator(locator, is_button: bool = False, action_type: 
         page = getattr(locator, "page", None)
         if not page or page.is_closed():
             return
-        reports_dir = getattr(node.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
-        test_slug = re.sub(r"[^\w]+", "_", node.name.lower()).strip("_")
-
-        # 1. Test-specific folder: reports/screenshots/<test_slug>/
-        test_screenshots_dir = Path(reports_dir) / "screenshots" / test_slug
-        test_screenshots_dir.mkdir(parents=True, exist_ok=True)
-        screenshots_dir = Path(reports_dir) / "screenshots"
-        screenshots_dir.mkdir(parents=True, exist_ok=True)
-
-        # 2. Highlight action element in browser DOM
-        from core.evidence_annotator import EvidenceAnnotator
         act_name = "click" if is_button else action_type
         clean_val = str(value) if value is not None else ""
-        EvidenceAnnotator.highlight_action_input(page, locator, value=clean_val, action_type=act_name)
 
-        # 3. Determine action/step index
+        # Keep an action timeline for diagnostics, but defer screenshots until
+        # the test is known to have failed (pytest.ini uses only-on-failure).
         action_counter = getattr(node, "_qa_action_counter", 0) + 1
         setattr(node, "_qa_action_counter", action_counter)
-
-        # 4. Save step action screenshot
-        action_file = test_screenshots_dir / f"step_{action_counter}_{act_name}.png"
-        page.screenshot(path=str(action_file), full_page=False)
-
-        # 5. Keep legacy action screenshot for backward compatibility
-        legacy_action_file = screenshots_dir / f"{test_slug}_action.png"
-        try:
-            shutil.copy2(action_file, legacy_action_file)
-        except Exception:
-            pass
-
-        try:
-            rel_path = str(action_file.relative_to(WORKSPACE_DIR))
-        except Exception:
-            rel_path = str(action_file)
-
         step_screens = getattr(node, "_qa_step_screenshots", [])
-        step_screens.append((action_counter, act_name, clean_val, rel_path))
+        step_screens.append((action_counter, act_name, clean_val, None))
         setattr(node, "_qa_step_screenshots", step_screens)
-        setattr(node, "_qa_action_screenshot", rel_path)
-
-        # 6. Clear overlay
-        EvidenceAnnotator.clear_overlays(page)
     except Exception:
         pass
 
@@ -342,6 +310,7 @@ def browser_context_args(browser_context_args, pytestconfig):
     video_mode = pytestconfig.getoption("--video", default="off")
     args = {
         **browser_context_args,
+        "ignore_https_errors": True,
         "viewport": {"width": 1920, "height": 1080},
         "device_scale_factor": 1,
         "user_agent": (
@@ -401,6 +370,25 @@ def setup_page(page: Page, json_metadata, request, browser_name):
             document.addEventListener('DOMContentLoaded', initObserver);
         }
     """)
+
+    # 2b. Global Background API Guard:
+    # Auto-intercept background support session polling across both 5173 (Admin Portal) and 5174 (E-Service)
+    # to avoid Axios 401 interceptor cascading into an unintended redirect loop back to /login.
+    def _default_bg_interceptor(route):
+        url = route.request.url.lower()
+        if "support/sessions/current" in url:
+            route.fulfill(
+                status=200,
+                content_type="application/json",
+                body='{"isSuccess": true, "statusCode": 200, "data": null}',
+            )
+        else:
+            route.continue_()
+
+    try:
+        page.route("**/support/sessions/current**", _default_bg_interceptor)
+    except Exception:
+        pass
 
     # 3. Automatic Action Spotlight & Ripple Visualizer for Recorded Videos (Only active when video is enabled)
     video_mode = getattr(request.config.option, "video", "off")
@@ -620,154 +608,115 @@ def setup_page(page: Page, json_metadata, request, browser_name):
             except Exception:
                 pass
 
-        # 2. Auto-capture Step Actions & Highlighted Actual Result Evidence Screenshot
+        # 2. Record action steps for every test; save screenshots on pass or failure.
         try:
             reports_dir = getattr(request.config, "_ticket_reports_dir", DEFAULT_REPORTS_DIR)
             test_slug = re.sub(r"[^\w]+", "_", request.node.name.lower()).strip("_")
             screenshots_dir = Path(reports_dir) / "screenshots"
-            screenshots_dir.mkdir(parents=True, exist_ok=True)
             test_screenshots_dir = screenshots_dir / test_slug
-            test_screenshots_dir.mkdir(parents=True, exist_ok=True)
+            rel_actual_path = None
 
             if target_page and not target_page.is_closed():
+                screenshots_dir.mkdir(parents=True, exist_ok=True)
+                test_screenshots_dir.mkdir(parents=True, exist_ok=True)
                 from core.evidence_annotator import EvidenceAnnotator
 
-                status_label = "defect" if has_failed else "passed"
-                actual_loc = getattr(request.node, "_qa_actual_locator", None)
-                actual_text = getattr(request.node, "_qa_actual_text", None)
-
-                # Highlight Actual Result element in DOM
+                status_type = "defect" if has_failed else "passed"
                 EvidenceAnnotator.highlight_actual_result(
                     target_page,
-                    locator_or_selector=actual_loc,
-                    status=status_label,
-                    actual_text=actual_text,
+                    locator_or_selector=getattr(request.node, "_qa_actual_locator", None),
+                    status=status_type,
+                    actual_text=getattr(request.node, "_qa_actual_text", None),
                 )
-
-                # Capture Actual Result Screenshot into test directory
-                actual_filename = "actual_result.png"
-                actual_path = test_screenshots_dir / actual_filename
-                target_page.screenshot(path=str(actual_path), full_page=False)
-
-                # Legacy fallback copies for backward compatibility
-                legacy_filename = f"fail_{test_slug}_teardown.png" if has_failed else f"{test_slug}_pass.png"
-                legacy_path = screenshots_dir / legacy_filename
-                try:
-                    shutil.copy2(actual_path, legacy_path)
-                    shutil.copy2(actual_path, screenshots_dir / f"{test_slug}_actual_result.png")
-                except Exception:
-                    pass
-
-                try:
-                    rel_actual_path = str(actual_path.relative_to(WORKSPACE_DIR))
-                except Exception:
-                    rel_actual_path = str(actual_path)
-
+                actual_path = test_screenshots_dir / "actual_result.png"
+                target_page.screenshot(path=str(actual_path), full_page=True)
+                rel_actual_path = str(actual_path.relative_to(WORKSPACE_DIR))
                 setattr(request.node, "_qa_actual_screenshot", rel_actual_path)
                 EvidenceAnnotator.clear_overlays(target_page)
 
-                # Synchronize with step_tracker or json_metadata
-                step_screens = getattr(request.node, "_qa_step_screenshots", [])
-                if step_tracker and getattr(step_tracker, "steps", None):
-                    # Preserve all captured setup / action screenshots into steps timeline
-                    existing_screenshots = {s.get("screenshot") for s in step_tracker.steps if s.get("screenshot")}
-                    for idx, act, val, path in step_screens:
-                        if path not in existing_screenshots:
-                            insert_pos = max(0, len(step_tracker.steps) - 1)
-                            step_tracker.steps.insert(insert_pos, {
-                                "title": f"Setup / Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip(),
-                                "step_index": len(step_tracker.steps) + 1,
-                                "status": "passed",
-                                "duration": 0.1,
-                                "start_offset": 0.0,
-                                "end_offset": 0.1,
-                                "expected": f"Thực hiện thành công thao tác {act}",
-                                "actual": f"Đã thực hiện {act} trên trường tương ứng",
-                                "screenshot": path,
-                                "error": None,
-                            })
-                            existing_screenshots.add(path)
-
-                    # Ensure actual result has its own dedicated evidence without overwriting setup images
-                    last_step_shot = step_tracker.steps[-1].get("screenshot")
-                    if last_step_shot and last_step_shot != rel_actual_path and ("step_" in str(last_step_shot)):
-                        actual_step_title = "Kiểm chứng kết quả thực tế (PASSED)" if not has_failed else "Kiểm chứng kết quả thực tế (DEFECT / FAILED)"
-                        err_msg = str(exc_caught) if exc_caught else None
-                        step_tracker.steps.append({
-                            "title": actual_step_title,
+            step_screens = getattr(request.node, "_qa_step_screenshots", [])
+            if step_tracker and getattr(step_tracker, "steps", None):
+                existing_titles = {step.get("title") for step in step_tracker.steps}
+                for idx, act, val, path in step_screens:
+                    title = f"Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip()
+                    if title not in existing_titles:
+                        step_tracker.steps.insert(max(0, len(step_tracker.steps) - 1), {
+                            "title": title,
                             "step_index": len(step_tracker.steps) + 1,
-                            "status": "failed" if has_failed else "passed",
+                            "status": "passed",
                             "duration": 0.1,
                             "start_offset": 0.0,
                             "end_offset": 0.1,
-                            "expected": "Các điều kiện kiểm tra (assertions) và trạng thái giao diện đạt chuẩn nghiệp vụ",
-                            "actual": f"FAILED: {err_msg}" if has_failed else (actual_text or "Kết quả thực tế (Actual Result) chính xác theo đặc tả"),
+                            "expected": f"Thực hiện thành công thao tác {act}",
+                            "actual": f"Đã thực hiện {act} trên giao diện",
+                            "screenshot": None,
+                            "error": None,
+                        })
+                if rel_actual_path:
+                    if has_failed:
+                        err_msg = str(exc_caught or getattr(request.node, "_failure_exc", "Test failed"))
+                        step_tracker.steps.append({
+                            "title": "Ảnh trạng thái giao diện khi test thất bại",
+                            "step_index": len(step_tracker.steps) + 1,
+                            "status": "failed",
+                            "duration": 0.1,
+                            "start_offset": 0.0,
+                            "end_offset": 0.1,
+                            "expected": "Giao diện đáp ứng các điều kiện kiểm tra",
+                            "actual": f"FAILED: {err_msg}",
                             "screenshot": rel_actual_path,
                             "error": err_msg,
                             "is_actual_result": True,
                         })
                     else:
-                        step_tracker.steps[-1]["screenshot"] = rel_actual_path
-                        step_tracker.steps[-1]["is_actual_result"] = True
-                else:
-                    # Construct steps list with captured step actions + final actual result
-                    func_name = request.node.name
-                    doc = getattr(request.node.obj, "__doc__", "") or ""
-                    first_line = doc.strip().split("\n")[0].strip() if doc.strip() else ""
-                    m_tc = re.search(r"\b(TC-[A-Za-z0-9_-]+)\b", first_line)
-                    tc_badge = m_tc.group(1) if m_tc else func_name
-
-                    dur_total = round(time.time() - test_start_time, 2) if 'test_start_time' in locals() else 0.5
-                    steps_list = []
-                    step_screens = getattr(request.node, "_qa_step_screenshots", [])
-                    if step_screens:
-                        step_dur = round(dur_total / (len(step_screens) + 1), 2)
-                        for idx, act, val, path in step_screens:
-                            steps_list.append({
-                                "title": f"Bước {idx}: Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip(),
-                                "status": "passed",
-                                "duration": step_dur,
-                                "start_offset": 0.0,
-                                "end_offset": step_dur,
-                                "expected": f"Thực hiện thành công thao tác {act}",
-                                "actual": f"Đã thực hiện {act} trên trường tương ứng",
-                                "screenshot": path,
-                                "error": None,
-                            })
-                    else:
-                        rel_action = getattr(request.node, "_qa_action_screenshot", rel_actual_path)
-                        steps_list.append({
-                            "title": f"Bước 1: Trạng thái nhập liệu hoàn tất ({tc_badge})",
+                        step_tracker.steps.append({
+                            "title": "Ảnh minh chứng giao diện khi test pass",
+                            "step_index": len(step_tracker.steps) + 1,
                             "status": "passed",
-                            "duration": round(dur_total / 2, 2),
+                            "duration": 0.1,
                             "start_offset": 0.0,
-                            "end_offset": round(dur_total / 2, 2),
-                            "expected": "Giao diện và các trường thông tin được nhập liệu chính xác",
-                            "actual": "Đã hoàn thành các bước tương tác / nhập liệu trên giao diện màn hình",
-                            "screenshot": rel_action,
+                            "end_offset": 0.1,
+                            "expected": "Giao diện đạt theo tiêu chí kiểm thử",
+                            "actual": "Test PASSED: Giao diện hiển thị đúng kỳ vọng",
+                            "screenshot": rel_actual_path,
                             "error": None,
+                            "is_actual_result": True,
                         })
-
-                    actual_step_title = "Kiểm chứng kết quả thực tế (PASSED)" if not has_failed else "Kiểm chứng kết quả thực tế (DEFECT / FAILED)"
-                    err_msg = str(exc_caught) if exc_caught else None
+            else:
+                doc = getattr(request.node.obj, "__doc__", "") or ""
+                first_line = doc.strip().split("\n")[0].strip() if doc.strip() else ""
+                match = re.search(r"\b(TC-[A-Za-z0-9_-]+)\b", first_line)
+                tc_badge = match.group(1) if match else request.node.name
+                duration = round(time.time() - test_start_time, 2) if "test_start_time" in locals() else 0.5
+                steps_list = []
+                for idx, act, val, _ in step_screens:
                     steps_list.append({
-                        "title": f"Bước {len(steps_list) + 1}: {actual_step_title}",
-                        "status": "failed" if has_failed else "passed",
-                        "duration": round(dur_total / 2, 2),
-                        "start_offset": round(dur_total / 2, 2),
-                        "end_offset": dur_total,
-                        "expected": "Các điều kiện kiểm tra (assertions) và trạng thái giao diện đạt chuẩn nghiệp vụ",
-                        "actual": f"FAILED: {err_msg}" if has_failed else (actual_text or "Kết quả thực tế (Actual Result) chính xác theo đặc tả"),
-                        "screenshot": rel_actual_path,
-                        "error": err_msg,
-                        "is_actual_result": True,
+                        "title": f"Bước {idx}: Thao tác {act.upper()} {f'\"{val}\"' if val else ''}".strip(),
+                        "status": "passed",
+                        "duration": round(duration / (len(step_screens) + 1), 2),
+                        "start_offset": 0.0,
+                        "end_offset": duration,
+                        "expected": f"Thực hiện thành công thao tác {act}",
+                        "actual": f"Đã thực hiện {act} trên giao diện",
+                        "screenshot": None,
+                        "error": None,
                     })
-
-                    if "steps" not in json_metadata:
-                        json_metadata["steps"] = []
-                    json_metadata["steps"].clear()
-                    json_metadata["steps"].extend(steps_list)
+                err_msg = str(exc_caught or getattr(request.node, "_failure_exc", "Test failed")) if has_failed else None
+                steps_list.append({
+                    "title": f"{'Lỗi' if has_failed else 'Kiểm chứng'}: {tc_badge}",
+                    "status": "failed" if has_failed else "passed",
+                    "duration": duration,
+                    "start_offset": 0.0,
+                    "end_offset": duration,
+                    "expected": "Các điều kiện kiểm tra đạt theo đặc tả",
+                    "actual": f"FAILED: {err_msg}" if has_failed else "Test hoàn tất",
+                    "screenshot": rel_actual_path,
+                    "error": err_msg,
+                    "is_actual_result": True,
+                })
+                json_metadata["steps"] = steps_list
         except Exception:
+            # Evidence generation must not mask the original test result.
             pass
 
         # 3. Teardown: Safely close context and record video path 1:1 per test

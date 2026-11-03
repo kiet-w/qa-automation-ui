@@ -34,7 +34,7 @@ class SchoolUserDetailPage(BasePage):
         self.page.goto(target_url, wait_until="domcontentloaded")
         try:
             self.page.wait_for_selector(
-                "section h2, button:has-text('Sign in with Microsoft')", timeout=5000
+                "#school-user-detail-heading, button:has-text('Sign in with Microsoft')", timeout=5000
             )
         except Exception:
             pass
@@ -46,9 +46,7 @@ class SchoolUserDetailPage(BasePage):
 
     def wait_for_loaded(self, timeout: int = 10000) -> None:
         """Wait until a detail card or the page heading is mounted."""
-        self.page.wait_for_selector(
-            "section:has(h2), h1", timeout=timeout
-        )
+        self.page_heading.wait_for(state="visible", timeout=timeout)
 
     def get_user_id_from_url(self) -> str:
         """Extract the trailing :id segment from the current URL (empty for /new or list)."""
@@ -65,8 +63,8 @@ class SchoolUserDetailPage(BasePage):
         return self.school_card.first.inner_text().strip() if self.school_card.first.is_visible() else ""
 
     def is_unassigned(self) -> bool:
-        """Return True when no School card with school details is rendered."""
-        return not self.school_card.first.is_visible()
+        """Return True when the visible School card states no assignment."""
+        return "not assigned to a school yet" in self.get_school_card_text().lower()
 
     def get_page_text(self) -> str:
         """Return full visible body text of the current screen."""

@@ -1,5 +1,3 @@
-# **R8 (Final)**
-
 # **FS-08: Parent Portal – SingPass, Education Account, Profile**
 
 FR-08 cho phép Parent đăng nhập e-Service bằng SingPass, xem Education Account (EA) của con và cập nhật thông tin liên lạc của mình.

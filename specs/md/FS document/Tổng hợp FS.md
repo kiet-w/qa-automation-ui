@@ -1,5 +1,3 @@
-# **R1 (Final)**
-
 #  **R1 – Education Account Lifecycle Management**
 
 ## **Updated Functional Specification – Sprint 1 MVP**
@@ -652,8 +650,6 @@ Citizenship Change được Team Decision đưa vào Closure Eligibility. Tuy nh
 
 Leap Year Handling, một số Failure Handling Rules và Remaining Balance Closure Deferred Rule vẫn là Working Assumptions cho đến khi team thống nhất.
 
-# **R1**
-
 # **R1 – Education Account Lifecycle Management**
 
 **Functional Specification – Sprint 1 MVP**
@@ -980,274 +976,346 @@ Account Holder's Name, DOB, Citizenship và Address được truy xuất thông 
 | Processed At | DateTime | Yes | Processing timestamp |
 | Reason / Details | String | No | Lý do Skip, Block hoặc Failure |
 
-# **R2 (v3)**
-
 # **Function 2 (R2) – Top-Up Management**
 
 ## **1\. Introduction**
 
 ### **1.1. Preface**
 
-Tài liệu này là Functional Specification (FS) cho Function 2 (R2) – Top-Up Management trên Admin Portal của hệ thống Education Account & FAS (MOE Singapore). Function 2 cho phép MOE HQ User nạp tiền vào Education Account (EA) theo hai cách: nạp lẻ cho từng chủ tài khoản (Individual Top-Up), hoặc nạp hàng loạt theo campaign (Bulk Campaigns) với criterion tùy chọn theo độ tuổi và số dư. Campaign tạo một lần và dùng lại nhiều lần: HQ User bấm Run Campaign ngay ở danh sách để chạy một batch mới.
+Tài liệu này là Functional Specification (FS) cho Function 2 (R2) – Top-Up Management trên Admin Portal của hệ thống Education Account & FAS (MOE Singapore). Function 2 cho phép MOE HQ User nạp tiền vào Education Account (EA) theo hai cách: nạp lẻ cho từng chủ tài khoản (Individual Top-Up), hoặc nạp hàng loạt (Bulk Top-Up) với criterion tùy chọn theo độ tuổi và số dư.  
+Mỗi Bulk Top-Up có một trong hai chế độ chạy (Run Mode), chọn khi tạo: **Manual Run** (tạo một lần, dùng lại nhiều lần; HQ User bấm Run Bulk Top-Up ngay ở danh sách để chạy một batch mới) hoặc **Scheduled Run** (HQ User đặt ngày giờ, hệ thống tự chạy một batch vào đúng thời điểm đó).
 
 ### **1.2. Personas**
 
 | Persona | Loại | Vai trò trong Function 2 |
-| :---- | :---- | :---- |
-| MOE HQ User | Primary actor | Nạp lẻ; tạo và sửa campaign; xem preview; bấm Run Campaign; theo dõi kết quả batch và Top-Up History |
+| ----- | ----- | ----- |
+| MOE HQ User | Primary actor | Nạp lẻ; tạo và sửa Bulk Top-Up; chọn Run Mode (Manual hoặc Scheduled); đặt ngày giờ chạy (Scheduled); xem preview; bấm Run Bulk Top-Up (Manual); theo dõi kết quả batch và Top-Up History |
 | School User | Không phải actor | Không có quyền Top-Up, không thấy menu Top-up |
 | Parent | Gián tiếp | Thấy giao dịch Top-up trong Transaction History (R8) |
-| Admin Portal System | Hệ thống | Kiểm tra điều kiện, tính danh sách eligible, chạy batch, ghi log và audit |
+| Admin Portal System | Hệ thống | Kiểm tra điều kiện, tính danh sách eligible, tự chạy batch đúng giờ cho Bulk Top-Up Scheduled, chạy batch, ghi log và audit |
 
 ### **1.3. Design Assumptions and Limitations**
 
-#### **Design Assumptions**
+**Design Assumptions**
 
 | ID | Assumption |
-| :---- | :---- |
-| DA-02 | Function 2 ghi có trực tiếp vào số dư EA, đồng thời thêm một bút toán vào trong cùng một database transaction. |
-| DA-03 | Chỉ MOE HQ User dùng được Function 2\. School User và Parent không có quyền. |
-| DA-04 | Chỉ EA có trạng thái Active mới nhận top-up. |
-| DA-06 | Preview chỉ mang tính tham khảo và không bắt buộc trước khi chạy. Khi chạy, hệ thống đánh giá lại từng tài khoản bằng dữ liệu tại thời điểm đó. |
-| DA-07 | Criterion của campaign là tùy chọn (Age Range, Account Balance): tài khoản eligible khi thỏa tất cả criterion đã chọn. Nếu không chọn criterion nào, mặc định lấy hết (mọi EA Active). Mỗi tài khoản eligible nhận một số tiền cố định. |
-| DA-09 | Campaign dùng lại được. HQ User bấm Run Campaign ở danh sách Bulk Campaigns để chạy ngay; mỗi lần bấm tạo một batch mới. Không cần Preview hay bước xác nhận riêng, không có chế độ chạy theo lịch hay định kỳ. |
-| DA-11 | Mỗi lần ghi có tạo một top-up transaction với Reference ID riêng, và kiểm tra bằng Reference ID để không phát sinh hai giao dịch trùng. |
-| DA-12 | Tiền tệ SGD, 2 chữ số thập phân, hiển thị dạng \$1,234.00. Ngày giờ hiển thị dạng 21 Oct 2026, 5:56 pm theo giờ Singapore (SGT, UTC+8); lưu UTC. |
-| DA-13 | Function 2 không thiết lập ngân sách hay hạn mức cho campaign. Chi tiêu được theo dõi bằng Top-Up Summary (Total Spending, Successful, Failed) khi xem history, campaign và batch; số liệu chỉ để xem, không chặn ghi có. |
-| DA-14 | Mỗi campaign chỉ có tối đa một batch đang Running tại một thời điểm. Khi batch đang Running, nút Run Campaign và Edit của campaign đó bị vô hiệu. |
+| ----- | ----- |
+| DA-01 | Function 2 ghi có trực tiếp vào số dư EA tạo new balance. |
+| DA-02 | Chỉ MOE HQ User dùng được Function 2\. School User và Parent không có quyền. |
+| DA-03 | Chỉ EA có trạng thái Active mới nhận top-up. EA inactive chỉ được view thông tin nhưng không được Top-up. |
+| DA-04 | Preview chỉ mang tính tham khảo và không bắt buộc trước khi chạy. Khi chạy (HQ User bấm tay hoặc đến giờ theo lịch), hệ thống đánh giá lại từng tài khoản bằng dữ liệu tại thời điểm đó. Với Bulk Top-Up Scheduled, danh sách Preview được lập theo Scheduled Date/Time: tuổi tính tại ngày chạy theo lịch, số dư và trạng thái EA theo dữ liệu hiện tại. |
+| DA-05 | Criterion của Bulk Top-Up là tùy chọn (Age Range, Account Balance): tài khoản eligible khi thỏa tất cả criterion đã chọn. Nếu không chọn criterion nào, mặc định lấy hết (mọi EA Active). Mỗi tài khoản eligible nhận một số tiền cố định. |
+| DA-06 | Bulk Top-Up có hai Run Mode, chọn khi tạo. Manual Run: HQ User bấm Run Bulk Top-Up ở danh sách Bulk Top-Ups để chạy ngay; mỗi lần bấm tạo một batch mới; dùng lại được nhiều lần. Scheduled Run: HQ User đặt ngày giờ chạy; đến giờ hệ thống tự tạo một batch. Cả hai đều không cần Preview hay bước xác nhận riêng. Không có chạy định kỳ (recurring). |
+| DA-07 | Mỗi lần ghi có tạo một top-up transaction với Reference ID riêng, và kiểm tra bằng Reference ID để không phát sinh hai giao dịch trùng. |
+| DA-08 | Tiền tệ SGD, 2 chữ số thập phân, hiển thị dạng \$1,234.00. Ngày giờ hiển thị dạng 21 Oct 2026, 5:56 pm theo giờ Việt Nam (VNT, UTC+7) trên mọi màn hình; lưu UTC. Scheduled Date/Time do HQ User nhập theo giờ VNT. |
+| DA-09 | Function 2 không thiết lập ngân sách hay hạn mức cho Bulk Top-Up. Chi tiêu được theo dõi bằng Top-Up Summary (Total Spending, Successful, Failed) khi xem history, Bulk Top-Up và batch; số liệu chỉ để xem, không chặn ghi có. |
+| DA-10 | Mỗi Bulk Top-Up chỉ có tối đa một batch đang Running tại một thời điểm. Khi batch đang Running, nút Run Bulk Top-Up và Edit của Bulk Top-Up đó bị vô hiệu. |
+| DA-11 | Trạng thái phụ thuộc Run Mode: Manual gồm Draft, Active, Inactive; Scheduled gồm Scheduled, Completed. Trạng thái Manual do HQ User đổi bằng tay, không phụ thuộc số batch đã chạy. |
+| DA-12 | Scheduled Run chạy đúng một lần vào Scheduled Date/Time và phải đặt ở thời điểm sau hiện tại. HQ User có thể bấm Run Early để chạy sớm trước Scheduled Date/Time; dù chạy sớm hay đúng giờ, vẫn chỉ có một batch. |
+| DA-13 | Đến giờ, Admin Portal System tự tạo batch và xử lý như Manual Run: đánh giá lại criterion tại lúc chạy, mỗi batch item có Reference ID riêng. Audit ghi "System" kèm HQ User đã đặt lịch. |
 
-#### **Limitations**
+**Limitations**
 
-•      Function 2 không sửa hay hoàn tác top-up đã ghi có; top-up nhầm được xử lý ngoài hệ thống (OOS \#4).  
-•      Function 2 chỉ được coi là đạt khi cả nạp lẻ và nạp hàng loạt chạy đúng tiêu chí chấp nhận.
+* Function 2 không sửa hay hoàn tác top-up đã ghi có; top-up nhầm được xử lý ngoài hệ thống (OOS \#4).  
+* Scheduled Run chỉ chạy một lần; chạy định kỳ chưa hỗ trợ (OOS \#10).  
+* Function 2 chỉ được coi là đạt khi nạp lẻ, nạp hàng loạt Manual Run và nạp hàng loạt Scheduled Run đều chạy đúng tiêu chí chấp nhận.
 
 ### **1.4. Definitions, Acronyms and Abbreviations**
 
 | Thuật ngữ | Giải thích |
-| :---- | :---- |
+| ----- | ----- |
 | EA | Education Account. Tài khoản chi tiêu cho giáo dục của Singapore Citizen từ 7 đến dưới 16 tuổi. |
 | Top-Up | Giao dịch ghi có một số tiền SGD vào EA. |
 | Individual Top-Up | Top-up lẻ cho một EA do HQ User tìm và nhập số tiền. |
-| Bulk Top-Up | Top-up cho nhiều EA cùng lúc theo criterion của một campaign. |
-| Campaign | Định nghĩa một đợt bulk top-up: criterion tùy chọn (tuổi, số dư) và số tiền mỗi tài khoản. Tạo một lần, chạy được nhiều lần. Trạng thái: Draft (chưa chạy lần nào), Active (đã chạy ít nhất một lần), Deactive (bị tắt). |
-| Criterion | Một điều kiện lọc tùy chọn của campaign: Age Range hoặc Account Balance. Các criterion khác để sprint sau. |
-| Run Campaign | Thao tác chạy campaign ngay từ danh sách Bulk Campaigns. Mỗi lần bấm tạo một batch. |
-| Batch | Một lần chạy campaign (một lần Run Campaign). Cột Batches Run ở danh sách là số batch đã chạy của campaign. |
+| Bulk Top-Up | Định nghĩa một đợt top-up hàng loạt cho nhiều EA cùng lúc: tên, criterion tùy chọn (tuổi, số dư), số tiền mỗi tài khoản và Run Mode. Manual Run: tạo một lần, chạy được nhiều lần. Scheduled Run: chạy một lần vào ngày giờ đã đặt. |
+| Run Mode | Chế độ chạy của Bulk Top-Up, chọn khi tạo và không đổi sau khi lưu: Manual Run hoặc Scheduled Run. |
+| Manual Run | Run Mode do HQ User chủ động chạy bằng nút Run Bulk Top-Up ở danh sách. Mỗi lần bấm tạo một batch. Trạng thái Bulk Top-Up: Draft (mới tạo, chưa chạy được), Active (chạy được), Inactive (bị tắt, không chạy được). HQ User đổi trạng thái bằng tay. |
+| Scheduled Run | Run Mode do hệ thống tự chạy một lần vào Scheduled Date/Time. Trạng thái Bulk Top-Up: Scheduled (đã đặt lịch, chưa chạy xong), Completed (batch theo lịch đã kết thúc). |
+| Scheduled Date/Time | Ngày giờ (VNT) hệ thống tự tạo batch cho Bulk Top-Up Scheduled. Bắt buộc với Scheduled Run, phải sau thời điểm hiện tại khi lưu. |
+| Criterion | Một điều kiện lọc tùy chọn của Bulk Top-Up: Age Range hoặc Account Balance. Các criterion khác để sprint sau. |
+| Run Bulk Top-Up | Thao tác chạy ngay một Bulk Top-Up Manual từ danh sách Bulk Top-Ups. Mỗi lần bấm tạo một batch. |
+| Batch | Một lần chạy của Bulk Top-Up (một lần Run Bulk Top-Up, hoặc một lần chạy theo lịch). Cột Batches Run ở danh sách chỉ áp dụng cho Bulk Top-Up Manual Run (số batch đã chạy); Bulk Top-Up Scheduled Run chỉ chạy một lần nên không có Batches Run. |
 | Batch Item | Kết quả xử lý của một EA trong một batch. |
 | Preview | Danh sách tài khoản dự kiến eligible tại thời điểm xem, kèm tổng số và tổng tiền. Chỉ tham khảo, không bắt buộc trước khi chạy. |
-| Total Spending | Tổng số tiền đã ghi có thành công (tổng Amount các giao dịch Success) trong phạm vi đang xem: theo bộ lọc History, theo campaign hoặc theo batch. |
+| Total Spending | Tổng số tiền đã ghi có thành công (tổng Amount các giao dịch Success) trong phạm vi đang xem: theo bộ lọc History, theo Bulk Top-Up hoặc theo batch. |
 | Top-Up Summary | Khối số liệu chỉ để xem gồm Total Spending, Successful, Failed. Không thiết lập ngân sách và không chặn top-up. |
-| Successful / Failed | Hai nhóm kết quả của Batch Item: nạp thành công / không nạp được (lỗi xử lý, hoặc không còn đủ điều kiện khi chạy). |
+| Success / Failed | Hai kết quả (Outcome) của Batch Item: nạp thành công / không nạp được (lỗi xử lý, hoặc không còn đủ điều kiện khi chạy). Thẻ và cột đếm số lượng dùng nhãn Successful, Failed. |
+| Batch Status | Trạng thái của một batch: Running (đang xử lý; nút ở danh sách hiện "Executing…"), Success (đã xử lý xong, không có batch item Failed, kể cả batch có 0 tài khoản), Failed (đã xử lý xong, còn batch item Failed). |
 | Reference ID | Mã tham chiếu duy nhất của một lần ghi có, dùng để chống ghi trùng và đối soát. |
 | SGD | Singapore dollar. |
 
 ### **1.5. Exclusions**
 
-FS này không đặc tả:  
-•      Nguồn ngân sách, phê duyệt tài chính nội bộ MOE và hạch toán kế toán.  
-•      Tạo và đóng EA (R1).  
-•      Liên kết Student–EA (R3). Function 2 chỉ đọc.  
-•      Hiển thị Transaction History cho Parent (R8) và thanh toán phí bằng EA (R9).  
-•      Áp trợ cấp FAS (R4).  
-•      Xác thực và phân quyền Admin Portal.
+FS này không đặc tả:
+
+* Nguồn ngân sách, phê duyệt tài chính nội bộ MOE và hạch toán kế toán.  
+* Tạo và đóng EA (R1).  
+* Liên kết Student–EA (R3). Function 2 chỉ đọc.  
+* Hiển thị Transaction History cho Parent (R8) và thanh toán phí bằng EA (R9).  
+* Áp trợ cấp FAS (R4).  
+* Xác thực và phân quyền Admin Portal.
 
 ### **1.6. OOS List**
 
 | \# | Hạng mục ngoài phạm vi | Lý do / nguồn | Dự kiến |
-| :---- | :---- | :---- | :---- |
-| 1 | Số tiền khác nhau theo từng tài khoản (theo bậc tuổi, cấp học) | Requirement chỉ nêu số tiền cố định mỗi tài khoản; muốn nhiều mức thì tạo nhiều campaign | Chưa xếp lịch |
+| ----- | ----- | ----- | ----- |
+| 1 | Số tiền khác nhau theo từng tài khoản (theo bậc tuổi, cấp học) | Requirement chỉ nêu số tiền cố định mỗi tài khoản; muốn nhiều mức thì tạo nhiều Bulk Top-Up | Chưa xếp lịch |
 | 2 | Criterion bổ sung (Schooling Status, School, Academic Level, Class, FAS tier) | Requirement ghi "etc."; bản này chỉ có Age Range và Account Balance; Schooling Status, School, Academic Level và Class để sprint sau (khi triển khai, chỉ chọn được Class sau khi đã chọn School) | Chưa xếp lịch |
 | 3 | Nhập danh sách tài khoản bằng file CSV | Không có trong requirement | Chưa xếp lịch |
-| 4 | Sửa hoặc hoàn tác top-up đã ghi có (top-up lẻ, từng giao dịch trong batch, cả một batch) | Đã bỏ khỏi phạm vi (US-033 Incorrect Manual Top-Up Correction); top-up nhầm được xử lý ngoài hệ thống | Sau khi client chốt |
+| 4 | Sửa hoặc hoàn tác top-up đã ghi có (top-up lẻ, từng giao dịch trong batch, cả một batch) | Đã bỏ khỏi phạm vi (US-033 Incorrect Manual Top-Up Correction); top-up nhầm được xử lý ngoài hệ thống | Chưa xếp lịch |
 | 5 | Top-up cho EA Closed, chuyển số dư sang CPF | CPF Transfer chưa triển khai ở R1 | Cùng CPF Transfer |
-| 6 | Phê duyệt hai bước (maker-checker) | Chưa có trong requirement (OQ-03) | Chưa xếp lịch |
-| 7 | Dashboard phân tích chi tiêu nhiều campaign | Không có trong requirement; bản này chỉ có Top-Up Summary (Total Spending, Successful, Failed) khi xem history, từng campaign và từng batch, và export | Chưa xếp lịch |
-| 8 | Mọi thông báo cho Parent (email, SMS, trong ứng dụng) | Đã bỏ khỏi phạm vi (F2.8 Parent Notification); FS-08 cũng đã bỏ chuông thông báo | Chưa xếp lịch |
-| 9 | Thiết lập ngân sách hoặc hạn mức cho campaign, cảnh báo vượt ngân sách | Đã bỏ khỏi phạm vi; thay bằng Top-Up Summary khi xem history | Chưa xếp lịch |
-| 10 | Chạy campaign theo lịch (một lần hoặc định kỳ), chọn chế độ chạy | Đã bỏ khỏi phạm vi; campaign chỉ chạy khi HQ User bấm Run Campaign | Chưa xếp lịch |
+| 6 | Phê duyệt hai bước (maker-checker) | Chưa có trong requirement | Chưa xếp lịch |
+| 7 | Dashboard phân tích chi tiêu nhiều Bulk Top-Up | Không có trong requirement; bản này chỉ có Top-Up Summary (Total Spending, Successful, Failed) khi xem history, từng Bulk Top-Up và từng batch, và export | Chưa xếp lịch |
+| 8 | Mọi thông báo cho Parent (email, SMS, trong ứng dụng) | Đã bỏ khỏi phạm vi (F2.8 Parent Notification cũ); FS-08 cũng đã bỏ chuông thông báo | Chưa xếp lịch |
+| 9 | Thiết lập ngân sách hoặc hạn mức cho Bulk Top-Up, cảnh báo vượt ngân sách | Đã bỏ khỏi phạm vi; thay bằng Top-Up Summary khi xem history | Chưa xếp lịch |
+| 10 | Chạy Bulk Top-Up định kỳ (recurring); Run now cho Bulk Top-Up Scheduled; đổi Run Mode sau khi lưu | Scheduled Run chỉ chạy một lần vào ngày giờ đã đặt; Manual Run chỉ chạy khi HQ User bấm Run Bulk Top-Up; Run Mode cố định sau khi lưu (DA-11, DA-12) | Chưa xếp lịch |
+| 11 | Hủy lịch hoặc dừng Bulk Top-Up Scheduled (không có trạng thái Cancelled) | Bản này chỉ có hai trạng thái Scheduled và Completed cho Scheduled Run; chưa có thao tác hủy lịch; HQ User chỉ Edit đổi giờ, criterion hoặc số tiền | Chưa xếp lịch |
 
 ## **2\. System Process and Function Overview**
 
 ### **2.1. Process Flow Diagrams**
 
-#### ***2.1.1 Individual Top-Up Flow***
+#### **2.1.1 Individual Top-Up Flow**
 
-HQ User tìm một EA, kiểm tra thông tin chủ tài khoản, nhập số tiền và xác nhận. Chỉ EA Active mới nhận tiền; thất bại không làm đổi số dư.  
-1\.     HQ User mở menu Top-up, tab Individual Top-Up, tìm EA theo Account Number hoặc NRIC.  
-2\.     Hệ thống hiển thị thông tin chủ tài khoản, trạng thái và số dư; EA không Active thì không cho nhập số tiền.  
-3\.     HQ User nhập số tiền (lý do không bắt buộc), xem lại và xác nhận.  
-4\.     Hệ thống tạo giao dịch với Reference ID và ghi có vào EA.  
-5\.     Kết quả Success hoặc Failed hiển thị ở màn hình kết quả và trong Top-Up History; thất bại thì số dư không đổi.
+HQ User tìm một EA, kiểm tra thông tin chủ tài khoản, nhập số tiền và xác nhận. Chỉ EA Active mới nhận tiền; giao dịch thất bại không làm đổi số dư.
 
-#### ***2.1.2 Bulk Campaign Flow – Create, Run and Re-run***
+1. HQ User mở menu Top-up, tab Individual Top-Up, tìm EA theo Account Number hoặc NRIC.  
+2. Hệ thống hiển thị thông tin chủ tài khoản, trạng thái và số dư; EA không Active thì không cho nhập số tiền, chỉ hiện thông tin.  
+3. HQ User nhập số tiền (lý do không bắt buộc), xem lại và xác nhận.  
+4. Hệ thống tạo giao dịch với Reference ID và ghi có vào EA.  
+5. Kết quả Success hoặc Failed hiển thị ở màn hình kết quả và trong Top-Up History; thất bại thì số dư không đổi.
 
-HQ User tạo campaign ở tab Bulk Campaigns với criterion tùy chọn (tuổi, số dư) và số tiền mỗi tài khoản. Từ danh sách, HQ User có thể Preview để xem số tài khoản được Top-up và tổng tiền dự kiến, Edit lại, hoặc bấm Run Campaign luôn. Campaign dùng lại được: mỗi lần Run Campaign tạo một batch mới và Batches Run tăng thêm 1\.  
-1\.     HQ User chọn Create Campaign, nhập Campaign Name, cấu hình criterion tùy chọn (Age, Account Balance) và số tiền mỗi tài khoản, rồi Save. Campaign ở trạng thái Draft.  
-2\.     (Tùy chọn) HQ User bấm Preview ở danh sách để xem danh sách eligible tại thời điểm hiện tại.  
-3\.     (Tùy chọn) HQ User bấm Edit để sửa lại campaign.  
-4\.     HQ User bấm Run Campaign ở dòng campaign. Hệ thống tạo batch mới, lập danh sách eligible theo dữ liệu lúc đó và bắt đầu ghi có từng tài khoản; lần chạy đầu tiên chuyển campaign từ Draft sang Active.  
-5\.     HQ User theo dõi batch ở Top-Up History (Bulk Batches), kèm Top-Up Summary; xem Batch Item, export CSV.  
-6\.     Muốn chạy lại, HQ User bấm Run Campaign lần nữa; Batches Run tăng thêm 1\.
+#### **2.1.2 Bulk Top-Up Flow – Manual Run (Create, Run and Re-run)**
+
+HQ User tạo Bulk Top-Up ở tab Bulk Top-Ups với Run Mode là Manual Run, criterion tùy chọn (tuổi, số dư) và số tiền mỗi tài khoản. Từ danh sách, HQ User có thể Preview để xem số tài khoản được top-up và tổng tiền dự kiến, Edit lại, chuyển sang Active rồi bấm Run Bulk Top-Up. Bulk Top-Up dùng lại được: mỗi lần Run Bulk Top-Up tạo một batch mới và Batches Run tăng thêm 1\.
+
+1. HQ User chọn Create Bulk Top-Up, nhập Bulk Top-Up Name, chọn Run Mode \= Manual Run, cấu hình criterion tùy chọn (Age, Account Balance) và số tiền mỗi tài khoản, rồi Save. Bulk Top-up được tạo thành công ở trạng thái Active.  
+2. (Tùy chọn) HQ User bấm Preview ở danh sách để xem danh sách eligible tại thời điểm hiện tại.  
+3. (Tùy chọn) HQ User bấm Edit để sửa lại Bulk Top-Up và có thể chuyển trạng thái sang Draft. Ở draft, không được run mà phải chuyển sang Active  
+4. HQ User bấm nút Activate ở dòng Bulk Top-Up Draft trên danh sách để chuyển sang Active.  
+5. HQ User bấm Run Bulk Top-Up. Hệ thống tạo batch mới, lập danh sách eligible theo dữ liệu lúc đó và bắt đầu ghi có từng tài khoản.  
+6. HQ User theo dõi batch ở Top-Up History (Bulk Batches), kèm Top-Up Summary; xem Batch Item, export CSV.  
+7. Muốn chạy lại, HQ User bấm Run Bulk Top-Up lần nữa; Batches Run tăng thêm 1\. Muốn tắt, HQ User chuyển trạng thái sang Deactivate. 
+
+#### **2.1.3 Bulk Top-Up Flow – Scheduled Run (Create, Schedule and Auto-run)**
+
+HQ User tạo Bulk Top-Up với Run Mode là Scheduled Run và đặt ngày giờ chạy. Bulk Top-Up ở trạng thái Scheduled cho đến khi batch theo lịch kết thúc, rồi chuyển sang Completed. Scheduled Run chỉ chạy một lần; không có nút Run Bulk Top-Up cho Bulk Top-Up Scheduled.
+
+1. HQ User chọn Create Bulk Top-Up, nhập Bulk Top-Up Name, chọn Run Mode \= Scheduled Run, nhập Scheduled Date/Time (VNT, sau thời điểm hiện tại), cấu hình criterion tùy chọn và số tiền mỗi tài khoản, rồi Save. Bulk Top-Up ở trạng thái Scheduled.  
+2. (Tùy chọn) HQ User bấm Preview ở danh sách để xem danh sách eligible theo Scheduled Date/Time.  
+3. (Tùy chọn) HQ User bấm Run early để run tại thời điểm đó hoặc Reschedule để đổi Scheduled Date/Time, criterion hoặc số tiền, khi batch theo lịch chưa bắt đầu.  
+4. Đến Scheduled Date/Time, hệ thống tự tạo batch, lập danh sách eligible theo dữ liệu lúc đó và ghi có từng tài khoản.  
+5. Khi batch kết thúc (Success hoặc Failed), Bulk Top-Up chuyển từ Scheduled sang Completed.  
+6. HQ User theo dõi kết quả ở Top-Up History (Bulk Batches), kèm Top-Up Summary; xem Batch Item, export CSV. Muốn nạp thêm, HQ User tạo Bulk Top-Up mới.
 
 ## **3\. Detailed Functions and Solution Design**
 
 ### **3.1. Detailed Function Specification**
 
-#### ***3.1.1. Function Description***
+#### **3.1.1. Function Description**
 
-Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho một chủ tài khoản, hoặc nạp hàng loạt theo campaign. Campaign gồm criterion tùy chọn (tuổi, số dư) và số tiền cố định mỗi tài khoản. Campaign dùng lại được: HQ User có thể Preview, Edit lại hoặc bấm Run Campaign ở danh sách để chạy ngay một batch, không cần Preview hay bước xác nhận riêng. Khi xem Top-Up History, campaign và batch, HQ User thấy Total Spending, Successful, Failed.
+Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho một chủ tài khoản, hoặc nạp hàng loạt (Bulk Top-Up). Bulk Top-Up gồm criterion tùy chọn (tuổi, số dư), số tiền cố định mỗi tài khoản và Run Mode. Với Manual Run, Bulk Top-Up dùng lại được: HQ User có thể Preview, Edit lại hoặc bấm Run Bulk Top-Up ở danh sách để chạy ngay một batch. Với Scheduled Run, HQ User đặt ngày giờ và hệ thống tự chạy một batch vào đúng thời điểm đó. Khi xem Top-Up History, Bulk Top-Up và batch, HQ User thấy Total Spending, Successful, Failed.
 
 | Mục | Nội dung |
-| :---- | :---- |
+| ----- | ----- |
 | Function ID | F2 (R2) |
-| Portal | Admin Portal, menu Top-up, ba tab: Individual Top-Up, Bulk Campaigns, Top-Up History |
-| Actor chính | MOE HQ User |
+| Portal | Admin Portal, menu Top-up, ba tab: Individual Top-Up, Bulk Top-Ups, Top-Up History |
+| Actor chính | MOE HQ User; Admin Portal System (chạy batch theo lịch) |
 | Precondition | HQ User đã đăng nhập Admin Portal và có quyền Top-Up; EA đã được tạo (R1) |
-| Postcondition (thành công) | Mỗi lần ghi có thành công làm số dư EA tăng đúng một lần; có top-up transaction với Reference; có audit log. Với bulk: có batch summary Successful, Failed và Top-Up Summary (Total Spending, Successful, Failed) của campaign |
+| Postcondition (thành công) | Mỗi lần ghi có thành công làm số dư EA tăng đúng một lần; có top-up transaction với Reference; có audit log. Với bulk: có batch summary Successful, Failed và Top-Up Summary (Total Spending, Successful, Failed) của Bulk Top-Up |
 | Postcondition (thất bại) | Top-up transaction \= Failed; số dư EA không đổi; lý do được ghi log. Với bulk: các tài khoản khác trong batch vẫn được xử lý |
-| Postcondition (đang chạy) | Batch \= Running; campaign không sửa được và không chạy thêm batch khác cho đến khi batch kết thúc |
+| Postcondition (đang chạy) | Batch \= Running; Bulk Top-Up không sửa được và không chạy thêm batch khác cho đến khi batch kết thúc |
+| Postcondition (đến giờ chạy theo lịch) | Hệ thống tự tạo đúng một batch cho Bulk Top-Up Scheduled; khi batch kết thúc, Bulk Top-Up chuyển từ Scheduled sang Completed |
 
-##### **Sub-functions**
+**Sub-functions**
 
 | ID | Sub-function | Mục đích |
-| :---- | :---- | :---- |
+| ----- | ----- | ----- |
 | F2.1 | Search and Verify EA Account Holder | Tìm kiếm tài khoản EA theo Account Number hoặc Student NRIC; hiển thị thông tin chủ tài khoản, trạng thái tài khoản và số dư hiện tại để xác minh trước khi nạp tiền. |
 | F2.2 | Individual Top-Up | Thực hiện nạp tiền cho một tài khoản EA cụ thể; nhập số tiền, xác nhận giao dịch, kiểm tra điều kiện hợp lệ, ghi có vào EA và hiển thị kết quả. |
-| F2.3 | Top-Up History | Tra cứu lịch sử top-up lẻ (Individual Top-Ups) và top-up từ bulk (Bulk Batches), lọc theo nguồn và trạng thái, tìm theo tên học sinh; xem Top-Up Summary (Total Spending, Successful, Failed) theo bộ lọc, theo campaign và theo batch; lưu vết kiểm toán. |
-| F2.4 | Top-Up Campaign Configuration | Tạo và sửa campaign theo tiêu chí đối tượng thụ hưởng và số tiền nạp; tìm và lọc danh sách Bulk Campaigns. |
+| F2.3 | Top-Up History | Tra cứu lịch sử top-up lẻ (Individual Top-Ups) và top-up từ bulk (Bulk Batches), lọc theo nguồn và trạng thái, tìm theo tên học sinh; xem Top-Up Summary (Total Spending, Successful, Failed) theo bộ lọc, theo Bulk Top-Up và theo batch. |
+| F2.4 | Bulk Top-Up Configuration | Tạo và sửa Bulk Top-Up theo Run Mode (Manual Run hoặc Scheduled Run), tiêu chí đối tượng thụ hưởng, số tiền nạp và (với Scheduled Run) Scheduled Date/Time; tìm và lọc danh sách Bulk Top-Ups theo Status và Run Mode. |
 | F2.5 | Eligibility Preview | Xác định danh sách tài khoản đủ điều kiện theo các tiêu chí đã cấu hình; hiển thị số lượng tài khoản và tổng số tiền dự kiến để kiểm tra criterion. |
-| F2.6 | Run Campaign | Khi HQ User bấm Run Campaign ở danh sách, hệ thống tạo ngay một batch và chạy. |
-| F2.7 | Top-Up Execution and Batch Monitoring | Thực thi top-up theo danh sách lập lúc chạy; kiểm tra lại điều kiện từng tài khoản trước khi ghi có; tổng hợp kết quả thành công/thất bại, xuất báo cáo và lưu audit log. |
+| F2.6 | Manual Run | Khi HQ User bấm Run Bulk Top-Up ở danh sách (Bulk Top-Up Manual), hệ thống tạo ngay một batch và chạy. |
+| F2.7 | Top-Up Execution and Batch Monitoring | Thực thi top-up theo danh sách lập lúc chạy; kiểm tra lại điều kiện từng tài khoản trước khi ghi có; tổng hợp kết quả thành công/thất bại, xuất báo cáo và lưu audit log. Dùng chung cho Manual Run và Scheduled Run. |
+| F2.8 | Scheduled Run | Lưu Scheduled Date/Time của Bulk Top-Up Scheduled; đến giờ, hệ thống tự tạo một batch và chạy; chuyển trạng thái Scheduled sang Completed; xử lý trường hợp trễ lịch do hệ thống không hoạt động. |
 
-#### ***Business Rules***
+**Business Rules**  
+*Nhóm A – Quyền và Individual Top-Up (F2.1, F2.2)*
 
-**Nhóm A – Quyền và Individual Top-Up (F2.1, F2.2)**  
-•      BR-F2-01: Chỉ MOE HQ User có quyền Top-Up.  
-•      BR-F2-02: Tìm EA theo khớp chính xác Account Number hoặc NRIC đầy đủ của học sinh; không tìm gần đúng. Chỉ khi nhập đủ và đúng NRIC (hoặc Account Number) mới hiển thị tài khoản; nhập thiếu, thừa ký tự hoặc sai thì không có kết quả, không có danh sách gợi ý, không hiển thị kết quả một phần, và chỉ báo MSG-0201. Mỗi lần tìm trả về tối đa một EA. Kết quả hiển thị NRIC che một phần.  
-•      BR-F2-03: Số tiền top-up lớn hơn 0, tối đa 2 chữ số thập phân, không vượt hạn mức mỗi lần (TBC, OQ-01). Lý do (reason) optional, tối đa 200 ký tự.  
-•      BR-F2-04: Chỉ EA Active nhận top-up.  
-•      BR-F2-06: Giao dịch thất bại không làm đổi số dư nhưng vẫn được ghi log trên MOE (thời điểm, người thực hiện, lý do).  
-**Nhóm B – Lịch sử (F2.3)**  
-•      BR-F2-07: Tab Top-Up History liệt kê mọi top-up lẻ và top-up từ bulk (SCR-05). Hai nút Filter by Source (Individual Top-Ups, Bulk Batches) chọn nguồn đang xem; ngoài ra có ô Search theo tên học sinh và bộ lọc Status.  
-> > > o      Phía trên bảng là ba thẻ Top-Up Summary tính theo đúng bộ lọc đang chọn: Total Spending (tổng Amount các giao dịch Success, ghi chú "Credited successfully only"), Successful (số giao dịch Success, ghi chú "Accounts credited") và Failed (số giao dịch thất bại, ghi chú "Transactions failed").  
-> > > o      Bảng sắp xếp mặc định theo Date / Time mới nhất trước; cột Date / Time và Amount sắp xếp được. Campaign bulk đã chạy xem được ở danh sách Bulk Campaigns (SCR-07, cột Batches Run), danh sách batch (SCR-11) và Batch summary (SCR-12), kèm ba chỉ số này theo từng campaign và batch. Số liệu chỉ để xem, không chặn ghi có.  
-**Nhóm C – Cấu hình Campaign (F2.4)**  
-•      BR-F2-13: Campaign Code duy nhất, hệ thống sinh theo mẫu CMP-YYYY-NNNN.  
-•      BR-F2-14: Criterion là tùy chọn. HQ User có thể không chọn criterion nào (mặc định lấy hết mọi EA đủ điều kiện nền) hoặc chọn một hoặc cả hai loại criterion; tài khoản eligible khi thỏa tất cả criterion đã chọn. Điều kiện nền áp dụng cho mọi tài khoản và không phải criterion: Student SC có liên kết EA và EA Active. Bản này có hai loại criterion, mỗi loại thêm tối đa một lần:  
-> > > o      Age Range: Minimum Age, Maximum Age (bao gồm cả hai đầu); thỏa khi tuổi của học sinh tại ngày bấm Run Campaign (hoặc Preview) nằm trong khoảng.  
-> > > o      Account Balance: toán tử và ngưỡng SGD; thỏa khi số dư hiện tại so với ngưỡng đúng toán tử.  
-> > > o      Các criterion Schooling Status, School, Academic Level và Class để sprint sau (OOS \#2). Khi triển khai, chỉ chọn được Class sau khi đã chọn School.  
-•      BR-F2-15: Age Range: chỉ nhận giá trị lớn hơn hoặc bằng 7 VÀ bé hơn 16 vì EA chỉ tồn tại từ 7 đến dưới 16 tuổi. Tuổi được tính theo số năm tròn của ngày hôm đó (ngày bấm Run Campaign hoặc Preview).  
-•      BR-F2-17: Function 2 không thiết lập ngân sách hay hạn mức cho campaign. Chi tiêu của campaign được theo dõi bằng Top-Up Summary (BR-F2-07); không có bước chặn hay cảnh báo theo ngân sách ở preview hay khi chạy.  
-•      BR-F2-18: Trạng thái campaign: Draft, Active, Deactive (Appendix A).  
-> > > o      Draft: chưa chạy lần nào (Batches Run \= 0). Active: đã chạy ít nhất một lần (Batches Run lớn hơn hoặc bằng 1).  
-> > > o      Deactive: campaign bị tắt, không chạy được (cách bật, tắt TBC, OQ-13).  
-**Nhóm D – Preview và thực thi (F2.5, F2.6, F2.7)**  
-•      BR-F2-19: Preview hiển thị Student Name, Age, Balance, Top-Up Amount dự kiến của từng tài khoản, cùng tổng số tài khoản, tổng tiền dự kiến và thời điểm tính preview. Preview chỉ đọc, không có nút Confirm.  
-•      BR-F2-20: Run Campaign không yêu cầu Preview trước. Điều kiện để chạy: campaign không Deactive, không có batch Running của campaign đó, và có ít nhất một tài khoản eligible tại lúc bắt đầu chạy. Không có tài khoản eligible thì báo không có tài khoản (MSG-0214) và không tạo batch.  
-•      BR-F2-21: Khi HQ User bấm Run Campaign ở danh sách, hệ thống tạo batch ngay (Pending rồi Running) và ghi audit log người bấm. Nút Run Campaign bị vô hiệu sau lần bấm đầu. Không có lựa chọn chế độ chạy, lịch chạy hay bước xác nhận riêng.  
-•      BR-F2-22: Campaign chạy được nhiều lần; mỗi lần Run Campaign tạo một batch mới và Batches Run tăng 1; lần chạy đầu tiên chuyển campaign từ Draft sang Active. Mỗi campaign chỉ có một batch Running tại một thời điểm; bấm Run Campaign hai lần, hoặc hai HQ User bấm cùng lúc, chỉ tạo một batch (kiểm tra bằng row version).  
-•      BR-F2-24: Khi chạy, hệ thống xử lý từng tài khoản theo thứ tự Account Number tăng dần, theo từng đoạn nhỏ: EA còn Active, đánh giá lại các criterion đã chọn bằng dữ liệu tại thời điểm đó, ghi có. Sau mỗi đoạn hệ thống cập nhật số liệu batch (Successful, Failed, Total credited) để theo dõi.  
-•      BR-F2-25: Trong một batch, mỗi tài khoản được ghi có tối đa một lần (duy nhất theo Batch và EA). Giữa các batch của cùng campaign hoặc của campaign khác, một tài khoản có thể nhận nhiều khoản.  
-•      BR-F2-26: Kết quả từng tài khoản chỉ có hai trạng thái: Successful hoặc Failed. Failed kèm Failure Code: không còn đủ điều kiện khi chạy (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH khi không còn thỏa criterion đã chọn) hoặc lỗi kỹ thuật (ví dụ CREDIT\_FAILED).  
-•      BR-F2-27: Mỗi batch item (mỗi tài khoản được top-up trong batch) có một Reference ID riêng, sinh một lần và duy nhất trong toàn hệ thống; dùng để kiểm tra không ghi trùng. Việc theo dõi theo campaign dùng Campaign Code, batch không có Reference ID riêng.  
-•      BR-F2-29: Batch summary hiển thị Total Spending của batch (Total credited), tổng Successful, Failed (số tài khoản và số tiền), lọc theo kết quả; export CSV. Trạng thái batch: Completed khi không có Failed, Failed khi còn Failed kèm lý do.  
-•      BR-F2-30: Audit lưu vĩnh viễn: Reference, số tiền, thời điểm, người thực hiện (HQ User, hoặc "System" kèm HQ User đã bấm Run Campaign), campaign, batch. Không xóa cứng campaign, batch, batch item và giao dịch.
+* BR-F2-01: Chỉ MOE HQ User có quyền Top-Up.  
+* BR-F2-02: Tìm EA theo khớp chính xác Account Number hoặc NRIC đầy đủ của học sinh; không tìm gần đúng. Chỉ khi nhập đủ và đúng NRIC (hoặc Account Number) mới hiển thị tài khoản; nhập thiếu, thừa ký tự hoặc sai thì không có kết quả, không có danh sách gợi ý, không hiển thị kết quả một phần, và chỉ báo MSG-0201. Mỗi lần tìm trả về tối đa một EA. Kết quả hiển thị NRIC che một phần.  
+* BR-F2-03: Số tiền top-up lớn hơn 0, tối đa 2 chữ số thập phân. Lý do (reason) optional, tối đa 200 ký tự.  
+* BR-F2-04: Chỉ EA Active nhận top-up.  
+* BR-F2-06: Giao dịch thất bại không làm đổi số dư nhưng vẫn được ghi log trên MOE (thời điểm, người thực hiện, lý do).
 
-#### ***3.1.2. Process Flow Description and Screens***
+*Nhóm B – Lịch sử (F2.3)*
 
-##### **A. Individual Top-Up Flow**
+* BR-F2-07: Tab Top-Up History liệt kê mọi top-up lẻ và top-up từ bulk (SCR-05). Hai nút Filter by Source (Individual Top-Ups, Bulk Batches) chọn nguồn đang xem; ngoài ra có ô Search theo tên học sinh và bộ lọc Status.  
+  * Phía trên bảng là ba thẻ Top-Up Summary tính theo đúng bộ lọc đang chọn: Total Spending (tổng Amount các giao dịch Success, ghi chú "Credited successfully only"), Successful (số giao dịch Success, ghi chú "Accounts credited") và Failed (số giao dịch thất bại, ghi chú "Transactions failed").  
+  * Bảng sắp xếp mặc định theo Date / Time mới nhất trước; cột Date / Time và Amount sắp xếp được. Bulk Top-Up đã chạy xem được ở danh sách Bulk Top-Ups (SCR-07, cột Batches Run chỉ cho Manual Run), danh sách batch (SCR-11) và Batch summary (SCR-12), kèm ba chỉ số này theo từng Bulk Top-Up và batch. Số liệu chỉ để xem, không chặn ghi có.
 
-**Bước 1\. Tìm EA và xác minh chủ tài khoản (F2.1)**  
-•      **1.1** HQ User vào menu Top-up, chọn tab Individual Top-Up (SCR-01).  
-•      **1.2** HQ User nhập Account Number hoặc NRIC đầy đủ của học sinh và chọn Search. Hệ thống tìm EA theo khớp chính xác (BR-F2-02).  
-•      **1.3** Hệ thống hiển thị SCR-02: tên học sinh, NRIC che một phần, tuổi, Account Number, Account Status, Current Balance.  
-•      **1.4** Luồng thay thế: không tìm thấy thì báo MSG-0201; EA không Active vẫn hiển thị để tra cứu nhưng không cho nhập số tiền, kèm lý do (MSG-0204).  
-**Bước 2\. Nhập số tiền và xác nhận (F2.2)**  
-•      **2.1** Trên SCR-02, HQ User nhập Top-Up Amount và Reason (không bắt buộc), rồi chọn Continue.  
-•      **2.2** Hệ thống kiểm tra định dạng và hạn mức (BR-F2-03).  
-•      **2.3** Hệ thống hiển thị SCR-03 để xem lại: chủ tài khoản, Account Number, số dư hiện tại, số tiền, số dư sau top-up (tham khảo), lý do (nếu có).  
-•      **2.4** HQ User xác nhận. Nút xác nhận bị vô hiệu ngay sau lần bấm đầu.  
-**Bước 3\. Ghi có (F2.2)**  
-•      **3.1** Hệ thống tạo top-up transaction (Pending) với Reference ID.  
-•      **3.2** Hệ thống kiểm tra Reference ID chưa được dùng.  
-•      **3.3** Hệ thống lưu vào history và cập nhất số dư mới.  
-> > > o      Thành công: transaction Success, ghi audit log, hiển thị SCR-04 kèm Reference và số dư mới (MSG-0207).  
-> > > o      Thất bại (EA không Active, hoặc lỗi khi ghi có): transaction Failed, số dư không đổi, hiển thị SCR-04 (MSG-0204 hoặc MSG-0208).  
-**Bước 4\. Xem lịch sử top-up lẻ (F2.3)**  
-•      **4.1** HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Individual Top-Ups.  
-•      **4.2** Màn hình hiển thị ba thẻ Top-Up Summary (Total Spending, Successful, Failed), tính theo đúng bộ lọc đang chọn (BR-F2-07).  
-•      **4.3** HQ User có thể nhập tên học sinh vào ô Search, chọn Status, rồi bấm Search hoặc Reset.  
-•      **4.4** Bảng giao dịch hiển thị mới nhất trước: Date / Time, Reference, Student, Account, Amount, Status, Note.  
-•      **4.5** Màn hình chỉ để tra cứu; không có thao tác sửa hoặc hoàn tác top-up (OOS \#4). Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.
+*Nhóm C – Cấu hình Bulk Top-Up (F2.4)*
 
-##### **B. Batch Top-Up Flow**
+* BR-F2-13: Bulk Top-Up Code duy nhất, hệ thống sinh theo mẫu BTU-YYYY-NNNN.  
+* BR-F2-14: Criterion là tùy chọn. HQ User có thể không chọn criterion nào (mặc định lấy hết mọi EA đủ điều kiện nền) hoặc chọn một hoặc cả hai loại criterion; tài khoản eligible khi thỏa tất cả criterion đã chọn. Điều kiện nền áp dụng cho mọi tài khoản và không phải criterion: Student SC có liên kết EA và EA Active. Bản này có hai loại criterion, mỗi loại thêm tối đa một lần:  
+  * Age Range: Minimum Age, Maximum Age (bao gồm cả hai đầu); thỏa khi tuổi của học sinh tại ngày chạy batch (ngày bấm Run Bulk Top-Up, ngày đến giờ chạy theo lịch, hoặc ngày Preview của Manual Run; Preview của Scheduled Run tính theo ngày Scheduled Date/Time) nằm trong khoảng.  
+  * Account Balance: toán tử và ngưỡng SGD; thỏa khi số dư hiện tại so với ngưỡng đúng toán tử.  
+* BR-F2-15: Age Range: chỉ nhận giá trị lớn hơn hoặc **bằng 7 VÀ bé hơn 16** vì EA chỉ tồn tại từ 7 đến dưới 16 tuổi. Tuổi được tính theo số năm tròn của ngày hôm đó (ngày bấm Run Bulk Top-Up, ngày đến giờ chạy theo lịch, hoặc ngày Preview của Manual Run; Preview của Scheduled Run dùng ngày Scheduled Date/Time; theo giờ VNT).  
+* BR-F2-17: Function 2 không thiết lập ngân sách hay hạn mức cho Bulk Top-Up. Chi tiêu của Bulk Top-Up được theo dõi bằng Top-Up Summary (BR-F2-07); không có bước chặn hay cảnh báo theo ngân sách ở preview hay khi chạy.  
+* BR-F2-18: Trạng thái Bulk Top-Up phụ thuộc Run Mode (Appendix A):  
+  * Manual Run có ba trạng thái: Draft (mặc định khi Save, không chạy được), Active (chạy được), Inactive (bị tắt, không chạy được). HQ User đổi trạng thái bằng nút trên danh sách (BR-F2-40). Trạng thái không phụ thuộc Batches Run: Bulk Top-Up Active có thể có Batches Run \= 0\.  
+  * Scheduled Run có hai trạng thái: Scheduled (đã đặt lịch, batch theo lịch chưa kết thúc), Completed (batch theo lịch đã kết thúc). Scheduled Run chỉ chạy một lần nên không có Batches Run.  
+  * Bulk Top-Up Manual không có trạng thái Scheduled hay Completed; Bulk Top-Up Scheduled không có trạng thái Draft, Active hay Inactive.  
+* BR-F2-31: Run Mode bắt buộc, chọn khi tạo: Manual Run hoặc Scheduled Run (mặc định Manual Run). Sau khi lưu, Run Mode không đổi được (DA-11).  
+* BR-F2-32: Với Scheduled Run, Scheduled Date/Time bắt buộc, nhập theo giờ VNT và phải sau thời điểm hiện tại lúc Save (và lúc Save khi Edit có đổi lịch); sai thì báo MSG-0223. Manual Run không có Scheduled Date/Time.  
+* BR-F2-40: Ở danh sách Bulk Top-Up Manual Run, HQ User đổi trạng thái bằng nút trên dòng: Activate (hiện ở dòng Draft và Inactive, chuyển sang Active) và Deactivate (hiện ở dòng Active, chuyển sang Inactive). Không có thao tác đưa Bulk Top-Up về Draft. Mỗi lần đổi ghi audit log. Bulk Top-Up Scheduled không có hai nút này.
 
-**Bước 1\. Tạo và cấu hình Campaign (F2.4)**  
-•      **1.1** HQ User vào tab Bulk Campaigns (SCR-07), chọn Create Campaign.  
-•      **1.2** Trên SCR-08, HQ User nhập Campaign Name.  
-•      **1.3** HQ User cấu hình criterion tùy chọn gồm Minimum & Maximum Age hoặc Minimum & Maximum Account Balance.  
-•      **1.4** HQ User nhập Top-Up Amount per account, rồi Save Draft/ Preview.  
-•      **1.5** Hệ thống kiểm tra theo BR-F2-13 đến BR-F2-18 và lưu campaign ở trạng thái Draft.  
-•      **1.6** Từ danh sách, HQ User có thể Preview, Edit lại hoặc Run Campaign luôn; Edit bị vô hiệu khi campaign có batch Running.  
-**Bước 2\. Xem Preview, tùy chọn (F2.5)**  
-•      **2.1** HQ User bấm Preview ở dòng campaign.  
-•      **2.2** Hệ thống đánh giá các criterion đã chọn trên các EA Active theo dữ liệu hiện tại.  
-•      **2.3** Hệ thống hiển thị SCR-09: danh sách eligible (Student Name, Age, Balance, Top-Up Amount), tổng số tài khoản, tổng tiền dự kiến, thời điểm tính preview.  
-•      **2.4** Không có tài khoản eligible: hiển thị MSG-0214.  
-•      **2.5** Preview chỉ đọc; HQ User quay lại danh sách để chạy.  
-**Bước 3\. Run Campaign (F2.6)**  
-•      **3.1** HQ User bấm Run Campaign ở dòng campaign ngay trên danh sách SCR-07. Nút bị vô hiệu sau lần bấm đầu.  
-•      **3.2** Không có bước Preview bắt buộc, lựa chọn chế độ chạy, lịch chạy hay xác nhận riêng.  
-•      **3.3** Hệ thống ghi audit log người bấm và tạo batch ngay.  
-•      **3.4** Chưa có tài khoản eligible thì báo MSG-0214, không tạo batch.  
-•      **3.5** Batch đã chạy không dừng giữa chừng được.  
-**Bước 4\. Thực thi batch và nhận kết quả (F2.7)**  
-•      **4.1** Hệ thống tạo batch (Pending, rồi Running) và khóa campaign (không Edit, không Run thêm).  
-•      **4.2** Hệ thống cố định criterion và số tiền cho batch này; lần chạy đầu tiên chuyển campaign sang Active.  
-•      **4.3** Hệ thống xử lý từng tài khoản theo BR-F2-24: kiểm tra, ghi có vào EA với Reference ID riêng của từng batch item (BR-F2-27), ghi kết quả Successful hoặc Failed.  
-•      **4.4** HQ User theo dõi tiến độ ở SCR-11 và SCR-12 (số đã xử lý, Successful, Failed, Total credited).  
-•      **4.5** Hết danh sách: batch \= Completed (không có Failed) hoặc Failed (còn Failed, kèm lý do); hiển thị batch summary (BR-F2-29).  
-•      **4.6** Campaign được mở lại để Edit hoặc Run Campaign lần nữa; Batches Run tăng 1\.  
-**Bước 5\. Xem kết quả, export và chạy lại (F2.3, F2.7)**  
-•      **5.1** HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Bulk Batches để xem các batch đã chạy kèm Top-Up Summary (BR-F2-07).  
-•      **5.2** HQ User mở một batch để xem SCR-12, lọc batch item theo kết quả và export CSV.  
-•      **5.3** Batch item Failed không thử lại; cần thì chạy batch mới.  
-•      **5.4** Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.  
-•      **5.5** Muốn chạy đợt mới, HQ User bấm Run Campaign lần nữa ở SCR-07 (BR-F2-22).
+*Nhóm D – Preview và Manual Run (F2.5, F2.6, F2.7)*
 
-##### **Trường hợp ngoại lệ**
+* BR-F2-19: Preview hiển thị Student Name, Age, Balance, Top-Up Amount dự kiến của từng tài khoản, cùng tổng số tài khoản, tổng tiền dự kiến và thời điểm tính preview. Preview chỉ đọc, không có nút Confirm; dùng được cho cả Manual Run và Scheduled Run. Với Bulk Top-Up Scheduled, danh sách eligible và Age được lập theo Scheduled Date/Time (số dư và trạng thái EA theo dữ liệu hiện tại), và Preview hiển thị thêm thời điểm chạy theo lịch.  
+* BR-F2-20: Run Bulk Top-Up không yêu cầu Preview trước. Điều kiện để chạy: Run Mode là Manual Run, trạng thái Active (Draft và Inactive không chạy được), không có batch Running của Bulk Top-Up đó, và có ít nhất một tài khoản eligible tại lúc bắt đầu chạy. Không có tài khoản eligible thì báo không có tài khoản (MSG-0214) và không tạo batch.  
+* BR-F2-21: Khi HQ User bấm Run Bulk Top-Up ở danh sách, hệ thống tạo batch ngay (Running) và ghi audit log người bấm. Nút Run Bulk Top-Up bị vô hiệu sau lần bấm đầu. Thao tác này không có lựa chọn chế độ chạy, lịch chạy hay bước xác nhận riêng.  
+* BR-F2-22: Bulk Top-Up Manual chạy được nhiều lần; mỗi lần Run Bulk Top-Up tạo một batch mới và Batches Run tăng 1; chạy batch không đổi trạng thái Bulk Top-Up. Mỗi Bulk Top-Up chỉ có một batch Running tại một thời điểm; bấm Run Bulk Top-Up hai lần, hoặc hai HQ User bấm cùng lúc, chỉ tạo một batch (kiểm tra bằng row version).  
+* BR-F2-24: Khi chạy (bấm tay hoặc theo lịch), hệ thống xử lý từng tài khoản theo thứ tự Account Number tăng dần, theo từng đoạn nhỏ: EA còn Active, đánh giá lại các criterion đã chọn bằng dữ liệu tại thời điểm đó, ghi có. Sau mỗi đoạn hệ thống cập nhật số liệu batch (Targeted, Successful, Failed, Total Disbursed) để theo dõi.  
+* BR-F2-25: Trong một batch, mỗi tài khoản được ghi có tối đa một lần (duy nhất theo Batch và EA). Giữa các batch của cùng Bulk Top-Up hoặc của Bulk Top-Up khác, một tài khoản có thể nhận nhiều khoản.  
+* BR-F2-26: Kết quả (Outcome) từng tài khoản chỉ có hai trạng thái: Success hoặc Failed. Failed kèm Failure Code: không còn đủ điều kiện khi chạy (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH khi không còn thỏa criterion đã chọn) hoặc lỗi kỹ thuật (ví dụ CREDIT\_FAILED).  
+* BR-F2-27: Mỗi batch item (mỗi tài khoản được top-up trong batch) có một Reference ID riêng, sinh một lần và duy nhất trong toàn hệ thống; dùng để kiểm tra không ghi trùng. Việc theo dõi theo Bulk Top-Up dùng Bulk Top-Up Code, batch không có Reference ID riêng.  
+* BR-F2-29: Batch summary hiển thị Total Disbursed của batch (tổng tiền ghi có thành công), tổng Successful, Failed, lọc theo Outcome; export CSV. Trạng thái batch: Running khi đang xử lý; khi xử lý xong là Success nếu không có batch item Failed (kể cả batch có 0 tài khoản), Failed nếu còn batch item Failed kèm lý do. Trạng thái batch dùng cùng bộ nhãn Success, Failed với bộ lọc Status của Top-Up History.  
+* BR-F2-30: Audit lưu vĩnh viễn: Reference, số tiền, thời điểm, người thực hiện (HQ User; hoặc "System" kèm HQ User đã bấm Run Bulk Top-Up hoặc đã đặt lịch), Bulk Top-Up, batch. Không xóa cứng Bulk Top-Up, batch, batch item và giao dịch.
 
-| \# | Tình huống | Xử lý |
-| :---- | :---- | :---- |
-| EX-01 | School User hoặc Parent gọi API Top-Up, hoặc HQ User sửa ID trong request để thao tác trên campaign hay giao dịch không thuộc quyền | Server kiểm tra quyền cho mọi request, trả 403, không lộ dữ liệu, ghi log bảo mật (MSG-0003) |
-| EX-02 | EA chuyển sang Closed giữa lúc HQ User xem và lúc xác nhận | Top-up bị từ chối, số dư không đổi (MSG-0204) |
-| EX-04 | Bấm xác nhận hai lần, hoặc client gửi lại cùng một yêu cầu | Chỉ tạo một transaction (kiểm tra bằng Reference ID) và ghi có một lần; lần gửi lại nhận kết quả của transaction đầu |
-| EX-06 | Session Admin Portal hết hạn khi đang thao tác | Hết hạn trước khi xác nhận (top-up lẻ) hoặc trước khi bấm Run Campaign: yêu cầu đăng nhập lại, chưa có transaction hay batch. Hết hạn sau đó: transaction hoặc batch vẫn được xử lý; HQ User đăng nhập lại thấy trạng thái hiện tại (MSG-0002) |
-| EX-07 | HQ User sửa criterion hoặc số tiền sau khi đã xem Preview | Preview chỉ tham khảo, không chặn gì. Run Campaign dùng định nghĩa hiện tại và đánh giá lại tại lúc chạy; danh sách thực tế có thể khác Preview cũ |
-| EX-08 | Hai HQ User sửa hoặc Run Campaign cùng một campaign đồng thời; hoặc Edit, Run Campaign trên campaign đang có batch Running | Dùng row version để phát hiện xung đột, người sau nhận yêu cầu làm mới (MSG-0222). Campaign có batch Running không Edit hay Run Campaign được (MSG-0215) |
-| EX-09 | Giữa preview (hoặc lúc lập danh sách) và lúc xử lý, một tài khoản đổi số dư hoặc bị đóng | Đánh giá lại khi chạy: tài khoản không còn đủ điều kiện (bị đóng, hoặc không còn thỏa criterion đã chọn) bị Failed với Failure Code tương ứng (EA\_NOT\_ACTIVE hoặc CRITERIA\_NOT\_MATCH); danh sách thực tế có thể khác preview |
-| EX-11 | Job bị dừng đột ngột hoặc server khởi động lại giữa batch | Batch tiếp tục từ các batch item chưa xử lý. Kiểm tra Reference ID của từng item trước khi ghi có; không ghi có hai lần |
+*Nhóm E – Scheduled Run (F2.8)*
+
+* BR-F2-33: Bulk Top-Up Scheduled không có nút Run Bulk Top-Up (bị vô hiệu). Preview dùng được ở mọi trạng thái; Edit chỉ dùng được khi trạng thái Scheduled và chưa có batch Running (BR-F2-39).  
+* BR-F2-34: Đến Scheduled Date/Time, Admin Portal System tạo batch (Running) và ghi audit log "System" kèm HQ User đã lưu lịch gần nhất. Hệ thống cố định criterion và số tiền tại lúc đó, rồi xử lý theo BR-F2-24 đến BR-F2-27.  
+* BR-F2-36: Mỗi Bulk Top-Up Scheduled chỉ tạo đúng một batch. Hai tiến trình kích hoạt cùng lúc, hoặc kích hoạt lặp, chỉ tạo một batch (kiểm tra bằng row version và ràng buộc một batch Running cho mỗi Bulk Top-Up). Bulk Top-Up đã Completed không chạy lại.  
+* BR-F2-37: Nếu hệ thống không hoạt động đúng giờ (dừng, bảo trì), khi hoạt động lại hệ thống chạy ngay một lần cho các Bulk Top-Up Scheduled đã quá giờ mà chưa có batch; không bỏ qua và không chạy hai lần. Eligibility và tuổi được đánh giá theo thời điểm chạy thực tế.  
+* BR-F2-38: Bulk Top-Up Scheduled chuyển từ Scheduled sang Completed khi batch theo lịch kết thúc (batch Success hoặc Failed). Trạng thái Completed của Bulk Top-Up không phản ánh số Failed; kết quả chi tiết xem ở batch (BR-F2-29).  
+* BR-F2-39: Edit Bulk Top-Up Scheduled (tên, Scheduled Date/Time, criterion, số tiền) chỉ được khi trạng thái Scheduled và chưa có batch Running; mỗi lần sửa DefinitionVersion tăng và batch dùng định nghĩa tại lúc chạy. Bulk Top-Up Completed chỉ xem, không Edit. Hai HQ User sửa đồng thời: người sau nhận yêu cầu làm mới (row version, MSG-0222).
+
+#### **3.1.2. Process Flow Description and Screens**
+
+**A. Individual Top-Up Flow**  
+*Bước 1\. Tìm EA và xác minh chủ tài khoản (F2.1)*
+
+* 1.1 HQ User vào menu Top-up, chọn tab Individual Top-Up (SCR-01).  
+* 1.2 HQ User nhập Account Number hoặc NRIC đầy đủ của học sinh và chọn Search. Hệ thống tìm EA theo khớp chính xác (BR-F2-02).  
+* 1.3 Hệ thống hiển thị SCR-02: tên học sinh, NRIC che một phần, tuổi, Account Number, Account Status, Current Balance.  
+* 1.4 Luồng thay thế: không tìm thấy thì báo MSG-0201; EA không Active vẫn hiển thị để tra cứu nhưng không cho nhập số tiền, kèm lý do (MSG-0204).
+
+*Bước 2\. Nhập số tiền và xác nhận (F2.2)*
+
+* 2.1 Trên SCR-02, HQ User nhập Top-Up Amount và Reason (không bắt buộc), rồi chọn Continue.  
+* 2.2 Hệ thống kiểm tra định dạng (BR-F2-03).  
+* 2.3 Hệ thống hiển thị SCR-03 để xem lại: chủ tài khoản, Account Number, số dư hiện tại, số tiền, số dư sau top-up (tham khảo), lý do (nếu có).  
+* 2.4 HQ User xác nhận. Nút xác nhận bị vô hiệu ngay sau lần bấm đầu.
+
+*Bước 3\. Ghi có (F2.2)*
+
+* 3.1 Hệ thống tạo top-up transaction (Pending) với Reference ID.  
+* 3.2 Hệ thống kiểm tra Reference ID chưa được dùng.  
+* 3.3 Hệ thống lưu vào history và cập nhật số dư mới.  
+  * Thành công: transaction Success, ghi audit log, hiển thị SCR-04 kèm Reference và số dư mới (MSG-0207).  
+  * Thất bại (EA không Active, hoặc lỗi khi ghi có): transaction Failed, số dư không đổi, hiển thị SCR-04 (MSG-0204 hoặc MSG-0208).
+
+*Bước 4\. Xem lịch sử top-up lẻ (F2.3)*
+
+* 4.1 HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Individual Top-Ups.  
+* 4.2 Màn hình hiển thị ba thẻ Top-Up Summary (Total Spending, Successful, Failed), tính theo đúng bộ lọc đang chọn (BR-F2-07).  
+* 4.3 HQ User có thể nhập tên học sinh vào ô Search, chọn Status, rồi bấm Search hoặc Reset.  
+* 4.4 Bảng giao dịch hiển thị mới nhất trước: Date / Time, Reference, Student, Account, Amount, Status, Note.  
+* 4.5 Màn hình chỉ để tra cứu; không có thao tác sửa hoặc hoàn tác top-up (OOS \#4). Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.
+
+**B. Bulk Top-Up Flow – Manual Run**  
+*Bước 1\. Tạo và cấu hình Bulk Top-Up (F2.4)*
+
+* 1.1 HQ User vào tab Bulk Top-Ups (SCR-07), chọn Create Bulk Top-Up.  
+* 1.2 Trên SCR-08, HQ User nhập Bulk Top-Up Name và chọn Run Mode \= Manual Run.  
+* 1.3 HQ User cấu hình criterion tùy chọn gồm Minimum & Maximum Age hoặc Account Balance (toán tử và ngưỡng).  
+* 1.4 HQ User nhập Top-Up Amount per account, rồi Save.  
+* 1.5 Hệ thống kiểm tra theo BR-F2-13 đến BR-F2-18 và BR-F2-31, lưu Bulk Top-Up ở trạng thái Draft.  
+* 1.6 Từ danh sách, HQ User có thể Preview hoặc Edit lại. Muốn chạy, HQ User bấm Activate để chuyển Bulk Top-Up sang Active (BR-F2-40); Run Bulk Top-Up bị vô hiệu ở Draft và Inactive. Edit bị vô hiệu khi Bulk Top-Up có batch Running.
+
+*Bước 2\. Xem Preview, tùy chọn (F2.5)*
+
+* 2.1 HQ User bấm Preview ở dòng Bulk Top-Up.  
+* 2.2 Hệ thống đánh giá các criterion đã chọn trên các EA Active theo dữ liệu hiện tại.  
+* 2.3 Hệ thống hiển thị SCR-09: danh sách eligible (Student Name, Age, Balance, Top-Up Amount), tổng số tài khoản, tổng tiền dự kiến, thời điểm tính preview.  
+* 2.4 Không có tài khoản eligible: hiển thị MSG-0214.  
+* 2.5 Preview chỉ đọc; HQ User quay lại danh sách để chạy.
+
+*Bước 3\. Run Bulk Top-Up (F2.6)*
+
+* 3.1 HQ User bấm Run Bulk Top-Up ở dòng Bulk Top-Up Active ngay trên danh sách SCR-07. Nút bị vô hiệu sau lần bấm đầu.  
+* 3.2 Không có bước Preview bắt buộc, lựa chọn chế độ chạy, lịch chạy hay xác nhận riêng.  
+* 3.3 Hệ thống ghi audit log người bấm và tạo batch ngay.  
+* 3.4 Chưa có tài khoản eligible thì báo MSG-0214, không tạo batch.  
+* 3.5 Batch đã chạy không dừng giữa chừng được.
+
+*Bước 4\. Thực thi batch và nhận kết quả (F2.7)*
+
+* 4.1 Hệ thống tạo batch (Running) và khóa Bulk Top-Up (không Edit, không Run thêm).  
+* 4.2 Hệ thống cố định criterion và số tiền cho batch này; trạng thái Bulk Top-Up giữ nguyên Active.  
+* 4.3 Hệ thống xử lý từng tài khoản theo BR-F2-24: kiểm tra, ghi có vào EA với Reference ID riêng của từng batch item (BR-F2-27), ghi kết quả Success hoặc Failed.  
+* 4.4 HQ User theo dõi tiến độ ở SCR-11 và SCR-12 (Targeted, Successful, Failed, Total Disbursed).  
+* 4.5 Hết danh sách: batch \= Success (không có Failed) hoặc Failed (còn Failed, kèm lý do); hiển thị batch summary (BR-F2-29).  
+* 4.6 Bulk Top-Up được mở lại để Edit hoặc Run Bulk Top-Up lần nữa; Batches Run tăng 1\.
+
+*Bước 5\. Xem kết quả, export và chạy lại (F2.3, F2.7)*
+
+* 5.1 HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Bulk Batches để xem các batch đã chạy kèm Top-Up Summary (BR-F2-07).  
+* 5.2 HQ User mở một batch để xem SCR-12, lọc batch item theo kết quả và export CSV.  
+* 5.3 Batch item Failed không thử lại; cần thì chạy batch mới.  
+* 5.4 Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.  
+* 5.5 Muốn chạy đợt mới, HQ User bấm Run Bulk Top-Up lần nữa ở SCR-07 (BR-F2-22).
+
+**C. Bulk Top-Up Flow – Scheduled Run**  
+*Bước 1\. Tạo và đặt lịch (F2.4, F2.8)*
+
+* 1.1 HQ User vào tab Bulk Top-Ups (SCR-07), chọn Create Bulk Top-Up.  
+* 1.2 Trên SCR-08, HQ User nhập Bulk Top-Up Name và chọn Run Mode \= Scheduled Run. Trường Scheduled Date/Time xuất hiện và bắt buộc.  
+* 1.3 HQ User nhập Scheduled Date/Time (VNT), cấu hình criterion tùy chọn và Top-Up Amount per account, rồi Save.  
+* 1.4 Hệ thống kiểm tra theo BR-F2-13 đến BR-F2-18, BR-F2-31 và BR-F2-32. Nếu Scheduled Date/Time không sau thời điểm hiện tại thì báo MSG-0223, không lưu.  
+* 1.5 Hệ thống lưu Bulk Top-Up ở trạng thái Scheduled, ghi audit log HQ User đặt lịch. Danh sách SCR-07 hiển thị Run Mode \= Scheduled, cột Scheduled At, Batches Run để trống; nút Run Bulk Top-Up bị vô hiệu (BR-F2-33).
+
+*Bước 2\. Preview và Edit, tùy chọn (F2.4, F2.5)*
+
+* 2.1 HQ User bấm Preview ở dòng Bulk Top-Up để xem danh sách eligible theo Scheduled Date/Time (BR-F2-19; các bước còn lại như Manual Run, Bước 2).  
+* 2.2 HQ User bấm Edit để đổi tên, Scheduled Date/Time, criterion hoặc số tiền khi trạng thái là Scheduled và chưa có batch Running (BR-F2-39). Run Mode không đổi được.
+
+*Bước 3\. Hệ thống tự chạy đúng giờ (F2.8, F2.7)*
+
+* 3.1 Đến Scheduled Date/Time, Admin Portal System lấy các Bulk Top-Up Scheduled đến hạn mà chưa có batch.  
+* 3.2 Hệ thống ghi audit log "System" kèm HQ User đã đặt lịch, rồi tạo batch (Running) và khóa Bulk Top-Up (không Edit).  
+* 3.3 Hệ thống cố định criterion và số tiền cho batch này, lập danh sách eligible theo dữ liệu lúc đó (BR-F2-34).  
+* 3.4 Hệ thống xử lý từng tài khoản theo BR-F2-24: kiểm tra, ghi có vào EA với Reference ID riêng của từng batch item (BR-F2-27), ghi kết quả Success hoặc Failed.  
+* 3.5 Hết danh sách: batch \= Success hoặc Failed (BR-F2-29); Bulk Top-Up chuyển từ Scheduled sang Completed (BR-F2-38).
+
+*Bước 4\. Xem kết quả và export (F2.3, F2.7)*
+
+* 4.1 HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Bulk Batches để xem batch theo lịch kèm Top-Up Summary.  
+* 4.2 HQ User mở batch để xem SCR-12, lọc batch item theo kết quả và export CSV.  
+* 4.3 Batch item Failed không thử lại. Muốn nạp thêm, HQ User tạo Bulk Top-Up mới.
 
 ## **4\. Data Fields Table**
 
 ### **4.1. Trường hiển thị và nhập trên màn hình**
 
 | Màn hình | Trường | Kiểu | Nguồn | Nhập | Bắt buộc | Quy tắc / ghi chú |
-| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
+| ----- | ----- | ----- | ----- | ----- | ----- | ----- |
 | SCR-01 | Search by | Enum ACCOUNT\_NUMBER, NRIC | HQ User chọn | Có | Có | Khớp chính xác, không tìm gần đúng, không gợi ý khi nhập dở |
 | SCR-01 | Search value | Text | HQ User nhập | Có | Có | Account Number hoặc NRIC đầy đủ (9 ký tự) |
-| SCR-02 | Student name | Text | Student Profile (R1) | Không | Có |   |
+| SCR-02 | Student name | Text | Student Profile (R1) | Không | Có | – |
 | SCR-02 | NRIC | Text | Student Profile (R1) | Không | Có | Che một phần, không đưa NRIC đầy đủ vào URL |
 | SCR-02 | Age | Integer | Tính từ DOB | Không | Có | Số năm tròn tại ngày hiện tại |
-| SCR-02 | Account Number | Text | Education Account | Không | Có |   |
+| SCR-02 | Account Number | Text | Education Account | Không | Có | – |
 | SCR-02 | Account Status | Enum Active, Closed | Education Account | Không | Có | Chỉ Active mới nhập được số tiền |
-| SCR-02 | Current Balance | Decimal(18,2), SGD | Education Account | Không | Có |   |
-| SCR-02 | Top-Up Amount | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; tối đa 2 chữ số thập phân; không vượt hạn mức mỗi lần (TBC) |
+| SCR-02 | Current Balance | Decimal(18,2), SGD | Education Account | Không | Có | – |
+| SCR-02 | Top-Up Amount | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; tối đa 2 chữ số thập phân; không có hạn mức tối đa |
 | SCR-02 | Reason | Text, tối đa 200 ký tự | HQ User nhập | Có | Không | Chỉ dùng nội bộ, không hiển thị cho Parent. Hiển thị ở cột Note của Top-Up History |
 | SCR-03 | Balance after top-up | Decimal(18,2) | Tính | Không | Không | Chỉ để tham khảo |
-| SCR-04 | Reference | Text, tối đa 50 ký tự | Hệ thống sinh | Không | Có | Duy nhất; top-up lẻ theo mẫu TUP-IND-{timestamp ms}, ví dụ TUP-IND-1792580216342; tiền tố cho bulk TBC |
-| SCR-04 | Transaction Status | Enum Success, Failed | Transaction | Không | Có |   |
+| SCR-04 | Reference | Text, tối đa 50 ký tự | Hệ thống sinh | Không | Có | Duy nhất; top-up lẻ theo mẫu TUP-IND-{timestamp ms}, ví dụ TUP-IND-1792580216342; bulk: mỗi batch item có mã riêng do hệ thống sinh (ví dụ WTX-011-ENR) |
+| SCR-04 | Transaction Status | Enum Success, Failed | Transaction | Không | Có | – |
 | SCR-04 | New balance | Decimal(18,2) | Education Account | Không | Không | Chỉ khi Success |
 | SCR-05 | Thẻ Total Spending | Decimal(18,2), SGD | Tính | Không | Có | Tổng Amount các giao dịch Success theo bộ lọc đang chọn; ghi chú "Credited successfully only" |
 | SCR-05 | Thẻ Successful | Integer | Tính | Không | Có | Số giao dịch Success theo bộ lọc; ghi chú "Accounts credited" |
@@ -1256,231 +1324,235 @@ Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho m
 | SCR-05 | Search | Text | HQ User nhập | Có | Không | Tìm theo tên học sinh (placeholder "Search by student name"); có nút xóa nội dung |
 | SCR-05 | Status | Dropdown All Statuses, Success, Failed | HQ User chọn | Có | Không | Mặc định All Statuses |
 | SCR-05 | Nút Search, Reset | Button | HQ User bấm | Có | Không | Reset bị vô hiệu khi chưa có bộ lọc nào |
-| SCR-05 | Cột bảng | Date / Time, Reference, Student, Account, Amount, Status, Note | Transaction | Không | Có | Date / Time mới nhất trước, dạng 21 Oct 2026, 5:56 pm (SGT); Student hiển thị tên và NRIC (OQ-14); Account là Account Number; Amount có dấu \$ và dấu phẩy; Note là Reason của top-up lẻ; Date / Time và Amount sắp xếp được; 20 dòng mỗi trang |
-| SCR-07 | Search | Text | HQ User nhập | Có | Không | Tìm theo Campaign Code hoặc Campaign Name |
-| SCR-07 | Status | Dropdown All Statuses, Draft, Active, Deactive | HQ User chọn | Có | Không | Mặc định All Statuses; có nút Search và Reset |
-| SCR-07 | Create Campaign | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ tạo mới |
-| SCR-07 | Cột danh sách | Campaign Code, Campaign Name, Amount Per Account (SGD), Batches Run, Status, Actions | Campaign | Không | Có | Campaign Name kèm dòng tóm tắt criterion (ví dụ Age: 7–12); Amount Per Account và Batches Run sắp xếp được; Batches Run là số batch đã chạy của campaign; Status: Draft khi Batches Run bằng 0, Active khi lớn hơn hoặc bằng 1, Deactive khi bị tắt |
-| SCR-07 | Actions: Preview | Button | HQ User bấm | Có | Không | Mở SCR-09; dùng được ở mọi trạng thái campaign |
-| SCR-07 | Actions: Edit | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ sửa; vô hiệu khi campaign có batch Running |
-| SCR-07 | Actions: Run Campaign | Button | HQ User bấm | Có | Không | Chạy ngay một batch mới (BR-F2-20, BR-F2-21); bật với campaign Draft hoặc Active không có batch Running (OQ-13) |
-| SCR-08 | Campaign Name | Text, tối đa 150 ký tự | HQ User nhập | Có | Có |   |
+| SCR-05 | Cột bảng | Date / Time, Reference, Student, Account, Amount, Status, Note | Transaction | Không | Có | Date / Time mới nhất trước, dạng 21 Oct 2026, 5:56 pm (VNT); Student hiển thị tên và NRIC che một phần (BR-F2-02); Account là Account Number; Amount có dấu \$ và dấu phẩy; Note là Reason của top-up lẻ; Date / Time và Amount sắp xếp được; 20 dòng mỗi trang |
+| SCR-07 | Search | Text | HQ User nhập | Có | Không | Tìm theo Bulk Top-Up Code hoặc Bulk Top-Up Name |
+| SCR-07 | Status | Dropdown; Manual: All Statuses, Draft, Active, Inactive; Scheduled: All Statuses, Scheduled, Completed | HQ User chọn | Có | Không | Mặc định All Statuses; danh sách giá trị đổi theo Run Mode đang chọn; có nút Search và Reset |
+| SCR-07 | Run Mode | Dropdown All Run Modes, Manual Run, Scheduled Run | HQ User chọn | Có | Không | Mặc định All Run Modes; chọn Run Mode thì danh sách Status chỉ còn các trạng thái của Run Mode đó |
+| SCR-07 | Create Bulk Top-Up | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ tạo mới |
+| SCR-07 | Cột danh sách | Bulk Top-Up Code, Bulk Top-Up Name, Run Mode, Amount Per Account (SGD), Scheduled At, Batches Run, Status, Actions | Bulk Top-Up | Không | Có | Bulk Top-Up Name kèm dòng tóm tắt criterion (ví dụ Age: 7–12); Amount Per Account, Scheduled At và Batches Run sắp xếp được; Scheduled At chỉ có giá trị với Scheduled Run, dạng 21 Oct 2026, 5:56 pm (VNT); Batches Run là số batch đã chạy của Bulk Top-Up Manual Run, để trống với Scheduled Run; Status theo BR-F2-18 |
+| SCR-07 | Actions: Preview | Button | HQ User bấm | Có | Không | Mở SCR-09; dùng được ở mọi trạng thái Bulk Top-Up |
+| SCR-07 | Actions: Edit | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ sửa; vô hiệu khi Bulk Top-Up có batch Running, hoặc khi Bulk Top-Up Scheduled đã Completed |
+| SCR-07 | Actions: Activate, Deactivate | Button | HQ User bấm | Có | Không | Chỉ có ở Bulk Top-Up Manual Run (BR-F2-40): Activate ở dòng Draft, Inactive; Deactivate ở dòng Active; ghi audit log |
+| SCR-07 | Actions: Run Bulk Top-Up | Button | HQ User bấm | Có | Không | Chạy ngay một batch mới (BR-F2-20, BR-F2-21); chỉ bật với Bulk Top-Up Manual Run trạng thái Active không có batch Running; vô hiệu ở Draft và Inactive; vô hiệu với Bulk Top-Up Scheduled Run |
+| SCR-08 | Bulk Top-Up Name | Text, tối đa 150 ký tự | HQ User nhập | Có | Có | – |
+| SCR-08 | Run Mode | Radio Manual Run, Scheduled Run | HQ User chọn | Có | Có | Mặc định Manual Run; chọn khi tạo, bị khóa khi sửa (BR-F2-31) |
+| SCR-08 | Scheduled Date/Time | Datetime (VNT) | HQ User nhập | Có | Có, khi Run Mode là Scheduled Run | Chỉ hiện khi Run Mode là Scheduled Run; phải sau thời điểm hiện tại lúc Save (MSG-0223) |
 | SCR-08 | Age Range: Minimum, Maximum Age | Integer | HQ User nhập | Có | Không | 7 ≤ Min ≤ Max ≤ 15; nhập cả hai hoặc không nhập |
 | SCR-08 | Account Balance: operator, threshold | Enum, Decimal(18,2) | HQ User chọn, nhập | Có | Không | Toán tử \<, \<=, \>, \>=, \=; ngưỡng không âm; nhập cả hai hoặc không |
-| SCR-08 | Top-Up Amount per account | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; không vượt hạn mức mỗi lần (TBC); hiển thị ở cột Amount Per Account (SGD) |
+| SCR-08 | Top-Up Amount per account | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; không có hạn mức tối đa; hiển thị ở cột Amount Per Account (SGD) |
 | SCR-09 | Cột preview | Student Name, Age, Balance, Top-Up Amount | Tính | Không | Có | 20 dòng mỗi trang; chỉ đọc |
-| SCR-09 | Total accounts, Total amount (forecast), Previewed at | Integer, Decimal, Datetime | Tính | Không | Có | Chỉ để xem; không có nút Confirm |
-| SCR-11 | Cột danh sách batch | Campaign Code, Status, Total, Successful, Failed, Total credited, Started at, Completed at | Batch | Không | Có | Mở từ Top-Up History, nguồn Bulk Batches (bố cục TBC, OQ-15); Status: Pending, Running, Completed, Failed |
-| SCR-12 | Cột batch item | Student, Account Number, Age, Balance, Amount, Outcome, Failure Reason, Reference | Batch item | Không | Có | Lọc theo Outcome; nút Export CSV |
-| SCR-12 | Batch summary | Integer, Decimal(18,2) | Tính | Không | Có | Total Spending (Total credited), Successful, Failed (số lượng và tiền) |
+| SCR-09 | Total accounts, Total amount (forecast), Previewed at, Preview for | Integer, Decimal, Datetime | Tính | Không | Có | Chỉ để xem; không có nút Confirm; Preview for \= Scheduled Date/Time, chỉ hiện với Bulk Top-Up Scheduled |
+| SCR-11 | Cột danh sách batch | Date / Time, Batch Code, Top-up, Status, Targeted, Successful, Failed, Total Disbursed, Open | Batch | Không | Có | Hiện ở Top-Up History khi chọn nguồn Bulk Batches; Date / Time là thời điểm chạy batch, dạng 21 Oct 2026, 5:56 pm (VNT); Top-up là Bulk Top-Up Name; Status: Running, Success, Failed (BR-F2-29); Targeted là số tài khoản trong danh sách lúc chạy; Total Disbursed là tổng tiền ghi có thành công; Date / Time, Status, Targeted, Successful, Failed, Total Disbursed sắp xếp được; Open mở SCR-12 |
+| SCR-12 | Cột batch item | Student Name, Top-Up Amount (SGD), Outcome, Skip / Error Reason, Reference, Date / Time | Batch item | Không | Có | Outcome: Success, Failed; Skip / Error Reason hiện Failure Reason, để "—" khi Success; Student Name và Date / Time sắp xếp được; Search theo tên hoặc Account Number; lọc theo Outcome (All Outcomes, Success, Failed); nút Export CSV |
+| SCR-12 | Batch summary | Integer, Decimal(18,2) | Tính | Không | Có | Ba thẻ Total Disbursed, Successful, Failed; nhãn trạng thái batch ở góc phải |
 
 ### **4.2. Thực thể dữ liệu liên quan**
 
-Batch trong tài liệu này là bảng topup\_campaign\_runs; Batch Item là bảng topup\_run\_items. Tên bảng và cột (RunId, ...) giữ nguyên để khớp thiết kế DB hiện có.
+Bulk Top-Up trong tài liệu này là bảng topup\_campaigns; Batch là bảng topup\_campaign\_runs; Batch Item là bảng topup\_run\_items. Tên bảng và cột (CampaignId, RunId, ...) giữ nguyên để khớp thiết kế DB hiện có; chỉ tên hiển thị và thuật ngữ trong FS đổi từ "campaign" sang "Bulk Top-Up".  
+**Bulk Top-Up (topup\_campaigns)**
 
-#### **Campaign (topup\_campaigns)**
+* Id: VARCHAR(50) \- PK  
+* Code: NVARCHAR(50) \- Duy nhất; hiển thị dạng BTU-2026-0001  
+* Name: NVARCHAR(150)  
+* AmountPerAccount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Số tiền lớn hơn 0; mặc định SGD  
+* RunMode: INT \- 1 Manual Run, 2 Scheduled Run. Bắt buộc; chọn khi tạo, không đổi sau khi lưu  
+* ScheduledAt: DATETIME2(3) \- UTC. Bắt buộc khi RunMode \= 2, cấm khi RunMode \= 1; phải sau thời điểm lưu (lúc tạo hoặc lúc đổi lịch)  
+* ScheduledBy: VARCHAR(50) \- IAM ID của HQ User đã lưu lịch gần nhất; bắt buộc khi RunMode \= 2  
+* Status: INT \- Manual Run: 1 Draft, 2 Active, 3 Inactive. Scheduled Run: 4 Scheduled, 5 Completed. Ràng buộc: RunMode \= 1 chỉ nhận Status 1 đến 3; RunMode \= 2 chỉ nhận Status 4 hoặc 5\. Mặc định Draft khi tạo Manual Run; chỉ Active mới chạy được; Scheduled chuyển Completed khi batch theo lịch kết thúc; Draft, Active, Inactive do HQ User đổi bằng nút Activate, Deactivate (BR-F2-40)  
+* DefinitionVersion: INT \- Tăng mỗi lần sửa; ghi vào batch lúc chạy  
+* CreatedBy, CreatedAt, UpdatedAt, RowVersion: VARCHAR(50), DATETIME2(3), ROWVERSION \- UTC; RowVersion là token kiểm soát đồng thời lạc quan  
+* Giá trị dẫn xuất (không lưu): Batches Run là số batch của Bulk Top-Up Manual Run (Scheduled Run không có Batches Run). Top-Up Summary của Bulk Top-Up cộng dồn từ các batch thuộc Bulk Top-Up: Total Spending là tổng TotalCredited; Successful, Failed là tổng SuccessfulCount, FailedCount.
 
-•      Id: VARCHAR(50) \- PK  
-•      Code: NVARCHAR(50) \- Duy nhất; hiển thị dạng CMP-2026-0001  
-•      Name: NVARCHAR(150)  
-•      AmountPerAccount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Số tiền lớn hơn 0; mặc định SGD  
-•      Status: INT \- 1 Draft, 2 Active, 3 Deactive. Draft chuyển Active khi batch đầu tiên được tạo; Deactive do HQ User đặt (OQ-13)  
-•      DefinitionVersion: INT \- Tăng mỗi lần sửa; ghi vào batch lúc chạy  
-•      CreatedBy, CreatedAt, UpdatedAt, RowVersion: VARCHAR(50), DATETIME2(3), ROWVERSION \- UTC; RowVersion là token kiểm soát đồng thời lạc quan  
-•      Giá trị dẫn xuất (không lưu): Batches Run là số batch của campaign. Top-Up Summary của campaign cộng dồn từ các batch thuộc campaign: Total Spending là tổng TotalCredited; Successful, Failed là tổng SuccessfulCount, FailedCount.
+**Criterion (topup\_campaign\_criteria)**
 
-#### **Criterion (topup\_campaign\_criteria)**
+* Id, CampaignId: VARCHAR(50) \- PK, FK Bulk Top-Up  
+* CriterionType: INT \- 1 AGE\_RANGE, 2 BALANCE; duy nhất theo (CampaignId, CriterionType). Criterion là tùy chọn; Bulk Top-Up không có criterion nào thì lấy hết. Thêm loại mới ở sprint sau không đổi cấu trúc bảng  
+* MinAge, MaxAge: SMALLINT \- Bắt buộc khi AGE\_RANGE, cấm ở loại khác; 7 ≤ MinAge ≤ MaxAge ≤ 15  
+* BalanceOperator, BalanceThreshold: INT, DECIMAL(18,2) \- Bắt buộc khi BALANCE; 1 LT, 2 LTE, 3 GT, 4 GTE, 5 EQ; ngưỡng không âm
 
-•      Id, CampaignId: VARCHAR(50) \- PK, FK Campaign  
-•      CriterionType: INT \- 1 AGE\_RANGE, 2 BALANCE; duy nhất theo (CampaignId, CriterionType). Criterion là tùy chọn; campaign không có criterion nào thì lấy hết. Thêm loại mới ở sprint sau không đổi cấu trúc bảng  
-•      MinAge, MaxAge: SMALLINT \- Bắt buộc khi AGE\_RANGE, cấm ở loại khác; 7 ≤ MinAge ≤ MaxAge ≤ 15  
-•      BalanceOperator, BalanceThreshold: INT, DECIMAL(18,2) \- Bắt buộc khi BALANCE; 1 LT, 2 LTE, 3 GT, 4 GTE, 5 EQ; ngưỡng không âm
+**Batch (topup\_campaign\_runs)**
 
-#### **Batch (topup\_campaign\_runs)**
+* Id, CampaignId: VARCHAR(50) \- PK, FK Bulk Top-Up. Một Bulk Top-Up Manual có nhiều batch; một Bulk Top-Up Scheduled có tối đa một batch  
+* BatchNo: INT \- Số thứ tự batch trong Bulk Top-Up (1, 2, ...); duy nhất theo (CampaignId, BatchNo)  
+* TriggerType: INT \- 1 Manual (HQ User bấm Run Bulk Top-Up), 2 Scheduled (hệ thống chạy theo lịch)  
+* TriggeredBy: VARCHAR(50) \- IAM ID của HQ User đã bấm Run Bulk Top-Up (TriggerType \= 1\) hoặc đã lưu lịch (TriggerType \= 2); chỉ dùng cho audit, không hiển thị trên SCR-11  
+* ScheduledAt: DATETIME2(3) \- UTC. Snapshot Scheduled Date/Time lúc batch được tạo, chỉ có khi TriggerType \= 2; so với StartedAt để biết batch chạy trễ lịch  
+* DefinitionVersion, AmountPerAccount: INT, DECIMAL(18,2) \- Snapshot tại lúc bắt đầu; sửa Bulk Top-Up không đổi batch đã tạo  
+* Status: INT \- 1 Running, 2 Success, 3 Failed  
+* TotalAccounts, SuccessfulCount, FailedCount: INT \- Không âm; TotalAccounts hiển thị ở cột Targeted  
+* TotalCredited: DECIMAL(18,2) \- Tổng các khoản Success của batch; hiển thị là Total Disbursed  
+* StartedAt, CompletedAt, CreatedAt, UpdatedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC; StartedAt hiển thị ở cột Date / Time của SCR-11; CompletedAt chỉ dùng nội bộ  
+* Ràng buộc: tối đa một batch ở trạng thái Running cho mỗi CampaignId (unique index có điều kiện); đây là cơ sở của DA-10 và BR-F2-36. Với Scheduled Run, tối đa một batch cho mỗi CampaignId khi TriggerType \= 2
 
-•      Id, CampaignId: VARCHAR(50) \- PK, FK Campaign. Một campaign có nhiều batch  
-•      BatchNo: INT \- Số thứ tự batch trong campaign (1, 2, ...); duy nhất theo (CampaignId, BatchNo)  
-•      TriggeredBy: VARCHAR(50) \- IAM ID của HQ User đã bấm Run Campaign  
-•      DefinitionVersion, AmountPerAccount: INT, DECIMAL(18,2) \- Snapshot tại lúc bắt đầu; sửa campaign không đổi batch đã tạo  
-•      Status: INT \- 1 Pending, 2 Running, 3 Completed, 4 Failed  
-•      TotalAccounts, SuccessfulCount, FailedCount: INT \- Không âm  
-•      TotalCredited: DECIMAL(18,2) \- Tổng các khoản Successful của batch; là Total Spending của batch  
-•      StartedAt, CompletedAt, CreatedAt, UpdatedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC  
-•      Ràng buộc: tối đa một batch ở trạng thái Pending hoặc Running cho mỗi CampaignId (unique index có điều kiện); đây là cơ sở của DA-14
+**Batch Item (topup\_run\_items)**
 
-#### **Batch Item (topup\_run\_items)**
+* Id, RunId: VARCHAR(50) \- PK, FK Batch; duy nhất theo (RunId, EducationAccountId)  
+* EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
+* AccountNumber, StudentProfileId: VARCHAR(50), UNIQUEIDENTIFIER \- Tham chiếu hiển thị; NRIC lấy qua Student Profile, không sao chép  
+* AgeAtRun, BalanceSnapshot, ExpectedAmount: SMALLINT, DECIMAL(18,2), DECIMAL(18,2) \- Giá trị lúc lập danh sách và lúc đánh giá; dùng để hiển thị và audit  
+* Outcome: INT \- 1 Pending (nội bộ, chưa xử lý), 2 Success, 3 Failed  
+* FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Bắt buộc khi Failed; mã lỗi (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH, CREDIT\_FAILED) và nguyên nhân đã làm sạch  
+* ReferenceId: NVARCHAR(50) \- Duy nhất; sinh một lần  
+* TopUpTransactionId: VARCHAR(50) \- FK Transaction; bắt buộc khi Success  
+* ProcessedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC
 
-•      Id, RunId: VARCHAR(50) \- PK, FK Batch; duy nhất theo (RunId, EducationAccountId)  
-•      EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
-•      AccountNumber, StudentProfileId: VARCHAR(50), UNIQUEIDENTIFIER \- Tham chiếu hiển thị; NRIC lấy qua Student Profile, không sao chép  
-•      AgeAtRun, BalanceSnapshot, ExpectedAmount: SMALLINT, DECIMAL(18,2), DECIMAL(18,2) \- Giá trị lúc lập danh sách và lúc đánh giá; dùng để hiển thị và audit  
-•      Outcome: INT \- 1 Pending, 2 Successful, 3 Failed  
-•      FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Bắt buộc khi Failed; mã lỗi (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH, CREDIT\_FAILED) và nguyên nhân đã làm sạch  
-•      ReferenceId: NVARCHAR(50) \- Duy nhất; sinh một lần  
-•      TopUpTransactionId: VARCHAR(50) \- FK Transaction; bắt buộc khi Successful  
-•      ProcessedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC
+**Top-Up Transaction (topup\_transactions)**
 
-#### **Top-Up Transaction (topup\_transactions)**
+* Id: VARCHAR(50) \- PK  
+* TransactionReference: NVARCHAR(50) \- Duy nhất; hiển thị ở cột Reference của Top-Up History và ở SCR-04  
+* SourceType: INT \- 1 Individual, 2 Bulk  
+* EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
+* RunItemId: VARCHAR(50) \- FK Batch Item; bắt buộc khi Bulk, cấm ở loại khác  
+* InitiatedByUserId: VARCHAR(50) \- IAM ID của HQ User; với Bulk là HQ User đã bấm Run Bulk Top-Up hoặc đã lưu lịch (Scheduled Run)  
+* ReferenceId: NVARCHAR(50) \- Duy nhất; hệ thống kiểm tra trước khi tạo giao dịch để chống ghi trùng  
+* Amount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Lớn hơn 0; SGD  
+* Reason: NVARCHAR(200) \- Optional, chỉ dùng cho Individual; không hiển thị cho Parent; hiển thị ở cột Note của Top-Up History  
+* Status: INT \- 1 Pending, 2 Success, 3 Failed  
+* FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Đã làm sạch  
+* CreatedAt, UpdatedAt, CompletedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC; CompletedAt rỗng khi đang xử lý  
+* Giá trị dẫn xuất (không lưu): Top-Up Summary ở SCR-05 tính theo bộ lọc. Total Spending là tổng Amount các giao dịch Success. Successful và Failed là số giao dịch theo Status; với nguồn Bulk Batches đếm theo Outcome của batch item.
 
-•      Id: VARCHAR(50) \- PK  
-•      TransactionReference: NVARCHAR(50) \- Duy nhất; hiển thị ở cột Reference của Top-Up History và ở SCR-04  
-•      SourceType: INT \- 1 Individual, 2 Bulk  
-•      EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
-•      RunItemId: VARCHAR(50) \- FK Batch Item; bắt buộc khi Bulk, cấm ở loại khác  
-•      InitiatedByUserId: VARCHAR(50) \- IAM ID của HQ User; với Bulk là HQ User đã bấm Run Campaign  
-•      ReferenceId: NVARCHAR(50) \- Duy nhất; hệ thống kiểm tra trước khi tạo giao dịch để chống ghi trùng  
-•      Amount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Lớn hơn 0; SGD  
-•      Reason: NVARCHAR(200) \- Optional, chỉ dùng cho Individual; không hiển thị cho Parent; hiển thị ở cột Note của Top-Up History  
-•      Status: INT \- 1 Pending, 2 Success, 3 Failed  
-•      FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Đã làm sạch  
-•      CreatedAt, UpdatedAt, CompletedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC; CompletedAt rỗng khi đang xử lý  
-•      Giá trị dẫn xuất (không lưu): Top-Up Summary ở SCR-05 tính theo bộ lọc. Total Spending là tổng Amount các giao dịch Success. Successful và Failed là số giao dịch theo Status; với nguồn Bulk Batches đếm theo Outcome của batch item.
+**Tham chiếu ngoài & Audit Log**
 
-#### **Tham chiếu ngoài & Audit Log**
-
-•      R1: Student Profile (họ tên, NRIC, DOB, Citizenship).  
-•      R3: liên kết Student–EA.  
-•      AuditLog: actor, action, entity, entity\_id, old\_value, new\_value, timestamp. Ghi: tạo, sửa, bật hoặc tắt (Deactive) campaign; Run Campaign; bắt đầu và kết thúc batch; mỗi top-up.
+* R1: Student Profile (họ tên, NRIC, DOB, Citizenship).  
+* R3: liên kết Student–EA.  
+* AuditLog: actor, action, entity, entity\_id, old\_value, new\_value, timestamp. Ghi: tạo, sửa, đổi trạng thái (Draft, Active, Inactive) Bulk Top-Up; đặt hoặc đổi lịch chạy; Run Bulk Top-Up; hệ thống tự kích hoạt batch theo lịch (actor "System" kèm HQ User đã đặt lịch); bắt đầu và kết thúc batch; mỗi top-up.
 
 ## **5\. Validation**
 
 ### **5.1. Thông báo lỗi hiển thị cho HQ User**
 
 | Mã | Nội dung hiển thị | Hành vi UI |
-| :---- | :---- | :---- |
+| ----- | ----- | ----- |
 | MSG-0201 | No Education Account found. Check the Account Number or NRIC and try again. | Giữ ở SCR-01 |
 | MSG-0202 | Enter an amount greater than 0, with up to 2 decimal places. | Giữ ở SCR-02, đánh dấu ô nhập |
-| MSG-0203 | The amount is more than the limit for one top-up. (TBC, OQ-01) | Giữ ở SCR-02 hoặc SCR-08 |
 | MSG-0204 | This Education Account is not active. Top-up is not allowed. | Vô hiệu ô nhập số tiền |
 | MSG-0207 | Top-up completed. Reference: {Reference}. | SCR-04, hiện số dư mới |
 | MSG-0208 | The top-up could not be completed. No amount was credited. | SCR-04, cho thử lại |
-| MSG-0214 | No accounts match these criteria. | Hiện ở SCR-09 (Preview) hoặc ngay khi bấm Run Campaign ở SCR-07; không tạo batch |
-| MSG-0215 | This campaign is running and cannot be changed. | Vô hiệu nút Edit và Run Campaign của campaign đó |
+| MSG-0214 | No accounts match these criteria. | Hiện ở SCR-09 (Preview) hoặc ngay khi bấm Run Bulk Top-Up ở SCR-07; không tạo batch. Chỉ áp dụng cho Manual Run |
+| MSG-0215 | This bulk top-up is running and cannot be changed. | Vô hiệu nút Edit và Run Bulk Top-Up của Bulk Top-Up đó |
 | MSG-0217 | Enter an age range from 7 to 15, with the minimum not more than the maximum. | SCR-08, đánh dấu ô nhập |
 | MSG-0218 | Enter a balance operator and an amount of 0 or more. | SCR-08, đánh dấu ô nhập |
-| MSG-0222 | This campaign was changed by another user. Refresh and try again. | Làm mới dữ liệu |
+| MSG-0222 | This bulk top-up was changed by another user. Refresh and try again. | Làm mới dữ liệu |
+| MSG-0223 | Enter a run date and time later than the current time (VNT). | SCR-08, đánh dấu ô Scheduled Date/Time |
+| MSG-0224 | This bulk top-up is scheduled and cannot be run manually. | Vô hiệu nút Run Bulk Top-Up; chặn cả khi gọi API |
+| MSG-0225 | This scheduled bulk top-up has completed and cannot be changed. | Vô hiệu nút Edit; chặn cả khi gọi API |
 | MSG-0001 | Enter your \<field\> | Bỏ trống trường bắt buộc, báo theo từng trường |
 | MSG-0002 | Your session has expired. Please log in again. | Chuyển đến đăng nhập Admin Portal |
 | MSG-0003 | You do not have permission to perform this action. | Quay về màn hình chính |
 
 ### **5.2. Tiêu chí chấp nhận (AC)**
 
-#### **Individual Top-Up**
+**Individual Top-Up**
 
 | ID | Given / When / Then |
-| :---- | :---- |
+| ----- | ----- |
 | AC-01 | Given HQ User, when tìm theo Account Number hoặc NRIC đầy đủ, then thấy đúng một EA với holder, status, balance; NRIC hiển thị che một phần. |
-| AC-02 | Given Account Number hoặc NRIC không có EA, hoặc NRIC nhập thiếu, thừa ký tự hoặc chỉ khớp một phần, when tìm, then báo MSG-0201, không hiển thị tài khoản hay danh sách gợi ý nào. |
+| AC-02 | Given Account Number hoặc NRIC không có EA, hoặc NRIC nhập thiếu, thừa ký tự hoặc chỉ khớp một phần, when tìm then không hiển thị tài khoản hay danh sách gợi ý nào. |
 | AC-03 | Given EA Active, when HQ User xác nhận top-up 50.00, then số dư tăng đúng 50.00 một lần, transaction Success, có Reference và audit log. |
 | AC-04 | Given EA Closed, when xác nhận top-up, then bị từ chối, số dư không đổi, transaction Failed được ghi log. |
 | AC-07 | Given HQ User bấm xác nhận hai lần, then chỉ tạo một transaction (kiểm tra bằng Reference ID) và chỉ ghi có một lần. |
 | AC-09 | Given số tiền bằng 0, âm, hoặc có hơn 2 chữ số thập phân, then bị từ chối MSG-0202, không có dữ liệu nào đổi. |
 | AC-10 | Given top-up thất bại, then số dư không đổi và lý do được ghi log. |
-| AC-11 | Given School User hoặc Parent gọi API Top-Up, then bị từ chối 403 và ghi log bảo mật. |
 
-#### **Cấu hình Campaign, Preview**
-
-| ID | Given / When / Then |
-| :---- | :---- |
-| AC-18 | Given Campaign Name và số tiền hợp lệ (criterion tùy chọn), when Save, then campaign được tạo ở trạng thái Draft với Code do hệ thống sinh và hiện ở danh sách Bulk Campaigns với Batches Run bằng 0\. |
-| AC-19 | Given Minimum Age lớn hơn Maximum Age, hoặc nằm ngoài 7 đến 15, then bị từ chối MSG-0217. |
-| AC-20 | Given campaign có criterion tuổi 7 đến 12 và số dư dưới SGD 100, when Preview, then danh sách gồm mọi EA Active thỏa cả hai criterion, kèm Student Name, Age, Balance, Top-Up Amount; tổng số tài khoản và tổng tiền đúng. |
-| AC-21 | Given campaign không có criterion nào, when Preview, then danh sách gồm mọi EA Active; học sinh PR hoặc IS không có EA không bao giờ xuất hiện. |
-| AC-22 | Given campaign đã lưu, when HQ User bấm Preview, then hiển thị tổng số tài khoản và tổng tiền dự kiến (Total amount) để kiểm tra; Preview không có nút Confirm và không bắt buộc trước khi Run Campaign. |
-| AC-23 | Given đã xem Preview, when HQ User sửa criterion hoặc số tiền rồi bấm Run Campaign, then batch dùng định nghĩa mới nhất tại lúc bấm; Preview cũ không chặn việc chạy. |
-| AC-24 | Given hai campaign với criterion khác nhau, then cả hai chạy được; tài khoản thuộc cả hai nhận hai khoản và Preview không cảnh báo. |
-
-#### **Chạy và kết quả**
+**Cấu hình Bulk Top-Up, Preview**
 
 | ID | Given / When / Then |
-| :---- | :---- |
-| AC-25 | Given campaign Draft hoặc Active, when HQ User bấm Run Campaign, then mỗi tài khoản eligible được ghi có đúng một lần; batch summary có Successful, Failed; số tiền tổng khớp tổng các giao dịch Success. |
+| ----- | ----- |
+| AC-18 | Given Bulk Top-Up Name, Run Mode Manual Run và số tiền hợp lệ (criterion tùy chọn), when Save, then Bulk Top-Up được tạo ở trạng thái Active với Batches Run bằng 0\. |
+| AC-19 | Given Minimum Age lớn hơn Maximum Age, hoặc nằm ngoài 7 đến 15, then bị từ chối.. |
+| AC-20 | Given Bulk Top-Up có criterion tuổi 7 đến 12 và số dư dưới SGD 100, when Preview, then danh sách gồm mọi EA Active thỏa cả hai criterion, kèm Student Name, Age, Balance, Top-Up Amount; tổng số tài khoản và tổng tiền đúng. |
+| AC-21 | Given Bulk Top-Up không có criterion nào, when Preview, then danh sách gồm mọi EA Active; học sinh PR hoặc IS không có EA không bao giờ xuất hiện. |
+| AC-23 | Given đã xem Preview, when HQ User sửa criterion hoặc số tiền rồi bấm Run Bulk Top-Up (hoặc đến giờ chạy theo lịch), then batch dùng edit mới nhất tại lúc chạy; Preview cũ không chặn việc chạy. |
+| AC-24 | Given hai Bulk Top-Up với criterion khác nhau, then cả hai chạy được; tài khoản thuộc cả hai nhận hai khoản và Preview không cảnh báo. |
+
+**Chạy và kết quả (dùng chung cho Manual Run và Scheduled Run)**
+
+| ID | Given / When / Then |
+| ----- | ----- |
+| AC-25 | Given Bulk Top-Up Manual Active, when HQ User bấm Run Bulk Top-Up, then mỗi tài khoản eligible được ghi có đúng một lần; batch summary có Successful, Failed; số tiền tổng khớp tổng các giao dịch Success. |
 | AC-26 | Given giữa lúc lập danh sách và lúc xử lý một tài khoản không còn thỏa criterion đã chọn (ví dụ số dư tăng vượt ngưỡng), then bị Failed (CRITERIA\_NOT\_MATCH), không ghi có; nếu vẫn thỏa thì vẫn được ghi có. |
 | AC-27 | Given tài khoản bị đóng trước lúc chạy, then Failed (EA\_NOT\_ACTIVE), không ghi có. |
-| AC-28 | Given batch có 5 tài khoản eligible, số tiền mỗi tài khoản 100.00, when kết quả là 3 Successful, 2 Failed, then batch summary hiển thị Total Spending 300.00, Successful 3, Failed 2; các số này được cộng vào Top-Up Summary của campaign. |
-| AC-29 | Given một số tài khoản Failed, then batch vẫn xử lý các tài khoản khác và kết thúc ở trạng thái Failed kèm lý do. |
+| AC-28 | Given batch có 5 tài khoản eligible, số tiền mỗi tài khoản 100.00, when kết quả là 3 Success, 2 Failed, then batch có Status Failed, Targeted 5 và batch summary hiển thị Total Disbursed 300.00, Successful 3, Failed 2; các số này được cộng vào Top-Up Summary của Bulk Top-Up. |
+| AC-29 | Given một số tài khoản Failed, then batch vẫn xử lý các tài khoản khác và kết thúc ở trạng thái Failed kèm lý do. Given không có tài khoản Failed (kể cả Targeted \= 0), then batch kết thúc ở trạng thái Success. |
 | AC-31 | Given server khởi động lại giữa batch, then batch tiếp tục từ các item chưa xử lý, không ghi có trùng. |
 | AC-33 | Given batch item Failed, then số dư EA tương ứng không đổi. |
-| AC-34 | Given campaign có batch Running, when HQ User bấm Edit hoặc Run Campaign, hoặc hai HQ User thao tác đồng thời, then bị từ chối MSG-0215 hoặc MSG-0222. |
+| AC-34 | Given Bulk Top-Up có batch Running, when HQ User bấm Edit hoặc Run Bulk Top-Up, hoặc hai HQ User thao tác đồng thời, then bị từ chối MSG-0215 hoặc MSG-0222. |
 
-#### **Run Campaign**
-
-| ID | Given / When / Then |
-| :---- | :---- |
-| AC-35 | Given campaign Draft hoặc Active không có batch Running và có tài khoản eligible, when HQ User bấm Run Campaign ở danh sách, then batch bắt đầu ngay; không có bước Preview bắt buộc, chọn chế độ chạy, lịch chạy hay xác nhận riêng; campaign Draft chuyển Active. |
-| AC-36 | Given HQ User bấm Run Campaign hai lần, hoặc hai HQ User bấm cùng lúc, then chỉ tạo một batch; trong lúc batch Running, Run Campaign và Edit của campaign đó bị vô hiệu (MSG-0215). |
-| AC-37 | Given campaign đã có batch kết thúc, when HQ User bấm Run Campaign lần nữa, then tạo batch mới (BatchNo tăng, Batches Run tăng 1), batch cũ giữ nguyên, và Top-Up Summary của campaign cộng dồn cả hai batch. |
-| AC-38 | Given không có tài khoản eligible lúc bấm Run Campaign, then báo MSG-0214, không tạo batch, Batches Run không đổi. |
-
-#### **Audit và Parent (R8)**
+**Manual Run**
 
 | ID | Given / When / Then |
-| :---- | :---- |
-| AC-39 | Given mọi giao dịch Top-Up, then có Reference, số tiền, thời điểm, người thực hiện, campaign và batch (nếu có); không xóa cứng. |
+| ----- | ----- |
+| AC-35a | Given Bulk Top-Up Manual Draft hoặc Inactive, then nút Run Bulk Top-Up bị vô hiệu và gọi API bị từ chối; HQ User phải chuyển sang Active bằng tay trước khi chạy. Given Bulk Top-Up Active với Batches Run \= 0, then trạng thái vẫn là Active. |
+| AC-36 | Given HQ User bấm Run Bulk Top-Up hai lần, hoặc hai HQ User bấm cùng lúc, then chỉ tạo một batch; trong lúc batch Running, Run Bulk Top-Up và Edit của Bulk Top-Up đó bị vô hiệu. |
+| AC-37 | Given Bulk Top-Up Manual đã có batch kết thúc, when HQ User bấm Run Bulk Top-Up lần nữa, then tạo batch mới (BatchNo tăng, Batches Run tăng 1), batch cũ giữ nguyên, và Top-Up Summary của Bulk Top-Up cộng dồn cả hai batch. |
+| AC-38 | Given không có tài khoản eligible lúc bấm Run Bulk Top-Up, then báo MSG-0214, không tạo batch, Batches Run không đổi. |
+
+**Scheduled Run**
+
+| ID | Given / When / Then |
+| ----- | ----- |
+| AC-50 | Given Bulk Top-Up Scheduled, when xem danh sách, then nút Run Bulk Top-Up bị vô hiệu; Preview dùng được; Edit dùng được khi trạng thái Scheduled và chưa có batch Running. |
+| AC-52 | Given đến Scheduled Date/Time, when hệ thống kích hoạt, then tạo đúng một batch tự động, mỗi tài khoản eligible được ghi có đúng một lần, audit log ghi "System" kèm HQ User đã đặt lịch. |
+| AC-53 | Given batch theo lịch kết thúc (Success hoặc Failed), then Bulk Top-Up chuyển từ Scheduled sang Completed và Top-Up Summary của Bulk Top-Up bằng số liệu của batch đó. |
+| AC-55 | Given lần chạy theo lịch có tài khoản bị đóng hoặc không còn thỏa criterion giữa lúc lập danh sách và lúc xử lý, then tài khoản đó bị Failed (EA\_NOT\_ACTIVE hoặc CRITERIA\_NOT\_MATCH), không ghi có; các tài khoản còn lại vẫn được xử lý. |
+| AC-57 | Given hai tiến trình kích hoạt cùng lúc cho cùng một Bulk Top-Up Scheduled, then chỉ tạo một batch. |
+| AC-59 | Given danh sách Bulk Top-Ups, then Bulk Top-Up Manual chỉ có trạng thái Draft, Active hoặc Inactive; Bulk Top-Up Scheduled chỉ có trạng thái Scheduled hoặc Completed; lọc theo Status và Run Mode cho kết quả đúng. |
+
+**Audit và Parent (R8)**
+
+| ID | Given / When / Then |
+| ----- | ----- |
+| AC-39 | Given mọi giao dịch Top-Up, then có Reference, số tiền, thời điểm, người thực hiện, Bulk Top-Up và batch (nếu có); không xóa cứng. |
 | AC-40 | Given top-up thành công, when Parent xem Transaction History (R8), then thấy Type Top-up, Money in, Status Completed; Description không chứa lý do nội bộ. |
 
-#### **Top-Up Summary khi xem history**
+**Top-Up Summary khi xem history**
 
 | ID | Given / When / Then |
-| :---- | :---- |
+| ----- | ----- |
 | AC-42 | Given Top-Up History đang chọn một nguồn (Individual Top-Ups hoặc Bulk Batches), Status hoặc từ khóa Search, when HQ User bấm Search, then ba thẻ Top-Up Summary hiển thị Total Spending bằng tổng Amount các giao dịch Success trong bộ lọc, cùng số lượng Successful, Failed; đổi bộ lọc thì số liệu đổi theo. |
-| AC-43 | Given campaign đã chạy một hoặc nhiều batch, when xem Top-Up Summary của campaign, then Total Spending, Successful, Failed bằng tổng các batch tương ứng ở SCR-11. |
-| AC-44 | Given batch item Failed, then số tiền đó không được cộng vào Total Spending; chỉ batch item Successful mới được cộng. |
+| AC-43 | Given Bulk Top-Up đã chạy một hoặc nhiều batch, when xem Top-Up Summary của Bulk Top-Up, then Total Spending, Successful, Failed bằng tổng các batch tương ứng ở SCR-11. |
+| AC-44 | Given batch item Failed, then số tiền đó không được cộng vào Total Spending hay Total Disbursed; chỉ batch item Success mới được cộng. |
 | AC-45 | Given SCR-05 chọn nguồn Individual Top-Ups, then Total Spending chỉ gồm top-up lẻ Success. |
 
 ## **6\. Appendices**
 
-### **Appendix A. Trạng thái Campaign, Batch, Batch Item và Transaction**
+### **Appendix A. Trạng thái Bulk Top-Up, Batch, Batch Item và Transaction**
 
 | Đối tượng | Từ | Sang | Điều kiện | Ghi chú |
-| :---- | :---- | :---- | :---- | :---- |
-| Campaign | (mới) | Draft | HQ User Save | Chưa chạy lần nào; Preview, Edit, Run Campaign được |
-| Campaign | Draft | Active | HQ User bấm Run Campaign, batch đầu tiên được tạo | Batches Run lớn hơn hoặc bằng 1; vẫn Preview, Edit, Run Campaign được |
-| Campaign | Active | Active | HQ User bấm Run Campaign | Tạo batch mới; Edit và Run Campaign bị vô hiệu đến khi batch kết thúc |
-| Campaign | Draft hoặc Active | Deactive | HQ User tắt campaign (cách thao tác TBC, OQ-13) | Không chạy được |
-| Batch | (mới) | Pending | HQ User bấm Run Campaign | Khóa Edit và Run Campaign của campaign |
-| Batch | Pending | Running | Bắt đầu lập danh sách và xử lý |   |
-| Batch | Running | Completed | Hết danh sách, không còn batch item Failed | Mở lại Edit và Run Campaign |
-| Batch | Running | Failed | Hết danh sách, còn batch item Failed | Kèm lý do; mở lại Edit và Run Campaign |
-| Batch Item | (mới) | Pending | Lập danh sách khi batch bắt đầu |   |
-| Batch Item | Pending | Successful | Ghi có vào EA thành công | Số dư tăng một lần |
+| ----- | ----- | ----- | ----- | ----- |
+| Bulk Top-Up (Manual Run) | (mới) | Draft | HQ User Save với Run Mode Manual Run | Preview, Edit được; Run Bulk Top-Up bị vô hiệu |
+| Bulk Top-Up (Manual Run) | Draft | Active | HQ User bấm Activate | Không phụ thuộc Batches Run; Preview, Edit, Run Bulk Top-Up được |
+| Bulk Top-Up (Manual Run) | Active | Active | HQ User bấm Run Bulk Top-Up | Tạo batch mới; Edit và Run Bulk Top-Up bị vô hiệu đến khi batch kết thúc |
+| Bulk Top-Up (Manual Run) | Active | Inactive | HQ User bấm Deactivate | Không chạy được |
+| Bulk Top-Up (Manual Run) | Inactive | Active | HQ User bấm Activate | Chạy lại được |
+| Bulk Top-Up (Scheduled Run) | (mới) | Scheduled | HQ User Save với Run Mode Scheduled Run và Scheduled Date/Time sau thời điểm hiện tại | Không qua Draft; Preview, Edit được; không có Run Bulk Top-Up |
+| Bulk Top-Up (Scheduled Run) | Scheduled | Scheduled | Đến Scheduled Date/Time, System tạo batch | Vẫn Scheduled trong lúc batch chạy; Edit bị vô hiệu đến khi batch kết thúc |
+| Bulk Top-Up (Scheduled Run) | Scheduled | Completed | Batch theo lịch kết thúc (Success hoặc Failed) | Chỉ xem, không Edit |
+| Batch | (mới) | Running | HQ User bấm Run Bulk Top-Up (Manual Run), hoặc System đến Scheduled Date/Time (Scheduled Run); lập danh sách và xử lý | Khóa Edit và Run Bulk Top-Up của Bulk Top-Up; nút hiện "Executing…" |
+| Batch | Running | Success | Hết danh sách, không có batch item Failed (kể cả danh sách rỗng, Targeted \= 0\) | Mở lại Edit và Run Bulk Top-Up (Manual Run) |
+| Batch | Running | Failed | Hết danh sách, còn batch item Failed | Kèm lý do; mở lại Edit và Run Bulk Top-Up (Manual Run) |
+| Batch Item | (mới) | Pending | Lập danh sách khi batch bắt đầu |  |
+| Batch Item | Pending | Success | Ghi có vào EA thành công | Số dư tăng một lần |
 | Batch Item | Pending | Failed | Lỗi xử lý hoặc kiểm tra; không còn đủ điều kiện khi chạy | Số dư không đổi; có Failure Code |
 | Transaction | (mới) | Pending | HQ User xác nhận, hoặc batch item bắt đầu ghi có | Có Reference ID |
 | Transaction | Pending | Success | Ghi có vào EA thành công | Số dư tăng một lần |
 | Transaction | Pending | Failed | Không đủ điều kiện, hoặc lỗi khi ghi có | Số dư không đổi |
 
-### **Appendix B. Open Questions & Assumptions**
-
-| ID | Câu hỏi | Ảnh hưởng | Phương án tạm trong FS |
-| :---- | :---- | :---- | :---- |
-| OQ-01 | Hạn mức tối đa mỗi lần top-up lẻ và mỗi tài khoản trong bulk | BR-F2-03, BR-F2-19, MSG-0203 | Chưa đặt hạn mức; cấu hình được |
-| OQ-03 | Có cần phê duyệt hai bước (maker-checker) cho campaign | OOS \#6 | Không; HQ User bấm Run Campaign một bước, có audit |
-| OQ-08 | Description của top-up hiển thị cho Parent: tên campaign hay "MOE Top-up" chung | AC-40 | "MOE Top-up" chung |
-| OQ-09 | Tài khoản thỏa nhiều campaign, hoặc nhiều batch của cùng campaign: cho nhận nhiều khoản hay chặn | BR-F2-25 | Cho phép; Preview không cảnh báo |
-| OQ-13 | Trạng thái Deactive: HQ User tắt và bật lại bằng thao tác nào. UI mockup đang dùng nhãn Archived (Archived, Active, Draft) và hiện nút Run Campaign cả ở dòng Draft, Archived | BR-F2-18, BR-F2-20, SCR-07 | Deactive không chạy được; cần bổ sung thao tác tắt, bật trên UI |
-| OQ-14 | Top-Up History trên UI mockup hiện NRIC đầy đủ, trong khi BR-F2-02 yêu cầu che một phần | SCR-05 | FS giữ che một phần; cần chốt với UI hoặc client |
-| OQ-15 | Bố cục xem Bulk Batches (danh sách batch, Top-Up Summary theo campaign và batch) chưa có trong UI | BR-F2-07, SCR-11, SCR-12 | Theo mô tả ở 4.1; chờ UI |
-| OQ-16 | Có cần hộp thoại xác nhận ngắn trước khi chạy batch (thao tác ghi có hàng loạt) | DA-09, BR-F2-21 | Không; bấm Run Campaign chạy ngay, chỉ có chống bấm đúp |
-| OQ-17 | Các criterion đã chọn (Age Range, Account Balance) kết hợp bằng AND hay OR | DA-07, BR-F2-14 | AND: thỏa tất cả criterion đã chọn |
-
-### **Appendix C. Danh sách màn hình**
+### **Appendix B. Danh sách màn hình**
 
 | Mã | Màn hình | Thành phần chính | Hành động | Trạng thái UI |
-| :---- | :---- | :---- | :---- | :---- |
+| ----- | ----- | ----- | ----- | ----- |
 | SCR-01 | Individual Top-Up: Tìm EA (tab Individual Top-Up) | Chọn kiểu tìm, ô nhập Account Number hoặc NRIC | Search | Loading, Empty (không có kết quả), Error |
 | SCR-02 | Xác minh chủ tài khoản và nhập số tiền | Tên, NRIC che một phần, tuổi, Account Number, Account Status, Current Balance, ô Top-Up Amount, Reason (không bắt buộc) | Continue, quay lại | Ô nhập bị vô hiệu khi EA không Active |
 | SCR-03 | Xem lại và xác nhận | Chủ tài khoản, số tiền, số dư sau top-up, lý do (nếu có) | Xác nhận, hủy | Nút xác nhận bị vô hiệu sau khi bấm; Processing |
 | SCR-04 | Kết quả top-up | Trạng thái, Reference, số dư mới, thông báo | Về SCR-01, xem Top-Up History | Success, Failed |
-| SCR-05 | Top-Up History (tab Top-Up History) | Ba thẻ Top-Up Summary (Total Spending, Successful, Failed), Filter by Source (Individual Top-Ups, Bulk Batches), Search theo tên học sinh, Status, bảng giao dịch (Date / Time, Reference, Student, Account, Amount, Status, Note) | Search, Reset, sắp xếp Date / Time và Amount | Loading, Empty, Error |
-| SCR-07 | Bulk Campaigns (tab Bulk Campaigns) | Search, Status, bảng campaign (Campaign Code, Campaign Name, Amount Per Account (SGD), Batches Run, Status, Actions) | Create Campaign, Search, Reset, Preview, Edit, Run Campaign | Loading, Empty |
-| SCR-08 | Cấu hình Campaign (tạo mới và sửa) | Campaign Name, criterion tùy chọn (Age Range, Account Balance), Top-Up Amount per account | Save, hủy | Draft; lỗi từng trường |
+| SCR-05 | Top-Up History (tab Top-Up History) | Ba thẻ Top-Up Summary (Total Spending, Successful, Failed), Filter by Source (Individual Top-Ups, Bulk Batches), Search, Status (All Statuses, Success, Failed), bảng giao dịch (Date / Time, Reference, Student, Account, Amount, Status, Note) | Search, Reset, sắp xếp Date / Time và Amount | Loading, Empty, Error |
+| SCR-07 | Bulk Top-Ups (tab Bulk Top-Ups) | Search, Status, Run Mode, bảng Bulk Top-Up (Bulk Top-Up Code, Bulk Top-Up Name, Run Mode, Amount Per Account (SGD), Scheduled At, Batches Run, Status, Actions) | Create Bulk Top-Up, Search, Reset, Preview, Edit, Activate, Deactivate, Run Bulk Top-Up (chỉ Manual Run) | Loading, Empty |
+| SCR-08 | Cấu hình Bulk Top-Up (tạo mới và sửa) | Bulk Top-Up Name, Run Mode, Scheduled Date/Time (khi Scheduled Run), criterion tùy chọn (Age Range, Account Balance), Top-Up Amount per account | Save, hủy | Lưu ở Draft (Manual Run) hoặc Scheduled (Scheduled Run); Run Mode bị khóa khi sửa; lỗi từng trường |
 | SCR-09 | Preview | Danh sách eligible (Student Name, Age, Balance, Top-Up Amount), tổng số tài khoản, tổng tiền dự kiến, thời điểm preview | Quay lại danh sách | Empty (MSG-0214) |
-| SCR-11 | Danh sách Batch (Top-Up History, nguồn Bulk Batches; OQ-15) | Bảng batch: trạng thái, số liệu | Mở batch | Pending, Running, Completed, Failed |
+| SCR-11 | Danh sách Batch (Top-Up History, nguồn Bulk Batches) | Ba thẻ Top-Up Summary; bảng batch (Date / Time, Batch Code, Top-up, Status, Targeted, Successful, Failed, Total Disbursed) | Open, sắp xếp, Search, Reset | Running, Success, Failed |
 | SCR-12 | Batch summary và Batch Item | Total Spending, Successful, Failed (số lượng và tiền), bảng batch item, bộ lọc Outcome | Export CSV | Loading, Empty, Error |
-
- 
-
-# **R2 (v1)**
 
 # **FS Function 2 \- Top-Up Management**
 
@@ -2084,8 +2156,6 @@ Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho m
 | **SCR-11** | Danh sách Run | Bảng run: trạng thái, số liệu, Eligibility Date | Mở run, Stop, Cancel | Pending, Running, Completed, CompletedWithErrors, Stopped, Missed |
 | **SCR-12** | Run summary và Run Item | Tổng Successful, Skipped, Failed (số lượng và tiền), ngân sách đã dùng, bảng run item, bộ lọc Outcome | Export CSV, Retry failed | Loading, Empty, Error |
 
-# **R2 (v2)**
-
 1. # **Functional Specification: Function 2 (R2) – Top-Up Management**
 
    1. ## **1\. Introduction**
@@ -2622,7 +2692,503 @@ Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho m
 | **SCR-11** | Danh sách Run | Bảng run: trạng thái, số liệu, Eligibility Date | Mở run, Stop | Pending, Running, Completed, CompletedWithErrors, Stopped |
 | **SCR-12** | Run summary và Run Item | Total Spending, Successful, Failed (số lượng và tiền), bảng run item, bộ lọc Outcome | Export CSV, Retry failed | Loading, Empty, Error |
 
-# **R3 v3**
+# **Function 2 (R2) – Top-Up Management**
+
+## **1\. Introduction**
+
+### **1.1. Preface**
+
+Tài liệu này là Functional Specification (FS) cho Function 2 (R2) – Top-Up Management trên Admin Portal của hệ thống Education Account & FAS (MOE Singapore). Function 2 cho phép MOE HQ User nạp tiền vào Education Account (EA) theo hai cách: nạp lẻ cho từng chủ tài khoản (Individual Top-Up), hoặc nạp hàng loạt theo campaign (Bulk Campaigns) với criterion tùy chọn theo độ tuổi và số dư. Campaign tạo một lần và dùng lại nhiều lần: HQ User bấm Run Campaign ngay ở danh sách để chạy một batch mới.
+
+### **1.2. Personas**
+
+| Persona | Loại | Vai trò trong Function 2 |
+| :---- | :---- | :---- |
+| MOE HQ User | Primary actor | Nạp lẻ; tạo và sửa campaign; xem preview; bấm Run Campaign; theo dõi kết quả batch và Top-Up History |
+| School User | Không phải actor | Không có quyền Top-Up, không thấy menu Top-up |
+| Parent | Gián tiếp | Thấy giao dịch Top-up trong Transaction History (R8) |
+| Admin Portal System | Hệ thống | Kiểm tra điều kiện, tính danh sách eligible, chạy batch, ghi log và audit |
+
+### **1.3. Design Assumptions and Limitations**
+
+#### **Design Assumptions**
+
+| ID | Assumption |
+| :---- | :---- |
+| DA-02 | Function 2 ghi có trực tiếp vào số dư EA, đồng thời thêm một bút toán vào trong cùng một database transaction. |
+| DA-03 | Chỉ MOE HQ User dùng được Function 2\. School User và Parent không có quyền. |
+| DA-04 | Chỉ EA có trạng thái Active mới nhận top-up. |
+| DA-06 | Preview chỉ mang tính tham khảo và không bắt buộc trước khi chạy. Khi chạy, hệ thống đánh giá lại từng tài khoản bằng dữ liệu tại thời điểm đó. |
+| DA-07 | Criterion của campaign là tùy chọn (Age Range, Account Balance): tài khoản eligible khi thỏa tất cả criterion đã chọn. Nếu không chọn criterion nào, mặc định lấy hết (mọi EA Active). Mỗi tài khoản eligible nhận một số tiền cố định. |
+| DA-09 | Campaign dùng lại được. HQ User bấm Run Campaign ở danh sách Bulk Campaigns để chạy ngay; mỗi lần bấm tạo một batch mới. Không cần Preview hay bước xác nhận riêng, không có chế độ chạy theo lịch hay định kỳ. |
+| DA-11 | Mỗi lần ghi có tạo một top-up transaction với Reference ID riêng, và kiểm tra bằng Reference ID để không phát sinh hai giao dịch trùng. |
+| DA-12 | Tiền tệ SGD, 2 chữ số thập phân, hiển thị dạng \$1,234.00. Ngày giờ hiển thị dạng 21 Oct 2026, 5:56 pm theo giờ Singapore (SGT, UTC+8); lưu UTC. |
+| DA-13 | Function 2 không thiết lập ngân sách hay hạn mức cho campaign. Chi tiêu được theo dõi bằng Top-Up Summary (Total Spending, Successful, Failed) khi xem history, campaign và batch; số liệu chỉ để xem, không chặn ghi có. |
+| DA-14 | Mỗi campaign chỉ có tối đa một batch đang Running tại một thời điểm. Khi batch đang Running, nút Run Campaign và Edit của campaign đó bị vô hiệu. |
+
+#### **Limitations**
+
+•      Function 2 không sửa hay hoàn tác top-up đã ghi có; top-up nhầm được xử lý ngoài hệ thống (OOS \#4).  
+•      Function 2 chỉ được coi là đạt khi cả nạp lẻ và nạp hàng loạt chạy đúng tiêu chí chấp nhận.
+
+### **1.4. Definitions, Acronyms and Abbreviations**
+
+| Thuật ngữ | Giải thích |
+| :---- | :---- |
+| EA | Education Account. Tài khoản chi tiêu cho giáo dục của Singapore Citizen từ 7 đến dưới 16 tuổi. |
+| Top-Up | Giao dịch ghi có một số tiền SGD vào EA. |
+| Individual Top-Up | Top-up lẻ cho một EA do HQ User tìm và nhập số tiền. |
+| Bulk Top-Up | Top-up cho nhiều EA cùng lúc theo criterion của một campaign. |
+| Campaign | Định nghĩa một đợt bulk top-up: criterion tùy chọn (tuổi, số dư) và số tiền mỗi tài khoản. Tạo một lần, chạy được nhiều lần. Trạng thái: Draft (chưa chạy lần nào), Active (đã chạy ít nhất một lần), Deactive (bị tắt). |
+| Criterion | Một điều kiện lọc tùy chọn của campaign: Age Range hoặc Account Balance. Các criterion khác để sprint sau. |
+| Run Campaign | Thao tác chạy campaign ngay từ danh sách Bulk Campaigns. Mỗi lần bấm tạo một batch. |
+| Batch | Một lần chạy campaign (một lần Run Campaign). Cột Batches Run ở danh sách là số batch đã chạy của campaign. |
+| Batch Item | Kết quả xử lý của một EA trong một batch. |
+| Preview | Danh sách tài khoản dự kiến eligible tại thời điểm xem, kèm tổng số và tổng tiền. Chỉ tham khảo, không bắt buộc trước khi chạy. |
+| Total Spending | Tổng số tiền đã ghi có thành công (tổng Amount các giao dịch Success) trong phạm vi đang xem: theo bộ lọc History, theo campaign hoặc theo batch. |
+| Top-Up Summary | Khối số liệu chỉ để xem gồm Total Spending, Successful, Failed. Không thiết lập ngân sách và không chặn top-up. |
+| Successful / Failed | Hai nhóm kết quả của Batch Item: nạp thành công / không nạp được (lỗi xử lý, hoặc không còn đủ điều kiện khi chạy). |
+| Reference ID | Mã tham chiếu duy nhất của một lần ghi có, dùng để chống ghi trùng và đối soát. |
+| SGD | Singapore dollar. |
+
+### **1.5. Exclusions**
+
+FS này không đặc tả:  
+•      Nguồn ngân sách, phê duyệt tài chính nội bộ MOE và hạch toán kế toán.  
+•      Tạo và đóng EA (R1).  
+•      Liên kết Student–EA (R3). Function 2 chỉ đọc.  
+•      Hiển thị Transaction History cho Parent (R8) và thanh toán phí bằng EA (R9).  
+•      Áp trợ cấp FAS (R4).  
+•      Xác thực và phân quyền Admin Portal.
+
+### **1.6. OOS List**
+
+| \# | Hạng mục ngoài phạm vi | Lý do / nguồn | Dự kiến |
+| :---- | :---- | :---- | :---- |
+| 1 | Số tiền khác nhau theo từng tài khoản (theo bậc tuổi, cấp học) | Requirement chỉ nêu số tiền cố định mỗi tài khoản; muốn nhiều mức thì tạo nhiều campaign | Chưa xếp lịch |
+| 2 | Criterion bổ sung (Schooling Status, School, Academic Level, Class, FAS tier) | Requirement ghi "etc."; bản này chỉ có Age Range và Account Balance; Schooling Status, School, Academic Level và Class để sprint sau (khi triển khai, chỉ chọn được Class sau khi đã chọn School) | Chưa xếp lịch |
+| 3 | Nhập danh sách tài khoản bằng file CSV | Không có trong requirement | Chưa xếp lịch |
+| 4 | Sửa hoặc hoàn tác top-up đã ghi có (top-up lẻ, từng giao dịch trong batch, cả một batch) | Đã bỏ khỏi phạm vi (US-033 Incorrect Manual Top-Up Correction); top-up nhầm được xử lý ngoài hệ thống | Sau khi client chốt |
+| 5 | Top-up cho EA Closed, chuyển số dư sang CPF | CPF Transfer chưa triển khai ở R1 | Cùng CPF Transfer |
+| 6 | Phê duyệt hai bước (maker-checker) | Chưa có trong requirement (OQ-03) | Chưa xếp lịch |
+| 7 | Dashboard phân tích chi tiêu nhiều campaign | Không có trong requirement; bản này chỉ có Top-Up Summary (Total Spending, Successful, Failed) khi xem history, từng campaign và từng batch, và export | Chưa xếp lịch |
+| 8 | Mọi thông báo cho Parent (email, SMS, trong ứng dụng) | Đã bỏ khỏi phạm vi (F2.8 Parent Notification); FS-08 cũng đã bỏ chuông thông báo | Chưa xếp lịch |
+| 9 | Thiết lập ngân sách hoặc hạn mức cho campaign, cảnh báo vượt ngân sách | Đã bỏ khỏi phạm vi; thay bằng Top-Up Summary khi xem history | Chưa xếp lịch |
+| 10 | Chạy campaign theo lịch (một lần hoặc định kỳ), chọn chế độ chạy | Đã bỏ khỏi phạm vi; campaign chỉ chạy khi HQ User bấm Run Campaign | Chưa xếp lịch |
+
+## **2\. System Process and Function Overview**
+
+### **2.1. Process Flow Diagrams**
+
+#### ***2.1.1 Individual Top-Up Flow***
+
+HQ User tìm một EA, kiểm tra thông tin chủ tài khoản, nhập số tiền và xác nhận. Chỉ EA Active mới nhận tiền; thất bại không làm đổi số dư.  
+1\.     HQ User mở menu Top-up, tab Individual Top-Up, tìm EA theo Account Number hoặc NRIC.  
+2\.     Hệ thống hiển thị thông tin chủ tài khoản, trạng thái và số dư; EA không Active thì không cho nhập số tiền.  
+3\.     HQ User nhập số tiền (lý do không bắt buộc), xem lại và xác nhận.  
+4\.     Hệ thống tạo giao dịch với Reference ID và ghi có vào EA.  
+5\.     Kết quả Success hoặc Failed hiển thị ở màn hình kết quả và trong Top-Up History; thất bại thì số dư không đổi.
+
+#### ***2.1.2 Bulk Campaign Flow – Create, Run and Re-run***
+
+HQ User tạo campaign ở tab Bulk Campaigns với criterion tùy chọn (tuổi, số dư) và số tiền mỗi tài khoản. Từ danh sách, HQ User có thể Preview để xem số tài khoản được Top-up và tổng tiền dự kiến, Edit lại, hoặc bấm Run Campaign luôn. Campaign dùng lại được: mỗi lần Run Campaign tạo một batch mới và Batches Run tăng thêm 1\.  
+1\.     HQ User chọn Create Campaign, nhập Campaign Name, cấu hình criterion tùy chọn (Age, Account Balance) và số tiền mỗi tài khoản, rồi Save. Campaign ở trạng thái Draft.  
+2\.     (Tùy chọn) HQ User bấm Preview ở danh sách để xem danh sách eligible tại thời điểm hiện tại.  
+3\.     (Tùy chọn) HQ User bấm Edit để sửa lại campaign.  
+4\.     HQ User bấm Run Campaign ở dòng campaign. Hệ thống tạo batch mới, lập danh sách eligible theo dữ liệu lúc đó và bắt đầu ghi có từng tài khoản; lần chạy đầu tiên chuyển campaign từ Draft sang Active.  
+5\.     HQ User theo dõi batch ở Top-Up History (Bulk Batches), kèm Top-Up Summary; xem Batch Item, export CSV.  
+6\.     Muốn chạy lại, HQ User bấm Run Campaign lần nữa; Batches Run tăng thêm 1\.
+
+## **3\. Detailed Functions and Solution Design**
+
+### **3.1. Detailed Function Specification**
+
+#### ***3.1.1. Function Description***
+
+Function 2 cho MOE HQ User nạp tiền vào EA theo hai cách: nạp lẻ cho một chủ tài khoản, hoặc nạp hàng loạt theo campaign. Campaign gồm criterion tùy chọn (tuổi, số dư) và số tiền cố định mỗi tài khoản. Campaign dùng lại được: HQ User có thể Preview, Edit lại hoặc bấm Run Campaign ở danh sách để chạy ngay một batch, không cần Preview hay bước xác nhận riêng. Khi xem Top-Up History, campaign và batch, HQ User thấy Total Spending, Successful, Failed.
+
+| Mục | Nội dung |
+| :---- | :---- |
+| Function ID | F2 (R2) |
+| Portal | Admin Portal, menu Top-up, ba tab: Individual Top-Up, Bulk Campaigns, Top-Up History |
+| Actor chính | MOE HQ User |
+| Precondition | HQ User đã đăng nhập Admin Portal và có quyền Top-Up; EA đã được tạo (R1) |
+| Postcondition (thành công) | Mỗi lần ghi có thành công làm số dư EA tăng đúng một lần; có top-up transaction với Reference; có audit log. Với bulk: có batch summary Successful, Failed và Top-Up Summary (Total Spending, Successful, Failed) của campaign |
+| Postcondition (thất bại) | Top-up transaction \= Failed; số dư EA không đổi; lý do được ghi log. Với bulk: các tài khoản khác trong batch vẫn được xử lý |
+| Postcondition (đang chạy) | Batch \= Running; campaign không sửa được và không chạy thêm batch khác cho đến khi batch kết thúc |
+
+##### **Sub-functions**
+
+| ID | Sub-function | Mục đích |
+| :---- | :---- | :---- |
+| F2.1 | Search and Verify EA Account Holder | Tìm kiếm tài khoản EA theo Account Number hoặc Student NRIC; hiển thị thông tin chủ tài khoản, trạng thái tài khoản và số dư hiện tại để xác minh trước khi nạp tiền. |
+| F2.2 | Individual Top-Up | Thực hiện nạp tiền cho một tài khoản EA cụ thể; nhập số tiền, xác nhận giao dịch, kiểm tra điều kiện hợp lệ, ghi có vào EA và hiển thị kết quả. |
+| F2.3 | Top-Up History | Tra cứu lịch sử top-up lẻ (Individual Top-Ups) và top-up từ bulk (Bulk Batches), lọc theo nguồn và trạng thái, tìm theo tên học sinh; xem Top-Up Summary (Total Spending, Successful, Failed) theo bộ lọc, theo campaign và theo batch; lưu vết kiểm toán. |
+| F2.4 | Top-Up Campaign Configuration | Tạo và sửa campaign theo tiêu chí đối tượng thụ hưởng và số tiền nạp; tìm và lọc danh sách Bulk Campaigns. |
+| F2.5 | Eligibility Preview | Xác định danh sách tài khoản đủ điều kiện theo các tiêu chí đã cấu hình; hiển thị số lượng tài khoản và tổng số tiền dự kiến để kiểm tra criterion. |
+| F2.6 | Run Campaign | Khi HQ User bấm Run Campaign ở danh sách, hệ thống tạo ngay một batch và chạy. |
+| F2.7 | Top-Up Execution and Batch Monitoring | Thực thi top-up theo danh sách lập lúc chạy; kiểm tra lại điều kiện từng tài khoản trước khi ghi có; tổng hợp kết quả thành công/thất bại, xuất báo cáo và lưu audit log. |
+
+#### ***Business Rules***
+
+**Nhóm A – Quyền và Individual Top-Up (F2.1, F2.2)**  
+•      BR-F2-01: Chỉ MOE HQ User có quyền Top-Up.  
+•      BR-F2-02: Tìm EA theo khớp chính xác Account Number hoặc NRIC đầy đủ của học sinh; không tìm gần đúng. Chỉ khi nhập đủ và đúng NRIC (hoặc Account Number) mới hiển thị tài khoản; nhập thiếu, thừa ký tự hoặc sai thì không có kết quả, không có danh sách gợi ý, không hiển thị kết quả một phần, và chỉ báo MSG-0201. Mỗi lần tìm trả về tối đa một EA. Kết quả hiển thị NRIC che một phần.  
+•      BR-F2-03: Số tiền top-up lớn hơn 0, tối đa 2 chữ số thập phân. Lý do (reason) optional, tối đa 200 ký tự.  
+•      BR-F2-04: Chỉ EA Active nhận top-up.  
+•      BR-F2-06: Giao dịch thất bại không làm đổi số dư nhưng vẫn được ghi log trên MOE (thời điểm, người thực hiện, lý do).  
+**Nhóm B – Lịch sử (F2.3)**  
+•      BR-F2-07: Tab Top-Up History liệt kê mọi top-up lẻ và top-up từ bulk (SCR-05). Hai nút Filter by Source (Individual Top-Ups, Bulk Batches) chọn nguồn đang xem; ngoài ra có ô Search theo tên học sinh và bộ lọc Status.  
+> > > o      Phía trên bảng là ba thẻ Top-Up Summary tính theo đúng bộ lọc đang chọn: Total Spending (tổng Amount các giao dịch Success, ghi chú "Credited successfully only"), Successful (số giao dịch Success, ghi chú "Accounts credited") và Failed (số giao dịch thất bại, ghi chú "Transactions failed").  
+> > > o      Bảng sắp xếp mặc định theo Date / Time mới nhất trước; cột Date / Time và Amount sắp xếp được. Campaign bulk đã chạy xem được ở danh sách Bulk Campaigns (SCR-07, cột Batches Run), danh sách batch (SCR-11) và Batch summary (SCR-12), kèm ba chỉ số này theo từng campaign và batch. Số liệu chỉ để xem, không chặn ghi có.  
+**Nhóm C – Cấu hình Campaign (F2.4)**  
+•      BR-F2-13: Campaign Code duy nhất, hệ thống sinh theo mẫu CMP-YYYY-NNNN.  
+•      BR-F2-14: Criterion là tùy chọn. HQ User có thể không chọn criterion nào (mặc định lấy hết mọi EA đủ điều kiện nền) hoặc chọn một hoặc cả hai loại criterion; tài khoản eligible khi thỏa tất cả criterion đã chọn. Điều kiện nền áp dụng cho mọi tài khoản và không phải criterion: Student SC có liên kết EA và EA Active. Bản này có hai loại criterion, mỗi loại thêm tối đa một lần:  
+> > > o      Age Range: Minimum Age, Maximum Age (bao gồm cả hai đầu); thỏa khi tuổi của học sinh tại ngày bấm Run Campaign (hoặc Preview) nằm trong khoảng.  
+> > > o      Account Balance: toán tử và ngưỡng SGD; thỏa khi số dư hiện tại so với ngưỡng đúng toán tử.  
+> > > o      Các criterion Schooling Status, School, Academic Level và Class để sprint sau (OOS \#2). Khi triển khai, chỉ chọn được Class sau khi đã chọn School.  
+•      BR-F2-15: Age Range: chỉ nhận giá trị lớn hơn hoặc bằng 7 VÀ bé hơn 16 vì EA chỉ tồn tại từ 7 đến dưới 16 tuổi. Tuổi được tính theo số năm tròn của ngày hôm đó (ngày bấm Run Campaign hoặc Preview).  
+•      BR-F2-17: Function 2 không thiết lập ngân sách hay hạn mức cho campaign. Chi tiêu của campaign được theo dõi bằng Top-Up Summary (BR-F2-07); không có bước chặn hay cảnh báo theo ngân sách ở preview hay khi chạy.  
+•      BR-F2-18: Trạng thái campaign: Draft, Active, Deactive (Appendix A).  
+> > > o      Draft: chưa chạy lần nào (Batches Run \= 0). Active: đã chạy ít nhất một lần (Batches Run lớn hơn hoặc bằng 1).  
+> > > o      Deactive: campaign bị tắt, không chạy được (cách bật, tắt TBC, OQ-13).  
+**Nhóm D – Preview và thực thi (F2.5, F2.6, F2.7)**  
+•      BR-F2-19: Preview hiển thị Student Name, Age, Balance, Top-Up Amount dự kiến của từng tài khoản, cùng tổng số tài khoản, tổng tiền dự kiến và thời điểm tính preview. Preview chỉ đọc, không có nút Confirm.  
+•      BR-F2-20: Run Campaign không yêu cầu Preview trước. Điều kiện để chạy: campaign không Deactive, không có batch Running của campaign đó, và có ít nhất một tài khoản eligible tại lúc bắt đầu chạy. Không có tài khoản eligible thì báo không có tài khoản (MSG-0214) và không tạo batch.  
+•      BR-F2-21: Khi HQ User bấm Run Campaign ở danh sách, hệ thống tạo batch ngay (Pending rồi Running) và ghi audit log người bấm. Nút Run Campaign bị vô hiệu sau lần bấm đầu. Không có lựa chọn chế độ chạy, lịch chạy hay bước xác nhận riêng.  
+•      BR-F2-22: Campaign chạy được nhiều lần; mỗi lần Run Campaign tạo một batch mới và Batches Run tăng 1; lần chạy đầu tiên chuyển campaign từ Draft sang Active. Mỗi campaign chỉ có một batch Running tại một thời điểm; bấm Run Campaign hai lần, hoặc hai HQ User bấm cùng lúc, chỉ tạo một batch (kiểm tra bằng row version).  
+•      BR-F2-24: Khi chạy, hệ thống xử lý từng tài khoản theo thứ tự Account Number tăng dần, theo từng đoạn nhỏ: EA còn Active, đánh giá lại các criterion đã chọn bằng dữ liệu tại thời điểm đó, ghi có. Sau mỗi đoạn hệ thống cập nhật số liệu batch (Successful, Failed, Total credited) để theo dõi.  
+•      BR-F2-25: Trong một batch, mỗi tài khoản được ghi có tối đa một lần (duy nhất theo Batch và EA). Giữa các batch của cùng campaign hoặc của campaign khác, một tài khoản có thể nhận nhiều khoản.  
+•      BR-F2-26: Kết quả từng tài khoản chỉ có hai trạng thái: Successful hoặc Failed. Failed kèm Failure Code: không còn đủ điều kiện khi chạy (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH khi không còn thỏa criterion đã chọn) hoặc lỗi kỹ thuật (ví dụ CREDIT\_FAILED).  
+•      BR-F2-27: Mỗi batch item (mỗi tài khoản được top-up trong batch) có một Reference ID riêng, sinh một lần và duy nhất trong toàn hệ thống; dùng để kiểm tra không ghi trùng. Việc theo dõi theo campaign dùng Campaign Code, batch không có Reference ID riêng.  
+•      BR-F2-29: Batch summary hiển thị Total Spending của batch (Total credited), tổng Successful, Failed (số tài khoản và số tiền), lọc theo kết quả; export CSV. Trạng thái batch: Completed khi không có Failed, Failed khi còn Failed kèm lý do.  
+•      BR-F2-30: Audit lưu vĩnh viễn: Reference, số tiền, thời điểm, người thực hiện (HQ User, hoặc "System" kèm HQ User đã bấm Run Campaign), campaign, batch. Không xóa cứng campaign, batch, batch item và giao dịch.
+
+#### ***3.1.2. Process Flow Description and Screens***
+
+##### **A. Individual Top-Up Flow**
+
+**Bước 1\. Tìm EA và xác minh chủ tài khoản (F2.1)**  
+•      **1.1** HQ User vào menu Top-up, chọn tab Individual Top-Up (SCR-01).  
+•      **1.2** HQ User nhập Account Number hoặc NRIC đầy đủ của học sinh và chọn Search. Hệ thống tìm EA theo khớp chính xác (BR-F2-02).  
+•      **1.3** Hệ thống hiển thị SCR-02: tên học sinh, NRIC che một phần, tuổi, Account Number, Account Status, Current Balance.  
+•      **1.4** Luồng thay thế: không tìm thấy thì báo MSG-0201; EA không Active vẫn hiển thị để tra cứu nhưng không cho nhập số tiền, kèm lý do (MSG-0204).  
+**Bước 2\. Nhập số tiền và xác nhận (F2.2)**  
+•      **2.1** Trên SCR-02, HQ User nhập Top-Up Amount và Reason (không bắt buộc), rồi chọn Continue.  
+•      **2.2** Hệ thống kiểm tra định dạng và hạn mức (BR-F2-03).  
+•      **2.3** Hệ thống hiển thị SCR-03 để xem lại: chủ tài khoản, Account Number, số dư hiện tại, số tiền, số dư sau top-up (tham khảo), lý do (nếu có).  
+•      **2.4** HQ User xác nhận. Nút xác nhận bị vô hiệu ngay sau lần bấm đầu.  
+**Bước 3\. Ghi có (F2.2)**  
+•      **3.1** Hệ thống tạo top-up transaction (Pending) với Reference ID.  
+•      **3.2** Hệ thống kiểm tra Reference ID chưa được dùng.  
+•      **3.3** Hệ thống lưu vào history và cập nhất số dư mới.  
+> > > o      Thành công: transaction Success, ghi audit log, hiển thị SCR-04 kèm Reference và số dư mới (MSG-0207).  
+> > > o      Thất bại (EA không Active, hoặc lỗi khi ghi có): transaction Failed, số dư không đổi, hiển thị SCR-04 (MSG-0204 hoặc MSG-0208).  
+**Bước 4\. Xem lịch sử top-up lẻ (F2.3)**  
+•      **4.1** HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Individual Top-Ups.  
+•      **4.2** Màn hình hiển thị ba thẻ Top-Up Summary (Total Spending, Successful, Failed), tính theo đúng bộ lọc đang chọn (BR-F2-07).  
+•      **4.3** HQ User có thể nhập tên học sinh vào ô Search, chọn Status, rồi bấm Search hoặc Reset.  
+•      **4.4** Bảng giao dịch hiển thị mới nhất trước: Date / Time, Reference, Student, Account, Amount, Status, Note.  
+•      **4.5** Màn hình chỉ để tra cứu; không có thao tác sửa hoặc hoàn tác top-up (OOS \#4). Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.
+
+##### **B. Batch Top-Up Flow**
+
+**Bước 1\. Tạo và cấu hình Campaign (F2.4)**  
+•      **1.1** HQ User vào tab Bulk Campaigns (SCR-07), chọn Create Campaign.  
+•      **1.2** Trên SCR-08, HQ User nhập Campaign Name.  
+•      **1.3** HQ User cấu hình criterion tùy chọn gồm Minimum & Maximum Age hoặc Minimum & Maximum Account Balance.  
+•      **1.4** HQ User nhập Top-Up Amount per account, rồi Save Draft/ Preview.  
+•      **1.5** Hệ thống kiểm tra theo BR-F2-13 đến BR-F2-18 và lưu campaign ở trạng thái Draft.  
+•      **1.6** Từ danh sách, HQ User có thể Preview, Edit lại hoặc Run Campaign luôn; Edit bị vô hiệu khi campaign có batch Running.  
+**Bước 2\. Xem Preview, tùy chọn (F2.5)**  
+•      **2.1** HQ User bấm Preview ở dòng campaign.  
+•      **2.2** Hệ thống đánh giá các criterion đã chọn trên các EA Active theo dữ liệu hiện tại.  
+•      **2.3** Hệ thống hiển thị SCR-09: danh sách eligible (Student Name, Age, Balance, Top-Up Amount), tổng số tài khoản, tổng tiền dự kiến, thời điểm tính preview.  
+•      **2.4** Không có tài khoản eligible: hiển thị MSG-0214.  
+•      **2.5** Preview chỉ đọc; HQ User quay lại danh sách để chạy.  
+**Bước 3\. Run Campaign (F2.6)**  
+•      **3.1** HQ User bấm Run Campaign ở dòng campaign ngay trên danh sách SCR-07. Nút bị vô hiệu sau lần bấm đầu.  
+•      **3.2** Không có bước Preview bắt buộc, lựa chọn chế độ chạy, lịch chạy hay xác nhận riêng.  
+•      **3.3** Hệ thống ghi audit log người bấm và tạo batch ngay.  
+•      **3.4** Chưa có tài khoản eligible thì báo MSG-0214, không tạo batch.  
+•      **3.5** Batch đã chạy không dừng giữa chừng được.  
+**Bước 4\. Thực thi batch và nhận kết quả (F2.7)**  
+•      **4.1** Hệ thống tạo batch (Pending, rồi Running) và khóa campaign (không Edit, không Run thêm).  
+•      **4.2** Hệ thống cố định criterion và số tiền cho batch này; lần chạy đầu tiên chuyển campaign sang Active.  
+•      **4.3** Hệ thống xử lý từng tài khoản theo BR-F2-24: kiểm tra, ghi có vào EA với Reference ID riêng của từng batch item (BR-F2-27), ghi kết quả Successful hoặc Failed.  
+•      **4.4** HQ User theo dõi tiến độ ở SCR-11 và SCR-12 (số đã xử lý, Successful, Failed, Total credited).  
+•      **4.5** Hết danh sách: batch \= Completed (không có Failed) hoặc Failed (còn Failed, kèm lý do); hiển thị batch summary (BR-F2-29).  
+•      **4.6** Campaign được mở lại để Edit hoặc Run Campaign lần nữa; Batches Run tăng 1\.  
+**Bước 5\. Xem kết quả, export và chạy lại (F2.3, F2.7)**  
+•      **5.1** HQ User mở tab Top-Up History (SCR-05), chọn Filter by Source là Bulk Batches để xem các batch đã chạy kèm Top-Up Summary (BR-F2-07).  
+•      **5.2** HQ User mở một batch để xem SCR-12, lọc batch item theo kết quả và export CSV.  
+•      **5.3** Batch item Failed không thử lại; cần thì chạy batch mới.  
+•      **5.4** Parent thấy giao dịch trong Transaction History của R8 ngay sau khi ghi có.  
+•      **5.5** Muốn chạy đợt mới, HQ User bấm Run Campaign lần nữa ở SCR-07 (BR-F2-22).
+
+##### **Trường hợp ngoại lệ**
+
+| \# | Tình huống | Xử lý |
+| :---- | :---- | :---- |
+| EX-01 | School User hoặc Parent gọi API Top-Up, hoặc HQ User sửa ID trong request để thao tác trên campaign hay giao dịch không thuộc quyền | Server kiểm tra quyền cho mọi request, trả 403, không lộ dữ liệu, ghi log bảo mật (MSG-0003) |
+| EX-02 | EA chuyển sang Closed giữa lúc HQ User xem và lúc xác nhận | Top-up bị từ chối, số dư không đổi (MSG-0204) |
+| EX-04 | Bấm xác nhận hai lần, hoặc client gửi lại cùng một yêu cầu | Chỉ tạo một transaction (kiểm tra bằng Reference ID) và ghi có một lần; lần gửi lại nhận kết quả của transaction đầu |
+| EX-06 | Session Admin Portal hết hạn khi đang thao tác | Hết hạn trước khi xác nhận (top-up lẻ) hoặc trước khi bấm Run Campaign: yêu cầu đăng nhập lại, chưa có transaction hay batch. Hết hạn sau đó: transaction hoặc batch vẫn được xử lý; HQ User đăng nhập lại thấy trạng thái hiện tại (MSG-0002) |
+| EX-07 | HQ User sửa criterion hoặc số tiền sau khi đã xem Preview | Preview chỉ tham khảo, không chặn gì. Run Campaign dùng định nghĩa hiện tại và đánh giá lại tại lúc chạy; danh sách thực tế có thể khác Preview cũ |
+| EX-08 | Hai HQ User sửa hoặc Run Campaign cùng một campaign đồng thời; hoặc Edit, Run Campaign trên campaign đang có batch Running | Dùng row version để phát hiện xung đột, người sau nhận yêu cầu làm mới (MSG-0222). Campaign có batch Running không Edit hay Run Campaign được (MSG-0215) |
+| EX-09 | Giữa preview (hoặc lúc lập danh sách) và lúc xử lý, một tài khoản đổi số dư hoặc bị đóng | Đánh giá lại khi chạy: tài khoản không còn đủ điều kiện (bị đóng, hoặc không còn thỏa criterion đã chọn) bị Failed với Failure Code tương ứng (EA\_NOT\_ACTIVE hoặc CRITERIA\_NOT\_MATCH); danh sách thực tế có thể khác preview |
+| EX-11 | Job bị dừng đột ngột hoặc server khởi động lại giữa batch | Batch tiếp tục từ các batch item chưa xử lý. Kiểm tra Reference ID của từng item trước khi ghi có; không ghi có hai lần |
+
+## **4\. Data Fields Table**
+
+### **4.1. Trường hiển thị và nhập trên màn hình**
+
+| Màn hình | Trường | Kiểu | Nguồn | Nhập | Bắt buộc | Quy tắc / ghi chú |
+| :---- | :---- | :---- | :---- | :---- | :---- | :---- |
+| SCR-01 | Search by | Enum ACCOUNT\_NUMBER, NRIC | HQ User chọn | Có | Có | Khớp chính xác, không tìm gần đúng, không gợi ý khi nhập dở |
+| SCR-01 | Search value | Text | HQ User nhập | Có | Có | Account Number hoặc NRIC đầy đủ (9 ký tự) |
+| SCR-02 | Student name | Text | Student Profile (R1) | Không | Có |   |
+| SCR-02 | NRIC | Text | Student Profile (R1) | Không | Có | Che một phần, không đưa NRIC đầy đủ vào URL |
+| SCR-02 | Age | Integer | Tính từ DOB | Không | Có | Số năm tròn tại ngày hiện tại |
+| SCR-02 | Account Number | Text | Education Account | Không | Có |   |
+| SCR-02 | Account Status | Enum Active, Closed | Education Account | Không | Có | Chỉ Active mới nhập được số tiền |
+| SCR-02 | Current Balance | Decimal(18,2), SGD | Education Account | Không | Có |   |
+| SCR-02 | Top-Up Amount | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; tối đa 2 chữ số thập phân; không vượt hạn mức mỗi lần (TBC) |
+| SCR-02 | Reason | Text, tối đa 200 ký tự | HQ User nhập | Có | Không | Chỉ dùng nội bộ, không hiển thị cho Parent. Hiển thị ở cột Note của Top-Up History |
+| SCR-03 | Balance after top-up | Decimal(18,2) | Tính | Không | Không | Chỉ để tham khảo |
+| SCR-04 | Reference | Text, tối đa 50 ký tự | Hệ thống sinh | Không | Có | Duy nhất; top-up lẻ theo mẫu TUP-IND-{timestamp ms}, ví dụ TUP-IND-1792580216342; tiền tố cho bulk TBC |
+| SCR-04 | Transaction Status | Enum Success, Failed | Transaction | Không | Có |   |
+| SCR-04 | New balance | Decimal(18,2) | Education Account | Không | Không | Chỉ khi Success |
+| SCR-05 | Thẻ Total Spending | Decimal(18,2), SGD | Tính | Không | Có | Tổng Amount các giao dịch Success theo bộ lọc đang chọn; ghi chú "Credited successfully only" |
+| SCR-05 | Thẻ Successful | Integer | Tính | Không | Có | Số giao dịch Success theo bộ lọc; ghi chú "Accounts credited" |
+| SCR-05 | Thẻ Failed | Integer | Tính | Không | Có | Số giao dịch thất bại theo bộ lọc; ghi chú "Transactions failed" |
+| SCR-05 | Filter by Source | Nút chọn Individual Top-Ups, Bulk Batches | HQ User chọn | Có | Không | Chọn nguồn đang xem; thẻ Top-Up Summary và bảng đổi theo |
+| SCR-05 | Search | Text | HQ User nhập | Có | Không | Tìm theo tên học sinh (placeholder "Search by student name"); có nút xóa nội dung |
+| SCR-05 | Status | Dropdown All Statuses, Success, Failed | HQ User chọn | Có | Không | Mặc định All Statuses |
+| SCR-05 | Nút Search, Reset | Button | HQ User bấm | Có | Không | Reset bị vô hiệu khi chưa có bộ lọc nào |
+| SCR-05 | Cột bảng | Date / Time, Reference, Student, Account, Amount, Status, Note | Transaction | Không | Có | Date / Time mới nhất trước, dạng 21 Oct 2026, 5:56 pm (SGT); Student hiển thị tên và NRIC (OQ-14); Account là Account Number; Amount có dấu \$ và dấu phẩy; Note là Reason của top-up lẻ; Date / Time và Amount sắp xếp được; 20 dòng mỗi trang |
+| SCR-07 | Search | Text | HQ User nhập | Có | Không | Tìm theo Campaign Code hoặc Campaign Name |
+| SCR-07 | Status | Dropdown All Statuses, Draft, Active, Deactive | HQ User chọn | Có | Không | Mặc định All Statuses; có nút Search và Reset |
+| SCR-07 | Create Campaign | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ tạo mới |
+| SCR-07 | Cột danh sách | Campaign Code, Campaign Name, Amount Per Account (SGD), Batches Run, Status, Actions | Campaign | Không | Có | Campaign Name kèm dòng tóm tắt criterion (ví dụ Age: 7–12); Amount Per Account và Batches Run sắp xếp được; Batches Run là số batch đã chạy của campaign; Status: Draft khi Batches Run bằng 0, Active khi lớn hơn hoặc bằng 1, Deactive khi bị tắt |
+| SCR-07 | Actions: Preview | Button | HQ User bấm | Có | Không | Mở SCR-09; dùng được ở mọi trạng thái campaign |
+| SCR-07 | Actions: Edit | Button | HQ User bấm | Có | Không | Mở SCR-08 ở chế độ sửa; vô hiệu khi campaign có batch Running |
+| SCR-07 | Actions: Run Campaign | Button | HQ User bấm | Có | Không | Chạy ngay một batch mới (BR-F2-20, BR-F2-21); bật với campaign Draft hoặc Active không có batch Running (OQ-13) |
+| SCR-08 | Campaign Name | Text, tối đa 150 ký tự | HQ User nhập | Có | Có |   |
+| SCR-08 | Age Range: Minimum, Maximum Age | Integer | HQ User nhập | Có | Không | 7 ≤ Min ≤ Max ≤ 15; nhập cả hai hoặc không nhập |
+| SCR-08 | Account Balance: operator, threshold | Enum, Decimal(18,2) | HQ User chọn, nhập | Có | Không | Toán tử \<, \<=, \>, \>=, \=; ngưỡng không âm; nhập cả hai hoặc không |
+| SCR-08 | Top-Up Amount per account | Decimal(18,2), SGD | HQ User nhập | Có | Có | Lớn hơn 0; không vượt hạn mức mỗi lần (TBC); hiển thị ở cột Amount Per Account (SGD) |
+| SCR-09 | Cột preview | Student Name, Age, Balance, Top-Up Amount | Tính | Không | Có | 20 dòng mỗi trang; chỉ đọc |
+| SCR-09 | Total accounts, Total amount (forecast), Previewed at | Integer, Decimal, Datetime | Tính | Không | Có | Chỉ để xem; không có nút Confirm |
+| SCR-11 | Cột danh sách batch | Campaign Code, Status, Total, Successful, Failed, Total credited, Started at, Completed at | Batch | Không | Có | Mở từ Top-Up History, nguồn Bulk Batches (bố cục TBC, OQ-15); Status: Pending, Running, Completed, Failed |
+| SCR-12 | Cột batch item | Student, Account Number, Age, Balance, Amount, Outcome, Failure Reason, Reference | Batch item | Không | Có | Lọc theo Outcome; nút Export CSV |
+| SCR-12 | Batch summary | Integer, Decimal(18,2) | Tính | Không | Có | Total Spending (Total credited), Successful, Failed (số lượng và tiền) |
+
+### **4.2. Thực thể dữ liệu liên quan**
+
+Batch trong tài liệu này là bảng topup\_campaign\_runs; Batch Item là bảng topup\_run\_items. Tên bảng và cột (RunId, ...) giữ nguyên để khớp thiết kế DB hiện có.
+
+#### **Campaign (topup\_campaigns)**
+
+•      Id: VARCHAR(50) \- PK  
+•      Code: NVARCHAR(50) \- Duy nhất; hiển thị dạng CMP-2026-0001  
+•      Name: NVARCHAR(150)  
+•      AmountPerAccount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Số tiền lớn hơn 0; mặc định SGD  
+•      Status: INT \- 1 Draft, 2 Active, 3 Deactive. Draft chuyển Active khi batch đầu tiên được tạo; Deactive do HQ User đặt (OQ-13)  
+•      DefinitionVersion: INT \- Tăng mỗi lần sửa; ghi vào batch lúc chạy  
+•      CreatedBy, CreatedAt, UpdatedAt, RowVersion: VARCHAR(50), DATETIME2(3), ROWVERSION \- UTC; RowVersion là token kiểm soát đồng thời lạc quan  
+•      Giá trị dẫn xuất (không lưu): Batches Run là số batch của campaign. Top-Up Summary của campaign cộng dồn từ các batch thuộc campaign: Total Spending là tổng TotalCredited; Successful, Failed là tổng SuccessfulCount, FailedCount.
+
+#### **Criterion (topup\_campaign\_criteria)**
+
+•      Id, CampaignId: VARCHAR(50) \- PK, FK Campaign  
+•      CriterionType: INT \- 1 AGE\_RANGE, 2 BALANCE; duy nhất theo (CampaignId, CriterionType). Criterion là tùy chọn; campaign không có criterion nào thì lấy hết. Thêm loại mới ở sprint sau không đổi cấu trúc bảng  
+•      MinAge, MaxAge: SMALLINT \- Bắt buộc khi AGE\_RANGE, cấm ở loại khác; 7 ≤ MinAge ≤ MaxAge ≤ 15  
+•      BalanceOperator, BalanceThreshold: INT, DECIMAL(18,2) \- Bắt buộc khi BALANCE; 1 LT, 2 LTE, 3 GT, 4 GTE, 5 EQ; ngưỡng không âm
+
+#### **Batch (topup\_campaign\_runs)**
+
+•      Id, CampaignId: VARCHAR(50) \- PK, FK Campaign. Một campaign có nhiều batch  
+•      BatchNo: INT \- Số thứ tự batch trong campaign (1, 2, ...); duy nhất theo (CampaignId, BatchNo)  
+•      TriggeredBy: VARCHAR(50) \- IAM ID của HQ User đã bấm Run Campaign  
+•      DefinitionVersion, AmountPerAccount: INT, DECIMAL(18,2) \- Snapshot tại lúc bắt đầu; sửa campaign không đổi batch đã tạo  
+•      Status: INT \- 1 Pending, 2 Running, 3 Completed, 4 Failed  
+•      TotalAccounts, SuccessfulCount, FailedCount: INT \- Không âm  
+•      TotalCredited: DECIMAL(18,2) \- Tổng các khoản Successful của batch; là Total Spending của batch  
+•      StartedAt, CompletedAt, CreatedAt, UpdatedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC  
+•      Ràng buộc: tối đa một batch ở trạng thái Pending hoặc Running cho mỗi CampaignId (unique index có điều kiện); đây là cơ sở của DA-14
+
+#### **Batch Item (topup\_run\_items)**
+
+•      Id, RunId: VARCHAR(50) \- PK, FK Batch; duy nhất theo (RunId, EducationAccountId)  
+•      EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
+•      AccountNumber, StudentProfileId: VARCHAR(50), UNIQUEIDENTIFIER \- Tham chiếu hiển thị; NRIC lấy qua Student Profile, không sao chép  
+•      AgeAtRun, BalanceSnapshot, ExpectedAmount: SMALLINT, DECIMAL(18,2), DECIMAL(18,2) \- Giá trị lúc lập danh sách và lúc đánh giá; dùng để hiển thị và audit  
+•      Outcome: INT \- 1 Pending, 2 Successful, 3 Failed  
+•      FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Bắt buộc khi Failed; mã lỗi (EA\_NOT\_ACTIVE, CRITERIA\_NOT\_MATCH, CREDIT\_FAILED) và nguyên nhân đã làm sạch  
+•      ReferenceId: NVARCHAR(50) \- Duy nhất; sinh một lần  
+•      TopUpTransactionId: VARCHAR(50) \- FK Transaction; bắt buộc khi Successful  
+•      ProcessedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC
+
+#### **Top-Up Transaction (topup\_transactions)**
+
+•      Id: VARCHAR(50) \- PK  
+•      TransactionReference: NVARCHAR(50) \- Duy nhất; hiển thị ở cột Reference của Top-Up History và ở SCR-04  
+•      SourceType: INT \- 1 Individual, 2 Bulk  
+•      EducationAccountId: UNIQUEIDENTIFIER \- FK logic tới EA  
+•      RunItemId: VARCHAR(50) \- FK Batch Item; bắt buộc khi Bulk, cấm ở loại khác  
+•      InitiatedByUserId: VARCHAR(50) \- IAM ID của HQ User; với Bulk là HQ User đã bấm Run Campaign  
+•      ReferenceId: NVARCHAR(50) \- Duy nhất; hệ thống kiểm tra trước khi tạo giao dịch để chống ghi trùng  
+•      Amount, CurrencyCode: DECIMAL(18,2), CHAR(3) \- Lớn hơn 0; SGD  
+•      Reason: NVARCHAR(200) \- Optional, chỉ dùng cho Individual; không hiển thị cho Parent; hiển thị ở cột Note của Top-Up History  
+•      Status: INT \- 1 Pending, 2 Success, 3 Failed  
+•      FailureCode, FailureReason: VARCHAR(50), NVARCHAR(500) \- Đã làm sạch  
+•      CreatedAt, UpdatedAt, CompletedAt, RowVersion: DATETIME2(3), ROWVERSION \- UTC; CompletedAt rỗng khi đang xử lý  
+•      Giá trị dẫn xuất (không lưu): Top-Up Summary ở SCR-05 tính theo bộ lọc. Total Spending là tổng Amount các giao dịch Success. Successful và Failed là số giao dịch theo Status; với nguồn Bulk Batches đếm theo Outcome của batch item.
+
+#### **Tham chiếu ngoài & Audit Log**
+
+•      R1: Student Profile (họ tên, NRIC, DOB, Citizenship).  
+•      R3: liên kết Student–EA.  
+•      AuditLog: actor, action, entity, entity\_id, old\_value, new\_value, timestamp. Ghi: tạo, sửa, bật hoặc tắt (Deactive) campaign; Run Campaign; bắt đầu và kết thúc batch; mỗi top-up.
+
+## **5\. Validation**
+
+### **5.1. Thông báo lỗi hiển thị cho HQ User**
+
+| Mã | Nội dung hiển thị | Hành vi UI |
+| :---- | :---- | :---- |
+| MSG-0201 | No Education Account found. Check the Account Number or NRIC and try again. | Giữ ở SCR-01 |
+| MSG-0202 | Enter an amount greater than 0, with up to 2 decimal places. | Giữ ở SCR-02, đánh dấu ô nhập |
+| MSG-0203 | The amount is more than the limit for one top-up. (TBC, OQ-01) | Giữ ở SCR-02 hoặc SCR-08 |
+| MSG-0204 | This Education Account is not active. Top-up is not allowed. | Vô hiệu ô nhập số tiền |
+| MSG-0207 | Top-up completed. Reference: {Reference}. | SCR-04, hiện số dư mới |
+| MSG-0208 | The top-up could not be completed. No amount was credited. | SCR-04, cho thử lại |
+| MSG-0214 | No accounts match these criteria. | Hiện ở SCR-09 (Preview) hoặc ngay khi bấm Run Campaign ở SCR-07; không tạo batch |
+| MSG-0215 | This campaign is running and cannot be changed. | Vô hiệu nút Edit và Run Campaign của campaign đó |
+| MSG-0217 | Enter an age range from 7 to 15, with the minimum not more than the maximum. | SCR-08, đánh dấu ô nhập |
+| MSG-0218 | Enter a balance operator and an amount of 0 or more. | SCR-08, đánh dấu ô nhập |
+| MSG-0222 | This campaign was changed by another user. Refresh and try again. | Làm mới dữ liệu |
+| MSG-0001 | Enter your \<field\> | Bỏ trống trường bắt buộc, báo theo từng trường |
+| MSG-0002 | Your session has expired. Please log in again. | Chuyển đến đăng nhập Admin Portal |
+| MSG-0003 | You do not have permission to perform this action. | Quay về màn hình chính |
+
+### **5.2. Tiêu chí chấp nhận (AC)**
+
+#### **Individual Top-Up**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-01 | Given HQ User, when tìm theo Account Number hoặc NRIC đầy đủ, then thấy đúng một EA với holder, status, balance; NRIC hiển thị che một phần. |
+| AC-02 | Given Account Number hoặc NRIC không có EA, hoặc NRIC nhập thiếu, thừa ký tự hoặc chỉ khớp một phần, when tìm, then báo MSG-0201, không hiển thị tài khoản hay danh sách gợi ý nào. |
+| AC-03 | Given EA Active, when HQ User xác nhận top-up 50.00, then số dư tăng đúng 50.00 một lần, transaction Success, có Reference và audit log. |
+| AC-04 | Given EA Closed, when xác nhận top-up, then bị từ chối, số dư không đổi, transaction Failed được ghi log. |
+| AC-07 | Given HQ User bấm xác nhận hai lần, then chỉ tạo một transaction (kiểm tra bằng Reference ID) và chỉ ghi có một lần. |
+| AC-09 | Given số tiền bằng 0, âm, hoặc có hơn 2 chữ số thập phân, then bị từ chối MSG-0202, không có dữ liệu nào đổi. |
+| AC-10 | Given top-up thất bại, then số dư không đổi và lý do được ghi log. |
+| AC-11 | Given School User hoặc Parent gọi API Top-Up, then bị từ chối 403 và ghi log bảo mật. |
+
+#### **Cấu hình Campaign, Preview**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-18 | Given Campaign Name và số tiền hợp lệ (criterion tùy chọn), when Save, then campaign được tạo ở trạng thái Draft với Code do hệ thống sinh và hiện ở danh sách Bulk Campaigns với Batches Run bằng 0\. |
+| AC-19 | Given Minimum Age lớn hơn Maximum Age, hoặc nằm ngoài 7 đến 15, then bị từ chối MSG-0217. |
+| AC-20 | Given campaign có criterion tuổi 7 đến 12 và số dư dưới SGD 100, when Preview, then danh sách gồm mọi EA Active thỏa cả hai criterion, kèm Student Name, Age, Balance, Top-Up Amount; tổng số tài khoản và tổng tiền đúng. |
+| AC-21 | Given campaign không có criterion nào, when Preview, then danh sách gồm mọi EA Active; học sinh PR hoặc IS không có EA không bao giờ xuất hiện. |
+| AC-22 | Given campaign đã lưu, when HQ User bấm Preview, then hiển thị tổng số tài khoản và tổng tiền dự kiến (Total amount) để kiểm tra; Preview không có nút Confirm và không bắt buộc trước khi Run Campaign. |
+| AC-23 | Given đã xem Preview, when HQ User sửa criterion hoặc số tiền rồi bấm Run Campaign, then batch dùng định nghĩa mới nhất tại lúc bấm; Preview cũ không chặn việc chạy. |
+| AC-24 | Given hai campaign với criterion khác nhau, then cả hai chạy được; tài khoản thuộc cả hai nhận hai khoản và Preview không cảnh báo. |
+
+#### **Chạy và kết quả**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-25 | Given campaign Draft hoặc Active, when HQ User bấm Run Campaign, then mỗi tài khoản eligible được ghi có đúng một lần; batch summary có Successful, Failed; số tiền tổng khớp tổng các giao dịch Success. |
+| AC-26 | Given giữa lúc lập danh sách và lúc xử lý một tài khoản không còn thỏa criterion đã chọn (ví dụ số dư tăng vượt ngưỡng), then bị Failed (CRITERIA\_NOT\_MATCH), không ghi có; nếu vẫn thỏa thì vẫn được ghi có. |
+| AC-27 | Given tài khoản bị đóng trước lúc chạy, then Failed (EA\_NOT\_ACTIVE), không ghi có. |
+| AC-28 | Given batch có 5 tài khoản eligible, số tiền mỗi tài khoản 100.00, when kết quả là 3 Successful, 2 Failed, then batch summary hiển thị Total Spending 300.00, Successful 3, Failed 2; các số này được cộng vào Top-Up Summary của campaign. |
+| AC-29 | Given một số tài khoản Failed, then batch vẫn xử lý các tài khoản khác và kết thúc ở trạng thái Failed kèm lý do. |
+| AC-31 | Given server khởi động lại giữa batch, then batch tiếp tục từ các item chưa xử lý, không ghi có trùng. |
+| AC-33 | Given batch item Failed, then số dư EA tương ứng không đổi. |
+| AC-34 | Given campaign có batch Running, when HQ User bấm Edit hoặc Run Campaign, hoặc hai HQ User thao tác đồng thời, then bị từ chối MSG-0215 hoặc MSG-0222. |
+
+#### **Run Campaign**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-35 | Given campaign Draft hoặc Active không có batch Running và có tài khoản eligible, when HQ User bấm Run Campaign ở danh sách, then batch bắt đầu ngay; không có bước Preview bắt buộc, chọn chế độ chạy, lịch chạy hay xác nhận riêng; campaign Draft chuyển Active. |
+| AC-36 | Given HQ User bấm Run Campaign hai lần, hoặc hai HQ User bấm cùng lúc, then chỉ tạo một batch; trong lúc batch Running, Run Campaign và Edit của campaign đó bị vô hiệu (MSG-0215). |
+| AC-37 | Given campaign đã có batch kết thúc, when HQ User bấm Run Campaign lần nữa, then tạo batch mới (BatchNo tăng, Batches Run tăng 1), batch cũ giữ nguyên, và Top-Up Summary của campaign cộng dồn cả hai batch. |
+| AC-38 | Given không có tài khoản eligible lúc bấm Run Campaign, then báo MSG-0214, không tạo batch, Batches Run không đổi. |
+
+#### **Audit và Parent (R8)**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-39 | Given mọi giao dịch Top-Up, then có Reference, số tiền, thời điểm, người thực hiện, campaign và batch (nếu có); không xóa cứng. |
+| AC-40 | Given top-up thành công, when Parent xem Transaction History (R8), then thấy Type Top-up, Money in, Status Completed; Description không chứa lý do nội bộ. |
+
+#### **Top-Up Summary khi xem history**
+
+| ID | Given / When / Then |
+| :---- | :---- |
+| AC-42 | Given Top-Up History đang chọn một nguồn (Individual Top-Ups hoặc Bulk Batches), Status hoặc từ khóa Search, when HQ User bấm Search, then ba thẻ Top-Up Summary hiển thị Total Spending bằng tổng Amount các giao dịch Success trong bộ lọc, cùng số lượng Successful, Failed; đổi bộ lọc thì số liệu đổi theo. |
+| AC-43 | Given campaign đã chạy một hoặc nhiều batch, when xem Top-Up Summary của campaign, then Total Spending, Successful, Failed bằng tổng các batch tương ứng ở SCR-11. |
+| AC-44 | Given batch item Failed, then số tiền đó không được cộng vào Total Spending; chỉ batch item Successful mới được cộng. |
+| AC-45 | Given SCR-05 chọn nguồn Individual Top-Ups, then Total Spending chỉ gồm top-up lẻ Success. |
+
+## **6\. Appendices**
+
+### **Appendix A. Trạng thái Campaign, Batch, Batch Item và Transaction**
+
+| Đối tượng | Từ | Sang | Điều kiện | Ghi chú |
+| :---- | :---- | :---- | :---- | :---- |
+| Campaign | (mới) | Draft | HQ User Save | Chưa chạy lần nào; Preview, Edit, Run Campaign được |
+| Campaign | Draft | Active | HQ User bấm Run Campaign, batch đầu tiên được tạo | Batches Run lớn hơn hoặc bằng 1; vẫn Preview, Edit, Run Campaign được |
+| Campaign | Active | Active | HQ User bấm Run Campaign | Tạo batch mới; Edit và Run Campaign bị vô hiệu đến khi batch kết thúc |
+| Campaign | Draft hoặc Active | Deactive | HQ User tắt campaign (cách thao tác TBC, OQ-13) | Không chạy được |
+| Batch | (mới) | Pending | HQ User bấm Run Campaign | Khóa Edit và Run Campaign của campaign |
+| Batch | Pending | Running | Bắt đầu lập danh sách và xử lý |   |
+| Batch | Running | Completed | Hết danh sách, không còn batch item Failed | Mở lại Edit và Run Campaign |
+| Batch | Running | Failed | Hết danh sách, còn batch item Failed | Kèm lý do; mở lại Edit và Run Campaign |
+| Batch Item | (mới) | Pending | Lập danh sách khi batch bắt đầu |   |
+| Batch Item | Pending | Successful | Ghi có vào EA thành công | Số dư tăng một lần |
+| Batch Item | Pending | Failed | Lỗi xử lý hoặc kiểm tra; không còn đủ điều kiện khi chạy | Số dư không đổi; có Failure Code |
+| Transaction | (mới) | Pending | HQ User xác nhận, hoặc batch item bắt đầu ghi có | Có Reference ID |
+| Transaction | Pending | Success | Ghi có vào EA thành công | Số dư tăng một lần |
+| Transaction | Pending | Failed | Không đủ điều kiện, hoặc lỗi khi ghi có | Số dư không đổi |
+
+### **Appendix B. Open Questions & Assumptions**
+
+| ID | Câu hỏi | Ảnh hưởng | Phương án tạm trong FS |
+| :---- | :---- | :---- | :---- |
+| OQ-01 | Hạn mức tối đa mỗi lần top-up lẻ và mỗi tài khoản trong bulk | BR-F2-03, BR-F2-19, MSG-0203 | Chưa đặt hạn mức; cấu hình được |
+| OQ-03 | Có cần phê duyệt hai bước (maker-checker) cho campaign | OOS \#6 | Không; HQ User bấm Run Campaign một bước, có audit |
+| OQ-08 | Description của top-up hiển thị cho Parent: tên campaign hay "MOE Top-up" chung | AC-40 | "MOE Top-up" chung |
+| OQ-09 | Tài khoản thỏa nhiều campaign, hoặc nhiều batch của cùng campaign: cho nhận nhiều khoản hay chặn | BR-F2-25 | Cho phép; Preview không cảnh báo |
+| OQ-13 | Trạng thái Deactive: HQ User tắt và bật lại bằng thao tác nào. UI mockup đang dùng nhãn Archived (Archived, Active, Draft) và hiện nút Run Campaign cả ở dòng Draft, Archived | BR-F2-18, BR-F2-20, SCR-07 | Deactive không chạy được; cần bổ sung thao tác tắt, bật trên UI |
+| OQ-14 | Top-Up History trên UI mockup hiện NRIC đầy đủ, trong khi BR-F2-02 yêu cầu che một phần | SCR-05 | FS giữ che một phần; cần chốt với UI hoặc client |
+| OQ-15 | Bố cục xem Bulk Batches (danh sách batch, Top-Up Summary theo campaign và batch) chưa có trong UI | BR-F2-07, SCR-11, SCR-12 | Theo mô tả ở 4.1; chờ UI |
+| OQ-16 | Có cần hộp thoại xác nhận ngắn trước khi chạy batch (thao tác ghi có hàng loạt) | DA-09, BR-F2-21 | Không; bấm Run Campaign chạy ngay, chỉ có chống bấm đúp |
+| OQ-17 | Các criterion đã chọn (Age Range, Account Balance) kết hợp bằng AND hay OR | DA-07, BR-F2-14 | AND: thỏa tất cả criterion đã chọn |
+
+### **Appendix C. Danh sách màn hình**
+
+| Mã | Màn hình | Thành phần chính | Hành động | Trạng thái UI |
+| :---- | :---- | :---- | :---- | :---- |
+| SCR-01 | Individual Top-Up: Tìm EA (tab Individual Top-Up) | Chọn kiểu tìm, ô nhập Account Number hoặc NRIC | Search | Loading, Empty (không có kết quả), Error |
+| SCR-02 | Xác minh chủ tài khoản và nhập số tiền | Tên, NRIC che một phần, tuổi, Account Number, Account Status, Current Balance, ô Top-Up Amount, Reason (không bắt buộc) | Continue, quay lại | Ô nhập bị vô hiệu khi EA không Active |
+| SCR-03 | Xem lại và xác nhận | Chủ tài khoản, số tiền, số dư sau top-up, lý do (nếu có) | Xác nhận, hủy | Nút xác nhận bị vô hiệu sau khi bấm; Processing |
+| SCR-04 | Kết quả top-up | Trạng thái, Reference, số dư mới, thông báo | Về SCR-01, xem Top-Up History | Success, Failed |
+| SCR-05 | Top-Up History (tab Top-Up History) | Ba thẻ Top-Up Summary (Total Spending, Successful, Failed), Filter by Source (Individual Top-Ups, Bulk Batches), Search theo tên học sinh, Status, bảng giao dịch (Date / Time, Reference, Student, Account, Amount, Status, Note) | Search, Reset, sắp xếp Date / Time và Amount | Loading, Empty, Error |
+| SCR-07 | Bulk Campaigns (tab Bulk Campaigns) | Search, Status, bảng campaign (Campaign Code, Campaign Name, Amount Per Account (SGD), Batches Run, Status, Actions) | Create Campaign, Search, Reset, Preview, Edit, Run Campaign | Loading, Empty |
+| SCR-08 | Cấu hình Campaign (tạo mới và sửa) | Campaign Name, criterion tùy chọn (Age Range, Account Balance), Top-Up Amount per account | Save, hủy | Draft; lỗi từng trường |
+| SCR-09 | Preview | Danh sách eligible (Student Name, Age, Balance, Top-Up Amount), tổng số tài khoản, tổng tiền dự kiến, thời điểm preview | Quay lại danh sách | Empty (MSG-0214) |
+| SCR-11 | Danh sách Batch (Top-Up History, nguồn Bulk Batches; OQ-15) | Bảng batch: trạng thái, số liệu | Mở batch | Pending, Running, Completed, Failed |
+| SCR-12 | Batch summary và Batch Item | Total Spending, Successful, Failed (số lượng và tiền), bảng batch item, bộ lọc Outcome | Export CSV | Loading, Empty, Error |
+
+ 
 
 # **FUNCTIONAL SPECIFICATION – R3**
 
@@ -3267,8 +3833,6 @@ Hệ thống cần đảm bảo:
 * R4: FAS Eligibility Assessment, Grant và Subsidy Rules.  
 * R9: Payment Gateway, Wallet Debit và Reconciliation.
 
-# **R3 v2**
-
 # **FUNCTIONAL SPECIFICATION – R3: School, Student và Fee Management**
 
 ## **1\. Introduction**
@@ -3703,8 +4267,6 @@ F08 do System thực hiện, không có màn hình riêng.
 *End of Document*
 
 ## 
-
-# **R3**
 
 # **FUNCTIONAL SPECIFICATION – R3: School, Student và Fee Management**
 
@@ -4326,8 +4888,6 @@ Chưa có yêu cầu định lượng. Cần xác nhận: hiệu năng publish/g
 
 *End of R3*
 
-# **R4**
-
 # **FS F4 – Đơn FAS (FAS Applications)**
 
 21/10/2026 · Phiên bản 1.3 · @Huy
@@ -4669,8 +5229,6 @@ Nút chỉ có trên prototype cho MOE HQ, ở scheme MOEFAS có form đang Open
 | T14 | Add fee ở scheme Closed | Không hiển thị nút. |
 | T15 | Export kèm bộ lọc | CSV chỉ có các dòng đã lọc và các cột ở mục 3.4. |
 
-# **R5**
-
 # **FS F5 – Đơn giấy (Paper Applications)**
 
 21/10/2026 · Phiên bản 1.2 · @Huy
@@ -4826,9 +5384,7 @@ Hiển thị Part 1 Applicant (tên, NRIC, quan hệ, category · nationality, l
 | T12 | Sửa đơn đang Pending | Save changes cập nhật đơn; History "Paper application edited". |
 | T13 | Nộp khi không có form FAS nào đang mở | Bị chặn: "{tên}: the FAS application form is closed (next opens …)." |
 
-# **R6**
-
-# **FFUNCTIONAL SPECIFICATION**
+# **FUNCTIONAL SPECIFICATION**
 
 ## **R6 – FAS Budget & Statistics**
 
@@ -5392,10 +5948,6 @@ Các chức năng sau không được tự động xem là thuộc phạm vi R6 
 
 **End of Functional Specification – R6, Draft v0.1**
 
-# **R7**
-
-# **R8 (Final)**
-
 # **FS-08: Parent Portal – SingPass, Education Account, Profile**
 
 FR-08 cho phép Parent đăng nhập e-Service bằng SingPass, xem Education Account (EA) của con và cập nhật thông tin liên lạc của mình.
@@ -5658,10 +6210,6 @@ Mỗi lần sửa, ghi audit log: trường, giá trị cũ, giá trị mới, n
 | MSG-0809 | We could not retrieve your information. Please try again later. | API dữ liệu lỗi hoặc quá 10 giây, hoặc cập nhật dữ liệu lỗi khi đăng nhập |
 
  
-
-# **R9 (v2)**
-
-# **R9 (v1)**
 
 # **FS Function 9 \- Outstanding Fees and Payment**
 
@@ -6077,8 +6625,6 @@ Nếu không có invoice Issued, hệ thống hiển thị trạng thái không 
 
 ## 
 
-# **R10**
-
 # **FS F10 – Phụ huynh nộp đơn FAS (Parent FAS Application)**
 
 21/10/2026 · Phiên bản 1.2 · @Huy
@@ -6239,8 +6785,6 @@ Tiêu đề "Your circumstances and wishes". Ô nhập tuỳ chọn, tối đa 2
 | T10 | Con là PR | SBFAS, do trường xét. |
 | T11 | Trường duyệt SBFAS | Timeline Decision Approved; khung hiển thị "SBFAS Tier n from …". |
 | T12 | Không có form FAS nào đang mở | Các con bị khoá với "application form is closed (opens …)"; Continue bị khoá. |
-
-# **Function list**
 
 | No | Requirements | Portal | AI (Features) |
 | :---: | ----- | :---: | ----- |

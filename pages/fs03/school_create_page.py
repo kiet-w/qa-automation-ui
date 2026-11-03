@@ -122,7 +122,9 @@ class SchoolCreatePage(BasePage):
 
     def select_school_type(self, school_type: str) -> None:
         """Select a school type from the dropdown by visible label or value."""
-        self.school_type_select.select_option(label=school_type)
+        # The native option value is the API enum (e.g. GOVERNMENT), while
+        # its visible label is localized human text (e.g. Government).
+        self.school_type_select.select_option(value=school_type)
 
     def select_academic_level(self, level_name: str) -> None:
         """Click academic levels combobox to open listbox, select an option by text, and close listbox."""
